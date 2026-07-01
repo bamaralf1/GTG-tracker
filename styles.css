@@ -1955,6 +1955,9 @@ body::after{
 .lang-flag-btn{background:0 0;border:none;cursor:pointer;padding:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:.55;transition:all .25s var(--ease-expo, ease);position:relative}
 .lang-flag-btn:hover{opacity:.9;transform:translateY(-1px) scale(1.1)}
 .lang-flag-btn.active{opacity:1;box-shadow:0 0 0 1.5px var(--gold),0 0 10px rgba(212,168,67,.45);animation:langPulse 2.2s ease-in-out infinite}
-.lang-flag{font-size:18px;line-height:1;position:relative}
+.lang-flag{display:inline-block;width:20px;height:14px;border-radius:2px;background-size:contain;background-repeat:no-repeat;background-position:center}
+#lang-pt .lang-flag{background-image:url('https://flagcdn.com/24x18/br.png')}
+#lang-en .lang-flag{background-image:url('https://flagcdn.com/24x18/us.png')}
+#lang-ru .lang-flag{background-image:url('https://flagcdn.com/24x18/ru.png')}
 @keyframes langPulse{0%,100%{box-shadow:0 0 0 1.5px var(--gold),0 0 6px rgba(212,168,67,.35)}50%{box-shadow:0 0 0 1.5px var(--gold),0 0 14px rgba(212,168,67,.7)}}
 [data-theme=light] .lang-switcher{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12)}
