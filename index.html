@@ -1,0 +1,350 @@
+﻿<!doctypehtml><html lang="pt-BR"><meta charset="UTF-8"><meta name="viewport"content="width=device-width,initial-scale=1"><meta name="theme-color"content="#CC0000"><meta name="mobile-web-app-capable"content="yes"><meta name="apple-mobile-web-app-capable"content="yes"><meta name="apple-mobile-web-app-status-bar-style"content="black-translucent"><meta name="apple-mobile-web-app-title"content="GTG Tracker"><title>GTG TRACKER — FORÇA E RESISTÊNCIA</title><link rel="preconnect"href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Bebas+Neue&family=Share+Tech+Mono&display=swap"rel="stylesheet"><link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><link rel="stylesheet"href="styles.css"><link rel="stylesheet"href="skilltree.css"><header class="header"><div class="header-top"><div class="header-logo"><span class="star-symbol">★</span><div class="header-title-block"><h1>GTG TRACKER</h1><p data-i18n="header_subtitle">FORÇA E RESISTÊNCIA — GREASE THE GROOVE</div></div><div class="header-right"><a href="#readinessCard"class="header-readiness"id="headerReadiness"onclick="scrollToReadiness(event)"title="Estado de Prontidão"><span class="header-readiness-icon">🎯</span><div><div class="header-readiness-score"id="headerReadinessScore">--</div><div class="header-readiness-label" data-i18n="header_readiness">PRONTIDÃO</div></div></a><div class="header-streak"id="headerStreak"><span class="streak-fire">🔥</span> <span class="streak-count"id="streakCountHeader">0</span><div class="streak-label" data-i18n="header_streak">DIAS<br>STREAK</div></div><div class="streak-shield-display"id="headerShields"title="Streak Shields disponíveis"><span class="shield-icon"id="shieldIcon1">🛡</span> <span class="shield-icon"id="shieldIcon2">🛡</span> <span class="shield-icon"id="shieldIcon3">🛡</span></div><div class="header-xp"id="headerXP"><span class="xp-rank"id="headerRank">RECRUTA</span><div class="xp-bar-mini"><div class="xp-fill-mini"id="headerXpBar"style="width:0%"></div></div></div><div class="modo-foco-toggle"id="modoFocoToggle"onclick="toggleModoFoco()"><div class="toggle-switch"></div><span class="modo-foco-label" data-i18n="modo_foco">MODO FOCO</span> <select class="modo-foco-select"id="modoFocoSelect"onchange="changeFocoExercise(event)"onclick="event.stopPropagation()"><option value="">SELECIONAR...</select></div><div class="lang-switcher" id="langSwitcher"><button class="lang-flag-btn active" id="lang-pt" data-lang="pt" onclick="trocarIdioma('pt')" title="Português (Brasil)"><span class="lang-flag">🇧🇷</span></button><button class="lang-flag-btn" id="lang-en" data-lang="en" onclick="trocarIdioma('en')" title="English"><span class="lang-flag">🇺🇸</span></button><button class="lang-flag-btn" id="lang-ru" data-lang="ru" onclick="trocarIdioma('ru')" title="Русский"><span class="lang-flag">🇷🇺</span></button></div><button id="themeSwitchBtn"onclick="toggleTheme()"title="Alternar tema claro/escuro"style="background:0 0;border:1px solid rgba(255,255,255,.15);border-radius:4px;color:inherit;cursor:pointer;font-size:15px;padding:4px 10px;margin-left:8px;transition:all .2s">&#127769;</button><div class="header-date"id="headerDate"></div></div></div><nav class="nav-tabs"><div class="nav-tab active"data-tab="treino"onclick='switchTab(event,"treino")'>⚔ <span data-i18n="tab_treino">TREINO</span></div><div class="nav-tab"data-tab="stats"onclick='switchTab(event,"stats")'>📊 <span data-i18n="tab_stats">PROGRESSO</span></div><div class="nav-tab"data-tab="badges"onclick='switchTab(event,"badges")'>🎖 <span data-i18n="tab_badges">CONQUISTAS</span></div><div class="nav-tab"data-tab="historico"onclick='switchTab(event,"historico")'>📋 <span data-i18n="tab_historico">HISTÓRICO</span></div><div class="nav-tab"data-tab="metodo"onclick='switchTab(event,"metodo")'>📖 <span data-i18n="tab_metodo">MÉTODO GTG</span></div><div class="nav-tab"data-tab="exportar"onclick='switchTab(event,"exportar")'>⬇ <span data-i18n="tab_exportar">EXPORTAR</span></div><div class="nav-tab"data-tab="planejador"onclick='switchTab(event,"planejador")'>📅 <span data-i18n="tab_planejador">PLANO</span></div><div class="nav-tab"data-tab="skilltree"onclick="switchTab(event,'skilltree')">&#x1F5FA; <span data-i18n="tab_arvore">ÁRVORE</span></div></nav></header><main class="main"><div class="tab-content active"id="tab-treino"><div class="frase-card mb-16"style="margin-bottom:20px"><div id="fraseMotivacional"><div class="frase-texto">"A força não tem um fim de semana."</div><div class="frase-autor">— Pavel Tsatsouline</div></div><div class="frase-actions"><button class="btn btn-outline btn-sm"onclick="proximaFrase()">↻ PRÓXIMA FRASE</button><div class="lembrete-card"style="flex:1;min-width:200px;padding:8px 14px"><span class="lembrete-icon">⏰</span><div class="lembrete-info"><div class="lembrete-title">LEMBRETES GTG</div><div class="lembrete-desc"id="lembreteDesc">AVISO A CADA 20 MIN PARA FAZER UMA SÉRIE</div></div><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><button class="btn btn-sm"id="btnAtivarLembrete"style="background:rgba(204,0,0,.3);border:1px solid var(--red);color:var(--red-bright);font-family:'Bebas Neue',sans-serif;letter-spacing:2px"onclick="solicitarPermissaoNotificacao()">⚡ ATIVAR</button> <button class="btn btn-sm"id="btnInstalarPWA"style="display:none;background:rgba(212,160,23,.2);border:1px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;letter-spacing:2px"onclick="instalarPWA()">📲 INSTALAR APP</button></div></div></div></div><div class="card mb-16"style="margin-bottom:12px;background:linear-gradient(135deg,rgba(204,0,0,0.15),rgba(139,0,0,0.05));border-color:rgba(204,0,0,0.4)">
+  <div class="card-body"style="padding:12px 20px">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+      <span class="text-mono"style="font-size:11px;color:var(--gold);letter-spacing:2px;white-space:nowrap">☭ RÁDIO SOVIÉTICA</span>
+      <select id="sovietRadioStation" onchange="changeRadioStation()" style="flex:1;min-width:200px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid rgba(212,168,67,0.3);color:var(--gold);font-family:Share Tech Mono,monospace;font-size:11px;cursor:pointer">
+        <option value="http://evcast.mediacp.eu:2070/stream">🎵 Советская эстрада (Soviet Estrada)</option>
+        <option value="http://retroserver.streamr.ru:8043/retro256.mp3">🎺 Ретро FM (Retro FM Rússia)</option>
+        <option value="http://nashe1.hostingradio.ru/nashe-256">🎸 Наше Радио (Nashe Radio)</option>
+        <option value="http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3">🎤 Радио Шансон (Rádio Chanson)</option>
+        <option value="http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3">🎻 Радио Орфей (Clássica Russa)</option>
+      </select>
+      <button onclick="toggleRadio()" id="radioToggleBtn" style="padding:6px 12px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:Bebas Neue,sans-serif;letter-spacing:2px;font-size:12px;cursor:pointer">▶ PLAY</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span class="text-mono"style="font-size:10px;color:var(--gray-light)">VOLUME:</span>
+      <input type="range" id="radioVolume" min="0" max="100" value="50" onchange="changeRadioVolume()" style="flex:1;max-width:150px;height:6px;cursor:pointer">
+      <span class="text-mono"style="font-size:10px;color:var(--gold)" id="volumeDisplay">50%</span>
+      <span class="text-mono"style="font-size:10px;color:var(--gray-light);white-space:nowrap">📡 <span id="currentStationName">Soviet Music Radio</span></span>
+    </div>
+    <audio id="sovietRadioPlayer" preload="none" style="display:none"></audio>
+  </div>
+</div>
+<div class="card" id="gtgSessionCard" style="margin-top:20px;border-color:rgba(212,160,23,.25)"><div class="card-header" style="border-color:rgba(212,160,23,.2)"><span class="card-title" style="color:var(--gold)">🔗 SESSÃO GTG — MODO COMPRIMIDO</span><span class="text-mono" style="font-size:9px;color:var(--gray-light);max-width:200px;line-height:1.3">Quando não puder espalhar ao longo do dia — mantenha o descanso sagrado de 15 min</span></div><div class="card-body"><div class="session-setup" id="sessionSetup"><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px;"><div class="form-group" style="flex:2;min-width:160px;"><label class="form-label">EXERCÍCIO</label><select class="form-select" id="sessionExSelect" onchange="atualizarSugestaoSessao()" style="width:100%;"><option value="">SELECIONAR EXERCÍCIO</option></select></div><div class="form-group" style="flex:1;min-width:80px;"><label class="form-label">SÉRIES</label><input type="number" class="form-input" id="sessionNumSeries" value="5" min="1" max="20" style="width:100%;"></div><div class="form-group" style="flex:1;min-width:80px;"><label class="form-label">REPS/SEG</label><input type="number" class="form-input" id="sessionSerieValor" placeholder="—" min="1" style="width:100%;"></div></div><div class="form-group" style="margin-bottom:12px;"><label class="form-label">DESCANSO ENTRE SÉRIES</label><select class="form-select" id="sessionDescanso" style="width:100%;"><option value="900">15 minutos (Pavel recomenda)</option><option value="1200">20 minutos</option><option value="1800">30 minutos</option><option value="60">1 minuto (teste rápido)</option></select></div><div class="gtg-principle" style="padding:8px 12px;margin-bottom:12px;border-color:rgba(212,160,23,.2);"><span class="text-mono" style="font-size:10px;color:var(--gray-light);">💡 SUGESTÃO GTG: </span><span class="text-mono" style="font-size:11px;color:var(--gold);" id="sessionSugestao">—</span></div><div style="display:flex;gap:8px;align-items:center;"><button class="btn btn-red" style="flex:1;font-size:16px;letter-spacing:3px;" onclick="iniciarSessaoGTG()">▶ INICIAR SESSÃO</button></div><div class="text-mono" style="font-size:9px;color:var(--gray);margin-top:8px;text-align:center">"Frequência é rei, mas recuperação é a coroa." — Pavel Tsatsouline</div></div><div class="session-progress" id="sessionProgress" style="display:none;"><div style="text-align:center;margin-bottom:14px;"><div class="text-mono" id="sessionProgressTitle" style="font-size:12px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;">SESSÃO EM ANDAMENTO</div><div id="sessionSeriesDots" style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;"></div></div><div id="sessionStateBox" style="text-align:center;padding:20px 10px;background:rgba(0,0,0,0.2);border-radius:4px;margin-bottom:12px;"><div id="sessionStateLabel" class="text-mono" style="font-size:11px;color:var(--gray-light);letter-spacing:2px;margin-bottom:6px;">PRÓXIMA SÉRIE</div><div id="sessionTimerDisplay" style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,160,23,.5);">PRONTO</div></div><div style="display:flex;gap:8px;"><button class="btn btn-gold" id="sessionActionBtn" style="flex:1;" onclick="executarSerieSessao()">✓ REGISTRAR SÉRIE AGORA</button><button class="btn btn-outline" onclick="pararSessaoGTG()">■ ENCERRAR</button></div></div></div></div><div class="card" id="plankTimerCard" style="margin-top:20px"><div class="card-header"><span class="card-title">⏱ TIMER — PRANCHA / L-SIT / ISOMÉTRICO</span> <select class="form-select"id="timerExerciseSelect"style="font-size:12px;padding:4px 8px"></select></div><div class="card-body plank-timer"><div id="prepCountdown"style="display:none;font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:6px;color:var(--gold);margin-bottom:8px;animation:starPulse .8s ease-in-out infinite">PREPARE-SE</div><div id="prepNumber"style="display:none;font-family:'Bebas Neue',sans-serif;font-size:120px;color:var(--gold);line-height:1;text-shadow:0 0 40px rgba(212,160,23,.7);margin-bottom:4px"></div><div class="timer-display"id="timerDisplay">00:00</div><div class="timer-controls"><button class="btn btn-red"id="btnStartTimer"onclick="startPlankTimer()">▶ INICIAR</button> <button class="btn btn-outline"onclick="stopPlankTimer()">■ PARAR E SALVAR</button> <button class="btn btn-outline"onclick="resetPlankTimer()">↺ RESET</button></div></div></div>
+
+<script>
+let isRadioPlaying = false;
+const radioPlayer = document.getElementById('sovietRadioPlayer');
+const radioToggleBtn = document.getElementById('radioToggleBtn');
+const radioVolume = document.getElementById('radioVolume');
+const volumeDisplay = document.getElementById('volumeDisplay');
+const stationSelect = document.getElementById('sovietRadioStation');
+const currentStationName = document.getElementById('currentStationName');
+
+const stationNames = {
+  'http://evcast.mediacp.eu:2070/stream': 'Советская эстрада (Soviet Estrada)',
+  'http://retroserver.streamr.ru:8043/retro256.mp3': 'Ретро FM (Retro FM Rússia)',
+  'http://nashe1.hostingradio.ru/nashe-256': 'Наше Радио (Nashe Radio)',
+  'http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3': 'Радио Шансон (Rádio Chanson)',
+  'http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3': 'Радио Орфей (Clássica Russa)'
+};
+
+function changeRadioStation() {
+  const station = stationSelect.value;
+  radioPlayer.src = station;
+  currentStationName.textContent = stationNames[station] || 'Unknown Station';
+  if (isRadioPlaying) {
+    radioPlayer.play();
+  }
+}
+
+function toggleRadio() {
+  if (!radioPlayer.src) {
+    radioPlayer.src = stationSelect.value;
+  }
+  
+  if (isRadioPlaying) {
+    radioPlayer.pause();
+    radioToggleBtn.textContent = '▶ PLAY';
+    radioToggleBtn.style.background = 'var(--red)';
+    isRadioPlaying = false;
+  } else {
+    radioPlayer.play();
+    radioToggleBtn.textContent = '⏸ PAUSE';
+    radioToggleBtn.style.background = 'var(--gold)';
+    radioToggleBtn.style.color = 'var(--black)';
+    isRadioPlaying = true;
+  }
+}
+
+function changeRadioVolume() {
+  const volume = radioVolume.value / 100;
+  radioPlayer.volume = volume;
+  volumeDisplay.textContent = radioVolume.value + '%';
+}
+
+// Set initial volume
+radioPlayer.volume = 0.5;
+
+// Handle audio errors
+radioPlayer.addEventListener('error', function() {
+  console.log('Radio stream error, trying next station...');
+  const options = stationSelect.options;
+  const currentIndex = stationSelect.selectedIndex;
+  if (currentIndex < options.length - 1) {
+    stationSelect.selectedIndex = currentIndex + 1;
+    changeRadioStation();
+  }
+});
+</script><div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px">
+  <div style="flex:1">
+    <div class="card mb-16"style="margin-bottom:12px"><div class="card-body"style="padding:12px 20px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="text-mono"style="font-size:11px;color:var(--gold);letter-spacing:2px;white-space:nowrap">⚡ QUICK LOG</span> <input id="quickLogInput"class="form-input"style="flex:1;min-width:200px;font-family:Share Tech Mono,monospace;letter-spacing:1px"placeholder="Ex: flex 12  |  barra 5  |  prancha 45"> <button class="btn btn-red"onclick="processarQuickLog()"style="white-space:nowrap">▶ REGISTRAR</button> <span class="text-mono"style="font-size:10px;color:var(--gray-light);white-space:nowrap">? para ajuda</span></div><div id="quickLogFeedback"style="margin-top:6px;font-family:Share Tech Mono,monospace;font-size:11px;color:var(--gold-dim);display:none"></div></div></div>
+  </div>
+  <div style="width:280px;flex-shrink:0">
+    <div class="rest-timer-widget"id="restTimerWidget"><div class="rest-timer-title">⏱ DESCANSO ATIVO</div><div class="rest-timer-countdown"id="restTimerDisplay">15:00</div><div class="rest-timer-exercise"id="restTimerExercise">—</div><div class="rest-timer-controls"><button class="btn rest-timer-controls btn-pause-timer"id="btnPauseRestTimer"onclick="toggleRestTimer()">⏸ PAUSAR</button> <button class="btn rest-timer-controls btn-reset-timer"onclick="resetRestTimer()">↺ RESET</button></div></div>
+</div></div><div class="grid-4 mb-16"><div class="stat-card"><div class="stat-card-value"id="statHoje">0</div><div class="stat-card-label">SÉRIES HOJE</div><div class="stat-card-sub"id="statRepsHoje">0 reps</div></div><div class="stat-card"><div class="stat-card-value"id="statSemana">0</div><div class="stat-card-label">SÉRIES SEMANA</div><div class="stat-card-sub"id="statRepsSemanaSub">0 reps esta semana</div></div><div class="stat-card"><div class="stat-card-value"id="statTotal">0</div><div class="stat-card-label">TOTAL ACUMULADO</div><div class="stat-card-sub"id="statTotalSub">histórico completo</div></div><div class="stat-card"style="background:linear-gradient(135deg,rgba(204,0,0,.15),rgba(139,0,0,.05));border-color:rgba(204,0,0,.4)"><div class="stat-card-value"style="color:var(--red-bright)"id="statStreak">0</div><div class="stat-card-label">DIAS STREAK</div><div class="stat-card-sub"id="statStreakRecord">Recorde: 0 dias</div></div></div><div class="readiness-card"id="readinessCard"><div class="readiness-header"><span class="readiness-title">🎯 ESTADO DE PRONTIDÃO</span> <button class="readiness-reset"onclick="resetReadiness()"title="Resetar avaliação">↻ RESETAR</button></div><div class="readiness-body"><div class="readiness-sliders"><div class="readiness-slider-group"><div class="readiness-slider-label"><span class="readiness-slider-name">😴 Qualidade do Sono</span> <span class="readiness-slider-value"id="valSono">5</span></div><div class="readiness-slider-track"><div class="readiness-slider-fill"id="fillSono"style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range"class="readiness-slider-input"id="sliderSono"min="0"max="10"step="1"value="5"oninput="updateReadiness()"></div><div class="readiness-slider-ends"><span>Péssimo</span> <span>Perfeito</span></div></div><div class="readiness-slider-group"><div class="readiness-slider-label"><span class="readiness-slider-name">😰 Nível de Stress</span> <span class="readiness-slider-value"id="valStress">5</span></div><div class="readiness-slider-track"><div class="readiness-slider-fill"id="fillStress"style="width:50%;background:linear-gradient(90deg,var(--green-bright),var(--gold),var(--red),var(--red-dark))"></div><input type="range"class="readiness-slider-input"id="sliderStress"min="0"max="10"step="1"value="5"oninput="updateReadiness()"></div><div class="readiness-slider-ends"><span>Nenhum</span> <span>Extremo</span></div></div><div class="readiness-slider-group"><div class="readiness-slider-label"><span class="readiness-slider-name">💥 Dor Muscular</span> <span class="readiness-slider-value"id="valDor">5</span></div><div class="readiness-slider-track"><div class="readiness-slider-fill"id="fillDor"style="width:50%;background:linear-gradient(90deg,var(--green-bright),var(--gold),var(--red),var(--red-dark))"></div><input type="range"class="readiness-slider-input"id="sliderDor"min="0"max="10"step="1"value="5"oninput="updateReadiness()"></div><div class="readiness-slider-ends"><span>Nenhuma</span> <span>Incapacitante</span></div></div></div><div class="readiness-display"><div class="readiness-circle readiness-yellow"id="readinessCircle"><div class="readiness-circle-score"id="readinessScore">50</div><div class="readiness-circle-label"id="readinessLabel">MODERADO</div><div class="readiness-circle-sub"id="readinessSub">/ 100</div></div><div class="readiness-suggestion"id="readinessSuggestion"><strong>Volume normal.</strong> Foque na técnica.</div></div></div></div><div class="card mb-16"><div class="card-body"style="padding:16px 24px"><div class="flex"style="align-items:center;gap:20px;flex-wrap:wrap"><div class="level-badge"><span class="level-icon"id="levelIcon">🎖</span> <span class="level-name"id="levelName">RECRUTA</span></div><div style="flex:1;min-width:200px"><div class="flex"style="justify-content:space-between;margin-bottom:6px"><span class="text-mono">FORÇA E RESISTÊNCIA — XP</span> <span class="text-mono"id="xpNumbers">0 / 1000 XP</span></div><div class="xp-bar-container"><div class="xp-bar-fill"id="xpBarFill"style="width:0%"></div></div><div class="xp-numbers"><span id="xpTotalLabel">XP TOTAL: 0</span> <span id="xpNextLabel">PRÓXIMO: SOLDADO</span></div></div><div style="text-align:right"><div class="text-mono">STREAK BÔNUS</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--green-bright)"id="streakBonus">+0%</div></div></div></div></div><div class="foco-banner"id="focoBanner">🔥 MODO FOCO ATIVO — <span id="focoBannerEx">NENHUM EXERCÍCIO SELECIONADO</span></div><div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-text">★ EXERCÍCIOS ATIVOS ★</div><div class="section-divider-line"style="background:linear-gradient(270deg,var(--red),rgba(212,160,23,.3),transparent)"></div></div><div class="exercise-grid"id="exerciseGrid"></div><div class="card"style="margin-top:20px"><div class="card-header"><span class="card-title">+ ADICIONAR EXERCÍCIO</span></div><div class="card-body"><div class="add-exercise-form"><div class="form-group"><label class="form-label">Nome</label> <input class="form-input form-input-wide"id="newExName"placeholder="Ex: Flexão"></div><div class="form-group"><label class="form-label">Tipo</label> <select class="form-select"id="newExType"><option value="reps">Reps<option value="tempo">Tempo (seg)<option value="peso">Peso × Reps</select></div><div class="form-group"><label class="form-label">Unidade/Info</label> <input class="form-input"id="newExUnit"placeholder="reps / seg"></div><div class="form-group"><label class="form-label">Instruções</label> <input class="form-input"style="width:200px"id="newExInstructions"placeholder="Como executar..."></div><button class="btn btn-red"onclick="addExercise()">★ ADICIONAR</button></div></div></div></div><div class="tab-content"id="tab-stats"><div class="grid-2 mb-16"><div class="card"><div class="card-header"><span class="card-title">📈 VOLUME SEMANAL</span><div class="chart-toggles"><button class="toggle-btn active"onclick='setChartMode("series",this)'>SÉRIES</button> <button class="toggle-btn"onclick='setChartMode("reps",this)'>REPS</button> <button class="toggle-btn"onclick='setChartMode("volume",this)'>VOLUME</button> <button class="toggle-btn groove-filter"id="grooveFilterBtn"onclick='toggleFiltroPerfeitas(this)'title="Mostrar apenas séries perfeitas (3/3)">★ SÓ PERFEITAS</button></div></div><div class="card-body"><div class="chart-canvas-wrap"><canvas id="weeklyChart"></canvas></div></div></div><div class="card"><div class="card-header"><span class="card-title">🔥 HISTÓRICO STREAK</span></div><div class="card-body"><div class="grid-2"style="gap:12px;margin-bottom:16px"><div class="streak-card-large"><div class="text-mono mb-8">STREAK ATUAL</div><div class="streak-number"id="streakCurrentLarge">0</div><div class="streak-record"id="streakRecordLabel">RECORDE: 0 DIAS</div></div><div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(204,0,0,.2)"><div class="text-mono"style="margin-bottom:4px">🛡 STREAK SHIELDS</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span id="shieldCountDisplay"style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--gold)">0 / 3</span> <button class="btn-shield"id="btnBuyShield"onclick="comprarShield()">COMPRAR (500 XP)</button></div><div class="text-mono"style="margin-top:4px;font-size:9px;color:var(--gray)">Consome 1 shield automaticamente se streak quebrar</div></div><div style="display:flex;flex-direction:column;gap:8px"><div class="gtg-principle"style="flex:1"><div class="gtg-principle-title"style="font-size:13px">DIAS DE FOLGA</div><div class="gtg-principle-text"id="restDaysInfo">1 folga disponível/semana</div></div><div class="gtg-principle"style="flex:1"><div class="gtg-principle-title"style="font-size:13px">XP BÔNUS ATIVO</div><div class="gtg-principle-text"id="bonusXpLabel">Sem bônus</div></div></div></div><div class="chart-canvas-wrap"style="height:160px"><canvas id="streakChart"></canvas></div></div></div></div><div class="card"><div class="card-header"><span class="card-title">⚡ LINHA DE EVOLUÇÃO — ÚLTIMAS 8 SEMANAS</span><div class="chart-toggles"><button class="toggle-btn active"onclick='setProgressMode("volume",this)'>VOLUME</button> <button class="toggle-btn"onclick='setProgressMode("media",this)'>MÉDIA/DIA</button> <button class="toggle-btn"onclick='setProgressMode("exercicios",this)'>POR EXERCÍCIO</button></div></div><div class="card-body"><div class="chart-canvas-wrap"style="height:300px"><canvas id="progressChart"></canvas></div><div id="progressInsights"style="margin-top:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px"></div></div></div><div class="card"style="margin-top:20px"><div class="card-header"><span class="card-title">📅 ESTATÍSTICAS MENSAIS</span></div><div class="card-body"><div id="monthlyStats"class="progress-timeline"></div></div></div><div class="card"style="margin-top:20px"><div class="card-header"><span class="card-title">🗓 HEATMAP — CONSISTÊNCIA ANUAL</span> <span class="text-mono"id="heatmapLegend"style="font-size:10px;color:var(--gray-light)">0 dias treinados</span></div><div class="card-body"><div id="heatmapContainer"style="overflow-x:auto;padding-bottom:8px"></div><div style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap"><span class="text-mono"style="font-size:10px;color:var(--gray-light)">MENOS</span><div style="width:12px;height:12px;border-radius:2px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)"></div><div style="width:12px;height:12px;border-radius:2px;background:rgba(139,0,0,.5)"></div><div style="width:12px;height:12px;border-radius:2px;background:rgba(204,0,0,.7)"></div><div style="width:12px;height:12px;border-radius:2px;background:var(--accent-red)"></div><div style="width:12px;height:12px;border-radius:2px;background:var(--accent-red-bright)"></div><span class="text-mono"style="font-size:10px;color:var(--gray-light)">MAIS</span></div></div></div><div class="card"style="margin-top:20px"><div class="card-header"><span class="card-title">💡 ANÁLISE INTELIGENTE</span> <button class="btn btn-outline btn-sm"onclick="renderAnalise()">↻ ATUALIZAR</button></div><div class="card-body"><div id="insightsContainer"style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px"></div></div></div><div class="card"style="margin-top:20px"><div class="card-header"><span class="card-title">🏅 RANKING DE EXERCÍCIOS</span> <select class="form-select"id="rankingMetrica"onchange="renderRanking()"style="font-size:12px;padding:4px 8px"><option value="volume">Por Volume Total<option value="series">Por Nº de Séries<option value="consistencia">Por Consistência (dias)<option value="pr">Por PR Recente</select></div><div class="card-body"id="rankingContainer"></div></div><div class="card"style="margin-top:20px"><div class="card-header"><span class="card-title">⚖ ESTA SEMANA vs SEMANA PASSADA</span> <button class="btn btn-outline btn-sm"onclick="renderCompararSemanas()">↻</button></div><div class="card-body"id="compararSemanasContainer"style="overflow-x:auto"></div></div><div class="card"style="margin-top:20px"><div class="card-header"><span class="card-title">📊 VOLUME SEMANAL</span> <select class="form-select"id="volumeMetrica"onchange="renderVolumeChart()"style="font-size:12px;padding:4px 8px"><option value="series">Nº de Séries<option value="reps">Total de Reps/Seg<option value="xp">XP Ganho</select></div><div class="card-body"><div class="chart-canvas-wrap"style="height:220px"><canvas id="volumeWeekChart"></canvas></div></div></div></div><div class="tab-content"id="tab-badges"><div class="card mb-16"><div class="card-header"><span class="card-title">🎖 CONQUISTAS SOVIÉTICAS</span> <span class="text-mono"id="badgeCount">0 / 0 desbloqueadas</span></div><div class="card-body"><div class="badges-grid"id="badgesGrid"></div></div></div></div><div class="tab-content"id="tab-historico"><div class="card mb-16"style="margin-bottom:12px"><div class="card-header"><span class="card-title">📝 NOTA DO DIA</span> <span class="text-mono"id="notaDataLabel"style="font-size:11px;color:var(--gray-light)"></span></div><div class="card-body"style="padding:12px 20px"><textarea id="notaDiaria"class="form-input"rows="3"placeholder="Como foi o treino hoje? Forma, energia, progressos, observações..."style="width:100%;resize:vertical;font-family:Rajdhani,sans-serif;font-size:14px"oninput="salvarNotaDia()"></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;flex-wrap:wrap;gap:8px"><div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm"onclick="navegarNota(-1)">← DIA ANTERIOR</button> <button class="btn btn-outline btn-sm"onclick="navegarNota(1)"id="notaProxBtn">DIA SEGUINTE →</button></div><span class="text-mono"id="notaSalvoLabel"style="font-size:10px;color:var(--gray-light)"></span></div></div></div><div class="card"><div class="card-header"><span class="card-title">📋 REGISTRO DE COMBATE</span><div class="flex gap-8"style="flex-wrap:wrap"><input type="date"class="form-input"id="filterDate"oninput="renderHistory()"> <select class="form-select"id="filterExercise"onchange="renderHistory()"><option value="">TODOS OS EXERCÍCIOS</select> <select class="form-select"id="filterOrdem"onchange="renderHistory()"style="font-size:12px"><option value="recente">↓ MAIS RECENTE<option value="antigo">↑ MAIS ANTIGO<option value="exercicio">A–Z EXERCÍCIO<option value="xp">★ MAIOR XP</select> <button class="btn btn-outline btn-sm"onclick="copiarTreinoDia()"title="Copiar treino de hoje">📋 COPIAR DIA</button> <button class="btn btn-outline btn-sm"onclick="clearFilters()">LIMPAR</button></div></div><div class="card-body"id="historyLog"style="max-height:600px;overflow-y:auto"></div></div></div><div class="tab-content"id="tab-metodo"><div class="card mb-16"><div class="card-header"><span class="card-title">📖 GREASE THE GROOVE — O MÉTODO PAVEL</span></div><div class="card-body"><div class="quote-block">"Se você quer ficar melhor em flexões, faça flexões. Se você quer melhorar em chin-ups, faça chin-ups. Mas não ao fracasso, não até a falha — apenas muitas vezes ao longo do dia." <cite>— PAVEL TSATSOULINE, CRIADOR DO MÉTODO GTG</cite></div><div class="gtg-principle"><div class="gtg-principle-title">O QUE É O GREASE THE GROOVE?</div><div class="gtg-principle-text">GTG é uma metodologia de treinamento desenvolvida por Pavel Tsatsouline, ex-instrutor das forças especiais soviéticas e fundador do StrongFirst. O princípio central é: <strong style="color:var(--gold)">prática frequente com intensidade submáxima</strong> gera adaptações neurológicas muito mais eficientes do que treinos exaustivos e pouco frequentes.<br><br>O nome vem da analogia de "engraxar as engrenagens": quanto mais você pratica um movimento com qualidade, mais o sistema nervoso central aprende a recrutá-lo com eficiência — sem acumular fadiga que comprometeria a qualidade.</div></div><div class="gtg-principle"><div class="gtg-principle-title">⚙ PRINCÍPIO FUNDAMENTAL — NUNCA VÁ AO FRACASSO</div><div class="gtg-principle-text">A regra mais crítica do GTG: <strong style="color:var(--red-bright)">nunca execute uma série até a falha muscular</strong>. Pavel recomenda trabalhar com <strong style="color:var(--gold)">40–60% do seu máximo de repetições</strong>. Se você consegue 20 flexões no máximo, faça séries de 8 a 12. Isso preserva a qualidade do movimento e permite alta frequência sem sobrecarregar o sistema de recuperação.</div></div><div class="grid-2"><div class="gtg-principle"><div class="gtg-principle-title">📅 FREQUÊNCIA IDEAL</div><div class="gtg-principle-text">• <strong>6 dias de treino</strong>, 1 dia completo de descanso por semana<br>• <strong>2 a 8 séries por dia</strong>, distribuídas ao longo do dia<br>• Ideal: uma série a cada 30–90 minutos<br>• Pavel recomenda mínimo de <strong>15 minutos entre séries</strong> do mesmo exercício<br>• Evite treinar mais de 3 exercícios por dia com GTG</div></div><div class="gtg-principle"><div class="gtg-principle-title">🧠 COMO FUNCIONA — NEUROCIÊNCIA</div><div class="gtg-principle-text">O ganho de força é <strong>principalmente neural</strong> no início. Cada repetição de qualidade reforça o padrão motor no córtex motor. O GTG maximiza o volume de prática de alta qualidade, criando mielinização mais rápida das vias nervosas. Resultado: você fica mais forte <em>sem ficar mais muscular</em>, apenas mais eficiente.</div></div></div><div class="grid-2"style="margin-top:12px"><div class="gtg-principle"><div class="gtg-principle-title">📊 QUANDO ESPERAR RESULTADOS</div><div class="gtg-principle-text">• <strong>2–4 semanas:</strong> Melhora perceptível na técnica e eficiência<br>• <strong>4–8 semanas:</strong> Ganhos significativos de força e resistência<br>• <strong>3–6 meses:</strong> Transformação substancial na performance<br>• O segredo: <strong>consistência diária</strong> supera intensidade episódica</div></div><div class="gtg-principle"><div class="gtg-principle-title">⚠ ERROS COMUNS A EVITAR</div><div class="gtg-principle-text">• Fazer séries até a falha — destrói a qualidade neural<br>• Muitos exercícios ao mesmo tempo — o CNS não aguenta<br>• Descontinuidade — 3 dias seguidos sem treinar apaga progresso<br>• Aumentar volume muito rápido — adicione 1 série por semana<br>• Ignorar o descanso semanal — necessário para consolidação</div></div></div><div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-text">★ PRINCÍPIOS AVANÇADOS DE PAVEL ★</div><div class="section-divider-line"style="background:linear-gradient(270deg,var(--red),transparent)"></div></div><div class="gtg-principle"><div class="gtg-principle-title">⚡ TENSÃO IRRADIANTE — O SEGREDO DA FORÇA IMEDIATA</div><div class="gtg-principle-text">Pavel ensina que a força gerada em qualquer músculo irradia para o corpo todo. Antes de qualquer levantamento: <strong style="color:var(--gold)">contraia os punhos, os glúteos e o abdômen simultaneamente</strong>. Esse "tensionamento de corpo todo" aumenta a força produzida em qualquer movimento em 10-20% instantaneamente. É como ligar todos os circuitos elétricos antes de acionar a máquina.<br><br><em style="color:var(--gold-dim)">Exemplo prático: antes de puxar a barra, contraia o punho ao máximo, depois puxe. Sinta a diferença.</em></div></div><div class="gtg-principle"><div class="gtg-principle-title">🫁 TÉCNICA DE RESPIRAÇÃO — VALSALVA E POWER BREATHING</div><div class="gtg-principle-text">Pavel distingue dois tipos de respiração para treino:<br><br><strong style="color:var(--red-bright)">Valsalva (para levantamentos pesados):</strong> Inspire fundo, feche a glote, crie pressão intra-abdominal máxima. Levante. Expire apenas no final da fase difícil. Protege a coluna e maximiza a força.<br><br><strong style="color:var(--gold)">Power Breathing (para séries de repetições):</strong> Expire curta e explosiva em cada repetição — "TSSS!" como um soco. Reative a pressão em cada rep. Nunca fique sem ar por mais de 3-4 repetições seguidas.</div></div><div class="grid-2"style="margin-top:12px"><div class="gtg-principle"><div class="gtg-principle-title">🎯 PROTOCOLO SIMPLE & SINISTER</div><div class="gtg-principle-text">O protocolo mais famoso de Pavel além do GTG:<br><br>• <strong>100 swings</strong> com kettlebell pesado (10×10 ou 5×20)<br>• <strong>10 Turkish Get-ups</strong> (5 cada lado)<br>• 5-6 dias por semana<br>• Tempo alvo: terminar em 30 minutos sem sentir dor<br><br><em style="color:var(--gold-dim)">Standard: 32kg (homens) / 24kg (mulheres). Simple: completar em 30min. Sinister: 48kg/32kg.</em></div></div><div class="gtg-principle"><div class="gtg-principle-title">🔀 PROTOCOLO POWER TO THE PEOPLE</div><div class="gtg-principle-text">O protocolo de levantamento de Pavel para força máxima:<br><br>• <strong>2 séries × 5 reps</strong> por exercício<br>• Série 1: 90% do seu máximo de 5<br>• Série 2: 90% da série 1 (−10%)<br>• 5 dias por semana<br>• Aumente 1-2kg por semana<br><br><em style="color:var(--gold-dim)">Movimentos: Deadlift + Press militar. Só isso. Para o resto da vida.</em></div></div></div><div class="grid-2"style="margin-top:12px"><div class="gtg-principle"><div class="gtg-principle-title">🧊 RECUPERAÇÃO — O TREINO INVISÍVEL</div><div class="gtg-principle-text">Pavel sobre recuperação:<br><br>• <strong>Sono 7-9h</strong> — sem sono, sem força. Período.<br>• <strong>Caminhada ativa</strong> nos dias de descanso — promove circulação sem fadiga<br>• <strong>Sauna/banho frio</strong> — tradição russa de recuperação ativa<br>• <strong>Evite estresse crônico</strong> — cortisol elevado destrói a adaptação ao treino<br>• <strong>Alimentação simples</strong>: proteína, gordura, carboidrato de qualidade. Sem mistério.</div></div><div class="gtg-principle"><div class="gtg-principle-title">📈 PROGRESSÃO — A ARTE DE ADICIONAR CARGA</div><div class="gtg-principle-text">Pavel sobre progressão no GTG:<br><br>• Adicione <strong>1 série por semana</strong>, não 1 rep por dia<br>• Quando dominar o número de séries, aumente a <strong>dificuldade do exercício</strong><br>• Progressão de movimento > progressão de rep (flexão → archer → OAP)<br>• <strong>Nunca aumente volume e dificuldade ao mesmo tempo</strong><br>• Platô = sinal para reduzir volume, não aumentar</div></div></div><div class="gtg-principle"><div class="gtg-principle-title">🐻 ALEXANDER ZASS — O STRONGMAN QUE INSPIROU PAVEL</div><div class="gtg-principle-text">Pavel frequentemente cita Alexander Zass (1888-1962), o "Amazing Samson" russo, como prova viva dos princípios do treinamento isométrico. Zass era prisioneiro de guerra e desenvolveu força extraordinária puxando as barras e correntes de sua cela — sem pesos. Ele podia carregar um cavalo, dobrar barras de ferro e suportar golpes que derrubavam outros homens.<br><br><strong style="color:var(--gold)">Lição de Pavel:</strong> Tendões e sistema nervoso central — não volume de músculo — determinam a força funcional real. Zass era relativamente pequeno, mas sua força tendinosa e sua eficiência neural eram incomparáveis. O GTG e os isométricos seguem essa mesma filosofia.</div></div><div class="grid-3"style="margin-top:12px"><div class="gtg-principle"><div class="gtg-principle-title">📚 LIVROS DE PAVEL</div><div class="gtg-principle-text"><strong style="color:var(--gold)">Power to the People</strong> — Princípios de força com barras<br><br><strong style="color:var(--gold)">Naked Warrior</strong> — GTG com peso corporal (flexão e pistol)<br><br><strong style="color:var(--gold)">Enter the Kettlebell</strong> — O manual do kettlebell<br><br><strong style="color:var(--gold)">Simple & Sinister</strong> — O protocolo com swing e TGU<br><br><strong style="color:var(--gold)">Beyond Bodybuilding</strong> — Hipertrofia com princípios soviéticos</div></div><div class="gtg-principle"><div class="gtg-principle-title">🎯 OBJETIVOS REALISTAS — MARCOS DE PAVEL</div><div class="gtg-principle-text"><strong style="color:var(--gold)">Força Básica (todo adulto deveria):</strong><br>• 5 pull-ups limpos<br>• 20 flexões com tensão<br>• Agachamento profundo com peso corporal<br>• L-sit de 10 segundos<br><br><strong style="color:var(--gold)">Força Sólida:</strong><br>• 10 pull-ups + 20 dips<br>• Pistol squat × 5<br>• Deadlift 2× peso corporal</div></div><div class="gtg-principle"><div class="gtg-principle-title">⚔ A FILOSOFIA SOVIÉTICA</div><div class="gtg-principle-text">O sistema soviético de atletismo tinha uma regra central: <strong style="color:var(--gold)">nunca sacrifique a qualidade pelo volume</strong>. Atletas treinavam 6 dias por semana, mas cada sessão era planejada para não esgotar — apenas para estimular.<br><br>Pavel trouxe esse sistema para o Ocidente e descobriu que a maioria das pessoas treina ao contrário: volume alto, qualidade baixa, frequência inconsistente. O GTG inverte isso: qualidade máxima, volume controlado, frequência altíssima.</div></div></div><div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-text">★ GUIA DOS EXERCÍCIOS ★</div><div class="section-divider-line"style="background:linear-gradient(270deg,var(--red),transparent)"></div></div><div id="exerciseGuideSection"class="badges-grid"style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))"></div></div></div></div><div class="tab-content"id="tab-exportar"><div class="card mb-16"><div class="card-header"><span class="card-title">⬇ EXPORTAR RELATÓRIO</span></div><div class="card-body"><div class="grid-3"style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))"><div class="gtg-principle"style="border-color:rgba(68,204,68,.4);background:rgba(68,204,68,.05)"><div class="gtg-principle-title"style="color:var(--green-bright)">📅 EXPORTAR TREINO DO DIA</div><div class="gtg-principle-text"style="margin-bottom:12px">Exporta apenas os exercícios registrados hoje em formato texto. Ideal para compartilhar ou anotar o treino diário.</div><button class="btn btn-outline"style="border-color:var(--green-bright);color:var(--green-bright)"onclick="exportTXTHoje()">⬇ TXT — HOJE</button></div><div class="gtg-principle"><div class="gtg-principle-title">📄 EXPORTAR TXT COMPLETO</div><div class="gtg-principle-text"style="margin-bottom:12px">Exporta todo o histórico de treinos em formato texto simples. Ideal para backup ou leitura rápida.</div><button class="btn btn-outline"onclick="exportTXT()">⬇ BAIXAR TXT</button></div><div class="gtg-principle"style="border-color:rgba(83,74,183,.4);background:rgba(83,74,183,.05)"><div class="gtg-principle-title"style="color:#afa9ec">📊 EXPORTAR CSV — EXCEL/SHEETS</div><div class="gtg-principle-text"style="margin-bottom:12px">Exporta o histórico completo em CSV. Abre direto no Excel, Google Sheets ou qualquer planilha para análise avançada.</div><button class="btn btn-outline"style="border-color:#afa9ec;color:#afa9ec"onclick="exportCSV()">⬇ BAIXAR CSV</button></div><div class="gtg-principle"style="border-color:rgba(204,0,0,.4);background:rgba(204,0,0,.05)"><div class="gtg-principle-title"style="color:var(--red-bright)">📋 EXPORTAR PDF SOVIÉTICO</div><div class="gtg-principle-text"style="margin-bottom:12px">Gera um relatório completo em PDF com design soviético militar: histórico completo, estatísticas, streaks, badges e gráficos de progresso.</div><button class="btn btn-red"onclick="exportPDF()">★ GERAR PDF COMPLETO</button></div></div><div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-text">INTERVALO DE DATAS</div><div class="section-divider-line"style="background:linear-gradient(270deg,var(--red),transparent)"></div></div><div class="flex gap-12"style="flex-wrap:wrap;align-items:flex-end;margin-top:8px"><div class="form-group"><label class="form-label">Data Inicial</label> <input type="date"class="form-input"id="exportStart"></div><div class="form-group"><label class="form-label">Data Final</label> <input type="date"class="form-input"id="exportEnd"></div><button class="btn btn-outline"onclick="exportTXTRange()">⬇ TXT (INTERVALO)</button> <button class="btn btn-red"onclick="exportPDFRange()">★ PDF (INTERVALO)</button></div><div class="section-divider"><div class="section-divider-line"></div><div class="section-divider-text">DANGER ZONE</div><div class="section-divider-line"style="background:linear-gradient(270deg,var(--red),transparent)"></div></div><div class="flex gap-12"style="margin-top:8px;flex-wrap:wrap"><button class="btn btn-outline btn-sm"onclick="exportJSON()">⬇ BACKUP JSON</button> <button class="btn btn-outline btn-sm"onclick="importJSON()">⬆ IMPORTAR JSON</button> <input type="file"id="importFile"accept=".json"style="display:none"onchange="handleImport(event)"> <button class="btn btn-sm"style="background:rgba(204,0,0,.2);border:1px solid var(--red);color:var(--red-bright)"onclick='confirm("APAGAR TODOS OS DADOS? Isso não pode ser desfeito!")&&clearAllData()'>⚠ LIMPAR TUDO</button></div></div></div></div><div class="tab-content"id="tab-planejador"><div class="card mb-16"><div class="card-header"><span class="card-title">📅 PLANEJADOR SEMANAL</span><div class="flex gap-8"><button class="btn btn-outline btn-sm"onclick="limparPlanejador()">↺ LIMPAR SEMANA</button> <button class="btn btn-red btn-sm"onclick="irParaTreinoHoje()">▶ TREINAR HOJE</button></div></div><div class="card-body"><div class="text-mono"style="font-size:11px;color:var(--gray-light);margin-bottom:16px">Clique em + para adicionar exercícios a cada dia. O app destacará os exercícios do dia no treino.</div><div id="planejadorGrid"style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px"></div></div></div><div class="card"id="planejadorHojeCard"style="display:none"><div class="card-header"><span class="card-title"id="planejadorHojeTitle">🎯 PLANO DE HOJE</span></div><div class="card-body"id="planejadorHojeBody"></div></div></div>
+
+
+
+<div class="tab-content" id="tab-skilltree">
+
+  
+  <div class="st-page-header">
+    <div class="st-page-header__inner">
+      <div class="st-page-header__title-group">
+        <div class="st-page-header__star">★</div>
+        <div>
+          <h2 class="st-page-header__title">ÁRVORE DE PROGRESSÃO SOVIÉTICA</h2>
+          <p class="st-page-header__sub">MÉTODO GREASE THE GROOVE — PAVEL TSATSOULINE</p>
+        </div>
+      </div>
+
+      
+      <div class="st-progress-global">
+        <div class="st-progress-global__labels">
+          <span class="st-progress-global__label text-mono">PROGRESSÃO GERAL DA ÁRVORE</span>
+          <span class="st-progress-global__pct text-mono" id="stProgressPct">0%</span>
+        </div>
+        <div class="st-progress-global__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="stProgressBar" aria-label="Progresso geral da Skill Tree">
+          <div class="st-progress-global__fill" id="stProgressFill" style="width:0%"></div>
+          <div class="st-progress-global__shine"></div>
+        </div>
+        <div class="st-progress-global__stats" id="stProgressStats">
+          
+          <span class="st-badge st-badge--base">BASE</span>
+          <span class="st-badge st-badge--unlocked">DESBLOQUEADO</span>
+          <span class="st-badge st-badge--master">MESTRE</span>
+          <span class="st-badge st-badge--locked">BLOQUEADO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  
+  <div class="st-next-unlock card mb-16" id="stNextUnlockCard" style="display:none">
+    <div class="st-next-unlock__inner">
+      <div class="st-next-unlock__icon">⚡</div>
+      <div class="st-next-unlock__body">
+        <div class="st-next-unlock__label text-mono">PRÓXIMO DESBLOQUEIO</div>
+        <div class="st-next-unlock__name" id="stNextUnlockName">—</div>
+        <div class="st-next-unlock__req text-mono" id="stNextUnlockReq">—</div>
+      </div>
+      <div class="st-next-unlock__progress">
+        <svg class="st-next-unlock__ring" viewBox="0 0 48 48" aria-hidden="true">
+          <circle class="st-next-unlock__ring-bg" cx="24" cy="24" r="20"/>
+          <circle class="st-next-unlock__ring-fill" cx="24" cy="24" r="20" id="stNextUnlockRing"
+                  stroke-dasharray="125.6" stroke-dashoffset="125.6"/>
+        </svg>
+        <span class="st-next-unlock__ring-pct text-mono" id="stNextUnlockPct">0%</span>
+      </div>
+    </div>
+  </div>
+
+
+  
+  <div class="st-cat-tabs" role="tablist" aria-label="Filtrar por categoria">
+    <button class="st-cat-tab active" data-cat="TODOS" role="tab" aria-selected="true"
+            onclick="filtrarCategoria('TODOS', this)">
+      ⭐ TODOS
+    </button>
+    <button class="st-cat-tab" data-cat="EMPURRAR" role="tab" aria-selected="false"
+            onclick="filtrarCategoria('EMPURRAR', this)">
+      💪 EMPURRAR
+    </button>
+    <button class="st-cat-tab" data-cat="PUXAR" role="tab" aria-selected="false"
+            onclick="filtrarCategoria('PUXAR', this)">
+      🏋️ PUXAR
+    </button>
+    <button class="st-cat-tab" data-cat="PERNAS" role="tab" aria-selected="false"
+            onclick="filtrarCategoria('PERNAS', this)">
+      🦵 PERNAS
+    </button>
+    <button class="st-cat-tab" data-cat="CORE" role="tab" aria-selected="false"
+            onclick="filtrarCategoria('CORE', this)">
+      🔥 CORE
+    </button>
+    <button class="st-cat-tab" data-cat="GRIP" role="tab" aria-selected="false"
+            onclick="filtrarCategoria('GRIP', this)">
+      ✊ GRIP
+    </button>
+  </div>
+
+
+  
+  <div class="st-wrapper">
+
+    
+    <svg class="st-lines-svg" id="stLinesSvg" aria-hidden="true"
+         xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        
+        <linearGradient id="stLineGradLocked" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="rgba(255,255,255,0.12)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0.06)"/>
+        </linearGradient>
+        
+        <linearGradient id="stLineGradUnlocked" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="#D4A843"/>
+          <stop offset="100%" stop-color="#CC0000"/>
+        </linearGradient>
+        
+        <linearGradient id="stLineGradMaster" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="#FF3B30"/>
+          <stop offset="100%" stop-color="#FF8800"/>
+        </linearGradient>
+        
+        <filter id="stLineGlow" x="-20%" y="-200%" width="140%" height="500%">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      
+    </svg>
+
+    
+    <div class="st-nodes-layer" id="stNodesLayer" role="list" aria-label="Nós da Skill Tree"></div>
+
+    
+    <div class="st-empty-state" id="stEmptyState" aria-live="polite">
+      <div class="st-empty-state__icon">🗺</div>
+      <div class="st-empty-state__title">CARREGANDO ÁRVORE...</div>
+      <div class="st-empty-state__sub text-mono">Aguarde o cálculo de PRs</div>
+    </div>
+
+  </div>
+
+
+  
+  <div class="st-legend card">
+    <div class="st-legend__title text-mono">LEGENDA DA ÁRVORE</div>
+    <div class="st-legend__items">
+
+      <div class="st-legend__item">
+        <div class="st-legend__node st-legend__node--base" aria-hidden="true">★</div>
+        <div class="st-legend__text">
+          <strong>BASE</strong>
+          <span class="text-mono">Sempre desbloqueado. Exercício já ativo no app.</span>
+        </div>
+      </div>
+
+      <div class="st-legend__item">
+        <div class="st-legend__node st-legend__node--available" aria-hidden="true">◆</div>
+        <div class="st-legend__text">
+          <strong>DISPONÍVEL</strong>
+          <span class="text-mono">Sem requisito de PR. Pode treinar a qualquer momento.</span>
+        </div>
+      </div>
+
+      <div class="st-legend__item">
+        <div class="st-legend__node st-legend__node--unlocked" aria-hidden="true">▲</div>
+        <div class="st-legend__text">
+          <strong>DESBLOQUEADO</strong>
+          <span class="text-mono">PR do exercício pai ≥ threshold. Adicione ao treino!</span>
+        </div>
+      </div>
+
+      <div class="st-legend__item">
+        <div class="st-legend__node st-legend__node--master" aria-hidden="true">★</div>
+        <div class="st-legend__text">
+          <strong>MESTRE</strong>
+          <span class="text-mono">PR próprio ≥ threshold × 1.5. Domínio total do movimento.</span>
+        </div>
+      </div>
+
+      <div class="st-legend__item">
+        <div class="st-legend__node st-legend__node--locked" aria-hidden="true">✕</div>
+        <div class="st-legend__text">
+          <strong>BLOQUEADO</strong>
+          <span class="text-mono">Continue treinando. PR insuficiente para desbloquear.</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="st-legend__note text-mono">
+      ⏱ PRs calculados sobre os últimos 30 dias de registros. Clique em qualquer nó para detalhes.
+    </div>
+  </div>
+
+
+</div>
+
+
+
+<div class="st-tooltip" id="stTooltip" role="tooltip" aria-hidden="true">
+  <div class="st-tooltip__arrow" id="stTooltipArrow"></div>
+  <div class="st-tooltip__header">
+    <span class="st-tooltip__status-badge" id="stTooltipBadge">BLOQUEADO</span>
+    <button class="st-tooltip__close" onclick="fecharTooltipSkilltree()" aria-label="Fechar tooltip">✕</button>
+  </div>
+  <div class="st-tooltip__icon" id="stTooltipIcon" aria-hidden="true">⬡</div>
+  <div class="st-tooltip__name" id="stTooltipName">—</div>
+  <div class="st-tooltip__cat text-mono" id="stTooltipCat">—</div>
+
+  
+  <div class="st-tooltip__stats" id="stTooltipStats">
+    <div class="st-tooltip__stat">
+      <span class="st-tooltip__stat-label text-mono">SEU PR (30D)</span>
+      <span class="st-tooltip__stat-value" id="stTooltipPR">—</span>
+    </div>
+    <div class="st-tooltip__stat">
+      <span class="st-tooltip__stat-label text-mono">REQUISITO</span>
+      <span class="st-tooltip__stat-value" id="stTooltipReq">—</span>
+    </div>
+    <div class="st-tooltip__stat" id="stTooltipFaltaRow" style="display:none">
+      <span class="st-tooltip__stat-label text-mono">FALTA</span>
+      <span class="st-tooltip__stat-value st-tooltip__stat-value--falta" id="stTooltipFalta">—</span>
+    </div>
+  </div>
+
+  
+  <div class="st-tooltip__bar-wrap" id="stTooltipBarWrap" style="display:none">
+    <div class="st-tooltip__bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+         aria-valuenow="0" id="stTooltipBarEl" aria-label="Progresso para desbloqueio">
+      <div class="st-tooltip__bar-fill" id="stTooltipBarFill" style="width:0%"></div>
+    </div>
+    <span class="st-tooltip__bar-pct text-mono" id="stTooltipBarPct">0%</span>
+  </div>
+
+  
+  <div class="st-tooltip__mastery" id="stTooltipMastery" style="display:none">
+    <div class="st-tooltip__mastery-label text-mono">★ CAMINHO PARA MESTRIA</div>
+    <div class="st-tooltip__mastery-stats">
+      <span class="text-mono" id="stTooltipMasteryPR">PR: —</span>
+      <span class="text-mono">META: <span id="stTooltipMasteryReq">—</span></span>
+    </div>
+    <div class="st-tooltip__bar-track st-tooltip__bar-track--mastery"
+         role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+         id="stTooltipMasteryBarEl" aria-label="Progresso para mestria">
+      <div class="st-tooltip__bar-fill st-tooltip__bar-fill--mastery"
+           id="stTooltipMasteryFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  
+  <button class="st-tooltip__cta btn btn-red" id="stTooltipCTA"
+          onclick="irParaExercicioSkilltree()" style="display:none">
+    ▶ TREINAR AGORA
+  </button>
+</div>
+
+
+
+<div class="st-tooltip-backdrop" id="stTooltipBackdrop"
+     onclick="fecharTooltipSkilltree()" aria-hidden="true"></div></main><div class="modal-overlay"id="infoModal"><div class="modal"><div class="modal-header"><span class="modal-title"id="infoModalTitle">INFORMAÇÕES</span> <button class="modal-close"onclick='closeModal("infoModal")'>✕</button></div><div class="modal-body"id="infoModalBody"></div></div></div><div class="modal-overlay"id="restTimerModal"><div class="modal"style="max-width:360px"><div class="modal-header"><span class="modal-title">⏱ INICIAR DESCANSO</span> <button class="modal-close"onclick='closeModal("restTimerModal")'>✕</button></div><div class="modal-body"><div class="text-mono mb-8"style="margin-bottom:12px">Exercício: <span id="restModalExercise"style="color:var(--gold)"></span></div><div class="form-group"style="margin-bottom:16px"><label class="form-label">Duração do descanso</label> <select class="form-select"id="restDuration"style="width:100%"><option value="900">15 minutos (Pavel recomenda)<option value="1200">20 minutos<option value="1800">30 minutos<option value="2700">45 minutos<option value="3600">1 hora</select></div><button class="btn btn-gold"style="width:100%"onclick="confirmRestTimer()">▶ INICIAR DESCANSO</button></div></div></div><div class="badge-unlock-overlay"id="badgeUnlockOverlay"onclick="closeBadgeUnlock()"><div class="badge-unlock-box"onclick="event.stopPropagation()"><div class="badge-unlock-title">★ CONQUISTA DESBLOQUEADA ★</div><div class="badge-unlock-icon"id="unlockIcon">🏆</div><div class="badge-unlock-name"id="unlockName">CONQUISTA</div><div class="badge-unlock-desc"id="unlockDesc">Descrição</div><button class="btn btn-gold"style="margin-top:20px"onclick="closeBadgeUnlock()">✓ RECEBER HONRA</button></div></div><div class="toast-container"id="toastContainer"></div><button class="share-fab"onclick="abrirShareCard()"title="Exportar Cartão do Dia"><span class="share-fab-icon">📤</span> <span>CARTÃO DO DIA</span></button><div id="shareCardModal"><div class="share-modal-title">★ CARTÃO DO DIA ★</div><div class="share-modal-subtitle">PRONTO PARA INSTAGRAM STORIES · WHATSAPP STATUS · DOWNLOAD</div><img id="shareCardPreview"src=""alt="Cartão do dia"><div class="share-card-theme-toggle" id="shareCardThemeToggle" style="display:flex;align-items:center;gap:8px;justify-content:center;margin:10px 0;"><span class="text-mono" style="font-size:10px;color:var(--gray-light);letter-spacing:2px">VISUAL DO CARD:</span><button class="btn btn-sm btn-outline" id="btnCardTemaEscuro" onclick="toggleTemaCard(false)" style="background:rgba(0,0,0,0.5);color:var(--white);border:1px solid var(--gold)">◐ ESCURO</button><button class="btn btn-sm btn-outline" id="btnCardTemaClaro" onclick="toggleTemaCard(true)" style="background:transparent;color:var(--gray-light);border:1px solid var(--gray)">☀ CLARO</button></div><div class="share-actions"><button class="btn btn-red"onclick="baixarShareCard()"><i class="fas fa-download"></i> BAIXAR IMAGEM</button> <button class="btn btn-green" onclick="compartilharWhatsApp()"><i class="fab fa-whatsapp"></i> WHATSAPP</button> <button class="btn btn-purple" onclick="compartilharInstagram()"><i class="fab fa-instagram"></i> INSTAGRAM</button> <button class="btn btn-gold"onclick="copiarShareCard()"id="btnCopiarCard"><i class="fas fa-copy"></i> COPIAR</button> <button class="btn btn-outline"onclick='document.getElementById("shareCardModal").classList.remove("active")'>✕ FECHAR</button></div><div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#444;letter-spacing:2px;text-align:center">DICA: SALVE A IMAGEM E POSTE NOS STORIES / STATUS COMO FOTO</div></div><div id="shareCardCanvas"><div class="sc-bg"></div><div class="sc-border-top"></div><div class="sc-border-bottom"></div><div class="sc-inner"><div class="sc-star">★</div><div class="sc-app-name">GTG TRACKER</div><div class="sc-app-sub">FORÇA E RESISTÊNCIA</div><div class="sc-date"id="sc-date">—</div><div class="sc-divider"></div><div class="sc-section-label">— RELATÓRIO DO DIA —</div><div class="sc-stats-row"><div class="sc-stat-box"><div class="sc-stat-val"id="sc-series">0</div><div class="sc-stat-lbl">SÉRIES HOJE</div></div><div class="sc-stat-box"><div class="sc-stat-val"id="sc-reps">0</div><div class="sc-stat-lbl">REPS HOJE</div></div><div class="sc-stat-box"><div class="sc-stat-val"id="sc-xp">0</div><div class="sc-stat-lbl">XP GANHO</div></div></div><div class="sc-level-box"><span class="sc-level-icon"id="sc-level-icon">🎖</span><div class="sc-level-info"><div class="sc-level-name"id="sc-level-name">RECRUTA</div><div class="sc-level-xp"id="sc-level-xp">0 / 1000 XP</div></div><div class="sc-xp-bar-wrap"><div class="sc-xp-bar-fill"id="sc-xp-bar"style="width:0%"></div></div></div><div class="sc-streak-box"><div class="sc-streak-num"id="sc-streak">0</div><div class="sc-streak-label">🔥 DIAS DE STREAK</div></div><div class="sc-exercises-label">★ EXERCÍCIOS —</div><div id="sc-exercises-list"style="width:100%"></div><div class="sc-footer"><div class="sc-footer-tag">GREASE THE GROOVE · PAVEL TSATSOULINE</div><div class="sc-footer-url">GTG TRACKER</div></div></div></div><div class="modal-overlay"id="testMaxModal"><div class="modal"style="max-width:360px"><div class="modal-header"><span class="modal-title"id="testMaxTitle">🎯 TESTAR MÁXIMO</span> <button class="modal-close"onclick='closeModal("testMaxModal")'>✕</button></div><div class="modal-body"><div class="text-mono mb-8"style="margin-bottom:12px">Exercício: <span id="testMaxExercise"style="color:var(--gold)"></span></div><div class="form-group"style="margin-bottom:16px"><label class="form-label">Seu máximo de repetições</label> <input type="number"class="form-input"id="testMaxInput"placeholder="Ex: 20"min="1"style="width:100%"></div><div class="warning-box"style="margin-bottom:16px">⚠ Este teste atualiza seu PR e recalcula as sugestões GTG. Não conta para XP ou stats.</div><button class="btn btn-red"style="width:100%"onclick="confirmarTesteMaximo()">✓ CONFIRMAR MÁXIMO</button></div></div></div><div class="modal-overlay"id="resumoOntemModal"style="z-index:9999"><div class="modal"style="max-width:420px"><div class="modal-header"style="border-bottom:2px solid var(--gold)"><span class="modal-title"id="resumoOntemTitle">📊 RESUMO DE ONTEM</span> <button class="modal-close"onclick='document.getElementById("resumoOntemModal").classList.remove("active")'>✕</button></div><div class="modal-body"id="resumoOntemBody"></div></div></div><script src="skilltree.js?v=2"></script><script 
+src="skilltree-render.js?v=2"></script><script src="app.js?v=3"></script><script>function switchTab(e,tabName){if(tabName===undefined&&typeof e==='string'){tabName=e;e=null}if(e&&typeof e.preventDefault==='function'){e.preventDefault();e.stopPropagation()}console.log("Switching to tab:",tabName);document.querySelectorAll(".nav-tab").forEach(function(n){n.classList.remove("active")});document.querySelectorAll(".tab-content").forEach(function(c){c.classList.remove("active")});var tab=document.querySelector('.nav-tab[data-tab="'+tabName+'"]');var content=document.getElementById("tab-"+tabName);if(tab)tab.classList.add("active");if(content)content.classList.add("active");if(tabName==="stats"){setTimeout(function(){if(typeof renderGraficos==='function')renderGraficos();if(typeof renderProgresso==='function')renderProgresso();if(typeof renderEstatisticasMensais==='function')renderEstatisticasMensais()},100)}if(tabName==="planejador"){setTimeout(function(){if(typeof renderPlanejador==='function')renderPlanejador()},50)}if(tabName==="historico"){_notaData=(new Date).toISOString().slice(0,10);setTimeout(function(){if(typeof renderNotaDia==='function')renderNotaDia()},50)}if(tabName==="skilltree"&&typeof renderSkillTree==='function'){renderSkillTree()}}function setupNavTabs(){}</script>
+
