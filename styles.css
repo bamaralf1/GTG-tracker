@@ -725,7 +725,7 @@ body::after{
 .toggle-btn:hover{border-color:var(--gold-dim);color:var(--white-dim);background:rgba(212,168,67,0.05)}
 
 /* === PLANK TIMER === */
-.plank-timer{text-align:center;padding:30px}
+.plank-timer{text-align:center;padding:30px;position:relative;z-index:1}
 #plankTimerCard{overflow:visible}
 .timer-display{
   font-family:'Bebas Neue',sans-serif;
