@@ -726,6 +726,7 @@ body::after{
 
 /* === PLANK TIMER === */
 .plank-timer{text-align:center;padding:30px}
+#plankTimerCard{overflow:visible}
 .timer-display{
   font-family:'Bebas Neue',sans-serif;
   font-size:96px;
