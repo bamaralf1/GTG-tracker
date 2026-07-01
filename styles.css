@@ -1955,10 +1955,6 @@ body::after{
 .lang-flag-btn{background:0 0;border:none;cursor:pointer;padding:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:.55;transition:all .25s var(--ease-expo, ease);position:relative}
 .lang-flag-btn:hover{opacity:.9;transform:translateY(-1px) scale(1.1)}
 .lang-flag-btn.active{opacity:1;box-shadow:0 0 0 1.5px var(--gold),0 0 10px rgba(212,168,67,.45);animation:langPulse 2.2s ease-in-out infinite}
-.lang-flag{font-size:10px;font-weight:700;line-height:1;font-family:'Bebas Neue',sans-serif;letter-spacing:.5px;position:relative}
-#lang-pt{background:linear-gradient(135deg,#009739,#002776)}.lang-br{color:#FFDF00}
-#lang-en{background:linear-gradient(135deg,#3C3B6E,#B22234)}.lang-us{color:#FFF}
-#lang-ru{background:linear-gradient(135deg,#FFF,#D52B1E)}.lang-ru{color:#0039A6;text-shadow:0 0 4px rgba(0,0,0,.1)}
+.lang-flag{font-size:18px;line-height:1;position:relative}
 @keyframes langPulse{0%,100%{box-shadow:0 0 0 1.5px var(--gold),0 0 6px rgba(212,168,67,.35)}50%{box-shadow:0 0 0 1.5px var(--gold),0 0 14px rgba(212,168,67,.7)}}
 [data-theme=light] .lang-switcher{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12)}
-[data-theme=light] #lang-ru{background:linear-gradient(135deg,#D52B1E,#0039A6)}[data-theme=light] .lang-ru{color:#FFF;text-shadow:none}
