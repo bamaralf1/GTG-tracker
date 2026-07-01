@@ -1,0 +1,18 @@
+127.0.0.1 - - [27/Jun/2026 21:24:53] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2026 21:24:54] "GET /app.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2026 21:25:17] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2026 21:25:17] "GET /styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2026 21:25:18] "GET /skilltree.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2026 21:25:18] "GET /skilltree.js?v=2 HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2026 21:25:18] "GET /skilltree-render.js?v=2 HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2026 21:25:18] "GET /app.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2026 21:25:18] code 404, message File not found
+127.0.0.1 - - [27/Jun/2026 21:25:18] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2026 21:25:19] code 404, message File not found
+127.0.0.1 - - [27/Jun/2026 21:25:19] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2026 21:26:03] code 404, message File not found
+127.0.0.1 - - [27/Jun/2026 21:26:03] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2026 21:26:37] code 404, message File not found
+127.0.0.1 - - [27/Jun/2026 21:26:37] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2026 21:27:02] code 404, message File not found
+127.0.0.1 - - [27/Jun/2026 21:27:02] "GET /favicon.ico HTTP/1.1" 404 -
