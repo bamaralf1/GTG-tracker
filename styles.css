@@ -1963,28 +1963,194 @@ body::after{
 [data-theme=light] .lang-switcher{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12)}
 
 /* ============================================================
-   ANIMAÇÕES EXPANDIDAS
+   ANIMAÇÕES EXPANDIDAS — MODERN UI ENHANCEMENTS
    ============================================================ */
 
-/* --- Card Entrance (fade-up + scale) --- */
-@keyframes cardIn{
-  0%{opacity:0;transform:translateY(16px) scale(0.97)}
-  100%{opacity:1;transform:translateY(0) scale(1)}
+/* --- 1. AMBIENT FLOATING ORBS (animated gradient blobs) --- */
+@keyframes orbFloat{
+  0%{transform:translate(0,0) scale(1) rotate(0deg)}
+  25%{transform:translate(40px,-30px) scale(1.1) rotate(90deg)}
+  50%{transform:translate(-20px,20px) scale(0.9) rotate(180deg)}
+  75%{transform:translate(30px,40px) scale(1.05) rotate(270deg)}
+  100%{transform:translate(0,0) scale(1) rotate(360deg)}
+}
+.main::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  pointer-events:none;
+  background:
+    radial-gradient(600px circle at 20% 30%,rgba(204,0,0,0.06) 0%,transparent 70%),
+    radial-gradient(500px circle at 80% 70%,rgba(212,160,23,0.05) 0%,transparent 60%),
+    radial-gradient(400px circle at 50% 50%,rgba(139,0,0,0.04) 0%,transparent 50%);
+  animation:orbFloat 25s ease-in-out infinite alternate;
+}
+[data-theme=light] .main::before{
+  background:
+    radial-gradient(600px circle at 20% 30%,rgba(204,0,0,0.04) 0%,transparent 70%),
+    radial-gradient(500px circle at 80% 70%,rgba(184,134,11,0.04) 0%,transparent 60%),
+    radial-gradient(400px circle at 50% 50%,rgba(160,120,80,0.03) 0%,transparent 50%);
 }
 
-/* --- Staggered exercise card entrance --- */
+/* --- 2. 3D PERSPECTIVE ON EXERCISE CARDS --- */
 .exercise-card{
   animation:cardIn 0.5s var(--ease-expo) both;
-  animation-delay:calc(var(--i,0) * 0.06s)
+  animation-delay:calc(var(--i,0) * 0.06s);
+  transform:perspective(1200px) rotateX(0deg) rotateY(0deg);
+  transition:transform 0.4s var(--ease-expo), box-shadow 0.4s var(--ease-expo), border-color 0.4s var(--ease-expo)
+}
+.exercise-card:hover{
+  transform:perspective(1200px) rotateX(-2deg) rotateY(3deg) scale(1.02);
+  box-shadow:0 20px 60px rgba(204,0,0,0.15),0 8px 20px rgba(0,0,0,0.3),var(--inner-glow)
+}
+
+/* --- 3. ENHANCED TAB TRANSITION (direction-aware slide) --- */
+.tab-content.active{
+  animation:tabReveal 0.45s var(--ease-expo) both !important
+}
+@keyframes tabReveal{
+  0%{opacity:0;transform:translateY(12px) scale(0.98);filter:blur(2px)}
+  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+
+/* --- 4. ANIMATED GRADIENT TEXT on section titles --- */
+@keyframes textShimmer{
+  0%{background-position:-200% center}
+  100%{background-position:200% center}
+}
+.card-title{
+  background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold),var(--gold-light),var(--gold));
+  background-size:200% auto;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:textShimmer 6s linear infinite
+}
+.card-header .card-title{
+  display:inline-block
+}
+
+/* --- 5. MODERN GLOW ON INTERACTIVE ELEMENTS --- */
+.btn-red:hover{
+  box-shadow:0 12px 30px rgba(204,0,0,0.35),0 0 40px rgba(204,0,0,0.15),0 0 80px rgba(204,0,0,0.08),var(--inner-glow) !important
+}
+.btn-gold:hover{
+  box-shadow:0 10px 26px rgba(212,168,67,0.25),0 0 40px rgba(212,168,67,0.12),0 0 80px rgba(212,168,67,0.06),var(--inner-glow) !important
+}
+.btn-icon:hover{
+  box-shadow:0 0 20px rgba(212,168,67,0.2),0 0 40px rgba(212,168,67,0.08) !important
+}
+.sugestao-gtg:hover{
+  box-shadow:0 0 20px rgba(212,160,23,0.15),0 0 40px rgba(212,160,23,0.06)
+}
+.nav-tab:hover{
+  text-shadow:0 0 20px rgba(212,160,23,0.3),0 0 40px rgba(212,160,23,0.1)
+}
+.nav-tab.active{
+  text-shadow:0 0 30px rgba(212,160,23,0.4),0 0 60px rgba(212,160,23,0.15) !important
+}
+
+/* --- 6. FLOATING MICRO-PARTICLES (CSS-only) --- */
+@keyframes particleDrift{
+  0%{transform:translateY(0) translateX(0);opacity:0}
+  10%{opacity:1}
+  90%{opacity:0.6}
+  100%{transform:translateY(-100vh) translateX(50px);opacity:0}
+}
+.main::after{
+  content:'';position:fixed;inset:0;z-index:0;
+  pointer-events:none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 90%,rgba(212,160,23,0.3) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 20% 80%,rgba(212,160,23,0.2) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 30% 95%,rgba(204,0,0,0.25) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 40% 85%,rgba(212,160,23,0.3) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 50% 92%,rgba(204,0,0,0.2) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 88%,rgba(212,160,23,0.25) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 70% 93%,rgba(204,0,0,0.2) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 80% 87%,rgba(212,160,23,0.3) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 90% 91%,rgba(204,0,0,0.2) 0%,transparent 100%);
+  background-size:100% 100%;
+  animation:particleDrift 12s linear infinite;
+}
+[data-theme=light] .main::after{opacity:0.4}
+
+/* --- 7. MODERN SCROLLBAR --- */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,var(--red),var(--gold-dim));
+  border-radius:3px;
+  transition:background 0.3s
+}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,var(--red-bright),var(--gold))}
+
+/* --- 8. SMOOTH COUNT-UP ON NUMBERS --- */
+.ex-stat-val,.stat-card-value,.streak-number{
+  transition:all 0.3s var(--ease-expo)
+}
+.ex-stat-val:hover,.stat-card-value:hover,.streak-number:hover{
+  filter:brightness(1.3)
+}
+
+/* --- 9. ENHANCED CARD HOVER (glass lift) --- */
+.card:hover{
+  transform:translateY(-6px) scale(1.005);
+  box-shadow:0 16px 48px rgba(0,0,0,0.35),0 0 30px rgba(204,0,0,0.06),var(--inner-glow)
+}
+
+/* --- 10. INPUT FOCUS MODERN GLOW --- */
+.form-input:focus,.form-select:focus{
+  border-color:var(--gold) !important;
+  box-shadow:0 0 0 3px rgba(212,160,23,0.15),0 0 20px rgba(212,160,23,0.08) !important;
+  transform:translateY(-1px)
+}
+
+/* --- 11. MODAL CONTENT ENHANCED ENTRANCE --- */
+.modal{
+  animation:modalSlideIn 0.45s var(--ease-expo) both !important
+}
+@keyframes modalSlideIn{
+  0%{opacity:0;transform:translateY(-20px) scale(0.95);filter:blur(3px)}
+  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+
+/* --- 12. ENHANCED TOAST ENTRANCE --- */
+.toast{
+  animation:toastSlideIn 0.45s var(--ease-expo) both !important
+}
+@keyframes toastSlideIn{
+  0%{opacity:0;transform:translateX(60px) scale(0.9);filter:blur(2px)}
+  100%{opacity:1;transform:translateX(0) scale(1);filter:blur(0)}
+}
+
+/* --- 13. HEADER SUBTITLE ANIMATED REVEAL --- */
+.header-title-block p{
+  overflow:hidden;
+  white-space:nowrap;
+  border-right:2px solid var(--gold);
+  animation:typewriter 3s steps(40) 1s forwards, blinkCaret 0.8s step-end infinite
+}
+@keyframes typewriter{from{width:0}to{width:100%}}
+@keyframes blinkCaret{50%{border-color:transparent}}
+
+/* --- 14. STREAK FIRE ENHANCED AMBIENT --- */
+.streak-fire{
+  animation:flicker 1s ease-in-out infinite !important;
+  filter:drop-shadow(0 0 6px rgba(255,100,0,0.5)) drop-shadow(0 0 12px rgba(255,50,0,0.3))
+}
+
+/* --- 15. STAT CARDS HOVER LIFT WITH GLOW --- */
+.stat-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 32px rgba(0,0,0,0.3),0 0 20px rgba(204,0,0,0.08),var(--inner-glow)
 }
 
 /* --- Smooth fade-in for history log entries --- */
 @keyframes logIn{
-  0%{opacity:0;transform:translateX(-8px)}
-  100%{opacity:1;transform:translateX(0)}
+  0%{opacity:0;transform:translateX(-12px);filter:blur(1px)}
+  100%{opacity:1;transform:translateX(0);filter:blur(0)}
 }
 .log-entry{
-  animation:logIn 0.3s var(--ease-expo) both;
+  animation:logIn 0.35s var(--ease-expo) both;
   animation-delay:calc(var(--i,0) * 0.03s)
 }
 
@@ -2000,21 +2166,21 @@ body::after{
 /* --- Shake for form validation --- */
 @keyframes shake{
   0%,100%{transform:translateX(0)}
-  10%,50%,90%{transform:translateX(-4px)}
-  30%,70%{transform:translateX(4px)}
+  10%,50%,90%{transform:translateX(-5px)}
+  30%,70%{transform:translateX(5px)}
 }
 .form-input.shake{
-  animation:shake 0.4s ease
+  animation:shake 0.45s ease
 }
 
 /* --- Toast exit class --- */
 .toast.exit{
-  animation:toastOut 0.35s var(--ease-expo) forwards
+  animation:toastOut 0.35s var(--ease-expo) forwards !important
 }
 
 /* --- Smooth theme transition on root --- */
 html{
-  transition:background-color 0.4s ease
+  transition:background-color 0.5s ease
 }
 
 /* ============================================================
