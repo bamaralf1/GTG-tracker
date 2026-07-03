@@ -1961,3 +1961,74 @@ body::after{
 #lang-ru .lang-flag{background-image:url('https://flagcdn.com/24x18/ru.png')}
 @keyframes langPulse{0%,100%{box-shadow:0 0 0 1.5px var(--gold),0 0 6px rgba(212,168,67,.35)}50%{box-shadow:0 0 0 1.5px var(--gold),0 0 14px rgba(212,168,67,.7)}}
 [data-theme=light] .lang-switcher{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12)}
+
+/* ============================================================
+   ANIMAÇÕES EXPANDIDAS
+   ============================================================ */
+
+/* --- Card Entrance (fade-up + scale) --- */
+@keyframes cardIn{
+  0%{opacity:0;transform:translateY(16px) scale(0.97)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* --- Staggered exercise card entrance --- */
+.exercise-card{
+  animation:cardIn 0.5s var(--ease-expo) both;
+  animation-delay:calc(var(--i,0) * 0.06s)
+}
+
+/* --- Smooth fade-in for history log entries --- */
+@keyframes logIn{
+  0%{opacity:0;transform:translateX(-8px)}
+  100%{opacity:1;transform:translateX(0)}
+}
+.log-entry{
+  animation:logIn 0.3s var(--ease-expo) both;
+  animation-delay:calc(var(--i,0) * 0.03s)
+}
+
+/* --- Readiness circle: dedicated breathing animation --- */
+@keyframes readinessPulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.03);opacity:0.9}
+}
+.readiness-circle{
+  animation:readinessPulse 4s ease-in-out infinite !important
+}
+
+/* --- Shake for form validation --- */
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  10%,50%,90%{transform:translateX(-4px)}
+  30%,70%{transform:translateX(4px)}
+}
+.form-input.shake{
+  animation:shake 0.4s ease
+}
+
+/* --- Toast exit class --- */
+.toast.exit{
+  animation:toastOut 0.35s var(--ease-expo) forwards
+}
+
+/* --- Smooth theme transition on root --- */
+html{
+  transition:background-color 0.4s ease
+}
+
+/* ============================================================
+   PREFERS-REDUCED-MOTION — COBERTURA COMPLETA
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  *,
+  *::before,
+  *::after{
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+    transition-delay:0ms !important;
+    scroll-behavior:auto !important
+  }
+  .toast,.confetti-piece{display:none !important}
+}
