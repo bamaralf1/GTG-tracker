@@ -291,21 +291,24 @@ body::after{
   background:linear-gradient(180deg,rgba(15,5,5,0.6),rgba(15,15,15,0.8));
   border-bottom:1px solid rgba(212,168,67,0.12);
   display:flex;
+  flex-wrap:wrap;
   max-width:1400px;
   margin:0 auto;
   overflow-x:auto;
-  padding:6px 0;
+  padding:clamp(4px,0.6vw,8px) 0;
+  gap:clamp(2px,0.4vw,6px);
+  justify-content:center;
   backdrop-filter:blur(20px) saturate(180%);
   -webkit-backdrop-filter:blur(20px) saturate(180%);
 }
 .nav-tab{
   position:relative;
   font-family:'Bebas Neue',sans-serif;
-  font-size:14px;
-  letter-spacing:3px;
+  font-size:clamp(11px,1.4vw,14px);
+  letter-spacing:clamp(1.5px,0.3vw,3px);
   color:var(--gray-light);
-  padding:10px 18px;
-  margin:0 6px;
+  padding:clamp(6px,1vw,12px) clamp(8px,1.5vw,18px);
+  margin:0;
   cursor:pointer;
   border-bottom:none;
   transition:color .25s var(--ease-expo),transform .2s var(--ease-expo),opacity .2s var(--ease-expo);
@@ -318,10 +321,10 @@ body::after{
   left:50%;
   bottom:4px;
   transform:translateX(-50%) scaleX(0);
-  width:calc(100% - 20px);
-  height:3px;
+  width:calc(100% - clamp(8px,1.5vw,20px));
+  height:clamp(2px,0.3vw,3px);
   background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold));
-  border-radius:3px;
+  border-radius:clamp(1px,0.2vw,3px);
   transition:transform .35s var(--ease-expo),opacity .3s var(--ease-expo);
   opacity:0;
   box-shadow:0 0 12px rgba(212,168,67,0.6);
@@ -391,8 +394,8 @@ body::after{
   .header-right{gap:8px}
   .header-title-block h1{font-size:18px;letter-spacing:0.05em}
   .header-title-block p{display:none}
-  .nav-tabs{padding:4px 0}
-  .nav-tab{padding:8px 10px;font-size:12px}
+  .nav-tabs{padding:4px 0;gap:2px}
+  .nav-tab{padding:6px 8px;font-size:11px;letter-spacing:1px}
   .badge-icon-wrap{width:44px;height:44px;font-size:20px}
   .badge-desc{display:none}
   .share-fab{padding:10px 14px;bottom:18px;right:16px;font-size:12px}
