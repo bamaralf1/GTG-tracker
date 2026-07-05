@@ -725,15 +725,15 @@ body::after{
 .toggle-btn:hover{border-color:var(--gold-dim);color:var(--white-dim);background:rgba(212,168,67,0.05)}
 
 /* === PLANK TIMER === */
-.plank-timer{text-align:center;padding:30px;position:relative;z-index:1}
+.plank-timer{text-align:center;padding:clamp(16px, 4vw, 30px);position:relative;z-index:1}
 #plankTimerCard{overflow:visible}
 .timer-display{
   font-family:'Bebas Neue',sans-serif;
-  font-size:96px;
+  font-size:clamp(40px,12vw,96px);
   color:var(--gold);
   line-height:1;
   text-shadow:0 0 40px rgba(212,168,67,0.5),0 0 80px rgba(212,168,67,0.2);
-  letter-spacing:8px;
+  letter-spacing:clamp(4px,1vw,8px);
   font-variant-numeric:tabular-nums;
   transition:color .3s var(--ease-expo),text-shadow .3s var(--ease-expo);
 }
@@ -743,7 +743,10 @@ body::after{
   animation:timerPulse 1s ease-in-out infinite;
 }
 @keyframes timerPulse{0%,100%{text-shadow:0 0 60px rgba(255,59,48,0.6),0 0 100px rgba(255,59,48,0.3)}50%{text-shadow:0 0 80px rgba(255,59,48,0.8),0 0 120px rgba(255,59,48,0.4)}}
-.timer-controls{display:flex;gap:12px;justify-content:center;margin-top:20px}
+#prepNumber{font-size:clamp(48px,15vw,120px)!important}
+#prepCountdown{font-size:clamp(18px,4vw,28px)!important}
+.timer-controls{display:flex;gap:clamp(6px,2vw,12px);justify-content:center;margin-top:20px;flex-wrap:wrap}
+.timer-controls button{flex:1 1 auto;min-width:clamp(90px,20vw,160px);padding:clamp(8px,1.5vw,12px) clamp(10px,2vw,18px);font-size:clamp(11px,1.5vw,14px);white-space:nowrap}
 
 /* === PROGRESS TIMELINE === */
 .progress-timeline{position:relative;padding-left:24px}
