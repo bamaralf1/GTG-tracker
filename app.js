@@ -805,13 +805,13 @@ let fraseAtualIndex = -1,
   audioCtx = null;
 
 function inicializar() {
-  if (console.log("Inicializando aplicação..."), carregarDados(), atualizarDataHeader(), console.log("Renderizando exercícios..."), renderExercicios(), renderBadges(), renderHistory(), renderGuiaExercicios(), atualizarXP(), atualizarUIStreak(), atualizarStats(), setTimeout(() => {
+  if (carregarDados(), atualizarDataHeader(), renderExercicios(), renderBadges(), renderHistory(), renderGuiaExercicios(), atualizarXP(), atualizarUIStreak(), atualizarStats(), setTimeout(() => {
       renderGraficos(), renderProgresso(), renderEstatisticasMensais()
     }, 300), verificarStreak(), verificarBadges(), preencherSelects(), exibirFraseDoDia(), iniciarLembretes(), carregarReadiness(), carregarMetas(), carregarPlanejador(), carregarModoFoco(), modoFocoState.ativo) {
     const e = document.getElementById("modoFocoToggle");
     e && e.classList.add("active"), populateFocoSelect(), document.getElementById("modoFocoSelect").value = modoFocoState.exercicioId || "", aplicarModoFoco()
   }
-  setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), console.log("Inicialização concluída"), inicializarSkillTree();
+  setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), inicializarSkillTree();
   const pesoDataEl = document.getElementById("pesoData");
   if (pesoDataEl && !pesoDataEl.value) pesoDataEl.value = new Date().toISOString().slice(0, 10)
 }
@@ -839,7 +839,7 @@ function carregarDados() {
     const a = ["lsit", "isometrico"];
     dados.exercicios = dados.exercicios.filter(e => !a.includes(e.id));
     const t = new Set;
-    dados.exercicios = dados.exercicios.filter(e => !t.has(e.id) && (t.add(e.id), !0)), console.log("Dados carregados:", dados.exercicios.length, "exercícios")
+    dados.exercicios = dados.exercicios.filter(e => !t.has(e.id) && (t.add(e.id), !0))
   } catch (e) {
     console.error("Erro ao carregar dados:", e), localStorage.removeItem("gtg_data"), dados = {
       exercicios: EXERCICIOS_DEFAULT.map(e => ({
@@ -851,11 +851,15 @@ function carregarDados() {
   try {
     const e = localStorage.getItem("gtg_streaks");
     e && (streakData = JSON.parse(e)), void 0 === streakData.streakShields && (streakData.streakShields = 0), void 0 === streakData.shieldCost && (streakData.shieldCost = 500)
-  } catch (e) {}
+  } catch (e) {
+    console.error("[carregarDados] Falha ao carregar streakData:", e)
+  }
   try {
     const e = localStorage.getItem("gtg_xp");
     e && (xpData = JSON.parse(e))
-  } catch (e) {}
+  } catch (e) {
+    console.error("[carregarDados] Falha ao carregar xpData:", e)
+  }
   try {
     const e = localStorage.getItem("gtg_badges");
     badgesData = e ? JSON.parse(e) : {
@@ -1007,7 +1011,9 @@ function toggleGroove(exId, idx, el) {
   // play a tiny click tone if available
   try {
     if (typeof tocarTom === 'function') tocarTom(220 + 80 * grooveState[exId].filter(Boolean).length, .04, 'square', .06)
-  } catch (e) {}
+  } catch (e) {
+    console.warn("[toggleGroove] Falha ao tocar tom de clique:", e)
+  }
   atualizarPreviewGroove(exId);
 }
 
@@ -1635,7 +1641,9 @@ function tocarSomPreparo(e) {
         o = a.createGain();
       t.connect(o), o.connect(a.destination), t.type = "sine", t.frequency.value = 440 + 40 * (7 - e), o.gain.setValueAtTime(.18, a.currentTime), o.gain.exponentialRampToValueAtTime(.001, a.currentTime + .18), t.start(a.currentTime), t.stop(a.currentTime + .2)
     } else tocarTom(880, .15, "sine", .25, 0), tocarTom(1100, .15, "sine", .25, .16)
-  } catch (e) {}
+  } catch (e) {
+    console.warn("[tocarSomPreparo] Falha ao tocar som:", e)
+  }
 }
 
 function tocarSomInicioExercicio() {
@@ -1651,7 +1659,9 @@ function tocarSomInicioExercicio() {
         r = e.createGain();
       o.connect(r), r.connect(e.destination), o.type = "square", o.frequency.value = a, r.gain.setValueAtTime(.22, e.currentTime + t), r.gain.exponentialRampToValueAtTime(.001, e.currentTime + t + .25), o.start(e.currentTime + t), o.stop(e.currentTime + t + .3)
     })
-  } catch (e) {}
+  } catch (e) {
+    console.warn("[tocarSomInicioExercicio] Falha ao tocar som:", e)
+  }
 }
 
 function startPlankTimer() {
@@ -1744,7 +1754,9 @@ function tocarTom(e, a, t = "square", o = .15, r = 0) {
       n = s.createOscillator(),
       i = s.createGain();
     n.connect(i), i.connect(s.destination), n.type = t, n.frequency.value = e, i.gain.setValueAtTime(o, s.currentTime + r), i.gain.exponentialRampToValueAtTime(.001, s.currentTime + r + a), n.start(s.currentTime + r), n.stop(s.currentTime + r + a + .1)
-  } catch (e) {}
+  } catch (e) {
+    console.warn("[tocarTom] Falha ao tocar tom:", e)
+  }
 }
 
 function tocarSomRegistro() {
@@ -1912,7 +1924,9 @@ function tocarSomLembrete() {
         r = e.createGain();
       o.connect(r), r.connect(e.destination), o.type = "sine", o.frequency.value = a, r.gain.setValueAtTime(0, e.currentTime + t), r.gain.linearRampToValueAtTime(.2, e.currentTime + t + .05), r.gain.exponentialRampToValueAtTime(.001, e.currentTime + t + .8), o.start(e.currentTime + t), o.stop(e.currentTime + t + .9)
     })
-  } catch (e) {}
+  } catch (e) {
+    console.warn("[tocarSomLembrete] Falha ao tocar som:", e)
+  }
 }
 const SW_CODE = "\nconst LEMBRETES = [\n  \"⏰ Hora de uma série! Lembre: 50-60% do seu máximo. Qualidade acima de tudo.\",\n  \"🔔 Pavel diz: Uma série perfeita agora vale mais do que dez séries ruins depois.\",\n  \"⚡ 20 minutos se passaram. Hora de trabalhar!\",\n  \"🎯 Micro-dose de força. Uma série. Agora. Sem desculpa.\",\n  \"💪 O sistema nervoso está pronto. Mais uma série constrói o padrão.\",\n  \"🔥 Streak em andamento. Não quebre a corrente — uma série mantém tudo!\",\n  \"⭐ Frequência > Intensidade. Uma série agora > Zero séries depois.\",\n  \"🪖 O soldado não espera a hora perfeita. Ele treina quando pode.\",\n  \"🧠 Cada repetição de qualidade mieliniza a via nervosa. Faça agora.\",\n  \"⚔ GTG é sobre acúmulo. Cada série conta — mesmo a mais simples.\"\n];\n\nconst INTERVALO_MS = 20 * 60 * 1000;\n\nself.addEventListener('install', e => { self.skipWaiting(); });\nself.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); agendarProximo(); });\n\nself.addEventListener('message', e => {\n  if (e.data === 'INICIAR_LEMBRETES') agendarProximo();\n  if (e.data === 'PARAR_LEMBRETES' && self._lembreteTimeout) {\n    clearTimeout(self._lembreteTimeout);\n    self._lembreteTimeout = null;\n  }\n});\n\nfunction agendarProximo() {\n  if (self._lembreteTimeout) clearTimeout(self._lembreteTimeout);\n  self._lembreteTimeout = setTimeout(() => {\n    dispararNotificacao();\n    agendarProximo();\n  }, INTERVALO_MS);\n}\n\nfunction dispararNotificacao() {\n  const msg = LEMBRETES[Math.floor(Math.random() * LEMBRETES.length)];\n  self.registration.showNotification('GTG TRACKER — FORÇA E RESISTÊNCIA', {\n    body: msg,\n    icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230A0A0A%22/><text y=%22.9em%22 font-size=%2280%22>⭐</text></svg>',\n    badge: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>⭐</text></svg>',\n    tag: 'gtg-lembrete',\n    renotify: true,\n    requireInteraction: true,\n    silent: false,\n    vibrate: [200, 100, 200]\n  });\n}\n\nself.addEventListener('notificationclick', e => {\n  e.notification.close();\n  e.waitUntil(self.clients.matchAll({ type: 'window' }).then(clients => {\n    for (const c of clients) { if ('focus' in c) return c.focus(); }\n    if (self.clients.openWindow) return self.clients.openWindow('/');\n  }));\n});\n";
 let swRegistration = null,
@@ -1934,13 +1948,15 @@ async function registrarServiceWorker() {
       a = URL.createObjectURL(e);
     return swRegistration = await navigator.serviceWorker.register(a, {
       scope: "./"
-    }), await navigator.serviceWorker.ready, swRegistration = await navigator.serviceWorker.getRegistration(), console.log("SW registrado com sucesso:", swRegistration), swRegistration
+    }), await navigator.serviceWorker.ready, swRegistration = await navigator.serviceWorker.getRegistration(), swRegistration
   } catch (e) {
     console.warn("SW Blob falhou:", e.message);
     try {
       const e = await navigator.serviceWorker.getRegistration();
       if (e) return swRegistration = e, e
-    } catch (e) {}
+    } catch (e) {
+      console.error("[registrarServiceWorker] Falha no fallback de registro:", e)
+    }
     return null
   }
 }
@@ -1955,14 +1971,18 @@ async function enviarNotificacaoSW(e) {
       vibrate: [200, 100, 200],
       icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230A0A0A"/><text y=".9em" font-size="80">⭐</text></svg>'
     })
-  } catch (e) {}
+  } catch (e) {
+    console.warn("[enviarNotificacaoSW] Falha na notificação via SW:", e)
+  }
   if ("Notification" in window && "granted" === Notification.permission) try {
     new Notification("GTG TRACKER", {
       body: e,
       tag: "gtg-lembrete",
       renotify: !0
     })
-  } catch (e) {}
+  } catch (e) {
+    console.warn("[enviarNotificacaoSW] Falha na notificação fallback:", e)
+  }
 }
 async function solicitarPermissaoNotificacao() {
   if (!("Notification" in window)) return void mostrarToast("Info", "Navegador não suporta notificações.", "warning");
@@ -2002,25 +2022,6 @@ function dispararConfetti() {
     const a = document.createElement("div");
     a.className = "confetti-piece", a.style.left = 100 * Math.random() + "vw", a.style.background = e[Math.floor(Math.random() * e.length)], a.style.animationDelay = .5 * Math.random() + "s", document.body.appendChild(a), setTimeout(() => a.remove(), 3500)
   }
-}
-
-function switchTab(e) {
-  console.log("Switching to tab:", e), document.querySelectorAll(".nav-tab").forEach(e => e.classList.remove("active")), document.querySelector(`.nav-tab[data-tab="${e}"]`).classList.add("active"), document.querySelectorAll(".tab-content").forEach(e => {
-    e.classList.remove("active")
-  }), document.getElementById(`tab-${e}`).classList.add("active"), "stats" === e && setTimeout(() => {
-    renderGraficos(), renderProgresso(), renderEstatisticasMensais(), renderPesoChart()
-  }, 100), "planejador" === e && setTimeout(renderPlanejador, 50), "historico" === e && (_notaData = (new Date).toISOString().slice(0, 10), setTimeout(renderNotaDia, 50)), "skilltree" === e && renderSkillTree()
-}
-
-function setupNavTabs() {
-  console.log("Configurando abas de navegação...");
-  const e = document.querySelectorAll(".nav-tab");
-  console.log("Encontradas", e.length, "abas"), e.forEach(e => {
-    e.addEventListener("click", () => {
-      const a = e.dataset.tab;
-      console.log("Clicou na aba:", a), switchTab(a)
-    })
-  })
 }
 
 function exportTXTHoje() {
@@ -2132,6 +2133,7 @@ function handleImport(e) {
 }
 
 function clearAllData() {
+  if (!window.confirm("APAGAR TODOS OS DADOS? Isso não pode ser desfeito!")) return;
   localStorage.clear(), location.reload()
 }
 
@@ -2162,7 +2164,9 @@ function carregarModoFoco() {
   try {
     const e = localStorage.getItem("gtg_modo_foco");
     e && (modoFocoState = JSON.parse(e))
-  } catch (e) {}
+  } catch (e) {
+    console.error("[carregarModoFoco] Falha ao carregar modoFocoState:", e)
+  }
 }
 
 function salvarModoFoco() {
@@ -3440,36 +3444,7 @@ function pararTimerGTG(e) {
   a && (a.style.display = "none")
 }
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM carregado, iniciando configuração...");
-  const e = cssVar("--accent-red") || "#CC0000",
-    a = cssVar("--bg-dark") || "#0A0A0A",
-    t = e.replace("#", ""),
-    o = a.replace("#", ""),
-    r = {
-      name: "GTG Tracker — Força e Resistência",
-      short_name: "GTG Tracker",
-      description: "Grease The Groove — Método Pavel Tsatsouline",
-      start_url: ".",
-      display: "standalone",
-      background_color: a,
-      theme_color: e,
-      orientation: "portrait",
-      icons: [{
-        src: `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%23${o}' rx='20'/><text x='96' y='140' font-size='120' text-anchor='middle' fill='%23${t}'>★</text></svg>`,
-        sizes: "192x192",
-        type: "image/svg+xml"
-      }, {
-        src: `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%23${o}' rx='40'/><text x='256' y='380' font-size='320' text-anchor='middle' fill='%23${t}'>★</text></svg>`,
-        sizes: "512x512",
-        type: "image/svg+xml"
-      }]
-    },
-    s = new Blob([JSON.stringify(r)], {
-      type: "application/manifest+json"
-    }),
-    n = URL.createObjectURL(s),
-    i = document.createElement("link");
-  i.rel = "manifest", i.href = n, document.head.appendChild(i);
+  const e = cssVar("--accent-red") || "#CC0000";
   const d = document.querySelector('meta[name="theme-color"]');
   d && d.setAttribute("content", e), "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
     e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (BACKGROUND)", document.getElementById("btnAtivarLembrete").textContent = "✓ ATIVO", document.getElementById("btnAtivarLembrete").style.background = "rgba(45,122,45,0.3)", document.getElementById("btnAtivarLembrete").style.borderColor = "var(--green-bright)", document.getElementById("btnAtivarLembrete").style.color = "var(--green-bright)"))
@@ -3647,7 +3622,9 @@ function aplicarIdioma(lang) {
 function trocarIdioma(lang) {
   try {
     localStorage.setItem('gtg_idioma', lang)
-  } catch (e) {}
+  } catch (e) {
+    console.error("[trocarIdioma] Falha ao salvar idioma:", e)
+  }
   aplicarIdioma(lang);
 }
 
@@ -3655,53 +3632,10 @@ function carregarIdioma() {
   let lang = 'pt';
   try {
     lang = localStorage.getItem('gtg_idioma') || 'pt'
-  } catch (e) {}
+  } catch (e) {
+    console.error("[carregarIdioma] Falha ao ler idioma salvo:", e)
+  }
   aplicarIdioma(lang);
 }
 
-function switchTab(e, tabName) {
-  if (tabName === undefined && typeof e === 'string') {
-    tabName = e;
-    e = null
-  }
-  if (e && typeof e.preventDefault === 'function') {
-    e.preventDefault();
-    e.stopPropagation()
-  }
-  console.log("Switching to tab:", tabName);
-  document.querySelectorAll(".nav-tab").forEach(function(n) {
-    n.classList.remove("active")
-  });
-  document.querySelectorAll(".tab-content").forEach(function(c) {
-    c.classList.remove("active")
-  });
-  var tab = document.querySelector('.nav-tab[data-tab="' + tabName + '"]');
-  var content = document.getElementById("tab-" + tabName);
-  if (tab) tab.classList.add("active");
-  if (content) content.classList.add("active");
-  if (tabName === "stats") {
-    setTimeout(function() {
-      if (typeof renderGraficos === 'function') renderGraficos();
-      if (typeof renderProgresso === 'function') renderProgresso();
-      if (typeof renderEstatisticasMensais === 'function') renderEstatisticasMensais();
-      if (typeof renderPesoChart === 'function') renderPesoChart()
-    }, 100)
-  }
-  if (tabName === "planejador") {
-    setTimeout(function() {
-      if (typeof renderPlanejador === 'function') renderPlanejador()
-    }, 50)
-  }
-  if (tabName === "historico") {
-    _notaData = (new Date).toISOString().slice(0, 10);
-    setTimeout(function() {
-      if (typeof renderNotaDia === 'function') renderNotaDia()
-    }, 50)
-  }
-  if (tabName === "skilltree" && typeof renderSkillTree === 'function') {
-    renderSkillTree()
-  }
-}
-
-function setupNavTabs() {}
 document.addEventListener('DOMContentLoaded', carregarIdioma);
