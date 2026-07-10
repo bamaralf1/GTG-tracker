@@ -1818,20 +1818,20 @@ function somTimer() {
 
 let shareCardTemaClaro = !1;
 
-function toggleTemaCard(e) {
-  shareCardTemaClaro = e;
-  const a = document.getElementById("shareCardCanvas");
-  a && a.classList.toggle("sc-light", e);
-  const t = document.getElementById("btnCardTemaEscuro"),
-    o = document.getElementById("btnCardTemaClaro");
-  t && o && (e ? (o.style.background = "rgba(0,0,0,0.5)", o.style.color = "var(--white)", o.style.borderColor = "var(--gold)", t.style.background = "transparent", t.style.color = "var(--gray-light)", t.style.borderColor = "var(--gray)") : (t.style.background = "rgba(0,0,0,0.5)", t.style.color = "var(--white)", t.style.borderColor = "var(--gold)", o.style.background = "transparent", o.style.color = "var(--gray-light)", o.style.borderColor = "var(--gray)")), abrirShareCard(!0)
+function toggleTemaCard(light) {
+  shareCardTemaClaro = light;
+  const canvas = document.getElementById("shareCardCanvas");
+  canvas && canvas.classList.toggle("sc-light", light);
+  const btnDark = document.getElementById("btnCardTemaEscuro"),
+    btnLight = document.getElementById("btnCardTemaClaro");
+  btnDark && btnLight && (light ? (btnLight.style.background = "rgba(0,0,0,0.5)", btnLight.style.color = "var(--white)", btnLight.style.borderColor = "var(--gold)", btnDark.style.background = "transparent", btnDark.style.color = "var(--gray-light)", btnDark.style.borderColor = "var(--gray)") : (btnDark.style.background = "rgba(0,0,0,0.5)", btnDark.style.color = "var(--white)", btnDark.style.borderColor = "var(--gold)", btnLight.style.background = "transparent", btnLight.style.color = "var(--gray-light)", btnLight.style.borderColor = "var(--gray)")), abrirShareCard(!0)
 }
 let shareCardBlob = null;
 
-function abrirShareCard(e) {
-  preencherShareCard(), e || mostrarToast("Gerando...", "Preparando cartão do dia", "success"), setTimeout(() => {
-    const a = document.getElementById("shareCardCanvas");
-    html2canvas(a, {
+function abrirShareCard(skipToast) {
+  preencherShareCard(), skipToast || mostrarToast("Gerando...", "Preparando cartão do dia", "success"), setTimeout(() => {
+    const canvas = document.getElementById("shareCardCanvas");
+    html2canvas(canvas, {
       width: 1080,
       height: 1920,
       scale: 1,
@@ -1839,105 +1839,99 @@ function abrirShareCard(e) {
       allowTaint: !0,
       backgroundColor: shareCardTemaClaro ? "#FAF8F4" : cssVar("--bg-dark"),
       logging: !1,
-      onclone: function(e) {
-        const a = e.getElementById("shareCardCanvas");
-        a && (a.style.position = "relative", a.style.left = "0", a.style.top = "0")
+      onclone: function(doc) {
+        const cloned = doc.getElementById("shareCardCanvas");
+        cloned && (cloned.style.position = "relative", cloned.style.left = "0", cloned.style.top = "0")
       }
-    }).then(e => {
-      e.toBlob(e => {
-        shareCardBlob = e;
-        const a = URL.createObjectURL(e);
-        document.getElementById("shareCardPreview").src = a, document.getElementById("shareCardModal").classList.add("active")
+    }).then(canvas => {
+      canvas.toBlob(blob => {
+        shareCardBlob = blob;
+        const url = URL.createObjectURL(blob);
+        document.getElementById("shareCardPreview").src = url, document.getElementById("shareCardModal").classList.add("active")
       }, "image/png", 1)
-    }).catch(e => {
-      console.error("Erro ao gerar cartão:", e), mostrarToast("Erro", "Não foi possível gerar a imagem. Tente novamente.", "error")
+    }).catch(err => {
+      console.error("Erro ao gerar cartão:", err), mostrarToast("Erro", "Não foi possível gerar a imagem. Tente novamente.", "error")
     })
   }, 200)
 }
 
 function preencherShareCard() {
-  const e = (new Date).toISOString().slice(0, 10),
-    a = new Date;
-  document.getElementById("sc-date").textContent = `${["DOMINGO","SEGUNDA","TERÇA","QUARTA","QUINTA","SEXTA","SÁBADO"][a.getDay()]} · ${String(a.getDate()).padStart(2,"0")} ${["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"][a.getMonth()]} ${a.getFullYear()}`;
-  const t = dados.registros.filter(a => a.data === e),
-    o = t.reduce((e, a) => e + (a.valor || 0), 0),
-    r = t.reduce((e, a) => e + (a.xp || 0), 0);
-  document.getElementById("sc-series").textContent = t.length, document.getElementById("sc-reps").textContent = o, document.getElementById("sc-xp").textContent = r, document.getElementById("sc-streak").textContent = streakData.atual;
-  const s = getNivel(xpData.total),
-    n = (NIVEIS.findIndex(e => e.nome === s.nome), xpData.total - s.min),
-    i = s.proximo - s.min || 1,
-    d = Math.min(100, Math.round(n / i * 100));
-  document.getElementById("sc-level-icon").textContent = s.icone, document.getElementById("sc-level-name").textContent = s.nome, document.getElementById("sc-level-xp").textContent = `${xpData.total} XP TOTAL`, document.getElementById("sc-xp-bar").style.width = d + "%";
-  const c = document.getElementById("sc-exercises-list");
-  c.innerHTML = "";
-  const l = {};
-  t.forEach(e => {
-    l[e.exercicioId] || (l[e.exercicioId] = {
-      nome: e.exercicioNome,
-      series: 0,
-      reps: 0
-    }), l[e.exercicioId].series++, l[e.exercicioId].reps += e.valor || 0
+  const hoje = (new Date).toISOString().slice(0, 10),
+    now = new Date;
+  document.getElementById("sc-date").textContent = `${["DOMINGO","SEGUNDA","TERÇA","QUARTA","QUINTA","SEXTA","SÁBADO"][now.getDay()]} · ${String(now.getDate()).padStart(2,"0")} ${["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"][now.getMonth()]} ${now.getFullYear()}`;
+  const regsHoje = dados.registros.filter(r => r.data === hoje),
+    totalReps = regsHoje.reduce((acc, r) => acc + (r.valor || 0), 0),
+    totalXP = regsHoje.reduce((acc, r) => acc + (r.xp || 0), 0);
+  document.getElementById("sc-series").textContent = regsHoje.length, document.getElementById("sc-reps").textContent = totalReps, document.getElementById("sc-xp").textContent = totalXP, document.getElementById("sc-streak").textContent = streakData.atual;
+  const level = getNivel(xpData.total),
+    xpNoNivel = xpData.total - level.min,
+    xpParaProximo = level.proximo - level.min || 1,
+    xpPct = Math.min(100, Math.round(xpNoNivel / xpParaProximo * 100));
+  document.getElementById("sc-level-icon").textContent = level.icone, document.getElementById("sc-level-name").textContent = level.nome, document.getElementById("sc-level-xp").textContent = `${xpData.total} XP TOTAL`, document.getElementById("sc-xp-bar").style.width = xpPct + "%";
+  const listEl = document.getElementById("sc-exercises-list");
+  listEl.innerHTML = "";
+  const grupos = {};
+  regsHoje.forEach(r => {
+    grupos[r.exercicioId] || (grupos[r.exercicioId] = { nome: r.exercicioNome, series: 0, reps: 0 }), grupos[r.exercicioId].series++, grupos[r.exercicioId].reps += r.valor || 0
   });
-  const m = Object.values(l);
-  0 === m.length ? c.innerHTML = "<div style=\"width:100%; padding:30px; background:var(--bg-111); border-left:5px solid var(--accent-red); font-family:'Share Tech Mono',monospace; font-size:20px; color:var(--gray); letter-spacing:3px; text-align:center;\">SEM REGISTROS HOJE</div>" : m.slice(0, 7).forEach(e => {
-    const a = dados.exercicios.find(a => a.id === Object.keys(l).find(a => l[a].nome === e.nome)),
-      t = a ? "tempo" === a.tipo ? "seg" : a.unidade || "reps" : "reps";
-    c.innerHTML += `\n        <div class="sc-exercise-row">\n          <div class="sc-ex-name">${e.nome}</div>\n          <div class="sc-ex-chips">\n            <div class="sc-ex-chip">\n              <div class="sc-ex-chip-val">${e.series}</div>\n              <div class="sc-ex-chip-lbl">SÉRIES</div>\n            </div>\n            <div class="sc-ex-chip">\n              <div class="sc-ex-chip-val">${e.reps}</div>\n              <div class="sc-ex-chip-lbl">${t.toUpperCase()}</div>\n            </div>\n          </div>\n        </div>`
+  const entries = Object.values(grupos);
+  0 === entries.length ? listEl.innerHTML = '<div style="width:100%; padding:30px; background:var(--bg-111); border-left:5px solid var(--accent-red); font-family:\'Share Tech Mono\',monospace; font-size:20px; color:var(--gray); letter-spacing:3px; text-align:center;">SEM REGISTROS HOJE</div>' : entries.slice(0, 7).forEach(g => {
+    const ex = dados.exercicios.find(e => e.id === Object.keys(grupos).find(k => grupos[k].nome === g.nome)),
+      unit = ex ? "tempo" === ex.tipo ? "seg" : ex.unidade || "reps" : "reps";
+    listEl.innerHTML += `\n        <div class="sc-exercise-row">\n          <div class="sc-ex-name">${g.nome}</div>\n          <div class="sc-ex-chips">\n            <div class="sc-ex-chip">\n              <div class="sc-ex-chip-val">${g.series}</div>\n              <div class="sc-ex-chip-lbl">SÉRIES</div>\n            </div>\n            <div class="sc-ex-chip">\n              <div class="sc-ex-chip-val">${g.reps}</div>\n              <div class="sc-ex-chip-lbl">${unit.toUpperCase()}</div>\n            </div>\n          </div>\n        </div>`
   })
 }
 
 function baixarShareCard() {
   if (!shareCardBlob) return void mostrarToast("Erro", "Gere o cartão primeiro", "error");
-  const e = (new Date).toISOString().slice(0, 10),
-    a = URL.createObjectURL(shareCardBlob),
-    t = document.createElement("a");
-  t.href = a, t.download = `gtg_cartao_${e}.png`, t.click(), URL.revokeObjectURL(a), mostrarToast("✓ Baixado!", "Imagem salva. Pronto para Stories e Status!", "success")
+  const hoje = (new Date).toISOString().slice(0, 10),
+    url = URL.createObjectURL(shareCardBlob),
+    link = document.createElement("a");
+  link.href = url, link.download = `gtg_cartao_${hoje}.png`, link.click(), URL.revokeObjectURL(url), mostrarToast("✓ Baixado!", "Imagem salva. Pronto para Stories e Status!", "success")
 }
 async function copiarShareCard() {
   if (shareCardBlob) try {
-    await navigator.clipboard.write([new ClipboardItem({
-      "image/png": shareCardBlob
-    })]), mostrarToast("✓ Copiado!", "Imagem copiada — cole direto no WhatsApp ou Instagram", "success")
-  } catch (e) {
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": shareCardBlob })]), mostrarToast("✓ Copiado!", "Imagem copiada — cole direto no WhatsApp ou Instagram", "success")
+  } catch (err) {
     baixarShareCard(), mostrarToast("Info", "Seu navegador não suporta copiar imagem. Arquivo baixado!", "warning")
   } else mostrarToast("Erro", "Gere o cartão primeiro", "error")
 }
 
 function exibirFraseDoDia() {
-  const e = document.getElementById("fraseMotivacional");
-  if (!e) return;
-  const a = Math.floor(Math.random() * FRASES_PAVEL.length);
-  fraseAtualIndex = a;
-  const t = FRASES_PAVEL[a];
-  e.innerHTML = '<div class="frase-texto">"' + t.frase + '"</div><div class="frase-autor">— ' + t.autor + "</div>"
+  const el = document.getElementById("fraseMotivacional");
+  if (!el) return;
+  const idx = Math.floor(Math.random() * FRASES_PAVEL.length);
+  fraseAtualIndex = idx;
+  const frase = FRASES_PAVEL[idx];
+  el.innerHTML = '<div class="frase-texto">"' + frase.frase + '"</div><div class="frase-autor">— ' + frase.autor + "</div>"
 }
 
 function proximaFrase() {
   if (modoFocoState.ativo && modoFocoState.exercicioId) {
-    const e = dados.exercicios.find(e => e.id === modoFocoState.exercicioId);
-    if (e) {
-      const a = [`🎯 FOCO: ${e.nome}. Uma série perfeita agora vale mais que dez ruins depois.`, `🔥 Modo Foco ativo. ${e.nome} — qualidade máxima, volume controlado.`, `⚡ ${e.nome}: frequência > intensidade. Uma série agora > zero depois.`, `🪖 Soldado, hora de ${e.nome}. Tensão irradiante, controle total.`, `⭐ ${e.nome}: cada rep de qualidade mieliniza a via nervosa.`],
-        t = document.getElementById("fraseMotivacional");
-      if (t) {
-        const e = a[Math.floor(Math.random() * a.length)];
-        return t.style.opacity = "0", void setTimeout(() => {
-          t.innerHTML = '<div class="frase-texto">' + e + '</div><div class="frase-autor">— Pavel Tsatsouline</div>', t.style.opacity = "1"
+    const ex = dados.exercicios.find(e => e.id === modoFocoState.exercicioId);
+    if (ex) {
+      const focoFrases = [`🎯 FOCO: ${ex.nome}. Uma série perfeita agora vale mais que dez ruins depois.`, `🔥 Modo Foco ativo. ${ex.nome} — qualidade máxima, volume controlado.`, `⚡ ${ex.nome}: frequência > intensidade. Uma série agora > zero depois.`, `🪖 Soldado, hora de ${ex.nome}. Tensão irradiante, controle total.`, `⭐ ${ex.nome}: cada rep de qualidade mieliniza a via nervosa.`],
+        el = document.getElementById("fraseMotivacional");
+      if (el) {
+        const f = focoFrases[Math.floor(Math.random() * focoFrases.length)];
+        return el.style.opacity = "0", void setTimeout(() => {
+          el.innerHTML = '<div class="frase-texto">' + f + '</div><div class="frase-autor">— Pavel Tsatsouline</div>', el.style.opacity = "1"
         }, 300)
       }
     }
   }
   fraseAtualIndex = (fraseAtualIndex + 1) % FRASES_PAVEL.length;
-  const e = FRASES_PAVEL[fraseAtualIndex],
-    a = document.getElementById("fraseMotivacional");
-  a && (a.style.opacity = "0", a.style.transition = "opacity 0.3s", setTimeout(() => {
-    a.innerHTML = '<div class="frase-texto">"' + e.frase + '"</div><div class="frase-autor">— ' + e.autor + "</div>", a.style.opacity = "1"
+  const frase = FRASES_PAVEL[fraseAtualIndex],
+    el = document.getElementById("fraseMotivacional");
+  el && (el.style.opacity = "0", el.style.transition = "opacity 0.3s", setTimeout(() => {
+    el.innerHTML = '<div class="frase-texto">"' + frase.frase + '"</div><div class="frase-autor">— ' + frase.autor + "</div>", el.style.opacity = "1"
   }, 300))
 }
 
 function iniciarLembretes() {
   lembreteInterval && clearInterval(lembreteInterval), lembreteInterval = setInterval(() => {
-    const e = LEMBRETES_GTG[Math.floor(Math.random() * LEMBRETES_GTG.length)];
-    mostrarToast("LEMBRETE GTG", e, "success"), tocarSomLembrete(), enviarNotificacaoSW(e)
+    const msg = LEMBRETES_GTG[Math.floor(Math.random() * LEMBRETES_GTG.length)];
+    mostrarToast("LEMBRETE GTG", msg, "success"), tocarSomLembrete(), enviarNotificacaoSW(msg)
   }, 12e5)
 }
 
@@ -2051,33 +2045,29 @@ function dispararConfetti() {
 }
 
 function exportTXTHoje() {
-  const e = (new Date).toISOString().slice(0, 10),
-    a = dados.registros.filter(a => a.data === e);
-  if (0 === a.length) return void mostrarToast("Info", "Sem registros hoje para exportar.", "warning");
-  downloadFile(gerarTXTHoje(a, e), `gtg_treino_${e}.txt`, "text/plain"), mostrarToast("Exportado", "TXT do dia de hoje baixado!", "success")
+  const hoje = (new Date).toISOString().slice(0, 10),
+    regs = dados.registros.filter(r => r.data === hoje);
+  if (0 === regs.length) return void mostrarToast("Info", "Sem registros hoje para exportar.", "warning");
+  downloadFile(gerarTXTHoje(regs, hoje), `gtg_treino_${hoje}.txt`, "text/plain"), mostrarToast("Exportado", "TXT do dia de hoje baixado!", "success")
 }
 
-function gerarTXTHoje(e, a) {
-  const t = new Date,
-    o = `${["DOMINGO","SEGUNDA","TERÇA","QUARTA","QUINTA","SEXTA","SÁBADO"][t.getDay()]} ${String(t.getDate()).padStart(2,"0")} ${["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"][t.getMonth()]} ${t.getFullYear()}`;
-  let r = "══════════════════════════════════════════════════════════════\n";
-  r += "GTG TRACKER — FORÇA E RESISTÊNCIA — TREINO DO DIA\n", r += "══════════════════════════════════════════════════════════════\n\n", r += `DATA: ${o}\n`, r += `XP TOTAL: ${xpData.total} | NÍVEL: ${xpData.nivel} | STREAK: ${streakData.atual} dias\n`, r += `GERADO EM: ${t.toLocaleString("pt-BR")}\n\n`, r += "────────────────────────────────────────────────────────────────\n", r += "EXERCÍCIOS DE HOJE:\n", r += "────────────────────────────────────────────────────────────────\n\n";
-  const s = {};
-  e.forEach(e => {
-    s[e.exercicioId] || (s[e.exercicioId] = {
-      nome: e.exercicioNome,
-      series: [],
-      xpTotal: 0
-    }), s[e.exercicioId].series.push(e), s[e.exercicioId].xpTotal += e.xp || 0
-  }), Object.values(s).forEach(e => {
-    const a = e.series.reduce((e, a) => e + (a.valor || 0), 0);
-    r += `▶ ${e.nome}\n`, r += `   Séries: ${e.series.length} | Total: ${a} | XP: +${e.xpTotal}\n`, e.series.forEach((e, a) => {
-      r += `   [${a+1}] ${e.hora} — ${e.valor} ${e.peso?"@ "+e.peso+"kg":""}\n`
-    }), r += "\n"
+function gerarTXTHoje(regs, data) {
+  const now = new Date,
+    dataExt = `${["DOMINGO","SEGUNDA","TERÇA","QUARTA","QUINTA","SEXTA","SÁBADO"][now.getDay()]} ${String(now.getDate()).padStart(2,"0")} ${["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"][now.getMonth()]} ${now.getFullYear()}`;
+  let out = "══════════════════════════════════════════════════════════════\n";
+  out += "GTG TRACKER — FORÇA E RESISTÊNCIA — TREINO DO DIA\n", out += "══════════════════════════════════════════════════════════════\n\n", out += `DATA: ${dataExt}\n`, out += `XP TOTAL: ${xpData.total} | NÍVEL: ${xpData.nivel} | STREAK: ${streakData.atual} dias\n`, out += `GERADO EM: ${now.toLocaleString("pt-BR")}\n\n`, out += "────────────────────────────────────────────────────────────────\n", out += "EXERCÍCIOS DE HOJE:\n", out += "────────────────────────────────────────────────────────────────\n\n";
+  const grupos = {};
+  regs.forEach(r => {
+    grupos[r.exercicioId] || (grupos[r.exercicioId] = { nome: r.exercicioNome, series: [], xpTotal: 0 }), grupos[r.exercicioId].series.push(r), grupos[r.exercicioId].xpTotal += r.xp || 0
+  }), Object.values(grupos).forEach(g => {
+    const total = g.series.reduce((acc, s) => acc + (s.valor || 0), 0);
+    out += `▶ ${g.nome}\n`, out += `   Séries: ${g.series.length} | Total: ${total} | XP: +${g.xpTotal}\n`, g.series.forEach((s, i) => {
+      out += `   [${i+1}] ${s.hora} — ${s.valor} ${s.peso?"@ "+s.peso+"kg":""}\n`
+    }), out += "\n"
   });
-  const n = e.reduce((e, a) => e + (a.valor || 0), 0),
-    i = e.reduce((e, a) => e + (a.xp || 0), 0);
-  return r += "────────────────────────────────────────────────────────────────\n", r += `TOTAL DO DIA: ${e.length} séries | ${n} reps | +${i} XP\n`, r += "══════════════════════════════════════════════════════════════\n", r
+  const totalReps = regs.reduce((acc, r) => acc + (r.valor || 0), 0),
+    totalXP = regs.reduce((acc, r) => acc + (r.xp || 0), 0);
+  return out += "────────────────────────────────────────────────────────────────\n", out += `TOTAL DO DIA: ${regs.length} séries | ${totalReps} reps | +${totalXP} XP\n`, out += "══════════════════════════════════════════════════════════════\n", out
 }
 
 function exportTXT() {
@@ -2085,77 +2075,70 @@ function exportTXT() {
 }
 
 function exportTXTRange() {
-  const e = document.getElementById("exportStart").value,
-    a = document.getElementById("exportEnd").value;
-  if (!e || !a) return void mostrarToast("Erro", "Selecione as datas", "error");
-  downloadFile(gerarTXT(dados.registros.filter(t => t.data >= e && t.data <= a)), `gtg_historico_${e}_${a}.txt`, "text/plain"), mostrarToast("Exportado", "Arquivo TXT do intervalo baixado!", "success")
+  const start = document.getElementById("exportStart").value,
+    end = document.getElementById("exportEnd").value;
+  if (!start || !end) return void mostrarToast("Erro", "Selecione as datas", "error");
+  downloadFile(gerarTXT(dados.registros.filter(r => r.data >= start && r.data <= end)), `gtg_historico_${start}_${end}.txt`, "text/plain"), mostrarToast("Exportado", "Arquivo TXT do intervalo baixado!", "success")
 }
 
-function gerarTXT(e) {
-  let a = "══════════════════════════════════════════════════════════════\n";
-  a += "GTG TRACKER — FORÇA E RESISTÊNCIA — RELATÓRIO DE TREINO\n", a += "══════════════════════════════════════════════════════════════\n\n", a += `XP TOTAL: ${xpData.total} | NÍVEL: ${xpData.nivel} | STREAK: ${streakData.atual} dias\n`, a += `GERADO EM: ${(new Date).toLocaleString("pt-BR")}\n\n`, a += "────────────────────────────────────────────────────────────────\n", a += "HISTÓRICO DE SÉRIES:\n", a += "────────────────────────────────────────────────────────────────\n\n";
-  const t = [...e].sort((e, a) => a.timestamp - e.timestamp);
-  return t.forEach(e => {
-    a += `[${e.data} ${e.hora}] ${e.exercicioNome}: ${e.valor} ${e.peso?"@ "+e.peso+"kg ":""}(+${e.xp} XP)\n`
-  }), a += "\n────────────────────────────────────────────────────────────────\n", a += `TOTAL: ${t.length} séries | ${t.reduce((e,a)=>e+(a.valor||0),0)} reps acumulados\n`, a += "══════════════════════════════════════════════════════════════\n", a
+function gerarTXT(registros) {
+  let out = "══════════════════════════════════════════════════════════════\n";
+  out += "GTG TRACKER — FORÇA E RESISTÊNCIA — RELATÓRIO DE TREINO\n", out += "══════════════════════════════════════════════════════════════\n\n", out += `XP TOTAL: ${xpData.total} | NÍVEL: ${xpData.nivel} | STREAK: ${streakData.atual} dias\n`, out += `GERADO EM: ${(new Date).toLocaleString("pt-BR")}\n\n`, out += "────────────────────────────────────────────────────────────────\n", out += "HISTÓRICO DE SÉRIES:\n", out += "────────────────────────────────────────────────────────────────\n\n";
+  const sorted = [...registros].sort((a, b) => b.timestamp - a.timestamp);
+  return sorted.forEach(r => {
+    out += `[${r.data} ${r.hora}] ${r.exercicioNome}: ${r.valor} ${r.peso?"@ "+r.peso+"kg ":""}(+${r.xp} XP)\n`
+  }), out += "\n────────────────────────────────────────────────────────────────\n", out += `TOTAL: ${sorted.length} séries | ${sorted.reduce((acc,r)=>acc+(r.valor||0),0)} reps acumulados\n`, out += "══════════════════════════════════════════════════════════════\n", out
 }
 async function exportPDF() {
   await gerarRelatorioPDF(dados.registros, "HISTÓRICO COMPLETO", "gtg_relatorio_completo.pdf")
 }
 async function exportPDFRange() {
-  const e = document.getElementById("exportStart").value,
-    a = document.getElementById("exportEnd").value;
-  if (!e || !a) return void mostrarToast("Erro", "Selecione o intervalo de datas inicial e final.", "error");
-  const t = dados.registros.filter(t => t.data >= e && t.data <= a),
-    o = `DE ${formatarDataPtBR(e)} ATÉ ${formatarDataPtBR(a)}`;
-  await gerarRelatorioPDF(t, o, `gtg_relatorio_${e}_${a}.pdf`)
+  const start = document.getElementById("exportStart").value,
+    end = document.getElementById("exportEnd").value;
+  if (!start || !end) return void mostrarToast("Erro", "Selecione o intervalo de datas inicial e final.", "error");
+  const regs = dados.registros.filter(r => r.data >= start && r.data <= end),
+    titulo = `DE ${formatarDataPtBR(start)} ATÉ ${formatarDataPtBR(end)}`;
+  await gerarRelatorioPDF(regs, titulo, `gtg_relatorio_${start}_${end}.pdf`)
 }
 
-function formatarDataPtBR(e) {
-  if (!e) return "—";
-  const a = e.split("-");
-  return 3 !== a.length ? e : `${a[2]}/${a[1]}/${a[0]}`
+function formatarDataPtBR(data) {
+  if (!data) return "—";
+  const parts = data.split("-");
+  return 3 !== parts.length ? data : `${parts[2]}/${parts[1]}/${parts[0]}`
 }
-async function gerarRelatorioPDF(e, a, t) {
-  if (e && 0 !== e.length) {
+async function gerarRelatorioPDF(registros, titulo, fileName) {
+  if (registros && 0 !== registros.length) {
     mostrarToast("Iniciando...", "Preparando o Relatório de Combate em PDF...", "success");
     try {
-      const {
-        jsPDF: o
-      } = window.jspdf, r = new o("p", "pt", "a4");
-      r.text("Relatório GTG — " + a, 40, 40), r.text("Total de séries: " + e.length, 40, 60), r.text("XP total: " + e.reduce((e, a) => e + (a.xp || 0), 0), 40, 80), r.save(t), mostrarToast("Sucesso!", "PDF gerado com sucesso!", "success")
-    } catch (e) {
+      const { jsPDF: PDFLib } = window.jspdf, doc = new PDFLib("p", "pt", "a4");
+      doc.text("Relatório GTG — " + titulo, 40, 40), doc.text("Total de séries: " + registros.length, 40, 60), doc.text("XP total: " + registros.reduce((acc, r) => acc + (r.xp || 0), 0), 40, 80), doc.save(fileName), mostrarToast("Sucesso!", "PDF gerado com sucesso!", "success")
+    } catch (err) {
       mostrarToast("Erro", "Falha ao gerar PDF. Tente exportar TXT.", "error")
     }
   } else mostrarToast("Aviso", "Nenhum registro encontrado para exportar.", "warning")
 }
 
 function exportJSON() {
-  const e = {
-    dados: dados,
-    streakData: streakData,
-    xpData: xpData,
-    badgesData: badgesData
-  };
-  downloadFile(JSON.stringify(e, null, 2), "gtg_backup.json", "application/json"), mostrarToast("Backup", "Arquivo JSON baixado!", "success")
+  const payload = { dados, streakData, xpData, badgesData };
+  downloadFile(JSON.stringify(payload, null, 2), "gtg_backup.json", "application/json"), mostrarToast("Backup", "Arquivo JSON baixado!", "success")
 }
 
 function importJSON() {
   document.getElementById("importFile").click()
 }
 
-function handleImport(e) {
-  const a = e.target.files[0];
-  if (!a) return;
-  const t = new FileReader;
-  t.onload = e => {
+function handleImport(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader;
+  reader.onload = e => {
     try {
-      const a = JSON.parse(e.target.result);
-      a.dados && (dados = a.dados), a.streakData && (streakData = a.streakData), a.xpData && (xpData = a.xpData), a.badgesData && (badgesData = a.badgesData), salvarDados(), inicializar(), mostrarToast("Importado", "Dados restaurados com sucesso!", "success")
-    } catch (e) {
+      const parsed = JSON.parse(e.target.result);
+      parsed.dados && (dados = parsed.dados), parsed.streakData && (streakData = parsed.streakData), parsed.xpData && (xpData = parsed.xpData), parsed.badgesData && (badgesData = parsed.badgesData), salvarDados(), inicializar(), mostrarToast("Importado", "Dados restaurados com sucesso!", "success")
+    } catch (err) {
       mostrarToast("Erro", "Arquivo inválido", "error")
     }
-  }, t.readAsText(a)
+  }, reader.readAsText(file)
 }
 
 function clearAllData() {
@@ -2163,40 +2146,35 @@ function clearAllData() {
   localStorage.clear(), location.reload()
 }
 
-function downloadFile(e, a, t) {
-  const o = new Blob([e], {
-      type: t
-    }),
-    r = URL.createObjectURL(o),
-    s = document.createElement("a");
-  s.href = r, s.download = a, s.click(), URL.revokeObjectURL(r)
+function downloadFile(content, fileName, mimeType) {
+  const blob = new Blob([content], { type: mimeType }),
+    url = URL.createObjectURL(blob),
+    link = document.createElement("a");
+  link.href = url, link.download = fileName, link.click(), URL.revokeObjectURL(url)
 }
 
 function renderGuiaExercicios() {
-  const e = document.getElementById("exerciseGuideSection");
-  if (!e) return;
+  const section = document.getElementById("exerciseGuideSection");
+  if (!section) return;
   if (!dados.exercicios || dados.exercicios.length === 0) {
-    e.innerHTML = '<div class="text-mono" style="text-align:center;padding:24px;color:var(--gray-light)">Nenhum exercício cadastrado. Adicione exercícios para ver o guia.</div>';
+    section.innerHTML = '<div class="text-mono" style="text-align:center;padding:24px;color:var(--gray-light)">Nenhum exercício cadastrado. Adicione exercícios para ver o guia.</div>';
     return
   }
-  e.innerHTML = dados.exercicios.map(e => `\n    <div class="gtg-principle" style="cursor:pointer;" onclick="mostrarInfoExercicio('${e.id}')">\n      <div class="gtg-principle-title">${e.nome}</div>\n      <div class="gtg-principle-text" style="font-size:12px;">${e.tipo.toUpperCase()} — ${e.unidade||"reps"}</div>\n    </div>\n  `).join("")
+  section.innerHTML = dados.exercicios.map(ex => `\n    <div class="gtg-principle" style="cursor:pointer;" onclick="mostrarInfoExercicio('${ex.id}')">\n      <div class="gtg-principle-title">${ex.nome}</div>\n      <div class="gtg-principle-text" style="font-size:12px;">${ex.tipo.toUpperCase()} — ${ex.unidade||"reps"}</div>\n    </div>\n  `).join("")
 }
-window.addEventListener("beforeinstallprompt", e => {
-  e.preventDefault(), deferredInstallPrompt = e, document.getElementById("btnInstalarPWA").style.display = "inline-block"
+window.addEventListener("beforeinstallprompt", ev => {
+  ev.preventDefault(), deferredInstallPrompt = ev, document.getElementById("btnInstalarPWA").style.display = "inline-block"
 }), window.addEventListener("appinstalled", () => {
   deferredInstallPrompt = null, document.getElementById("btnInstalarPWA").style.display = "none", mostrarToast("✓ App Instalado!", "GTG Tracker instalado. Lembretes funcionarão em background.", "success")
 });
-let modoFocoState = {
-  ativo: !1,
-  exercicioId: null
-};
+let modoFocoState = { ativo: !1, exercicioId: null };
 
 function carregarModoFoco() {
   try {
-    const e = localStorage.getItem("gtg_modo_foco");
-    e && (modoFocoState = JSON.parse(e))
-  } catch (e) {
-    console.error("[carregarModoFoco] Falha ao carregar modoFocoState:", e)
+    const raw = localStorage.getItem("gtg_modo_foco");
+    raw && (modoFocoState = JSON.parse(raw))
+  } catch (err) {
+    console.error("[carregarModoFoco] Falha ao carregar modoFocoState:", err)
   }
 }
 
@@ -2205,52 +2183,52 @@ function salvarModoFoco() {
 }
 
 function toggleModoFoco() {
-  const e = document.getElementById("modoFocoToggle"),
-    a = document.getElementById("modoFocoSelect");
-  modoFocoState.ativo = !modoFocoState.ativo, modoFocoState.ativo ? (e.classList.add("active"), populateFocoSelect(), !modoFocoState.exercicioId && dados.exercicios.length > 0 && (modoFocoState.exercicioId = dados.exercicios[0].id), a.value = modoFocoState.exercicioId || "", mostrarToast("🔥 MODO FOCO", "Foco total em um exercício. Elimine distrações.", "success")) : (e.classList.remove("active"), modoFocoState.exercicioId = null, mostrarToast("MODO NORMAL", "Todos os exercícios visíveis.", "success")), salvarModoFoco(), aplicarModoFoco()
+  const toggle = document.getElementById("modoFocoToggle"),
+    select = document.getElementById("modoFocoSelect");
+  modoFocoState.ativo = !modoFocoState.ativo, modoFocoState.ativo ? (toggle.classList.add("active"), populateFocoSelect(), !modoFocoState.exercicioId && dados.exercicios.length > 0 && (modoFocoState.exercicioId = dados.exercicios[0].id), select.value = modoFocoState.exercicioId || "", mostrarToast("🔥 MODO FOCO", "Foco total em um exercício. Elimine distrações.", "success")) : (toggle.classList.remove("active"), modoFocoState.exercicioId = null, mostrarToast("MODO NORMAL", "Todos os exercícios visíveis.", "success")), salvarModoFoco(), aplicarModoFoco()
 }
 
 function populateFocoSelect() {
-  const e = document.getElementById("modoFocoSelect");
-  if (!e) return;
-  const a = e.value;
-  e.innerHTML = '<option value="">SELECIONAR...</option>', dados.exercicios.forEach(a => {
-    const t = document.createElement("option");
-    t.value = a.id, t.textContent = a.nome, e.appendChild(t)
-  }), a && (e.value = a)
+  const el = document.getElementById("modoFocoSelect");
+  if (!el) return;
+  const prevVal = el.value;
+  el.innerHTML = '<option value="">SELECIONAR...</option>', dados.exercicios.forEach(ex => {
+    const opt = document.createElement("option");
+    opt.value = ex.id, opt.textContent = ex.nome, el.appendChild(opt)
+  }), prevVal && (el.value = prevVal)
 }
 
-function changeFocoExercise(e) {
-  if (modoFocoState.exercicioId = e.target.value, salvarModoFoco(), aplicarModoFoco(), modoFocoState.exercicioId) {
-    const e = dados.exercicios.find(e => e.id === modoFocoState.exercicioId);
-    e && mostrarToast("🎯 FOCO REDEFINIDO", e.nome, "success")
+function changeFocoExercise(ev) {
+  if (modoFocoState.exercicioId = ev.target.value, salvarModoFoco(), aplicarModoFoco(), modoFocoState.exercicioId) {
+    const ex = dados.exercicios.find(e => e.id === modoFocoState.exercicioId);
+    ex && mostrarToast("🎯 FOCO REDEFINIDO", ex.nome, "success")
   }
 }
 
 function aplicarModoFoco() {
-  const e = document.getElementById("focoBanner"),
-    a = document.getElementById("focoBannerEx"),
-    t = document.querySelectorAll(".exercise-card");
-  if (!modoFocoState.ativo || !modoFocoState.exercicioId) return t.forEach(e => {
-    e.classList.remove("foco-hidden", "foco-highlight")
-  }), void(e && e.classList.remove("active"));
-  const o = dados.exercicios.find(e => e.id === modoFocoState.exercicioId);
-  a && o && (a.textContent = o.nome), e && e.classList.add("active"), t.forEach(e => {
-    e.id.replace("excard-", "") === modoFocoState.exercicioId ? (e.classList.remove("foco-hidden"), e.classList.add("foco-highlight")) : (e.classList.add("foco-hidden"), e.classList.remove("foco-highlight"))
+  const banner = document.getElementById("focoBanner"),
+    bannerEx = document.getElementById("focoBannerEx"),
+    cards = document.querySelectorAll(".exercise-card");
+  if (!modoFocoState.ativo || !modoFocoState.exercicioId) return cards.forEach(card => {
+    card.classList.remove("foco-hidden", "foco-highlight")
+  }), void(banner && banner.classList.remove("active"));
+  const ex = dados.exercicios.find(e => e.id === modoFocoState.exercicioId);
+  bannerEx && ex && (bannerEx.textContent = ex.nome), banner && banner.classList.add("active"), cards.forEach(card => {
+    card.id.replace("excard-", "") === modoFocoState.exercicioId ? (card.classList.remove("foco-hidden"), card.classList.add("foco-highlight")) : (card.classList.add("foco-hidden"), card.classList.remove("foco-highlight"))
   })
 }
 
 function atualizarDisplayShields() {
-  for (let e = 1; e <= 3; e++) {
-    const a = document.getElementById("shieldIcon" + e);
-    a && a.classList.toggle("active", e <= streakData.streakShields)
+  for (let i = 1; i <= 3; i++) {
+    const icon = document.getElementById("shieldIcon" + i);
+    icon && icon.classList.toggle("active", i <= streakData.streakShields)
   }
-  const e = document.getElementById("shieldCountDisplay");
-  e && (e.textContent = streakData.streakShields + " / 3");
-  const a = document.getElementById("btnBuyShield");
-  if (a) {
-    const e = xpData.total >= streakData.shieldCost && streakData.streakShields < 3;
-    a.disabled = !e, streakData.streakShields >= 3 ? a.textContent = "MÁXIMO ATINGIDO" : a.textContent = "COMPRAR (" + streakData.shieldCost + " XP)"
+  const countDisplay = document.getElementById("shieldCountDisplay");
+  countDisplay && (countDisplay.textContent = streakData.streakShields + " / 3");
+  const buyBtn = document.getElementById("btnBuyShield");
+  if (buyBtn) {
+    const canBuy = xpData.total >= streakData.shieldCost && streakData.streakShields < 3;
+    buyBtn.disabled = !canBuy, streakData.streakShields >= 3 ? buyBtn.textContent = "MÁXIMO ATINGIDO" : buyBtn.textContent = "COMPRAR (" + streakData.shieldCost + " XP)"
   }
 }
 
