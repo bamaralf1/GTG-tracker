@@ -967,6 +967,7 @@
   <script src="app.js?v=3"></script>
   <script>
     function switchTab(e, tabName) {
+      if (typeof pausePlankTimer === 'function') pausePlankTimer();
       if (tabName === undefined && typeof e === 'string') {
         tabName = e;
         e = null

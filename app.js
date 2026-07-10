@@ -1691,6 +1691,16 @@ function tocarSomInicioExercicio() {
 
 function startPlankTimer() {
   if (plankTimer.rodando || plankTimer.preparando) return;
+  if (plankTimer.pausado) {
+    plankTimer.pausado = !1, plankTimer.rodando = !0, document.getElementById("timerDisplay").classList.add("running"), document.getElementById("btnStartTimer").textContent = "▶ RODANDO...";
+    plankTimer.intervalo = setInterval(() => {
+      plankTimer.segundos++;
+      const e = String(Math.floor(plankTimer.segundos / 60)).padStart(2, "0"),
+        a = String(plankTimer.segundos % 60).padStart(2, "0");
+      document.getElementById("timerDisplay").textContent = `${e}:${a}`, plankTimer.segundos % 30 == 0 && tocarBeepCronometro()
+    }, 1e3);
+    return
+  }
   let e = 7;
   plankTimer.preparando = !0, document.getElementById("btnStartTimer").textContent = "⏳ PREPARANDO...", document.getElementById("btnStartTimer").disabled = !0, document.getElementById("timerDisplay").style.opacity = "0.3";
   const a = document.getElementById("prepCountdown"),
@@ -1708,7 +1718,7 @@ function startPlankTimer() {
 
 function stopPlankTimer() {
   if (!plankTimer.rodando) return;
-  clearInterval(plankTimer.intervalo), plankTimer.rodando = !1, document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("btnStartTimer").textContent = "▶ INICIAR", somTimer();
+  clearInterval(plankTimer.intervalo), plankTimer.rodando = !1, plankTimer.pausado = !1, document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("btnStartTimer").textContent = "▶ INICIAR", somTimer();
   const e = document.getElementById("timerExerciseSelect").value;
   e && plankTimer.segundos > 0 && (document.getElementById(`valor-${e}`).value = plankTimer.segundos, adicionarSerie(e), mostrarToast("Timer Salvo", `${plankTimer.segundos}s registrados`, "success")), resetPlankTimer()
 }
@@ -1718,8 +1728,14 @@ function resetPlankTimer() {
     intervalo: null,
     segundos: 0,
     rodando: !1,
-    preparando: !1
+    preparando: !1,
+    pausado: !1
   }, document.getElementById("timerDisplay").textContent = "00:00", document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("timerDisplay").style.opacity = "1", document.getElementById("btnStartTimer").textContent = "▶ INICIAR", document.getElementById("btnStartTimer").disabled = !1, document.getElementById("prepCountdown").style.display = "none", document.getElementById("prepNumber").style.display = "none"
+}
+
+function pausePlankTimer() {
+  if (!plankTimer.rodando) return;
+  clearInterval(plankTimer.intervalo), plankTimer.rodando = !1, plankTimer.pausado = !0, document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("btnStartTimer").textContent = "▶ RETOMAR"
 }
 let restTimerExIdPendente = null;
 
