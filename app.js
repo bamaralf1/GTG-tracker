@@ -1,8 +1,8 @@
-function cssVar(e) {
+function cssVar(name) {
   try {
-    return getComputedStyle(document.documentElement).getPropertyValue(e).trim() || e
-  } catch (a) {
-    return e
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || name
+  } catch (_) {
+    return name
   }
 }
 const EXERCICIOS_DEFAULT = [{
@@ -818,57 +818,40 @@ function inicializar() {
 
 function carregarDados() {
   try {
-    const e = localStorage.getItem("gtg_data");
-    e ? (dados = JSON.parse(e), dados && dados.exercicios && Array.isArray(dados.exercicios) || (console.warn("Dados corrompidos, resetando para defaults"), localStorage.removeItem("gtg_data"), dados = {
-      exercicios: EXERCICIOS_DEFAULT.map(e => ({
-        ...e
-      })),
+    const raw = localStorage.getItem("gtg_data");
+    raw ? (dados = JSON.parse(raw), dados && dados.exercicios && Array.isArray(dados.exercicios) || (console.warn("Dados corrompidos, resetando para defaults"), localStorage.removeItem("gtg_data"), dados = {
+      exercicios: EXERCICIOS_DEFAULT.map(ex => ({ ...ex })),
       registros: []
-    })) : (dados.exercicios = EXERCICIOS_DEFAULT.map(e => ({
-      ...e
-    })), dados.registros = []), dados.exercicios && 0 !== dados.exercicios.length || (dados.exercicios = EXERCICIOS_DEFAULT.map(e => ({
-      ...e
-    }))), dados.exercicios.forEach(e => {
-      const a = EXERCICIOS_DEFAULT.find(a => a.id === e.id);
-      a && !e.detalhes && (e.detalhes = a.detalhes), a && (e.detalhes = a.detalhes)
-    }), EXERCICIOS_DEFAULT.forEach(e => {
-      dados.exercicios.find(a => a.id === e.id) || dados.exercicios.push({
-        ...e
-      })
+    })) : (dados.exercicios = EXERCICIOS_DEFAULT.map(ex => ({ ...ex })), dados.registros = []), dados.exercicios && 0 !== dados.exercicios.length || (dados.exercicios = EXERCICIOS_DEFAULT.map(ex => ({ ...ex }))), dados.exercicios.forEach(ex => {
+      const defaultEx = EXERCICIOS_DEFAULT.find(d => d.id === ex.id);
+      defaultEx && !ex.detalhes && (ex.detalhes = defaultEx.detalhes), defaultEx && (ex.detalhes = defaultEx.detalhes)
+    }), EXERCICIOS_DEFAULT.forEach(defaultEx => {
+      dados.exercicios.find(ex => ex.id === defaultEx.id) || dados.exercicios.push({ ...defaultEx })
     });
-    const a = ["lsit", "isometrico"];
-    dados.exercicios = dados.exercicios.filter(e => !a.includes(e.id));
-    const t = new Set;
-    dados.exercicios = dados.exercicios.filter(e => !t.has(e.id) && (t.add(e.id), !0))
-  } catch (e) {
-    console.error("Erro ao carregar dados:", e), localStorage.removeItem("gtg_data"), dados = {
-      exercicios: EXERCICIOS_DEFAULT.map(e => ({
-        ...e
-      })),
-      registros: []
-    }
+    const removidos = ["lsit", "isometrico"];
+    dados.exercicios = dados.exercicios.filter(ex => !removidos.includes(ex.id));
+    const seen = new Set;
+    dados.exercicios = dados.exercicios.filter(ex => !seen.has(ex.id) && (seen.add(ex.id), !0))
+  } catch (err) {
+    console.error("Erro ao carregar dados:", err), localStorage.removeItem("gtg_data"), dados = { exercicios: EXERCICIOS_DEFAULT.map(ex => ({ ...ex })), registros: [] }
   }
   try {
-    const e = localStorage.getItem("gtg_streaks");
-    e && (streakData = JSON.parse(e)), void 0 === streakData.streakShields && (streakData.streakShields = 0), void 0 === streakData.shieldCost && (streakData.shieldCost = 500)
-  } catch (e) {
-    console.error("[carregarDados] Falha ao carregar streakData:", e)
+    const raw = localStorage.getItem("gtg_streaks");
+    raw && (streakData = JSON.parse(raw)), void 0 === streakData.streakShields && (streakData.streakShields = 0), void 0 === streakData.shieldCost && (streakData.shieldCost = 500)
+  } catch (err) {
+    console.error("[carregarDados] Falha ao carregar streakData:", err)
   }
   try {
-    const e = localStorage.getItem("gtg_xp");
-    e && (xpData = JSON.parse(e))
-  } catch (e) {
-    console.error("[carregarDados] Falha ao carregar xpData:", e)
+    const raw = localStorage.getItem("gtg_xp");
+    raw && (xpData = JSON.parse(raw))
+  } catch (err) {
+    console.error("[carregarDados] Falha ao carregar xpData:", err)
   }
   try {
-    const e = localStorage.getItem("gtg_badges");
-    badgesData = e ? JSON.parse(e) : {
-      desbloqueadas: []
-    }
-  } catch (e) {
-    badgesData = {
-      desbloqueadas: []
-    }
+    const raw = localStorage.getItem("gtg_badges");
+    badgesData = raw ? JSON.parse(raw) : { desbloqueadas: [] }
+  } catch (err) {
+    badgesData = { desbloqueadas: [] }
   }
 }
 
@@ -877,33 +860,33 @@ function salvarDados() {
 }
 
 function atualizarDataHeader() {
-  const e = new Date;
-  document.getElementById("headerDate").innerHTML = `${["DOM","SEG","TER","QUA","QUI","SEX","SAB"][e.getDay()]} ${String(e.getDate()).padStart(2,"0")} ${["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"][e.getMonth()]} ${e.getFullYear()}<br>\n     <span style="font-size:16px;">${String(e.getHours()).padStart(2,"0")}:${String(e.getMinutes()).padStart(2,"0")}</span>`, setTimeout(atualizarDataHeader, 3e4)
+  const now = new Date;
+  document.getElementById("headerDate").innerHTML = `${["DOM","SEG","TER","QUA","QUI","SEX","SAB"][now.getDay()]} ${String(now.getDate()).padStart(2,"0")} ${["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"][now.getMonth()]} ${now.getFullYear()}<br>\n     <span style="font-size:16px;">${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}</span>`, setTimeout(atualizarDataHeader, 3e4)
 }
 
 function verificarStreak() {
-  const e = (new Date).toISOString().slice(0, 10),
-    a = new Date(Date.now() - 864e5).toISOString().slice(0, 10),
-    t = dados.registros.some(a => (a.data || (a.timestamp ? new Date(a.timestamp).toISOString().slice(0, 10) : null)) === e);
-  dados.registros.some(e => (e.data || (e.timestamp ? new Date(e.timestamp).toISOString().slice(0, 10) : null)) === a);
-  if (streakData.ultimaData === e);
-  else if (t) {
-    if (streakData.ultimaData !== a && streakData.ultimaData) {
-      const a = streakData.ultimaData ? Math.floor((new Date(e) - new Date(streakData.ultimaData)) / 864e5) : 999;
-      2 === a && streakData.diasFolgaUsados < 1 ? (streakData.diasFolgaUsados += 1, streakData.atual += 2, mostrarToast("Dia de Folga Usado", "Sua streak foi preservada! (1 folga/semana)", "warning")) : a > 1 && a < 999 && (usarShield() ? streakData.atual += a : (streakData.atual = 1, streakData.diasFolgaUsados = 0, mostrarToast("💔 Streak Quebrada", "Sua streak foi resetada. Compre shields para proteção!", "error")))
+  const hoje = (new Date).toISOString().slice(0, 10),
+    ontem = new Date(Date.now() - 864e5).toISOString().slice(0, 10),
+    temHoje = dados.registros.some(reg => (reg.data || (reg.timestamp ? new Date(reg.timestamp).toISOString().slice(0, 10) : null)) === hoje);
+  dados.registros.some(reg => (reg.data || (reg.timestamp ? new Date(reg.timestamp).toISOString().slice(0, 10) : null)) === ontem);
+  if (streakData.ultimaData === hoje);
+  else if (temHoje) {
+    if (streakData.ultimaData !== ontem && streakData.ultimaData) {
+      const diff = streakData.ultimaData ? Math.floor((new Date(hoje) - new Date(streakData.ultimaData)) / 864e5) : 999;
+      2 === diff && streakData.diasFolgaUsados < 1 ? (streakData.diasFolgaUsados += 1, streakData.atual += 2, mostrarToast("Dia de Folga Usado", "Sua streak foi preservada! (1 folga/semana)", "warning")) : diff > 1 && diff < 999 && (usarShield() ? streakData.atual += diff : (streakData.atual = 1, streakData.diasFolgaUsados = 0, mostrarToast("💔 Streak Quebrada", "Sua streak foi resetada. Compre shields para proteção!", "error")))
     } else streakData.atual += 1;
-    streakData.ultimaData = e, streakData.atual > streakData.recorde && (streakData.recorde = streakData.atual);
-    const t = getInicioSemana(e);
-    streakData.semanaInicio !== t && (streakData.semanaInicio = t, streakData.diasFolgaUsados = 0), salvarDados()
+    streakData.ultimaData = hoje, streakData.atual > streakData.recorde && (streakData.recorde = streakData.atual);
+    const inicioSemana = getInicioSemana(hoje);
+    streakData.semanaInicio !== inicioSemana && (streakData.semanaInicio = inicioSemana, streakData.diasFolgaUsados = 0), salvarDados()
   }
   atualizarUIStreak(), atualizarDisplayShields()
 }
 
-function getInicioSemana(e) {
-  const a = new Date(e + "T00:00:00"),
-    t = a.getDay(),
-    o = a.getDate() - t + (0 === t ? -6 : 1);
-  return new Date(a.setDate(o)).toISOString().slice(0, 10)
+function getInicioSemana(data) {
+  const parsed = new Date(data + "T00:00:00"),
+    diaSemana = parsed.getDay(),
+    diff = parsed.getDate() - diaSemana + (0 === diaSemana ? -6 : 1);
+  return new Date(parsed.setDate(diff)).toISOString().slice(0, 10)
 }
 
 function atualizarUIStreak() {
@@ -916,69 +899,69 @@ function calcularBonusStreak() {
   return streakData.atual >= 30 ? .25 : streakData.atual >= 14 ? .15 : streakData.atual >= 7 ? .1 : 0
 }
 
-function calcularXPSerie(e, a, t) {
-  let o = 0;
-  return "reps" === e.tipo ? o = a : "tempo" === e.tipo ? o = 2 * a : "peso" === e.tipo && (o = (t || 0) * a), o *= 1 + calcularBonusStreak(), Math.round(o)
+function calcularXPSerie(exercicio, valor, peso) {
+  let base = 0;
+  return "reps" === exercicio.tipo ? base = valor : "tempo" === exercicio.tipo ? base = 2 * valor : "peso" === exercicio.tipo && (base = (peso || 0) * valor), base *= 1 + calcularBonusStreak(), Math.round(base)
 }
 
-function adicionarXP(e) {
-  xpData.total += e;
-  const a = getNivel(xpData.total),
-    t = xpData.nivel;
-  if (xpData.nivel = a.nome, xpData.nivelAtualEm = a.min, xpData.proximoNivelEm = a.proximo, t !== a.nome && "RECRUTA" !== t || xpData.total > a.min) {
-    const e = NIVEIS.find(e => e.nome === t);
-    e && e.min < a.min && (mostrarToast("★ PROMOÇÃO!", `Você avançou para ${a.nome} ${a.icone}`, "success"), dispararConfetti())
+function adicionarXP(amount) {
+  xpData.total += amount;
+  const level = getNivel(xpData.total),
+    oldLevelName = xpData.nivel;
+  if (xpData.nivel = level.nome, xpData.nivelAtualEm = level.min, xpData.proximoNivelEm = level.proximo, oldLevelName !== level.nome && "RECRUTA" !== oldLevelName || xpData.total > level.min) {
+    const old = NIVEIS.find(n => n.nome === oldLevelName);
+    old && old.min < level.min && (mostrarToast("★ PROMOÇÃO!", `Você avançou para ${level.nome} ${level.icone}`, "success"), dispararConfetti())
   }
   atualizarXP(), salvarDados()
 }
 
-function getNivel(e) {
-  for (let a = NIVEIS.length - 1; a >= 0; a--)
-    if (e >= NIVEIS[a].min) return NIVEIS[a];
+function getNivel(xp) {
+  for (let i = NIVEIS.length - 1; i >= 0; i--)
+    if (xp >= NIVEIS[i].min) return NIVEIS[i];
   return NIVEIS[0]
 }
 
 function atualizarXP() {
-  const e = getNivel(xpData.total),
-    a = (xpData.total - e.min) / (e.proximo - e.min),
-    t = Math.min(100, Math.round(100 * a));
-  document.getElementById("levelIcon").textContent = e.icone, document.getElementById("levelName").textContent = e.nome, document.getElementById("xpBarFill").style.width = t + "%", document.getElementById("xpNumbers").textContent = `${xpData.total.toLocaleString("pt-BR")} / ${e.proximo.toLocaleString("pt-BR")} XP`, document.getElementById("xpTotalLabel").textContent = `XP TOTAL: ${xpData.total.toLocaleString("pt-BR")}`;
-  const o = NIVEIS[NIVEIS.indexOf(e) + 1];
-  document.getElementById("xpNextLabel").textContent = o ? `PRÓXIMO: ${o.nome}` : "NÍVEL MÁXIMO", document.getElementById("headerRank").textContent = e.nome, document.getElementById("headerXpBar").style.width = t + "%"
+  const level = getNivel(xpData.total),
+    ratio = (xpData.total - level.min) / (level.proximo - level.min),
+    pct = Math.min(100, Math.round(100 * ratio));
+  document.getElementById("levelIcon").textContent = level.icone, document.getElementById("levelName").textContent = level.nome, document.getElementById("xpBarFill").style.width = pct + "%", document.getElementById("xpNumbers").textContent = `${xpData.total.toLocaleString("pt-BR")} / ${level.proximo.toLocaleString("pt-BR")} XP`, document.getElementById("xpTotalLabel").textContent = `XP TOTAL: ${xpData.total.toLocaleString("pt-BR")}`;
+  const nextLevel = NIVEIS[NIVEIS.indexOf(level) + 1];
+  document.getElementById("xpNextLabel").textContent = nextLevel ? `PRÓXIMO: ${nextLevel.nome}` : "NÍVEL MÁXIMO", document.getElementById("headerRank").textContent = level.nome, document.getElementById("headerXpBar").style.width = pct + "%"
 }
 
 function verificarBadges() {
-  const e = (new Date).toISOString().slice(0, 10);
+  const hoje = (new Date).toISOString().slice(0, 10);
   dados.registros.length > 0 && desbloquearBadge("primeiro_sangue");
-  dados.registros.filter(a => Array.isArray(a.groove) && a.groove.filter(Boolean).length === 3).length >= 50 && desbloquearBadge("perfeccionista_sovietico");
-  dados.registros.filter(a => a.data === e).length >= 50 && desbloquearBadge("submaximo_mestre"), streakData.atual >= 7 && desbloquearBadge("frequencia_intensidade"), dados.exercicios.forEach(e => {
-    dados.registros.filter(a => a.exercicioId === e.id && "reps" === e.tipo).reduce((e, a) => e + (a.valor || 0), 0) >= 1e3 && desbloquearBadge("pavel_aprovaria")
+  dados.registros.filter(reg => Array.isArray(reg.groove) && reg.groove.filter(Boolean).length === 3).length >= 50 && desbloquearBadge("perfeccionista_sovietico");
+  dados.registros.filter(reg => reg.data === hoje).length >= 50 && desbloquearBadge("submaximo_mestre"), streakData.atual >= 7 && desbloquearBadge("frequencia_intensidade"), dados.exercicios.forEach(ex => {
+    dados.registros.filter(reg => reg.exercicioId === ex.id && "reps" === ex.tipo).reduce((acc, reg) => acc + (reg.valor || 0), 0) >= 1e3 && desbloquearBadge("pavel_aprovaria")
   });
-  dados.registros.filter(a => a.data === e).reduce((e, a) => e + (a.valor || 0), 0) >= 500 && desbloquearBadge("volume_sovietico"), dados.exercicios.forEach(e => {
-    dados.registros.filter(a => a.exercicioId === e.id).length >= 100 && desbloquearBadge("especialista")
+  dados.registros.filter(reg => reg.data === hoje).reduce((acc, reg) => acc + (reg.valor || 0), 0) >= 500 && desbloquearBadge("volume_sovietico"), dados.exercicios.forEach(ex => {
+    dados.registros.filter(reg => reg.exercicioId === ex.id).length >= 100 && desbloquearBadge("especialista")
   }), dados.registros.length >= 100 && desbloquearBadge("centuriao"), dados.registros.length >= 1e3 && desbloquearBadge("mil_soldados"), streakData.atual >= 7 && desbloquearBadge("semana_perfeita");
-  dados.registros.filter(e => "grip" === e.exercicioId).length >= 50 && desbloquearBadge("grip_de_ferro");
-  dados.registros.filter(e => "dead_hang" === e.exercicioId).reduce((e, a) => e + (a.valor || 0), 0) >= 1800 && desbloquearBadge("pendulo_humano");
-  dados.registros.filter(e => "rosca_direta" === e.exercicioId).reduce((e, a) => e + (a.valor || 0), 0) >= 200 && desbloquearBadge("biceps_de_aco");
-  dados.registros.some(e => parseInt((e.hora || "00:00").split(":")[0]) < 7) && desbloquearBadge("madrugador");
-  dados.registros.some(e => parseInt((e.hora || "00:00").split(":")[0]) >= 22) && desbloquearBadge("noturno"), streakData.atual >= 30 && desbloquearBadge("consistencia_30");
-  new Set(dados.registros.filter(a => a.data === e).map(e => e.exercicioId)).size >= 5 && desbloquearBadge("poliglota_forca");
-  dados.registros.reduce((e, a) => e + (a.valor || 0), 0) >= 1e4 && desbloquearBadge("dez_mil_reps");
-  dados.registros.filter(e => "prancha" === e.exercicioId).reduce((e, a) => e + (a.valor || 0), 0) >= 3600 && desbloquearBadge("mestre_prancha"), dados.registros.length >= 5e3 && desbloquearBadge("cinco_mil_series"), xpData.total >= 3e3 && desbloquearBadge("strongfirst"), streakData.atual >= 14 && desbloquearBadge("streak_14"), streakData.atual >= 30 && desbloquearBadge("streak_30");
-  dados.registros.filter(e => "barra_fixa" === e.exercicioId).reduce((e, a) => e + (a.valor || 0), 0) >= 500 && desbloquearBadge("rei_da_barra");
-  dados.registros.filter(e => "agachamento" === e.exercicioId).reduce((e, a) => e + (a.valor || 0), 0) >= 1e3 && desbloquearBadge("squat_master"), atualizarUIBadges()
+  dados.registros.filter(reg => "grip" === reg.exercicioId).length >= 50 && desbloquearBadge("grip_de_ferro");
+  dados.registros.filter(reg => "dead_hang" === reg.exercicioId).reduce((acc, reg) => acc + (reg.valor || 0), 0) >= 1800 && desbloquearBadge("pendulo_humano");
+  dados.registros.filter(reg => "rosca_direta" === reg.exercicioId).reduce((acc, reg) => acc + (reg.valor || 0), 0) >= 200 && desbloquearBadge("biceps_de_aco");
+  dados.registros.some(reg => parseInt((reg.hora || "00:00").split(":")[0]) < 7) && desbloquearBadge("madrugador");
+  dados.registros.some(reg => parseInt((reg.hora || "00:00").split(":")[0]) >= 22) && desbloquearBadge("noturno"), streakData.atual >= 30 && desbloquearBadge("consistencia_30");
+  new Set(dados.registros.filter(reg => reg.data === hoje).map(reg => reg.exercicioId)).size >= 5 && desbloquearBadge("poliglota_forca");
+  dados.registros.reduce((acc, reg) => acc + (reg.valor || 0), 0) >= 1e4 && desbloquearBadge("dez_mil_reps");
+  dados.registros.filter(reg => "prancha" === reg.exercicioId).reduce((acc, reg) => acc + (reg.valor || 0), 0) >= 3600 && desbloquearBadge("mestre_prancha"), dados.registros.length >= 5e3 && desbloquearBadge("cinco_mil_series"), xpData.total >= 3e3 && desbloquearBadge("strongfirst"), streakData.atual >= 14 && desbloquearBadge("streak_14"), streakData.atual >= 30 && desbloquearBadge("streak_30");
+  dados.registros.filter(reg => "barra_fixa" === reg.exercicioId).reduce((acc, reg) => acc + (reg.valor || 0), 0) >= 500 && desbloquearBadge("rei_da_barra");
+  dados.registros.filter(reg => "agachamento" === reg.exercicioId).reduce((acc, reg) => acc + (reg.valor || 0), 0) >= 1e3 && desbloquearBadge("squat_master"), atualizarUIBadges()
 }
 
-function desbloquearBadge(e) {
-  if (!badgesData.desbloqueadas.includes(e)) {
-    badgesData.desbloqueadas.push(e), salvarDados(), vibrar([150, 80, 150, 80, 200]);
-    const a = TODAS_BADGES.find(a => a.id === e);
-    a && (somBadge(), setTimeout(() => mostrarUnlockBadge(a), 500))
+function desbloquearBadge(badgeId) {
+  if (!badgesData.desbloqueadas.includes(badgeId)) {
+    badgesData.desbloqueadas.push(badgeId), salvarDados(), vibrar([150, 80, 150, 80, 200]);
+    const badge = TODAS_BADGES.find(b => b.id === badgeId);
+    badge && (somBadge(), setTimeout(() => mostrarUnlockBadge(badge), 500))
   }
 }
 
-function mostrarUnlockBadge(e) {
-  document.getElementById("unlockIcon").textContent = e.icone, document.getElementById("unlockName").textContent = e.nome, document.getElementById("unlockDesc").textContent = e.desc, document.getElementById("badgeUnlockOverlay").classList.add("active"), dispararConfetti()
+function mostrarUnlockBadge(badge) {
+  document.getElementById("unlockIcon").textContent = badge.icone, document.getElementById("unlockName").textContent = badge.nome, document.getElementById("unlockDesc").textContent = badge.desc, document.getElementById("badgeUnlockOverlay").classList.add("active"), dispararConfetti()
 }
 
 function closeBadgeUnlock() {
@@ -986,15 +969,15 @@ function closeBadgeUnlock() {
 }
 
 function renderBadges() {
-  const e = document.getElementById("badgesGrid");
-  e.innerHTML = "", TODAS_BADGES.forEach((a, t) => {
-    const o = badgesData.desbloqueadas.includes(a.id);
-    e.insertAdjacentHTML("beforeend", `\n      <div class="badge-item ${o?"unlocked":""}" data-id="${a.id}">\n        <div class="badge-icon-wrap" aria-hidden="true">${a.icone}</div>\n        <div class="badge-name">${a.nome}</div>\n        <div class="badge-desc">${a.desc}</div>\n        ${o?'<div class="badge-check" title="Desbloqueada">✓</div>':'<div class="badge-locked-overlay">BLOQUEADA</div>'}\n      </div>\n    `)
+  const container = document.getElementById("badgesGrid");
+  container.innerHTML = "", TODAS_BADGES.forEach((badge, idx) => {
+    const unlocked = badgesData.desbloqueadas.includes(badge.id);
+    container.insertAdjacentHTML("beforeend", `\n      <div class="badge-item ${unlocked?"unlocked":""}" data-id="${badge.id}">\n        <div class="badge-icon-wrap" aria-hidden="true">${badge.icone}</div>\n        <div class="badge-name">${badge.nome}</div>\n        <div class="badge-desc">${badge.desc}</div>\n        ${unlocked?'<div class="badge-check" title="Desbloqueada">✓</div>':'<div class="badge-locked-overlay">BLOQUEADA</div>'}\n      </div>\n    `)
   });
-  const a = badgesData.desbloqueadas.length;
-  document.getElementById("badgeCount").textContent = `${a} / ${TODAS_BADGES.length} desbloqueadas`, setTimeout(() => {
-    document.querySelectorAll(".badge-item").forEach((e, a) => {
-      e.style.transitionDelay = 30 * a + "ms", e.classList.add("rendered")
+  const unlocked = badgesData.desbloqueadas.length;
+  document.getElementById("badgeCount").textContent = `${unlocked} / ${TODAS_BADGES.length} desbloqueadas`, setTimeout(() => {
+    document.querySelectorAll(".badge-item").forEach((el, i) => {
+      el.style.transitionDelay = 30 * i + "ms", el.classList.add("rendered")
     })
   }, 40)
 }
