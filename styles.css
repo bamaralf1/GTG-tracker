@@ -745,7 +745,7 @@ body::after{
   text-shadow:0 0 40px rgba(212,168,67,0.5),0 0 80px rgba(212,168,67,0.2);
   letter-spacing:clamp(4px,1vw,8px);
   font-variant-numeric:tabular-nums;
-  transition:color .3s var(--ease-expo),text-shadow .3s var(--ease-expo);
+  transition:color .3s var(--ease-expo),text-shadow .3s var(--ease-expo),transform .2s var(--ease-expo);
 }
 .timer-display.running{
   color:var(--red-bright);

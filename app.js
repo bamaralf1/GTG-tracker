@@ -1805,7 +1805,10 @@ function tocarSomRegistro() {
 }
 
 function tocarBeepCronometro() {
-  tocarTom(660, .05, "sawtooth", .08)
+  tocarTom(660, .05, "sawtooth", .08);
+  vibrar([100]);
+  const e = document.getElementById("timerDisplay");
+  e && (e.style.transform = "scale(1.04)", setTimeout(() => e.style.transform = "", 200))
 }
 
 function tocarSomDescanso() {
