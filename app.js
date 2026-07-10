@@ -1112,136 +1112,133 @@ function renderExercicios() {
   }
 }
 
-function adicionarSerie(e) {
-  const a = dados.exercicios.find(a => a.id === e);
-  if (!a) return;
-  const t = document.getElementById(`valor-${e}`),
-    o = parseInt(t.value);
-  if (!o || o < 1) return void mostrarToast("Erro", "Insira um valor válido", "error");
-  const r = "peso" === a.tipo && parseFloat(document.getElementById(`peso-${e}`)?.value) || 0;
-  const s = new Date,
-    n = s.toISOString().slice(0, 10),
-    i = s.toTimeString().slice(0, 5),
-    d = s.getTime();
-  const c = dados.registros.filter(a => a.exercicioId === e).sort((e, a) => a.timestamp - e.timestamp)[0];
-  if (c) {
-    if ((d - c.timestamp) / 6e4 < 15) {
-      const a = document.getElementById(`warn-${e}`);
-      a && (a.style.display = "block", setTimeout(() => a.style.display = "none", 5e3))
+function adicionarSerie(exId) {
+  const ex = dados.exercicios.find(e => e.id === exId);
+  if (!ex) return;
+  const input = document.getElementById(`valor-${exId}`),
+    valor = parseInt(input.value);
+  if (!valor || valor < 1) return void mostrarToast("Erro", "Insira um valor válido", "error");
+  const peso = "peso" === ex.tipo && parseFloat(document.getElementById(`peso-${exId}`)?.value) || 0;
+  const now = new Date,
+    dataStr = now.toISOString().slice(0, 10),
+    horaStr = now.toTimeString().slice(0, 5),
+    timestamp = now.getTime();
+  const lastReg = dados.registros.filter(reg => reg.exercicioId === exId).sort((a, b) => b.timestamp - a.timestamp)[0];
+  if (lastReg) {
+    if ((timestamp - lastReg.timestamp) / 6e4 < 15) {
+      const warnEl = document.getElementById(`warn-${exId}`);
+      warnEl && (warnEl.style.display = "block", setTimeout(() => warnEl.style.display = "none", 5e3))
     } else desbloquearBadge("descanso_digno")
   }
 
-  // === GROOVE QUALITY: lê toggles + calcula bônus ===
-  const groovRaw = grooveState[e] || [false, false, false];
+  const groovRaw = grooveState[exId] || [false, false, false];
   const groovAmp = !!groovRaw[0],
     groovTen = !!groovRaw[1],
     groovBal = !!groovRaw[2];
   const groovChecks = [groovAmp, groovTen, groovBal];
   const groovCount = groovChecks.filter(Boolean).length;
-  const groovBonusMult = 1 + groovCount * 0.1; // +10% por checkbox, +30% perfeito
-  const xpBase = calcularXPSerie(a, o, r);
-  const l = Math.round(xpBase * groovBonusMult);
-  const m = rpeSelecionado[e] || null;
-  const u = {
+  const groovBonusMult = 1 + groovCount * 0.1;
+  const xpBase = calcularXPSerie(ex, valor, peso);
+  const xpFinal = Math.round(xpBase * groovBonusMult);
+  const rpeVal = rpeSelecionado[exId] || null;
+  const registro = {
     id: Date.now() + Math.random().toString(36).slice(2),
-    exercicioId: e,
-    exercicioNome: a.nome,
-    valor: o,
-    peso: r,
-    data: n,
-    hora: i,
-    timestamp: d,
-    xp: l,
+    exercicioId: exId,
+    exercicioNome: ex.nome,
+    valor: valor,
+    peso: peso,
+    data: dataStr,
+    hora: horaStr,
+    timestamp: timestamp,
+    xp: xpFinal,
     xpBase: xpBase,
-    rpe: m,
+    rpe: rpeVal,
     groove: groovChecks,
     perfeito: groovCount === 3
   };
-  dados.registros.push(u), adicionarXP(l), verificarStreak(), verificarBadges(), salvarDados(), t.value = "", document.getElementById(`peso-${e}`) && (document.getElementById(`peso-${e}`).value = ""), delete rpeSelecionado[e];
-  const p = document.getElementById("rpe-scale-" + e);
-  p && p.querySelectorAll(".rpe-btn").forEach(e => e.classList.remove("selected"));
-  const g = document.getElementById("rpe-warn-" + e);
-  g && g.classList.remove("show");
+  dados.registros.push(registro), adicionarXP(xpFinal), verificarStreak(), verificarBadges(), salvarDados(), input.value = "", document.getElementById(`peso-${exId}`) && (document.getElementById(`peso-${exId}`).value = ""), delete rpeSelecionado[exId];
+  const rpeScaleEl = document.getElementById("rpe-scale-" + exId);
+  rpeScaleEl && rpeScaleEl.querySelectorAll(".rpe-btn").forEach(el => el.classList.remove("selected"));
+  const rpeWarnEl = document.getElementById("rpe-warn-" + exId);
+  rpeWarnEl && rpeWarnEl.classList.remove("show");
 
-  // Toast mensagem inclui o bônus de groove
   const bonusPct = groovCount * 10;
   const bonusMsg = groovCount > 0 ? (` · ⚙ GROOVE +${bonusPct}% XP` + (groovCount === 3 ? " · ★ SÉRIE PERFEITA" : "")) : "";
-  const toastVal = `+${o} ${"tempo"===a.tipo?"seg":"reps"}`;
-  const xpToast = groovCount > 0 ? `+${xpBase} → +${l} XP — ${a.nome}${bonusMsg}` : `+${l} XP — ${a.nome}`;
-  mostrarToast(toastVal, xpToast, "success"), mostrarUndoBar(u);
+  const toastVal = `+${valor} ${"tempo"===ex.tipo?"seg":"reps"}`;
+  const xpToast = groovCount > 0 ? `+${xpBase} → +${xpFinal} XP — ${ex.nome}${bonusMsg}` : `+${xpFinal} XP — ${ex.nome}`;
+  mostrarToast(toastVal, xpToast, "success"), mostrarUndoBar(registro);
 
-  // Reset groove toggles após registrar
-  grooveState[e] = [false, false, false];
+  grooveState[exId] = [false, false, false];
 
   renderExercicios(), atualizarStats(), renderHistory(), setTimeout(() => {
     renderGraficos(), renderProgresso(), renderEstatisticasMensais()
-  }, 100), somRegistrar(), iniciarTimerGTG(e)
+  }, 100), somRegistrar(), iniciarTimerGTG(exId)
 }
 
 let exercicioEditandoId = null;
 
-function editarExercicio(e) {
-  const a = dados.exercicios.find(a => a.id === e);
-  if (!a) return void mostrarToast("Erro", "Exercício não encontrado", "error");
-  document.getElementById("newExName").value = a.nome, document.getElementById("newExType").value = a.tipo, document.getElementById("newExUnit").value = a.unidade || "", document.getElementById("newExInstructions").value = a.instrucoes || "", exercicioEditandoId = e, document.getElementById("newExName").focus(), document.getElementById("newExName").scrollIntoView({
+function editarExercicio(exId) {
+  const ex = dados.exercicios.find(e => e.id === exId);
+  if (!ex) return void mostrarToast("Erro", "Exercício não encontrado", "error");
+  document.getElementById("newExName").value = ex.nome, document.getElementById("newExType").value = ex.tipo, document.getElementById("newExUnit").value = ex.unidade || "", document.getElementById("newExInstructions").value = ex.instrucoes || "", exercicioEditandoId = exId, document.getElementById("newExName").focus(), document.getElementById("newExName").scrollIntoView({
     behavior: "smooth",
     block: "center"
-  }), document.querySelector(".add-exercise-form .btn-red").textContent = "★ SALVAR", document.querySelector(".add-exercise-form .btn-red").style.background = "var(--gold)", "none" !== document.getElementById("tab-treino").style.display || void 0 === document.getElementById("tab-treino").style.display || switchTab("treino"), mostrarToast("Editando", `Editando ${a.nome} — altere os campos e clique em SALVAR`, "info")
+  }), document.querySelector(".add-exercise-form .btn-red").textContent = "★ SALVAR", document.querySelector(".add-exercise-form .btn-red").style.background = "var(--gold)", "none" !== document.getElementById("tab-treino").style.display || void 0 === document.getElementById("tab-treino").style.display || switchTab("treino"), mostrarToast("Editando", `Editando ${ex.nome} — altere os campos e clique em SALVAR`, "info")
 }
 
 function addExercise() {
   if (exercicioEditandoId) {
-    const e = document.getElementById("newExName").value.trim();
-    if (!e) return void mostrarToast("Erro", "Insira o nome do exercício", "error");
-    const a = document.getElementById("newExType").value,
-      t = document.getElementById("newExUnit").value.trim() || ("tempo" === a ? "seg" : "reps"),
-      o = document.getElementById("newExInstructions").value.trim();
-    const r = dados.exercicios.find(a => a.id === exercicioEditandoId);
-    if (r) r.nome = e.toUpperCase(), r.tipo = a, r.unidade = t, r.instrucoes = o, r.detalhes && (r.detalhes.descricao = o || "Exercício personalizado.", r.detalhes.execucao = o ? [o] : ["Execute com controle e qualidade"]);
-    salvarDados(), renderExercicios(), renderGuiaExercicios(), exercicioEditandoId = null, document.getElementById("newExName").value = "", document.getElementById("newExUnit").value = "", document.getElementById("newExInstructions").value = "", document.querySelector(".add-exercise-form .btn-red").textContent = "★ ADICIONAR", document.querySelector(".add-exercise-form .btn-red").style.background = "", mostrarToast("Exercício Atualizado", e, "success");
+    const nome = document.getElementById("newExName").value.trim();
+    if (!nome) return void mostrarToast("Erro", "Insira o nome do exercício", "error");
+    const tipo = document.getElementById("newExType").value,
+      unidade = document.getElementById("newExUnit").value.trim() || ("tempo" === tipo ? "seg" : "reps"),
+      instrucoes = document.getElementById("newExInstructions").value.trim();
+    const existingEx = dados.exercicios.find(e => e.id === exercicioEditandoId);
+    if (existingEx) existingEx.nome = nome.toUpperCase(), existingEx.tipo = tipo, existingEx.unidade = unidade, existingEx.instrucoes = instrucoes, existingEx.detalhes && (existingEx.detalhes.descricao = instrucoes || "Exercício personalizado.", existingEx.detalhes.execucao = instrucoes ? [instrucoes] : ["Execute com controle e qualidade"]);
+    salvarDados(), renderExercicios(), renderGuiaExercicios(), exercicioEditandoId = null, document.getElementById("newExName").value = "", document.getElementById("newExUnit").value = "", document.getElementById("newExInstructions").value = "", document.querySelector(".add-exercise-form .btn-red").textContent = "★ ADICIONAR", document.querySelector(".add-exercise-form .btn-red").style.background = "", mostrarToast("Exercício Atualizado", nome, "success");
     return
   }
-  const e = document.getElementById("newExName").value.trim();
-  if (!e) return void mostrarToast("Erro", "Insira o nome do exercício", "error");
-  const a = document.getElementById("newExType").value,
-    t = document.getElementById("newExUnit").value.trim() || ("tempo" === a ? "seg" : "reps"),
-    o = document.getElementById("newExInstructions").value.trim(),
-    r = e.toLowerCase().replace(/[^a-z0-9]/g, "_") + "_" + Date.now();
+  const nome = document.getElementById("newExName").value.trim();
+  if (!nome) return void mostrarToast("Erro", "Insira o nome do exercício", "error");
+  const tipo = document.getElementById("newExType").value,
+    unidade = document.getElementById("newExUnit").value.trim() || ("tempo" === tipo ? "seg" : "reps"),
+    instrucoes = document.getElementById("newExInstructions").value.trim(),
+    newId = nome.toLowerCase().replace(/[^a-z0-9]/g, "_") + "_" + Date.now();
   dados.exercicios.push({
-    id: r,
-    nome: e.toUpperCase(),
-    tipo: a,
-    unidade: t,
-    instrucoes: o,
+    id: newId,
+    nome: nome.toUpperCase(),
+    tipo: tipo,
+    unidade: unidade,
+    instrucoes: instrucoes,
     detalhes: {
-      descricao: o || "Exercício personalizado.",
-      execucao: o ? [o] : ["Execute com controle e qualidade"],
+      descricao: instrucoes || "Exercício personalizado.",
+      execucao: instrucoes ? [instrucoes] : ["Execute com controle e qualidade"],
       gtgDica: "Mantenha séries a 50-60% do seu máximo.",
       variacoes: []
     }
-  }), salvarDados(), renderExercicios(), renderGuiaExercicios(), document.getElementById("newExName").value = "", document.getElementById("newExUnit").value = "", document.getElementById("newExInstructions").value = "", mostrarToast("Exercício Adicionado", e, "success")
+  }), salvarDados(), renderExercicios(), renderGuiaExercicios(), document.getElementById("newExName").value = "", document.getElementById("newExUnit").value = "", document.getElementById("newExInstructions").value = "", mostrarToast("Exercício Adicionado", nome, "success")
 }
 
-function removerExercicio(e) {
-  const a = dados.exercicios.find(a => a.id === e),
-    t = a ? a.nome : e;
-  confirmarAcao(`REMOVER ${t}?`, "Os registros históricos serão mantidos. O exercício sairá da lista de treino.", () => {
-    dados.exercicios = dados.exercicios.filter(a => a.id !== e), salvarDados(), renderExercicios(), renderGuiaExercicios(), mostrarToast("Removido", `${t} removido da lista.`, "success")
+function removerExercicio(exId) {
+  const ex = dados.exercicios.find(e => e.id === exId),
+    exName = ex ? ex.nome : exId;
+  confirmarAcao(`REMOVER ${exName}?`, "Os registros históricos serão mantidos. O exercício sairá da lista de treino.", () => {
+    dados.exercicios = dados.exercicios.filter(e => e.id !== exId), salvarDados(), renderExercicios(), renderGuiaExercicios(), mostrarToast("Removido", `${exName} removido da lista.`, "success")
   })
 }
 
-function calcularPR(e) {
-  const a = Date.now() - 2592e6,
-    t = dados.registros.filter(t => t.exercicioId === e.id && t.timestamp > a).sort((e, a) => e.timestamp - a.timestamp);
-  if (0 === t.length) return 0;
-  const o = Math.max(...dados.registros.filter(a => a.exercicioId === e.id).map(e => e.valor || 0)),
-    r = {};
-  t.forEach(e => {
-    const a = getInicioSemana(e.data);
-    r[a] = (r[a] || 0) + (e.valor || 0)
+function calcularPR(ex) {
+  const tresMesesAtras = Date.now() - 2592e6,
+    registrosRecentes = dados.registros.filter(r => r.exercicioId === ex.id && r.timestamp > tresMesesAtras).sort((a, b) => a.timestamp - b.timestamp);
+  if (0 === registrosRecentes.length) return 0;
+  const maxValor = Math.max(...dados.registros.filter(r => r.exercicioId === ex.id).map(r => r.valor || 0)),
+    semanaMap = {};
+  registrosRecentes.forEach(r => {
+    const inicioSemana = getInicioSemana(r.data);
+    semanaMap[inicioSemana] = (semanaMap[inicioSemana] || 0) + (r.valor || 0)
   });
-  const s = Object.values(r).length > 0 ? Object.values(r).reduce((e, a) => e + a, 0) / Object.values(r).length : 0;
-  return Math.round(o + s / 100)
+  const avgSemanal = Object.values(semanaMap).length > 0 ? Object.values(semanaMap).reduce((acc, v) => acc + v, 0) / Object.values(semanaMap).length : 0;
+  return Math.round(maxValor + avgSemanal / 100)
 }
 
 function atualizarStats() {
