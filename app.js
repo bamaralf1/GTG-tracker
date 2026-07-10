@@ -2036,10 +2036,11 @@ async function solicitarPermissaoNotificacao() {
 
 function mostrarToast(e, a, t = "success") {
   const o = document.getElementById("toastContainer"),
-    r = document.createElement("div");
+    r = document.createElement("div"),
+    s = "success" === t ? 3e3 : "warning" === t || "info" === t ? 5e3 : 8e3;
   r.className = `toast ${t}`, r.innerHTML = `<div class="toast-title">${e}</div><div class="toast-msg">${a}</div>`, o.appendChild(r), setTimeout(() => {
     r.style.animation = "toastOut 0.4s ease forwards", setTimeout(() => r.remove(), 400)
-  }, 8e3)
+  }, s)
 }
 
 function closeModal(e) {
