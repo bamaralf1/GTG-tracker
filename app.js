@@ -1638,34 +1638,34 @@ function preencherSelects() {
   })
 }
 
-function tocarSomPreparo(e) {
+function tocarSomPreparo(countdown) {
   try {
-    const a = getAudioCtx();
-    if (e > 1) {
-      const t = a.createOscillator(),
-        o = a.createGain();
-      t.connect(o), o.connect(a.destination), t.type = "sine", t.frequency.value = 440 + 40 * (7 - e), o.gain.setValueAtTime(.18, a.currentTime), o.gain.exponentialRampToValueAtTime(.001, a.currentTime + .18), t.start(a.currentTime), t.stop(a.currentTime + .2)
+    const ctx = getAudioCtx();
+    if (countdown > 1) {
+      const osc = ctx.createOscillator(),
+        gain = ctx.createGain();
+      osc.connect(gain), gain.connect(ctx.destination), osc.type = "sine", osc.frequency.value = 440 + 40 * (7 - countdown), gain.gain.setValueAtTime(.18, ctx.currentTime), gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .18), osc.start(ctx.currentTime), osc.stop(ctx.currentTime + .2)
     } else tocarTom(880, .15, "sine", .25, 0), tocarTom(1100, .15, "sine", .25, .16)
-  } catch (e) {
-    console.warn("[tocarSomPreparo] Falha ao tocar som:", e)
+  } catch (err) {
+    console.warn("[tocarSomPreparo] Falha ao tocar som:", err)
   }
 }
 
 function tocarSomInicioExercicio() {
   try {
-    const e = getAudioCtx();
+    const ctx = getAudioCtx();
     [
       [523, 0],
       [659, .18],
       [784, .36],
       [1047, .54]
-    ].forEach(([a, t]) => {
-      const o = e.createOscillator(),
-        r = e.createGain();
-      o.connect(r), r.connect(e.destination), o.type = "square", o.frequency.value = a, r.gain.setValueAtTime(.22, e.currentTime + t), r.gain.exponentialRampToValueAtTime(.001, e.currentTime + t + .25), o.start(e.currentTime + t), o.stop(e.currentTime + t + .3)
+    ].forEach(([freq, delay]) => {
+      const osc = ctx.createOscillator(),
+        gain = ctx.createGain();
+      osc.connect(gain), gain.connect(ctx.destination), osc.type = "square", osc.frequency.value = freq, gain.gain.setValueAtTime(.22, ctx.currentTime + delay), gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + delay + .25), osc.start(ctx.currentTime + delay), osc.stop(ctx.currentTime + delay + .3)
     })
-  } catch (e) {
-    console.warn("[tocarSomInicioExercicio] Falha ao tocar som:", e)
+  } catch (err) {
+    console.warn("[tocarSomInicioExercicio] Falha ao tocar som:", err)
   }
 }
 
@@ -1675,32 +1675,32 @@ function startPlankTimer() {
     plankTimer.pausado = !1, plankTimer.rodando = !0, document.getElementById("timerDisplay").classList.add("running"), document.getElementById("btnStartTimer").textContent = "▶ RODANDO...";
     plankTimer.intervalo = setInterval(() => {
       plankTimer.segundos++;
-      const e = String(Math.floor(plankTimer.segundos / 60)).padStart(2, "0"),
-        a = String(plankTimer.segundos % 60).padStart(2, "0");
-      document.getElementById("timerDisplay").textContent = `${e}:${a}`, plankTimer.segundos % 30 == 0 && tocarBeepCronometro()
+      const mins = String(Math.floor(plankTimer.segundos / 60)).padStart(2, "0"),
+        secs = String(plankTimer.segundos % 60).padStart(2, "0");
+      document.getElementById("timerDisplay").textContent = `${mins}:${secs}`, plankTimer.segundos % 30 == 0 && tocarBeepCronometro()
     }, 1e3);
     return
   }
-  let e = 7;
+  let countdown = 7;
   plankTimer.preparando = !0, document.getElementById("btnStartTimer").textContent = "⏳ PREPARANDO...", document.getElementById("btnStartTimer").disabled = !0, document.getElementById("timerDisplay").style.opacity = "0.3";
-  const a = document.getElementById("prepCountdown"),
-    t = document.getElementById("prepNumber");
-  a.style.display = "block", t.style.display = "block", t.textContent = e, tocarSomPreparo(e);
-  const o = setInterval(() => {
-    e--, e <= 0 ? (clearInterval(o), a.style.display = "none", t.style.display = "none", document.getElementById("timerDisplay").style.opacity = "1", document.getElementById("btnStartTimer").textContent = "▶ RODANDO...", document.getElementById("btnStartTimer").disabled = !1, plankTimer.preparando = !1, tocarSomInicioExercicio(), plankTimer.rodando = !0, document.getElementById("timerDisplay").classList.add("running"), plankTimer.intervalo = setInterval(() => {
+  const prepOverlay = document.getElementById("prepCountdown"),
+    prepNum = document.getElementById("prepNumber");
+  prepOverlay.style.display = "block", prepNum.style.display = "block", prepNum.textContent = countdown, tocarSomPreparo(countdown);
+  const prepInterval = setInterval(() => {
+    countdown--, countdown <= 0 ? (clearInterval(prepInterval), prepOverlay.style.display = "none", prepNum.style.display = "none", document.getElementById("timerDisplay").style.opacity = "1", document.getElementById("btnStartTimer").textContent = "▶ RODANDO...", document.getElementById("btnStartTimer").disabled = !1, plankTimer.preparando = !1, tocarSomInicioExercicio(), plankTimer.rodando = !0, document.getElementById("timerDisplay").classList.add("running"), plankTimer.intervalo = setInterval(() => {
       plankTimer.segundos++;
-      const e = String(Math.floor(plankTimer.segundos / 60)).padStart(2, "0"),
-        a = String(plankTimer.segundos % 60).padStart(2, "0");
-      document.getElementById("timerDisplay").textContent = `${e}:${a}`, plankTimer.segundos % 30 == 0 && tocarBeepCronometro()
-    }, 1e3)) : (t.textContent = e, tocarSomPreparo(e))
+      const mins = String(Math.floor(plankTimer.segundos / 60)).padStart(2, "0"),
+        secs = String(plankTimer.segundos % 60).padStart(2, "0");
+      document.getElementById("timerDisplay").textContent = `${mins}:${secs}`, plankTimer.segundos % 30 == 0 && tocarBeepCronometro()
+    }, 1e3)) : (prepNum.textContent = countdown, tocarSomPreparo(countdown))
   }, 1e3)
 }
 
 function stopPlankTimer() {
   if (!plankTimer.rodando) return;
   clearInterval(plankTimer.intervalo), plankTimer.rodando = !1, plankTimer.pausado = !1, document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("btnStartTimer").textContent = "▶ INICIAR", somTimer();
-  const e = document.getElementById("timerExerciseSelect").value;
-  e && plankTimer.segundos > 0 && (document.getElementById(`valor-${e}`).value = plankTimer.segundos, adicionarSerie(e), mostrarToast("Timer Salvo", `${plankTimer.segundos}s registrados`, "success")), resetPlankTimer()
+  const selectedExId = document.getElementById("timerExerciseSelect").value;
+  selectedExId && plankTimer.segundos > 0 && (document.getElementById(`valor-${selectedExId}`).value = plankTimer.segundos, adicionarSerie(selectedExId), mostrarToast("Timer Salvo", `${plankTimer.segundos}s registrados`, "success")), resetPlankTimer()
 }
 
 function resetPlankTimer() {
@@ -1719,34 +1719,34 @@ function pausePlankTimer() {
 }
 let restTimerExIdPendente = null;
 
-function abrirTimerDescanso(e) {
-  const a = dados.exercicios.find(a => a.id === e);
-  restTimerExIdPendente = e, document.getElementById("restModalExercise").textContent = a?.nome || e, document.getElementById("restTimerModal").classList.add("active")
+function abrirTimerDescanso(exId) {
+  const ex = dados.exercicios.find(e => e.id === exId);
+  restTimerExIdPendente = exId, document.getElementById("restModalExercise").textContent = ex?.nome || exId, document.getElementById("restTimerModal").classList.add("active")
 }
 
 function confirmRestTimer() {
-  const e = parseInt(document.getElementById("restDuration").value),
-    a = restTimerExIdPendente,
-    t = dados.exercicios.find(e => e.id === a);
-  closeModal("restTimerModal"), iniciarRestTimer(e, a, t?.nome || a)
+  const duration = parseInt(document.getElementById("restDuration").value),
+    exId = restTimerExIdPendente,
+    ex = dados.exercicios.find(e => e.id === exId);
+  closeModal("restTimerModal"), iniciarRestTimer(duration, exId, ex?.nome || exId)
 }
 
-function iniciarRestTimer(e, a, t) {
+function iniciarRestTimer(duration, exId, exName) {
   restTimer.intervalo && clearInterval(restTimer.intervalo), restTimer = {
     intervalo: null,
-    segundos: e,
+    segundos: duration,
     rodando: !0,
-    exercicioId: a,
-    exercicioNome: t
-  }, document.getElementById("restTimerWidget").classList.add("active"), document.getElementById("restTimerExercise").textContent = t, atualizarDisplayRestTimer(), restTimer.intervalo = setInterval(() => {
-    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), mostrarToast("✓ DESCANSO COMPLETO!", `Hora de mais uma série de ${t}!`, "success"), setTimeout(() => document.getElementById("restTimerWidget").classList.remove("active"), 5e3))
+    exercicioId: exId,
+    exercicioNome: exName
+  }, document.getElementById("restTimerWidget").classList.add("active"), document.getElementById("restTimerExercise").textContent = exName, atualizarDisplayRestTimer(), restTimer.intervalo = setInterval(() => {
+    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), mostrarToast("✓ DESCANSO COMPLETO!", `Hora de mais uma série de ${exName}!`, "success"), setTimeout(() => document.getElementById("restTimerWidget").classList.remove("active"), 5e3))
   }, 1e3)
 }
 
 function atualizarDisplayRestTimer() {
-  const e = String(Math.floor(restTimer.segundos / 60)).padStart(2, "0"),
-    a = String(restTimer.segundos % 60).padStart(2, "0");
-  document.getElementById("restTimerDisplay").textContent = `${e}:${a}`
+  const mins = String(Math.floor(restTimer.segundos / 60)).padStart(2, "0"),
+    secs = String(restTimer.segundos % 60).padStart(2, "0");
+  document.getElementById("restTimerDisplay").textContent = `${mins}:${secs}`
 }
 
 function toggleRestTimer() {
@@ -1769,14 +1769,14 @@ function getAudioCtx() {
   return audioCtx || (audioCtx = new(window.AudioContext || window.webkitAudioContext)), audioCtx
 }
 
-function tocarTom(e, a, t = "square", o = .15, r = 0) {
+function tocarTom(freq, duration, waveform = "square", volume = .15, delay = 0) {
   try {
-    const s = getAudioCtx(),
-      n = s.createOscillator(),
-      i = s.createGain();
-    n.connect(i), i.connect(s.destination), n.type = t, n.frequency.value = e, i.gain.setValueAtTime(o, s.currentTime + r), i.gain.exponentialRampToValueAtTime(.001, s.currentTime + r + a), n.start(s.currentTime + r), n.stop(s.currentTime + r + a + .1)
-  } catch (e) {
-    console.warn("[tocarTom] Falha ao tocar tom:", e)
+    const ctx = getAudioCtx(),
+      osc = ctx.createOscillator(),
+      gain = ctx.createGain();
+    osc.connect(gain), gain.connect(ctx.destination), osc.type = waveform, osc.frequency.value = freq, gain.gain.setValueAtTime(volume, ctx.currentTime + delay), gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + delay + duration), osc.start(ctx.currentTime + delay), osc.stop(ctx.currentTime + delay + duration + .1)
+  } catch (err) {
+    console.warn("[tocarTom] Falha ao tocar tom:", err)
   }
 }
 
@@ -1787,8 +1787,8 @@ function tocarSomRegistro() {
 function tocarBeepCronometro() {
   tocarTom(660, .05, "sawtooth", .08);
   vibrar([100]);
-  const e = document.getElementById("timerDisplay");
-  e && (e.style.transform = "scale(1.04)", setTimeout(() => e.style.transform = "", 200))
+  const displayEl = document.getElementById("timerDisplay");
+  displayEl && (displayEl.style.transform = "scale(1.04)", setTimeout(() => displayEl.style.transform = "", 200))
 }
 
 function tocarSomDescanso() {
@@ -1800,20 +1800,20 @@ function somRegistrar() {
 }
 
 function somBadge() {
-  [523, 659, 784, 1047].forEach((e, a) => tocarTom(e, .15, "sine", .14, .1 * a))
+  [523, 659, 784, 1047].forEach((freq, idx) => tocarTom(freq, .15, "sine", .14, .1 * idx))
 }
 
 function somErro() {
   tocarTom(220, .15, "sawtooth", .1, 0)
 }
 
-function vibrar(e = [200, 100, 200]) {
-  navigator.vibrate && navigator.vibrate(e)
+function vibrar(pattern = [200, 100, 200]) {
+  navigator.vibrate && navigator.vibrate(pattern)
 }
 
 function somTimer() {
   vibrar([300, 100, 300]);
-  [880, 880, 1100].forEach((e, a) => tocarTom(e, .1, "sine", .13, .15 * a))
+  [880, 880, 1100].forEach((freq, idx) => tocarTom(freq, .1, "sine", .13, .15 * idx))
 }
 
 let shareCardTemaClaro = !1;
@@ -2022,31 +2022,31 @@ async function solicitarPermissaoNotificacao() {
   } else mostrarToast("Bloqueado", "Permissão negada. Habilite notificações nas configurações do navegador.", "error")
 }
 
-function mostrarToast(e, a, t = "success") {
-  const o = document.getElementById("toastContainer"),
-    r = document.createElement("div"),
-    s = "success" === t ? 3e3 : "warning" === t || "info" === t ? 5e3 : 8e3;
-  r.className = `toast ${t}`, r.innerHTML = `<div class="toast-title">${e}</div><div class="toast-msg">${a}</div>`, o.appendChild(r), setTimeout(() => {
-    r.style.animation = "toastOut 0.4s ease forwards", setTimeout(() => r.remove(), 400)
-  }, s)
+function mostrarToast(title, msg, type = "success") {
+  const container = document.getElementById("toastContainer"),
+    el = document.createElement("div"),
+    timeout = "success" === type ? 3e3 : "warning" === type || "info" === type ? 5e3 : 8e3;
+  el.className = `toast ${type}`, el.innerHTML = `<div class="toast-title">${title}</div><div class="toast-msg">${msg}</div>`, container.appendChild(el), setTimeout(() => {
+    el.style.animation = "toastOut 0.4s ease forwards", setTimeout(() => el.remove(), 400)
+  }, timeout)
 }
 
-function closeModal(e) {
-  document.getElementById(e).classList.remove("active")
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove("active")
 }
 
-function mostrarInfoExercicio(e) {
-  const a = dados.exercicios.find(a => a.id === e);
-  if (!a) return;
-  const t = a.detalhes || {};
-  document.getElementById("infoModalTitle").textContent = a.nome, document.getElementById("infoModalBody").innerHTML = `\n    <div class="exercise-info-section">\n      <h3>DESCRIÇÃO</h3>\n      <p>${t.descricao||"Sem descrição."}</p>\n    </div>\n    ${t.pavelQuote?`\n    <div class="pavel-quote-highlight">\n      ${t.pavelQuote}\n      <cite>PAVEL TSATSOULINE</cite>\n    </div>`:""}\n    <div class="exercise-info-section">\n      <h3>EXECUÇÃO PASSO A PASSO</h3>\n      <ul>${(t.execucao||["Execute com controle"]).map((e,a)=>`<li><strong style="color:var(--gold)">${a+1}.</strong> ${e}</li>`).join("")}</ul>\n    </div>\n    <div class="exercise-info-section">\n      <h3>⚡ DICA GTG DE PAVEL</h3>\n      <p>${t.gtgDica||"Mantenha séries a 50-60% do seu máximo."}</p>\n    </div>\n    ${t.variacoes&&t.variacoes.length>0?`\n    <div class="exercise-info-section">\n      <h3>PROGRESSÕES E VARIAÇÕES</h3>\n      <ul>${t.variacoes.map(e=>`<li>${e}</li>`).join("")}</ul>\n    </div>`:""}\n    <div class="warning-box">\n      TIPO: ${a.tipo.toUpperCase()} | UNIDADE: ${a.unidade||"reps"} | GTG: 40-60% DO MÁXIMO\n    </div>\n  `, document.getElementById("infoModal").classList.add("active")
+function mostrarInfoExercicio(exId) {
+  const ex = dados.exercicios.find(e => e.id === exId);
+  if (!ex) return;
+  const det = ex.detalhes || {};
+  document.getElementById("infoModalTitle").textContent = ex.nome, document.getElementById("infoModalBody").innerHTML = `\n    <div class="exercise-info-section">\n      <h3>DESCRIÇÃO</h3>\n      <p>${det.descricao||"Sem descrição."}</p>\n    </div>\n    ${det.pavelQuote?`\n    <div class="pavel-quote-highlight">\n      ${det.pavelQuote}\n      <cite>PAVEL TSATSOULINE</cite>\n    </div>`:""}\n    <div class="exercise-info-section">\n      <h3>EXECUÇÃO PASSO A PASSO</h3>\n      <ul>${(det.execucao||["Execute com controle"]).map((step,i)=>`<li><strong style="color:var(--gold)">${i+1}.</strong> ${step}</li>`).join("")}</ul>\n    </div>\n    <div class="exercise-info-section">\n      <h3>⚡ DICA GTG DE PAVEL</h3>\n      <p>${det.gtgDica||"Mantenha séries a 50-60% do seu máximo."}</p>\n    </div>\n    ${det.variacoes&&det.variacoes.length>0?`\n    <div class="exercise-info-section">\n      <h3>PROGRESSÕES E VARIAÇÕES</h3>\n      <ul>${det.variacoes.map(v=>`<li>${v}</li>`).join("")}</ul>\n    </div>`:""}\n    <div class="warning-box">\n      TIPO: ${ex.tipo.toUpperCase()} | UNIDADE: ${ex.unidade||"reps"} | GTG: 40-60% DO MÁXIMO\n    </div>\n  `, document.getElementById("infoModal").classList.add("active")
 }
 
 function dispararConfetti() {
-  const e = [cssVar("--accent-red"), cssVar("--gold"), cssVar("--gold-light"), cssVar("--red-bright"), cssVar("--green-bright")];
-  for (let a = 0; a < 50; a++) {
-    const a = document.createElement("div");
-    a.className = "confetti-piece", a.style.left = 100 * Math.random() + "vw", a.style.background = e[Math.floor(Math.random() * e.length)], a.style.animationDelay = .5 * Math.random() + "s", document.body.appendChild(a), setTimeout(() => a.remove(), 3500)
+  const colors = [cssVar("--accent-red"), cssVar("--gold"), cssVar("--gold-light"), cssVar("--red-bright"), cssVar("--green-bright")];
+  for (let i = 0; i < 50; i++) {
+    const piece = document.createElement("div");
+    piece.className = "confetti-piece", piece.style.left = 100 * Math.random() + "vw", piece.style.background = colors[Math.floor(Math.random() * colors.length)], piece.style.animationDelay = .5 * Math.random() + "s", document.body.appendChild(piece), setTimeout(() => piece.remove(), 3500)
   }
 }
 
