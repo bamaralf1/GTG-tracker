@@ -1928,7 +1928,6 @@ function tocarSomLembrete() {
     console.warn("[tocarSomLembrete] Falha ao tocar som:", e)
   }
 }
-const SW_CODE = "\nconst LEMBRETES = [\n  \"⏰ Hora de uma série! Lembre: 50-60% do seu máximo. Qualidade acima de tudo.\",\n  \"🔔 Pavel diz: Uma série perfeita agora vale mais do que dez séries ruins depois.\",\n  \"⚡ 20 minutos se passaram. Hora de trabalhar!\",\n  \"🎯 Micro-dose de força. Uma série. Agora. Sem desculpa.\",\n  \"💪 O sistema nervoso está pronto. Mais uma série constrói o padrão.\",\n  \"🔥 Streak em andamento. Não quebre a corrente — uma série mantém tudo!\",\n  \"⭐ Frequência > Intensidade. Uma série agora > Zero séries depois.\",\n  \"🪖 O soldado não espera a hora perfeita. Ele treina quando pode.\",\n  \"🧠 Cada repetição de qualidade mieliniza a via nervosa. Faça agora.\",\n  \"⚔ GTG é sobre acúmulo. Cada série conta — mesmo a mais simples.\"\n];\n\nconst INTERVALO_MS = 20 * 60 * 1000;\n\nself.addEventListener('install', e => { self.skipWaiting(); });\nself.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); agendarProximo(); });\n\nself.addEventListener('message', e => {\n  if (e.data === 'INICIAR_LEMBRETES') agendarProximo();\n  if (e.data === 'PARAR_LEMBRETES' && self._lembreteTimeout) {\n    clearTimeout(self._lembreteTimeout);\n    self._lembreteTimeout = null;\n  }\n});\n\nfunction agendarProximo() {\n  if (self._lembreteTimeout) clearTimeout(self._lembreteTimeout);\n  self._lembreteTimeout = setTimeout(() => {\n    dispararNotificacao();\n    agendarProximo();\n  }, INTERVALO_MS);\n}\n\nfunction dispararNotificacao() {\n  const msg = LEMBRETES[Math.floor(Math.random() * LEMBRETES.length)];\n  self.registration.showNotification('GTG TRACKER — FORÇA E RESISTÊNCIA', {\n    body: msg,\n    icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230A0A0A%22/><text y=%22.9em%22 font-size=%2280%22>⭐</text></svg>',\n    badge: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>⭐</text></svg>',\n    tag: 'gtg-lembrete',\n    renotify: true,\n    requireInteraction: true,\n    silent: false,\n    vibrate: [200, 100, 200]\n  });\n}\n\nself.addEventListener('notificationclick', e => {\n  e.notification.close();\n  e.waitUntil(self.clients.matchAll({ type: 'window' }).then(clients => {\n    for (const c of clients) { if ('focus' in c) return c.focus(); }\n    if (self.clients.openWindow) return self.clients.openWindow('/');\n  }));\n});\n";
 let swRegistration = null,
   deferredInstallPrompt = null;
 async function instalarPWA() {
@@ -1942,15 +1941,12 @@ async function instalarPWA() {
 async function registrarServiceWorker() {
   if (!("serviceWorker" in navigator)) return null;
   try {
-    const e = new Blob([SW_CODE], {
-        type: "application/javascript"
-      }),
-      a = URL.createObjectURL(e);
-    return swRegistration = await navigator.serviceWorker.register(a, {
+    swRegistration = await navigator.serviceWorker.register("./sw.js", {
       scope: "./"
-    }), await navigator.serviceWorker.ready, swRegistration = await navigator.serviceWorker.getRegistration(), swRegistration
+    });
+    return await navigator.serviceWorker.ready, swRegistration = await navigator.serviceWorker.getRegistration(), swRegistration
   } catch (e) {
-    console.warn("SW Blob falhou:", e.message);
+    console.warn("[registrarServiceWorker] Falha ao registrar sw.js:", e.message);
     try {
       const e = await navigator.serviceWorker.getRegistration();
       if (e) return swRegistration = e, e
@@ -3444,6 +3440,7 @@ function pararTimerGTG(e) {
   a && (a.style.display = "none")
 }
 document.addEventListener("DOMContentLoaded", () => {
+  "serviceWorker" in navigator && registrarServiceWorker();
   const e = cssVar("--accent-red") || "#CC0000";
   const d = document.querySelector('meta[name="theme-color"]');
   d && d.setAttribute("content", e), "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
