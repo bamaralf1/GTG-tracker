@@ -1242,34 +1242,34 @@ function calcularPR(ex) {
 }
 
 function atualizarStats() {
-  const e = (new Date).toISOString().slice(0, 10),
-    a = getInicioSemana(e),
-    t = dados.registros.filter(a => a.data === e),
-    o = dados.registros.filter(e => e.data >= a);
-  document.getElementById("statHoje").textContent = t.length, document.getElementById("statRepsHoje").textContent = t.reduce((e, a) => e + (a.valor || 0), 0) + " reps", document.getElementById("statSemana").textContent = o.length, document.getElementById("statRepsSemanaSub").textContent = o.reduce((e, a) => e + (a.valor || 0), 0) + " reps esta semana", document.getElementById("statTotal").textContent = dados.registros.length, document.getElementById("statTotalSub").textContent = dados.registros.reduce((e, a) => e + (a.valor || 0), 0).toLocaleString("pt-BR") + " reps acum."
+  const hoje = (new Date).toISOString().slice(0, 10),
+    inicioSemana = getInicioSemana(hoje),
+    registrosHoje = dados.registros.filter(r => r.data === hoje),
+    registrosSemana = dados.registros.filter(r => r.data >= inicioSemana);
+  document.getElementById("statHoje").textContent = registrosHoje.length, document.getElementById("statRepsHoje").textContent = registrosHoje.reduce((acc, r) => acc + (r.valor || 0), 0) + " reps", document.getElementById("statSemana").textContent = registrosSemana.length, document.getElementById("statRepsSemanaSub").textContent = registrosSemana.reduce((acc, r) => acc + (r.valor || 0), 0) + " reps esta semana", document.getElementById("statTotal").textContent = dados.registros.length, document.getElementById("statTotalSub").textContent = dados.registros.reduce((acc, r) => acc + (r.valor || 0), 0).toLocaleString("pt-BR") + " reps acum."
 }
 
-function getDadosUltimasSemanas(e = 8, registrosSource) {
+function getDadosUltimasSemanas(numSemanas = 8, registrosSource) {
   const src = registrosSource || dados.registros;
-  const a = [];
-  for (let t = e - 1; t >= 0; t--) {
-    const o = new Date;
-    o.setDate(o.getDate() - 7 * t);
-    const r = getInicioSemana(o.toISOString().slice(0, 10)),
-      s = new Date(r);
-    s.setDate(s.getDate() + 6);
-    const n = s.toISOString().slice(0, 10),
-      i = src.filter(e => e.data >= r && e.data <= n);
-    a.push({
-      label: "S" + (e - t),
-      inicio: r,
-      fim: n,
-      series: i.length,
-      reps: i.reduce((e, a) => e + (a.valor || 0), 0),
-      volume: i.reduce((e, a) => e + (a.valor || 0), 0)
+  const semanas = [];
+  for (let i = numSemanas - 1; i >= 0; i--) {
+    const now = new Date;
+    now.setDate(now.getDate() - 7 * i);
+    const inicioSemana = getInicioSemana(now.toISOString().slice(0, 10)),
+      fimSemana = new Date(inicioSemana);
+    fimSemana.setDate(fimSemana.getDate() + 6);
+    const fimStr = fimSemana.toISOString().slice(0, 10),
+      filtrados = src.filter(r => r.data >= inicioSemana && r.data <= fimStr);
+    semanas.push({
+      label: "S" + (numSemanas - i),
+      inicio: inicioSemana,
+      fim: fimStr,
+      series: filtrados.length,
+      reps: filtrados.reduce((acc, r) => acc + (r.valor || 0), 0),
+      volume: filtrados.reduce((acc, r) => acc + (r.valor || 0), 0)
     })
   }
-  return a
+  return semanas
 }
 
 function renderGraficos() {
@@ -1601,24 +1601,24 @@ function setProgressMode(e, a) {
 }
 
 function renderHistory() {
-  const e = document.getElementById("historyLog"),
-    a = document.getElementById("filterDate")?.value,
-    t = document.getElementById("filterExercise")?.value,
-    o = document.getElementById("filterOrdem")?.value || "recente";
-  let r = [...dados.registros];
-  a && (r = r.filter(e => e.data === a)), t && (r = r.filter(e => e.exercicioId === t)), "recente" === o ? r.sort((e, a) => a.timestamp - e.timestamp) : "antigo" === o ? r.sort((e, a) => e.timestamp - a.timestamp) : "exercicio" === o ? r.sort((e, a) => (e.exercicioNome || "").localeCompare(a.exercicioNome || "")) : "xp" === o && r.sort((e, a) => (a.xp || 0) - (e.xp || 0)), 0 !== r.length ? e.innerHTML = r.slice(0, 200).map((e, idx) => {
-    const a = dados.exercicios.find(a => a.id === e.exercicioId),
-      t = "tempo" === a?.tipo ? "seg" : a?.unidade || "reps",
-      o = getRPEColorClass(e.rpe),
-      r = e.rpe ? `<span class="log-rpe ${o}">RPE ${e.rpe}</span>` : "";
-    return `\n      <div class="log-entry" style="--i:${idx}">\n        <div class="log-dot"></div>\n        <div class="log-time">${e.data?.slice(5)} ${e.hora}</div>\n        ${r}\n        <div class="log-quality ${renderQualityClass(e.groove)}">${renderQualityIcons(e.groove)}</div>\n        <div class="log-exercise">${e.exercicioNome||e.exercicioId}</div>\n        <div class="log-detail">${e.valor} ${t}${e.peso?` @ ${e.peso}kg`:""}</div>\n        <div class="log-xp">+${e.xp||0} XP</div>\n        <button class="btn-icon danger" onclick="removerRegistroComConfirm('${e.id}')" style="flex-shrink:0;">✕</button>\n      </div>`
-  }).join("") : e.innerHTML = '<div class="text-mono" style="text-align:center;padding:30px;">Nenhum registro encontrado. Comece a treinar!</div>'
+  const container = document.getElementById("historyLog"),
+    filterDate = document.getElementById("filterDate")?.value,
+    filterEx = document.getElementById("filterExercise")?.value,
+    filterOrdem = document.getElementById("filterOrdem")?.value || "recente";
+  let filtered = [...dados.registros];
+  filterDate && (filtered = filtered.filter(r => r.data === filterDate)), filterEx && (filtered = filtered.filter(r => r.exercicioId === filterEx)), "recente" === filterOrdem ? filtered.sort((a, b) => b.timestamp - a.timestamp) : "antigo" === filterOrdem ? filtered.sort((a, b) => a.timestamp - b.timestamp) : "exercicio" === filterOrdem ? filtered.sort((a, b) => (a.exercicioNome || "").localeCompare(b.exercicioNome || "")) : "xp" === filterOrdem && filtered.sort((a, b) => (b.xp || 0) - (a.xp || 0)), 0 !== filtered.length ? container.innerHTML = filtered.slice(0, 200).map((reg, idx) => {
+    const ex = dados.exercicios.find(e => e.id === reg.exercicioId),
+      unit = "tempo" === ex?.tipo ? "seg" : ex?.unidade || "reps",
+      rpeCls = getRPEColorClass(reg.rpe),
+      rpeHtml = reg.rpe ? `<span class="log-rpe ${rpeCls}">RPE ${reg.rpe}</span>` : "";
+    return `\n      <div class="log-entry" style="--i:${idx}">\n        <div class="log-dot"></div>\n        <div class="log-time">${reg.data?.slice(5)} ${reg.hora}</div>\n        ${rpeHtml}\n        <div class="log-quality ${renderQualityClass(reg.groove)}">${renderQualityIcons(reg.groove)}</div>\n        <div class="log-exercise">${reg.exercicioNome||reg.exercicioId}</div>\n        <div class="log-detail">${reg.valor} ${unit}${reg.peso?` @ ${reg.peso}kg`:""}</div>\n        <div class="log-xp">+${reg.xp||0} XP</div>\n        <button class="btn-icon danger" onclick="removerRegistroComConfirm('${reg.id}')" style="flex-shrink:0;">✕</button>\n      </div>`
+  }).join("") : container.innerHTML = '<div class="text-mono" style="text-align:center;padding:30px;">Nenhum registro encontrado. Comece a treinar!</div>'
 }
 
-function removerRegistroComConfirm(e) {
-  const a = dados.registros.find(a => a.id === e);
-  a && confirmarAcao("REMOVER ESTE REGISTRO?", `${a.exercicioNome} — ${a.valor} — ${a.data} ${a.hora}`, () => {
-    dados.registros = dados.registros.filter(a => a.id !== e), salvarDados(), renderHistory(), renderExercicios(), atualizarStats(), mostrarToast("Registro removido", "", "success")
+function removerRegistroComConfirm(regId) {
+  const reg = dados.registros.find(r => r.id === regId);
+  reg && confirmarAcao("REMOVER ESTE REGISTRO?", `${reg.exercicioNome} — ${reg.valor} — ${reg.data} ${reg.hora}`, () => {
+    dados.registros = dados.registros.filter(r => r.id !== regId), salvarDados(), renderHistory(), renderExercicios(), atualizarStats(), mostrarToast("Registro removido", "", "success")
   })
 }
 
@@ -1627,14 +1627,14 @@ function clearFilters() {
 }
 
 function preencherSelects() {
-  ["filterExercise", "timerExerciseSelect", "sessionExSelect"].forEach(e => {
-    const a = document.getElementById(e);
-    if (!a) return;
-    const t = a.value;
-    a.innerHTML = "filterExercise" === e ? '<option value="">TODOS OS EXERCÍCIOS</option>' : '<option value="">SELECIONAR EXERCÍCIO</option>', dados.exercicios.forEach(e => {
-      const t = document.createElement("option");
-      t.value = e.id, t.textContent = e.nome, a.appendChild(t)
-    }), t && (a.value = t)
+  ["filterExercise", "timerExerciseSelect", "sessionExSelect"].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const prevVal = el.value;
+    el.innerHTML = "filterExercise" === id ? '<option value="">TODOS OS EXERCÍCIOS</option>' : '<option value="">SELECIONAR EXERCÍCIO</option>', dados.exercicios.forEach(ex => {
+      const opt = document.createElement("option");
+      opt.value = ex.id, opt.textContent = ex.nome, el.appendChild(opt)
+    }), prevVal && (el.value = prevVal)
   })
 }
 
