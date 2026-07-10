@@ -1293,6 +1293,12 @@ function getDadosUltimasSemanas(e = 8, registrosSource) {
 }
 
 function renderGraficos() {
+  if (!dados.registros || dados.registros.length === 0) {
+    chartSemanal && chartSemanal.destroy();
+    document.getElementById("weeklyChart").getContext("2d").clearRect(0, 0, 1, 1);
+    renderStreakChart(), renderHeatmap(), renderAnalise(), renderRanking(), renderVolumeChart(), renderCompararSemanas(), injetarCardPR();
+    return
+  }
   let registrosBase = dados.registros;
   if (filtroPerfeitas) {
     registrosBase = dados.registros.filter(e => Array.isArray(e.groove) && e.groove.filter(Boolean).length === 3)
@@ -1371,6 +1377,20 @@ function renderGraficos() {
 }
 
 function renderStreakChart() {
+  const canvas = document.getElementById("streakChart");
+  if (!dados.registros || dados.registros.length === 0) {
+    chartStreak && chartStreak.destroy();
+    if (canvas) {
+      canvas.style.display = "none";
+      let msg = canvas.parentNode?.querySelector(".empty-state-msg");
+      msg || (msg = document.createElement("div"), msg.className = "empty-state-msg text-mono", msg.style.cssText = "text-align:center;padding:24px;color:var(--gray-light);font-size:12px", msg.textContent = "Sem histórico ainda. Comece a treinar!", canvas.parentNode?.appendChild(msg))
+    }
+    return
+  }
+  canvas.style.display = "";
+  const msgEl = canvas.parentNode?.querySelector(".empty-state-msg");
+  msgEl && msgEl.remove();
+  const ctx = canvas.getContext("2d");
   const e = [];
   for (let a = 29; a >= 0; a--) {
     const t = new Date;
@@ -1382,8 +1402,7 @@ function renderStreakChart() {
       treinou: r
     })
   }
-  const a = document.getElementById("streakChart").getContext("2d");
-  chartStreak && chartStreak.destroy(), chartStreak = new Chart(a, {
+  chartStreak && chartStreak.destroy(), chartStreak = new Chart(ctx, {
     type: "bar",
     data: {
       labels: e.map(e => e.label),
@@ -1428,6 +1447,12 @@ function renderStreakChart() {
 }
 
 function renderProgresso() {
+  if (!dados.registros || dados.registros.length === 0) {
+    chartProgresso && chartProgresso.destroy();
+    document.getElementById("progressChart").getContext("2d").clearRect(0, 0, 1, 1);
+    document.getElementById("progressInsights") && (document.getElementById("progressInsights").innerHTML = '<div class="text-mono" style="text-align:center;padding:24px;color:var(--gray-light)">Sem dados de treino ainda. Comece a treinar para ver seu progresso!</div>');
+    return
+  }
   const e = getDadosUltimasSemanas(8),
     a = e.map(e => e.label);
   let t = [];
@@ -2144,7 +2169,12 @@ function downloadFile(e, a, t) {
 
 function renderGuiaExercicios() {
   const e = document.getElementById("exerciseGuideSection");
-  e && (e.innerHTML = dados.exercicios.map(e => `\n    <div class="gtg-principle" style="cursor:pointer;" onclick="mostrarInfoExercicio('${e.id}')">\n      <div class="gtg-principle-title">${e.nome}</div>\n      <div class="gtg-principle-text" style="font-size:12px;">${e.tipo.toUpperCase()} — ${e.unidade||"reps"}</div>\n    </div>\n  `).join(""))
+  if (!e) return;
+  if (!dados.exercicios || dados.exercicios.length === 0) {
+    e.innerHTML = '<div class="text-mono" style="text-align:center;padding:24px;color:var(--gray-light)">Nenhum exercício cadastrado. Adicione exercícios para ver o guia.</div>';
+    return
+  }
+  e.innerHTML = dados.exercicios.map(e => `\n    <div class="gtg-principle" style="cursor:pointer;" onclick="mostrarInfoExercicio('${e.id}')">\n      <div class="gtg-principle-title">${e.nome}</div>\n      <div class="gtg-principle-text" style="font-size:12px;">${e.tipo.toUpperCase()} — ${e.unidade||"reps"}</div>\n    </div>\n  `).join("")
 }
 window.addEventListener("beforeinstallprompt", e => {
   e.preventDefault(), deferredInstallPrompt = e, document.getElementById("btnInstalarPWA").style.display = "inline-block"
@@ -3184,6 +3214,10 @@ function renderRanking() {
 let _volumeChart = null;
 
 function renderVolumeChart() {
+  if (!dados.registros || dados.registros.length === 0) {
+    _volumeChart && _volumeChart.destroy();
+    return
+  }
   const e = document.getElementById("volumeWeekChart");
   if (!e) return;
   const a = document.getElementById("volumeMetrica")?.value || "series",
