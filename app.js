@@ -971,7 +971,7 @@ function verificarBadges() {
 
 function desbloquearBadge(e) {
   if (!badgesData.desbloqueadas.includes(e)) {
-    badgesData.desbloqueadas.push(e), salvarDados();
+    badgesData.desbloqueadas.push(e), salvarDados(), vibrar([150, 80, 150, 80, 200]);
     const a = TODAS_BADGES.find(a => a.id === e);
     a && (somBadge(), setTimeout(() => mostrarUnlockBadge(a), 500))
   }
@@ -1824,7 +1824,12 @@ function somErro() {
   tocarTom(220, .15, "sawtooth", .1, 0)
 }
 
+function vibrar(e = [200, 100, 200]) {
+  navigator.vibrate && navigator.vibrate(e)
+}
+
 function somTimer() {
+  vibrar([300, 100, 300]);
   [880, 880, 1100].forEach((e, a) => tocarTom(e, .1, "sine", .13, .15 * a))
 }
 
