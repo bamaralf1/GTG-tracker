@@ -68,7 +68,7 @@
   <main class="main">
     <div class="tab-content active" id="tab-treino">
       <div class="treino-layout" style="display:flex; gap:32px; align-items:flex-start;">
-        <div class="treino-main" style="flex:1; min-width:0; max-width:880px;">
+        <div class="treino-main" style="flex:1; min-width:0;">
           <div class="grid-4 mb-16">
             <div class="stat-card">
               <div class="stat-card-value" id="statHoje">0</div>
@@ -168,7 +168,7 @@
         </div>
       </div>
         </div>
-        <div class="treino-sidebar" style="width:460px; flex-shrink:1; min-width:0; overflow:auto; box-sizing:border-box; display:flex; flex-direction:column; gap:12px;">
+        <div class="treino-sidebar" style="width:400px; flex-shrink:0; box-sizing:border-box; display:flex; flex-direction:column; gap:12px;">
           <div class="card" style="padding:14px 18px; margin:0;">
             <div class="card-body" style="padding:0;">
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span class="text-mono" style="font-size:16px;color:var(--gold);letter-spacing:2px;white-space:nowrap">⚡ QUICK LOG</span> <input id="quickLogInput" class="form-input" style="flex:1;min-width:120px;font-family:Share Tech Mono,monospace;font-size:16px;padding:8px 12px;letter-spacing:1px" placeholder="Ex: flex 12"> <button class="btn btn-red" onclick="processarQuickLog()" style="padding:8px 16px;font-size:15px">▶</button></div>
