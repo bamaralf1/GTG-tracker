@@ -2536,48 +2536,6 @@ function _initDragDrop() {
   })
 }
 
-function processarQuickLog() {
-  const e = document.getElementById("quickLogInput"),
-    a = document.getElementById("quickLogFeedback"),
-    t = (e.value || "").trim().toLowerCase();
-  if (!t) return;
-  if ("?" === t || "help" === t || "ajuda" === t) return a.style.display = "block", a.style.color = "var(--gold)", void(a.textContent = 'SINTAXE: <nome> <valor>  |  Exemplos: "flex 12", "barra 5", "prancha 45", "swing 20"');
-  const o = t.match(/^(.+?)\s+(\d+(?:\.\d+)?)$/);
-  if (!o) return a.style.display = "block", a.style.color = "var(--red-bright)", void(a.textContent = '✕ Formato inválido. Use: <exercício> <valor>  |  Ex: "flex 12"  |  ? para ajuda');
-  const r = o[1].trim(),
-    s = parseFloat(o[2]),
-    n = dados.exercicios.find(e => {
-      const a = e.nome.toLowerCase(),
-        t = e.id.toLowerCase();
-      return a.includes(r) || t.includes(r) || r.split("").every(e => a.includes(e))
-    }) || dados.exercicios.find(e => e.nome.toLowerCase().split(" ").some(e => e.startsWith(r)));
-  if (!n) {
-    a.style.display = "block", a.style.color = "var(--red-bright)";
-    const e = dados.exercicios.map(e => e.nome.split(" ")[0].toLowerCase()).join(", ");
-    return void(a.textContent = `✕ Exercício "${r}" não encontrado. Disponíveis: ${e}`)
-  }
-  const i = document.getElementById(`valor-${n.id}`);
-  if (i) i.value = Math.round(s), adicionarSerie(n.id);
-  else {
-    const e = new Date,
-      a = {
-        id: Date.now() + Math.random().toString(36).slice(2),
-        exercicioId: n.id,
-        exercicioNome: n.nome,
-        valor: Math.round(s),
-        peso: 0,
-        data: e.toISOString().slice(0, 10),
-        hora: e.toTimeString().slice(0, 5),
-        timestamp: e.getTime(),
-        xp: calcularXPSerie(n, Math.round(s), 0),
-        rpe: null
-      };
-    dados.registros.push(a), adicionarXP(a.xp), verificarStreak(), verificarBadges(), salvarDados(), renderExercicios(), atualizarStats(), renderHistory(), somRegistrar(), mostrarToast(`+${Math.round(s)} ${"tempo"===n.tipo?"seg":"reps"}`, `+${a.xp} XP — ${n.nome}`, "success")
-  }
-  a.style.display = "block", a.style.color = "var(--green-bright)", a.textContent = `✓ ${n.nome}: ${Math.round(s)} ${"tempo"===n.tipo?"seg":"reps"} registrado`, e.value = "", setTimeout(() => {
-    a.style.display = "none"
-  }, 3e3)
-}
 
 function renderHeatmap() {
   const e = document.getElementById("heatmapContainer"),
@@ -2790,12 +2748,7 @@ document.addEventListener("keydown", e => {
   }
 }), setTimeout(() => {
   sessionStorage.getItem("gtg_atalhos_dica") || (sessionStorage.setItem("gtg_atalhos_dica", "1"), mostrarToast("⌨ Atalhos ativos", "Pressione ? para ver todos os atalhos de teclado.", "success"))
-}, 2500), document.addEventListener("DOMContentLoaded", () => {
-  const e = document.getElementById("quickLogInput");
-  e && e.addEventListener("keydown", e => {
-    "Enter" === e.key && processarQuickLog()
-  })
-});
+}, 2500);
 let chartPR = null;
 
 function renderGraficoPR(e) {
