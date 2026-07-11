@@ -341,7 +341,7 @@ body::after{
 .nav-tab.active::after{transform:translateX(-50%) scaleX(1);opacity:1}
 
 /* === MAIN + TABS === */
-.main{max-width:1800px;margin-left:24px;margin-right:auto;padding:24px}
+.main{max-width:1400px;margin:0 auto;padding:24px}
 .tab-content{display:none!important}
 .tab-content.active{display:block!important;animation:tabFade .4s var(--ease-expo)}
 @keyframes tabFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
