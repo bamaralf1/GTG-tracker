@@ -168,10 +168,10 @@
         </div>
       </div>
         </div>
-        <div class="treino-sidebar" style="width:460px; flex-shrink:0; display:flex; flex-direction:column; gap:12px;">
+        <div class="treino-sidebar" style="width:460px; flex-shrink:1; min-width:0; overflow:auto; box-sizing:border-box; display:flex; flex-direction:column; gap:12px;">
           <div class="card" style="padding:14px 18px; margin:0;">
             <div class="card-body" style="padding:0;">
-              <div style="display:flex;align-items:center;gap:10px;"><span class="text-mono" style="font-size:16px;color:var(--gold);letter-spacing:2px;white-space:nowrap">⚡ QUICK LOG</span> <input id="quickLogInput" class="form-input" style="flex:1;min-width:0;font-family:Share Tech Mono,monospace;font-size:16px;padding:8px 12px;letter-spacing:1px" placeholder="Ex: flex 12"> <button class="btn btn-red" onclick="processarQuickLog()" style="padding:8px 16px;font-size:15px">▶</button></div>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span class="text-mono" style="font-size:16px;color:var(--gold);letter-spacing:2px;white-space:nowrap">⚡ QUICK LOG</span> <input id="quickLogInput" class="form-input" style="flex:1;min-width:120px;font-family:Share Tech Mono,monospace;font-size:16px;padding:8px 12px;letter-spacing:1px" placeholder="Ex: flex 12"> <button class="btn btn-red" onclick="processarQuickLog()" style="padding:8px 16px;font-size:15px">▶</button></div>
               <div id="quickLogFeedback" style="margin-top:6px;font-family:Share Tech Mono,monospace;font-size:14px;color:var(--gold-dim);display:none"></div>
             </div>
           </div>
