@@ -26,17 +26,17 @@
       <div class="header-logo"><span class="star-symbol">★</span>
         <div class="header-title-block">
           <h1>GTG TRACKER</h1>
-          <p data-i18n="header_subtitle">FORÇA E RESISTÊNCIA — GREASE THE GROOVE
+          <p>FORÇA E RESISTÊNCIA — GREASE THE GROOVE
         </div>
       </div>
       <div class="header-right"><a href="#readinessCard" class="header-readiness" id="headerReadiness" onclick="scrollToReadiness(event)" title="Estado de Prontidão"><span class="header-readiness-icon">🎯</span>
           <div>
             <div class="header-readiness-score" id="headerReadinessScore">--</div>
-            <div class="header-readiness-label" data-i18n="header_readiness">PRONTIDÃO</div>
+            <div class="header-readiness-label">PRONTIDÃO</div>
           </div>
         </a>
         <div class="header-streak" id="headerStreak"><span class="streak-fire">🔥</span> <span class="streak-count" id="streakCountHeader">0</span>
-          <div class="streak-label" data-i18n="header_streak">DIAS<br>STREAK</div>
+          <div class="streak-label">DIAS<br>STREAK</div>
         </div>
         <div class="streak-shield-display" id="headerShields" title="Streak Shields disponíveis"><span class="shield-icon" id="shieldIcon1">🛡</span> <span class="shield-icon" id="shieldIcon2">🛡</span> <span class="shield-icon" id="shieldIcon3">🛡</span></div>
         <div class="header-xp" id="headerXP"><span class="xp-rank" id="headerRank">RECRUTA</span>
@@ -45,24 +45,24 @@
           </div>
         </div>
         <div class="modo-foco-toggle" id="modoFocoToggle" onclick="toggleModoFoco()">
-          <div class="toggle-switch"></div><span class="modo-foco-label" data-i18n="modo_foco">MODO FOCO</span> <select class="modo-foco-select" id="modoFocoSelect" onchange="changeFocoExercise(event)" onclick="event.stopPropagation()">
+          <div class="toggle-switch"></div><span class="modo-foco-label">MODO FOCO</span> <select class="modo-foco-select" id="modoFocoSelect" onchange="changeFocoExercise(event)" onclick="event.stopPropagation()">
             <option value="">SELECIONAR...
           </select>
         </div>
-        <div class="lang-switcher" id="langSwitcher"><button class="lang-flag-btn active" id="lang-pt" data-lang="pt" onclick="trocarIdioma('pt')" title="Português (Brasil)"><span class="lang-flag"></span></button><button class="lang-flag-btn" id="lang-en" data-lang="en" onclick="trocarIdioma('en')" title="English"><span class="lang-flag"></span></button><button class="lang-flag-btn" id="lang-ru" data-lang="ru" onclick="trocarIdioma('ru')" title="Русский"><span class="lang-flag"></span></button></div><button id="btnToggleAudio" onclick="toggleAudio()" title="Ativar/desativar som" style="background:0 0;border:1px solid rgba(255,255,255,.15);border-radius:4px;color:inherit;cursor:pointer;font-size:15px;padding:4px 10px;margin-left:8px;transition:all .2s">🔊</button><button id="themeSwitchBtn" onclick="toggleTheme()" title="Alternar tema claro/escuro" style="background:0 0;border:1px solid rgba(255,255,255,.15);border-radius:4px;color:inherit;cursor:pointer;font-size:15px;padding:4px 10px;margin-left:8px;transition:all .2s">&#127769;</button>
+        <button id="btnToggleAudio" onclick="toggleAudio()" title="Ativar/desativar som" style="background:0 0;border:1px solid rgba(255,255,255,.15);border-radius:4px;color:inherit;cursor:pointer;font-size:15px;padding:4px 10px;margin-left:8px;transition:all .2s">🔊</button><button id="themeSwitchBtn" onclick="toggleTheme()" title="Alternar tema claro/escuro" style="background:0 0;border:1px solid rgba(255,255,255,.15);border-radius:4px;color:inherit;cursor:pointer;font-size:15px;padding:4px 10px;margin-left:8px;transition:all .2s">&#127769;</button>
         <div class="header-date" id="headerDate"></div>
       </div>
     </div>
     <nav class="nav-tabs">
-      <div class="nav-tab active" data-tab="treino" onclick='switchTab(event,"treino")'>⚔ <span data-i18n="tab_treino">TREINO</span></div>
-      <div class="nav-tab" data-tab="stats" onclick='switchTab(event,"stats")'>📊 <span data-i18n="tab_stats">PROGRESSO</span></div>
-      <div class="nav-tab" data-tab="badges" onclick='switchTab(event,"badges")'>🎖 <span data-i18n="tab_badges">CONQUISTAS</span></div>
-      <div class="nav-tab" data-tab="historico" onclick='switchTab(event,"historico")'>📋 <span data-i18n="tab_historico">HISTÓRICO</span></div>
-      <div class="nav-tab" data-tab="metodo" onclick='switchTab(event,"metodo")'>📖 <span data-i18n="tab_metodo">MÉTODO GTG</span></div>
-      <div class="nav-tab" data-tab="exportar" onclick='switchTab(event,"exportar")'>⬇ <span data-i18n="tab_exportar">EXPORTAR</span></div>
-      <div class="nav-tab" data-tab="planejador" onclick='switchTab(event,"planejador")'>📅 <span data-i18n="tab_planejador">PLANO</span></div>
-      <div class="nav-tab" data-tab="skilltree" onclick="switchTab(event,'skilltree')">&#x1F5FA; <span data-i18n="tab_arvore">ÁRVORE</span></div>
-      <div class="nav-tab" data-tab="calendario" onclick="switchTab(event,'calendario')">&#x1F4C6; <span data-i18n="tab_calendario">CALENDÁRIO</span></div>
+      <div class="nav-tab active" data-tab="treino" onclick='switchTab(event,"treino")'>⚔ <span>TREINO</span></div>
+      <div class="nav-tab" data-tab="stats" onclick='switchTab(event,"stats")'>📊 <span>PROGRESSO</span></div>
+      <div class="nav-tab" data-tab="badges" onclick='switchTab(event,"badges")'>🎖 <span>CONQUISTAS</span></div>
+      <div class="nav-tab" data-tab="historico" onclick='switchTab(event,"historico")'>📋 <span>HISTÓRICO</span></div>
+      <div class="nav-tab" data-tab="metodo" onclick='switchTab(event,"metodo")'>📖 <span>MÉTODO GTG</span></div>
+      <div class="nav-tab" data-tab="exportar" onclick='switchTab(event,"exportar")'>⬇ <span>EXPORTAR</span></div>
+      <div class="nav-tab" data-tab="planejador" onclick='switchTab(event,"planejador")'>📅 <span>PLANO</span></div>
+      <div class="nav-tab" data-tab="skilltree" onclick="switchTab(event,'skilltree')">&#x1F5FA; <span>ÁRVORE</span></div>
+      <div class="nav-tab" data-tab="calendario" onclick="switchTab(event,'calendario')">&#x1F4C6; <span>CALENDÁRIO</span></div>
     </nav>
   </header>
   <main class="main">
