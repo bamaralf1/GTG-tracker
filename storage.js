@@ -119,12 +119,17 @@ async function removeItem(key) {
   await db.delete(KV_STORE, key);
 }
 
+async function clearAll() {
+  const db = await getDB();
+  await db.clear(KV_STORE);
+}
+
 /* ---------------------------------------------------------------------------
  * Boot: roda migração + checagem de expiração ao carregar o módulo.
  * A primeira leitura do app.js (carregarDados) deve aguardar migrarDeLocalStorage()
  * para garantir que dados antigos do localStorage já estejam no IndexedDB.
  * ------------------------------------------------------------------------- */
-const storageReady = (async () => {
+window.storageReady = (async () => {
   await migrarDeLocalStorage();
   await limparFallbackExpirado();
 })();

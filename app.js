@@ -805,21 +805,26 @@ let fraseAtualIndex = -1,
   audioCtx = null;
 
 function inicializar() {
-  if (carregarDados(), atualizarDataHeader(), renderExercicios(), renderBadges(), renderHistory(), renderGuiaExercicios(), atualizarXP(), atualizarUIStreak(), atualizarStats(), setTimeout(() => {
+  carregarDados().then(async () => {
+    atualizarDataHeader(), renderExercicios(), renderBadges(), renderHistory(), renderGuiaExercicios(), atualizarXP(), atualizarUIStreak(), atualizarStats(), setTimeout(() => {
       renderGraficos(), renderProgresso(), renderEstatisticasMensais()
-    }, 300), verificarStreak(), verificarBadges(), preencherSelects(), exibirFraseDoDia(), iniciarLembretes(), carregarReadiness(), carregarMetas(), carregarPlanejador(), carregarModoFoco(), modoFocoState.ativo) {
-    const e = document.getElementById("modoFocoToggle");
-    e && e.classList.add("active"), populateFocoSelect(), document.getElementById("modoFocoSelect").value = modoFocoState.exercicioId || "", aplicarModoFoco()
-  }
-  setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), inicializarSkillTree();
-  const pesoDataEl = document.getElementById("pesoData");
-  if (pesoDataEl && !pesoDataEl.value) pesoDataEl.value = new Date().toISOString().slice(0, 10)
+    }, 300), verificarStreak(), verificarBadges(), preencherSelects(), exibirFraseDoDia(), iniciarLembretes();
+    await Promise.all([carregarReadiness(), carregarMetas(), carregarPlanejador(), carregarModoFoco()]);
+    if (modoFocoState.ativo) {
+      const e = document.getElementById("modoFocoToggle");
+      e && e.classList.add("active"), populateFocoSelect(), document.getElementById("modoFocoSelect").value = modoFocoState.exercicioId || "", aplicarModoFoco()
+    }
+    setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), inicializarSkillTree();
+    const pesoDataEl = document.getElementById("pesoData");
+    if (pesoDataEl && !pesoDataEl.value) pesoDataEl.value = new Date().toISOString().slice(0, 10)
+  })
 }
 
-function carregarDados() {
+async function carregarDados() {
   try {
-    const raw = localStorage.getItem("gtg_data");
-    raw ? (dados = JSON.parse(raw), dados && dados.exercicios && Array.isArray(dados.exercicios) || (console.warn("Dados corrompidos, resetando para defaults"), localStorage.removeItem("gtg_data"), dados = {
+    await window.storageReady;
+    const raw = await getItem("gtg_data") || localStorage.getItem("gtg_data");
+    raw ? (dados = JSON.parse(raw), dados && dados.exercicios && Array.isArray(dados.exercicios) || (console.warn("Dados corrompidos, resetando para defaults"), await removeItem("gtg_data").catch(() => {}), localStorage.removeItem("gtg_data"), dados = {
       exercicios: EXERCICIOS_DEFAULT.map(ex => ({ ...ex })),
       registros: []
     })) : (dados.exercicios = EXERCICIOS_DEFAULT.map(ex => ({ ...ex })), dados.registros = []), dados.exercicios && 0 !== dados.exercicios.length || (dados.exercicios = EXERCICIOS_DEFAULT.map(ex => ({ ...ex }))), dados.exercicios.forEach(ex => {
@@ -833,22 +838,24 @@ function carregarDados() {
     const seen = new Set;
     dados.exercicios = dados.exercicios.filter(ex => !seen.has(ex.id) && (seen.add(ex.id), !0))
   } catch (err) {
-    console.error("Erro ao carregar dados:", err), localStorage.removeItem("gtg_data"), dados = { exercicios: EXERCICIOS_DEFAULT.map(ex => ({ ...ex })), registros: [] }
+    console.error("Erro ao carregar dados:", err);
+    try { await removeItem("gtg_data") } catch (e) {}
+    localStorage.removeItem("gtg_data"), dados = { exercicios: EXERCICIOS_DEFAULT.map(ex => ({ ...ex })), registros: [] }
   }
   try {
-    const raw = localStorage.getItem("gtg_streaks");
+    const raw = await getItem("gtg_streaks") || localStorage.getItem("gtg_streaks");
     raw && (streakData = JSON.parse(raw)), void 0 === streakData.streakShields && (streakData.streakShields = 0), void 0 === streakData.shieldCost && (streakData.shieldCost = 500)
   } catch (err) {
     console.error("[carregarDados] Falha ao carregar streakData:", err)
   }
   try {
-    const raw = localStorage.getItem("gtg_xp");
+    const raw = await getItem("gtg_xp") || localStorage.getItem("gtg_xp");
     raw && (xpData = JSON.parse(raw))
   } catch (err) {
     console.error("[carregarDados] Falha ao carregar xpData:", err)
   }
   try {
-    const raw = localStorage.getItem("gtg_badges");
+    const raw = await getItem("gtg_badges") || localStorage.getItem("gtg_badges");
     badgesData = raw ? JSON.parse(raw) : { desbloqueadas: [] }
   } catch (err) {
     badgesData = { desbloqueadas: [] }
@@ -856,7 +863,12 @@ function carregarDados() {
 }
 
 function salvarDados() {
-  localStorage.setItem("gtg_data", JSON.stringify(dados)), localStorage.setItem("gtg_streaks", JSON.stringify(streakData)), localStorage.setItem("gtg_xp", JSON.stringify(xpData)), localStorage.setItem("gtg_badges", JSON.stringify(badgesData))
+  Promise.all([
+    setItem("gtg_data", JSON.stringify(dados)),
+    setItem("gtg_streaks", JSON.stringify(streakData)),
+    setItem("gtg_xp", JSON.stringify(xpData)),
+    setItem("gtg_badges", JSON.stringify(badgesData))
+  ]).catch(() => {})
 }
 
 function atualizarDataHeader() {
@@ -1749,7 +1761,7 @@ try { audioMuted = JSON.parse(localStorage.getItem("gtg_audio_muted")) || !1 } c
 
 function toggleAudio() {
   audioMuted = !audioMuted;
-  localStorage.setItem("gtg_audio_muted", JSON.stringify(audioMuted));
+  setItem("gtg_audio_muted", JSON.stringify(audioMuted)).catch(() => {});
   const btn = document.getElementById("btnToggleAudio");
   btn && (btn.textContent = audioMuted ? "🔇" : "🔊")
 }
@@ -2162,7 +2174,7 @@ function handleImport(ev) {
 
 function clearAllData() {
   if (!window.confirm("APAGAR TODOS OS DADOS? Isso não pode ser desfeito!")) return;
-  localStorage.clear(), location.reload()
+  clearAll().catch(() => {}), localStorage.clear(), location.reload()
 }
 
 function downloadFile(content, fileName, mimeType) {
@@ -2188,9 +2200,9 @@ window.addEventListener("beforeinstallprompt", ev => {
 });
 let modoFocoState = { ativo: !1, exercicioId: null };
 
-function carregarModoFoco() {
+async function carregarModoFoco() {
   try {
-    const raw = localStorage.getItem("gtg_modo_foco");
+    const raw = await getItem("gtg_modo_foco") || localStorage.getItem("gtg_modo_foco");
     raw && (modoFocoState = JSON.parse(raw))
   } catch (err) {
     console.error("[carregarModoFoco] Falha ao carregar modoFocoState:", err)
@@ -2198,7 +2210,7 @@ function carregarModoFoco() {
 }
 
 function salvarModoFoco() {
-  localStorage.setItem("gtg_modo_foco", JSON.stringify(modoFocoState))
+  setItem("gtg_modo_foco", JSON.stringify(modoFocoState)).catch(() => {})
 }
 
 function toggleModoFoco() {
@@ -2388,9 +2400,9 @@ let readinessData = {
 };
 const READINESS_KEY = "gtg_readiness";
 
-function carregarReadiness() {
+async function carregarReadiness() {
   try {
-    const e = localStorage.getItem(READINESS_KEY);
+    const e = await getItem(READINESS_KEY) || localStorage.getItem(READINESS_KEY);
     if (e) {
       const a = JSON.parse(e),
         t = (new Date).toISOString().slice(0, 10);
@@ -2404,7 +2416,7 @@ function carregarReadiness() {
 
 function salvarReadiness() {
   try {
-    readinessData.data = (new Date).toISOString().slice(0, 10), localStorage.setItem(READINESS_KEY, JSON.stringify(readinessData))
+    readinessData.data = (new Date).toISOString().slice(0, 10), setItem(READINESS_KEY, JSON.stringify(readinessData)).catch(() => {})
   } catch (e) {
     console.error("Erro ao salvar readiness:", e)
   }
@@ -2894,9 +2906,9 @@ function preencherSelectPR() {
   e && (e.innerHTML = dados.exercicios.map(e => `<option value="${e.id}">${e.nome}</option>`).join(""), dados.exercicios.length && renderGraficoPR(dados.exercicios[0].id))
 }
 
-function carregarMetas() {
+async function carregarMetas() {
   try {
-    const e = localStorage.getItem("gtg_metas");
+    const e = await getItem("gtg_metas") || localStorage.getItem("gtg_metas");
     e && (dados.metas = JSON.parse(e))
   } catch (e) {
     dados.metas = {}
@@ -2904,7 +2916,7 @@ function carregarMetas() {
 }
 
 function salvarMetas() {
-  localStorage.setItem("gtg_metas", JSON.stringify(dados.metas || {}))
+  setItem("gtg_metas", JSON.stringify(dados.metas || {})).catch(() => {})
 }
 
 function calcularProgressoMeta(e) {
@@ -3041,9 +3053,9 @@ const DIAS_SEMANA = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"],
   DIAS_COMPLETOS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 let planejador = {};
 
-function carregarPlanejador() {
+async function carregarPlanejador() {
   try {
-    const e = localStorage.getItem("gtg_planejador");
+    const e = await getItem("gtg_planejador") || localStorage.getItem("gtg_planejador");
     planejador = e ? JSON.parse(e) : {}
   } catch (e) {
     planejador = {}
@@ -3051,7 +3063,7 @@ function carregarPlanejador() {
 }
 
 function salvarPlanejador() {
-  localStorage.setItem("gtg_planejador", JSON.stringify(planejador))
+  setItem("gtg_planejador", JSON.stringify(planejador)).catch(() => {})
 }
 
 function renderPlanejador() {
@@ -3123,7 +3135,7 @@ function irParaTreinoHoje() {
 }
 
 function aplicarTema(e) {
-  document.documentElement.setAttribute("data-theme", e), localStorage.setItem("gtg_tema", e);
+  document.documentElement.setAttribute("data-theme", e), setItem("gtg_tema", e).catch(() => {});
   const a = document.getElementById("themeSwitchBtn");
   a && (a.textContent = "light" === e ? "☀" : "🌙", a.style.borderColor = "light" === e ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.15)", a.style.color = "light" === e ? "#1A1208" : "inherit")
 }
@@ -3133,24 +3145,27 @@ function toggleTheme() {
 }
 
 function carregarTema() {
-  aplicarTema(localStorage.getItem("gtg_tema") || "dark")
+  const saved = localStorage.getItem("gtg_tema") || "dark";
+  aplicarTema(saved);
+  getItem("gtg_tema").then(v => { if (v !== null) aplicarTema(v) }).catch(() => {})
 }
 carregarTema();
 let _notaData = (new Date).toISOString().slice(0, 10),
   _notaTimer = null;
 
-function carregarNotas() {
+async function carregarNotas() {
   try {
-    return JSON.parse(localStorage.getItem("gtg_notas") || "{}")
+    const raw = await getItem("gtg_notas") || localStorage.getItem("gtg_notas");
+    return JSON.parse(raw || "{}")
   } catch (e) {
     return {}
   }
 }
 
-function salvarNotaDia() {
-  const e = carregarNotas(),
+async function salvarNotaDia() {
+  const e = await carregarNotas(),
     a = document.getElementById("notaDiaria")?.value || "";
-  a.trim() ? e[_notaData] = a : delete e[_notaData], localStorage.setItem("gtg_notas", JSON.stringify(e));
+  a.trim() ? e[_notaData] = a : delete e[_notaData], setItem("gtg_notas", JSON.stringify(e)).catch(() => {});
   const t = document.getElementById("notaSalvoLabel");
   t && (t.textContent = "Salvo automaticamente", setTimeout(() => {
     t.textContent = ""
@@ -3298,29 +3313,32 @@ function renderVolumeChart() {
 const PESO_KEY = "gtg_peso";
 let _pesoChart = null;
 
-function getPesoData() {
-  try { return JSON.parse(localStorage.getItem(PESO_KEY)) || {} } catch (e) { return {} }
+async function getPesoData() {
+  try {
+    const raw = await getItem(PESO_KEY) || localStorage.getItem(PESO_KEY);
+    return JSON.parse(raw || "{}")
+  } catch (e) { return {} }
 }
 
-function salvarPeso() {
+async function salvarPeso() {
   const dataEl = document.getElementById("pesoData"),
     valEl = document.getElementById("pesoValor");
   if (!dataEl || !valEl) return;
   const data = dataEl.value || new Date().toISOString().slice(0, 10),
     valor = parseFloat(valEl.value);
   if (!valor || valor < 20 || valor > 300) return void mostrarToast("Erro", "Insira um peso válido (20-300 kg)", "error");
-  const pesos = getPesoData();
+  const pesos = await getPesoData();
   pesos[data] = valor;
-  localStorage.setItem(PESO_KEY, JSON.stringify(pesos));
+  setItem(PESO_KEY, JSON.stringify(pesos)).catch(() => {});
   valEl.value = "";
-  renderPesoChart();
+  await renderPesoChart();
   mostrarToast("Peso registrado", `${data}: ${valor} kg`, "success")
 }
 
-function renderPesoChart() {
+async function renderPesoChart() {
   const e = document.getElementById("pesoChart");
   if (!e) return;
-  const pesos = getPesoData(),
+  const pesos = await getPesoData(),
     sorted = Object.keys(pesos).sort(),
     recentes = sorted.slice(-60);
   if (recentes.length < 1) {
@@ -3426,30 +3444,34 @@ function renderCompararSemanas() {
 
 function mostrarResumoOntem() {
   const e = (new Date).toISOString().slice(0, 10);
-  if (localStorage.getItem("gtg_resumo_visto") === e) return;
-  const a = new Date(Date.now() - 864e5).toISOString().slice(0, 10),
-    t = dados.registros.filter(e => e.data === a && !e.isTest);
-  if (0 === t.length) return;
-  localStorage.setItem("gtg_resumo_visto", e);
-  const o = t.reduce((e, a) => e + (a.xp || 0), 0),
-    r = t.reduce((e, a) => e + (a.valor || 0), 0),
-    s = {};
-  t.forEach(e => {
-    s[e.exercicioId] || (s[e.exercicioId] = {
-      nome: e.exercicioNome,
-      series: 0,
-      reps: 0
-    }), s[e.exercicioId].series++, s[e.exercicioId].reps += e.valor || 0
-  });
-  const n = JSON.parse(localStorage.getItem("gtg_notas") || "{}")[a] || "",
-    i = new Date(a + "T12:00:00"),
-    d = document.getElementById("resumoOntemModal"),
-    c = document.getElementById("resumoOntemTitle"),
-    l = document.getElementById("resumoOntemBody");
-  if (!d || !l) return;
-  c.textContent = `📊 RESUMO — ${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][i.getDay()].toUpperCase()}, ${i.toLocaleDateString("pt-BR")}`;
-  const m = Object.values(s).map(e => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">\n      <span style="font-family:Rajdhani,sans-serif;font-size:14px;">${e.nome}</span>\n      <span class="text-mono" style="font-size:12px;color:var(--gold);">${e.series} séries · ${e.reps} vol</span>\n    </div>`).join("");
-  l.innerHTML = `\n    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;">\n      <div style="text-align:center;background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--gold);">${t.length}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">SÉRIES</div>\n      </div>\n      <div style="text-align:center;background:rgba(204,0,0,0.08);border:1px solid rgba(204,0,0,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--red-bright);">${r}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">VOLUME</div>\n      </div>\n      <div style="text-align:center;background:rgba(45,122,45,0.08);border:1px solid rgba(45,122,45,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--green-bright);">+${o}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">XP</div>\n      </div>\n    </div>\n    <div style="margin-bottom:12px;">${m}</div>\n    ${n?`<div style="background:rgba(212,160,23,0.06);border:1px solid rgba(212,160,23,0.2);border-radius:4px;padding:10px;margin-bottom:12px;">\n      <div class="text-mono" style="font-size:10px;color:var(--gold-dim);margin-bottom:4px;">📝 SUA NOTA</div>\n      <div style="font-family:Rajdhani,sans-serif;font-size:14px;color:var(--white-dim);">${n}</div>\n    </div>`:""}\n    <button class="btn btn-red" style="width:100%;" onclick="document.getElementById('resumoOntemModal').classList.remove('active')">▶ TREINAR HOJE</button>\n  `, setTimeout(() => d.classList.add("active"), 1200)
+  getItem("gtg_resumo_visto").then(visto => {
+    if (visto === e) return;
+    const a = new Date(Date.now() - 864e5).toISOString().slice(0, 10),
+      t = dados.registros.filter(e => e.data === a && !e.isTest);
+    if (0 === t.length) return;
+    setItem("gtg_resumo_visto", e).catch(() => {});
+    const o = t.reduce((e, a) => e + (a.xp || 0), 0),
+      r = t.reduce((e, a) => e + (a.valor || 0), 0),
+      s = {};
+    t.forEach(e => {
+      s[e.exercicioId] || (s[e.exercicioId] = {
+        nome: e.exercicioNome,
+        series: 0,
+        reps: 0
+      }), s[e.exercicioId].series++, s[e.exercicioId].reps += e.valor || 0
+    });
+    carregarNotas().then(notas => {
+      const n = notas[a] || "",
+        i = new Date(a + "T12:00:00"),
+        d = document.getElementById("resumoOntemModal"),
+        c = document.getElementById("resumoOntemTitle"),
+        l = document.getElementById("resumoOntemBody");
+      if (!d || !l) return;
+      c.textContent = `📊 RESUMO — ${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][i.getDay()].toUpperCase()}, ${i.toLocaleDateString("pt-BR")}`;
+      const m = Object.values(s).map(e => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">\n      <span style="font-family:Rajdhani,sans-serif;font-size:14px;">${e.nome}</span>\n      <span class="text-mono" style="font-size:12px;color:var(--gold);">${e.series} séries · ${e.reps} vol</span>\n    </div>`).join("");
+      l.innerHTML = `\n    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;">\n      <div style="text-align:center;background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--gold);">${t.length}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">SÉRIES</div>\n      </div>\n      <div style="text-align:center;background:rgba(204,0,0,0.08);border:1px solid rgba(204,0,0,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--red-bright);">${r}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">VOLUME</div>\n      </div>\n      <div style="text-align:center;background:rgba(45,122,45,0.08);border:1px solid rgba(45,122,45,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--green-bright);">+${o}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">XP</div>\n      </div>\n    </div>\n    <div style="margin-bottom:12px;">${m}</div>\n    ${n?`<div style="background:rgba(212,160,23,0.06);border:1px solid rgba(212,160,23,0.2);border-radius:4px;padding:10px;margin-bottom:12px;">\n      <div class="text-mono" style="font-size:10px;color:var(--gold-dim);margin-bottom:4px;">📝 SUA NOTA</div>\n      <div style="font-family:Rajdhani,sans-serif;font-size:14px;color:var(--white-dim);">${n}</div>\n    </div>`:""}\n    <button class="btn btn-red" style="width:100%;" onclick="document.getElementById('resumoOntemModal').classList.remove('active')">▶ TREINAR HOJE</button>\n  `, setTimeout(() => d.classList.add("active"), 1200)
+    }).catch(() => {})
+  }).catch(() => {})
 }
 let _gtgTimers = {};
 
@@ -3481,7 +3503,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const d = document.querySelector('meta[name="theme-color"]');
   d && d.setAttribute("content", e), "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
     e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (BACKGROUND)", document.getElementById("btnAtivarLembrete").textContent = "✓ ATIVO", document.getElementById("btnAtivarLembrete").style.background = "rgba(45,122,45,0.3)", document.getElementById("btnAtivarLembrete").style.borderColor = "var(--green-bright)", document.getElementById("btnAtivarLembrete").style.color = "var(--green-bright)"))
-  }), setupNavTabs(), inicializar(), setTimeout(mostrarResumoOntem, 1500);
+  }), setupNavTabs(), inicializar();
   const audioBtn = document.getElementById("btnToggleAudio");
   audioBtn && (audioBtn.textContent = audioMuted ? "🔇" : "🔊")
 });
@@ -3656,7 +3678,7 @@ function aplicarIdioma(lang) {
 
 function trocarIdioma(lang) {
   try {
-    localStorage.setItem('gtg_idioma', lang)
+    setItem('gtg_idioma', lang).catch(() => {})
   } catch (e) {
     console.error("[trocarIdioma] Falha ao salvar idioma:", e)
   }
@@ -3666,7 +3688,8 @@ function trocarIdioma(lang) {
 function carregarIdioma() {
   let lang = 'pt';
   try {
-    lang = localStorage.getItem('gtg_idioma') || 'pt'
+    lang = localStorage.getItem('gtg_idioma') || 'pt';
+    getItem('gtg_idioma').then(v => { if (v) aplicarIdioma(v) }).catch(() => {})
   } catch (e) {
     console.error("[carregarIdioma] Falha ao ler idioma salvo:", e)
   }
