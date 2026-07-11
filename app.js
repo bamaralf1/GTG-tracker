@@ -814,7 +814,7 @@ function inicializar() {
       const e = document.getElementById("modoFocoToggle");
       e && e.classList.add("active"), populateFocoSelect(), document.getElementById("modoFocoSelect").value = modoFocoState.exercicioId || "", aplicarModoFoco()
     }
-    setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), inicializarSkillTree(), renderCalendario();
+    setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), inicializarSkillTree(), renderCalendario(), verificarRelatorioSemanal();
     const pesoDataEl = document.getElementById("pesoData");
     if (pesoDataEl && !pesoDataEl.value) pesoDataEl.value = new Date().toISOString().slice(0, 10)
   })
@@ -1983,7 +1983,9 @@ function tocarSomLembrete() {
   tocarNota(784, { vol: .1, dur: .15, rev: .3 }), tocarNota(1047, { vol: .14, dur: .2, rev: .35, delay: .15 })
 }
 let swRegistration = null,
-  deferredInstallPrompt = null;
+  deferredInstallPrompt = null,
+  CACHE_BUILD = "20260711"; // altere quando fizer deploy de novas versoes
+
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");
   deferredInstallPrompt.prompt();
@@ -3473,6 +3475,110 @@ function mostrarResumoOntem() {
     }).catch(() => {})
   }).catch(() => {})
 }
+
+function getFimSemana(dataStr) {
+  const inicio = new Date(getInicioSemana(dataStr) + "T12:00:00");
+  return new Date(inicio.getTime() + 6 * 864e5).toISOString().slice(0, 10)
+}
+
+function gerarRelatorioSemanal() {
+  const hoje = (new Date).toISOString().slice(0, 10),
+    segInicio = getInicioSemana(hoje),
+    segFim = getFimSemana(hoje);
+  const regs = dados.registros.filter(r => r.data >= segInicio && r.data <= segFim && !r.isTest),
+    diasComTreino = new Set(regs.map(r => r.data)).size,
+    totalSeries = regs.length,
+    totalReps = regs.reduce((a, r) => a + (r.valor || 0), 0),
+    totalXP = regs.reduce((a, r) => a + (r.xp || 0), 0);
+  const agrupado = {};
+  regs.forEach(r => {
+    const key = r.exercicioNome || r.exercicioId || "?";
+    agrupado[key] || (agrupado[key] = { series: 0, reps: 0 });
+    agrupado[key].series++, agrupado[key].reps += r.valor || 0
+  });
+  const items = Object.entries(agrupado).sort((a, b) => b[1].series - a[1].series).slice(0, 8).map(([nome, st]) =>
+    `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px;">
+      <span style="font-family:Rajdhani,sans-serif;">${nome}</span>
+      <span class="text-mono" style="font-size:11px;color:var(--gold);">${st.series}s · ${st.reps} reps</span>
+    </div>`
+  ).join("");
+  const badgesSemana = TODAS_BADGES.filter(b => badgesData.desbloqueadas.includes(b.id));
+  const badgesHTML = badgesSemana.length
+    ? badgesSemana.map(b => `<span style="display:inline-block;margin:3px 4px;padding:3px 8px;background:rgba(212,160,23,0.1);border:1px solid rgba(212,160,23,0.25);border-radius:4px;font-size:11px;">${b.icone} ${b.nome}</span>`).join("")
+    : '<span class="text-mono" style="font-size:10px;color:var(--gray-light);">Nenhuma conquista nova esta semana</span>';
+  const inicio = new Date(segInicio + "T12:00:00"),
+    fim = new Date(segFim + "T12:00:00");
+  const dataLabel = `${String(inicio.getDate()).padStart(2,"0")} ${["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"][inicio.getMonth()]} — ${String(fim.getDate()).padStart(2,"0")} ${["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"][fim.getMonth()]} ${fim.getFullYear()}`;
+  return {
+    dataLabel,
+    totalSeries,
+    totalReps: totalReps.toLocaleString("pt-BR"),
+    totalXP: totalXP.toLocaleString("pt-BR"),
+    diasComTreino,
+    totalDias: 7,
+    streak: streakData.atual,
+    streakRec: streakData.recorde,
+    itemsHTML: items || '<div class="text-mono" style="text-align:center;padding:16px;font-size:11px;color:var(--gray-light);">Nenhum registro nesta semana.</div>',
+    badgesHTML
+  }
+}
+
+function mostrarRelatorioSemanal() {
+  const rel = gerarRelatorioSemanal(),
+    d = document.getElementById("relSemanalModal"),
+    t = document.getElementById("relSemanalTitle"),
+    b = document.getElementById("relSemanalBody");
+  if (!d || !b) return;
+  t.textContent = `📊 RELATÓRIO SEMANAL`;
+  b.innerHTML = `
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:2px;text-align:center;margin-bottom:12px;">${rel.dataLabel}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+      <div style="text-align:center;background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2);border-radius:4px;padding:10px;">
+        <div style="font-family:Bebas Neue,sans-serif;font-size:26px;color:var(--gold);">${rel.totalSeries}</div>
+        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">SÉRIES</div>
+      </div>
+      <div style="text-align:center;background:rgba(204,0,0,0.08);border:1px solid rgba(204,0,0,0.2);border-radius:4px;padding:10px;">
+        <div style="font-family:Bebas Neue,sans-serif;font-size:26px;color:var(--red-bright);">${rel.totalReps}</div>
+        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">VOLUME</div>
+      </div>
+      <div style="text-align:center;background:rgba(45,122,45,0.08);border:1px solid rgba(45,122,45,0.2);border-radius:4px;padding:10px;">
+        <div style="font-family:Bebas Neue,sans-serif;font-size:26px;color:var(--green-bright);">+${rel.totalXP}</div>
+        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">XP</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+      <div style="text-align:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:4px;padding:8px;">
+        <div style="font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--white-dim);">🔥 ${rel.streak}</div>
+        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">STREAK ATUAL</div>
+      </div>
+      <div style="text-align:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:4px;padding:8px;">
+        <div style="font-family:Bebas Neue,sans-serif;font-size:20px;color:var(--white-dim);">📅 ${rel.diasComTreino}/7</div>
+        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">DIAS TREINADOS</div>
+      </div>
+    </div>
+    <div style="margin-bottom:12px;">${rel.itemsHTML}</div>
+    <div style="margin-bottom:12px;">
+      <div class="text-mono" style="font-size:10px;color:var(--gold-dim);margin-bottom:6px;letter-spacing:2px;">🏆 CONQUISTAS</div>
+      <div style="text-align:center;">${rel.badgesHTML}</div>
+    </div>
+    <div style="margin-top:4px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--gray-light);text-align:center;letter-spacing:1px;">RECORDE STREAK: ${rel.streakRec} DIAS</div>
+    <button class="btn btn-red" style="width:100%;margin-top:10px;" onclick="document.getElementById('relSemanalModal').classList.remove('active')">▶ FECHAR</button>
+  `, setTimeout(() => d.classList.add("active"), 300)
+}
+
+function verificarRelatorioSemanal() {
+  const hoje = (new Date).toISOString().slice(0, 10);
+  getItem("gtg_semana_visto").then(visto => {
+    if (visto === hoje) return;
+    const segInicio = getInicioSemana(hoje);
+    if (segInicio === visto) return;
+    const regs = dados.registros.filter(r => r.data >= segInicio && r.data <= hoje && !r.isTest);
+    if (regs.length < 1) return;
+    setItem("gtg_semana_visto", hoje).catch(() => {});
+    setTimeout(mostrarRelatorioSemanal, 2000)
+  }).catch(() => {})
+}
+
 let _gtgTimers = {};
 
 function iniciarTimerGTG(e) {
@@ -3498,7 +3604,15 @@ function pararTimerGTG(e) {
   a && (a.style.display = "none")
 }
 document.addEventListener("DOMContentLoaded", () => {
-  "serviceWorker" in navigator && registrarServiceWorker();
+  "serviceWorker" in navigator && registrarServiceWorker().then(reg => {
+    if (reg) {
+      swRegistration = reg;
+      const enviarBuild = () => { reg.active && reg.active.postMessage({ type: "ATUALIZAR_CACHE", version: CACHE_BUILD }) };
+      reg.active ? enviarBuild() : reg.addEventListener("updatefound", () => {
+        reg.installing?.addEventListener("statechange", () => { reg.active && enviarBuild() })
+      })
+    }
+  });
   const e = cssVar("--accent-red") || "#CC0000";
   const d = document.querySelector('meta[name="theme-color"]');
   d && d.setAttribute("content", e), "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
