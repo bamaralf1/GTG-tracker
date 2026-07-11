@@ -110,7 +110,7 @@ body::after{
   backdrop-filter:blur(20px) saturate(180%);
   -webkit-backdrop-filter:blur(20px) saturate(180%);
 }
-.header-top{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;max-width:1400px;margin:0 auto;flex-wrap:wrap;row-gap:10px}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;max-width:1800px;margin:0 auto;flex-wrap:wrap;row-gap:10px}
 .header-logo{display:flex;align-items:center;gap:14px}
 
 /* Star symbol — lens flare pulse */
@@ -299,7 +299,7 @@ body::after{
   border-bottom:1px solid rgba(212,168,67,0.12);
   display:flex;
   flex-wrap:wrap;
-  max-width:1400px;
+  max-width:1800px;
   margin:0 auto;
   overflow-x:auto;
   padding:clamp(4px,0.6vw,8px) 0;
