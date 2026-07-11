@@ -385,6 +385,7 @@ body::after{
 
 @media (max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr 1fr}.grid-2{grid-template-columns:1fr}}
 @media (max-width:600px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.main{padding:12px}}
+@media (max-width:768px){.treino-layout{flex-direction:column!important}.treino-sidebar{width:100%!important}}
 
 @media (max-width:900px){
   .header-top{padding:10px 16px}

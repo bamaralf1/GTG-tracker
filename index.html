@@ -67,192 +67,30 @@
   </header>
   <main class="main">
     <div class="tab-content active" id="tab-treino">
-      <div class="frase-card mb-16" style="margin-bottom:20px">
-        <div id="fraseMotivacional">
-          <div class="frase-texto">"A força não tem um fim de semana."</div>
-          <div class="frase-autor">— Pavel Tsatsouline</div>
-        </div>
-        <div class="frase-actions"><button class="btn btn-outline btn-sm" onclick="proximaFrase()">↻ PRÓXIMA FRASE</button>
-          <div class="lembrete-card" style="flex:1;min-width:200px;padding:8px 14px"><span class="lembrete-icon">⏰</span>
-            <div class="lembrete-info">
-              <div class="lembrete-title">LEMBRETES GTG</div>
-              <div class="lembrete-desc" id="lembreteDesc">AVISO A CADA 20 MIN PARA FAZER UMA SÉRIE</div>
+      <div class="treino-layout" style="display:flex; gap:16px; align-items:flex-start;">
+        <div class="treino-main" style="flex:1; min-width:0;">
+          <div class="grid-4 mb-16">
+            <div class="stat-card">
+              <div class="stat-card-value" id="statHoje">0</div>
+              <div class="stat-card-label">SÉRIES HOJE</div>
+              <div class="stat-card-sub" id="statRepsHoje">0 reps</div>
             </div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><button class="btn btn-sm" id="btnAtivarLembrete" style="background:rgba(204,0,0,.3);border:1px solid var(--red);color:var(--red-bright);font-family:'Bebas Neue',sans-serif;letter-spacing:2px" onclick="solicitarPermissaoNotificacao()">⚡ ATIVAR</button> <button class="btn btn-sm" id="btnInstalarPWA" style="display:none;background:rgba(212,160,23,.2);border:1px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;letter-spacing:2px" onclick="instalarPWA()">📲 INSTALAR APP</button></div>
-          </div>
-        </div>
-      </div>
-      <div class="card mb-16" style="margin-bottom:12px;background:linear-gradient(135deg,rgba(204,0,0,0.15),rgba(139,0,0,0.05));border-color:rgba(204,0,0,0.4)">
-        <div class="card-body" style="padding:12px 20px">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-            <span class="text-mono" style="font-size:11px;color:var(--gold);letter-spacing:2px;white-space:nowrap">☭ RÁDIO SOVIÉTICA</span>
-            <select id="sovietRadioStation" onchange="changeRadioStation()" style="flex:1;min-width:200px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid rgba(212,168,67,0.3);color:var(--gold);font-family:Share Tech Mono,monospace;font-size:11px;cursor:pointer">
-              <option value="http://evcast.mediacp.eu:2070/stream">🎵 Советская эстрада (Soviet Estrada)</option>
-              <option value="http://retroserver.streamr.ru:8043/retro256.mp3">🎺 Ретро FM (Retro FM Rússia)</option>
-              <option value="http://nashe1.hostingradio.ru/nashe-256">🎸 Наше Радио (Nashe Radio)</option>
-              <option value="http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3">🎤 Радио Шансон (Rádio Chanson)</option>
-              <option value="http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3">🎻 Радио Орфей (Clássica Russa)</option>
-            </select>
-            <button onclick="toggleRadio()" id="radioToggleBtn" style="padding:6px 12px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:Bebas Neue,sans-serif;letter-spacing:2px;font-size:12px;cursor:pointer">▶ PLAY</button>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <span class="text-mono" style="font-size:10px;color:var(--gray-light)">VOLUME:</span>
-            <input type="range" id="radioVolume" min="0" max="100" value="50" onchange="changeRadioVolume()" style="flex:1;max-width:150px;height:6px;cursor:pointer">
-            <span class="text-mono" style="font-size:10px;color:var(--gold)" id="volumeDisplay">50%</span>
-            <span class="text-mono" style="font-size:10px;color:var(--gray-light);white-space:nowrap">📡 <span id="currentStationName">Soviet Music Radio</span></span>
-          </div>
-          <audio id="sovietRadioPlayer" preload="none" style="display:none"></audio>
-        </div>
-      </div>
-      <div class="card" id="plankTimerCard" style="margin-top:20px">
-        <div class="card-header"><span class="card-title">⏱ TIMER — PRANCHA / L-SIT / ISOMÉTRICO</span> <select class="form-select" id="timerExerciseSelect" style="font-size:12px;padding:4px 8px"></select></div>
-        <div class="card-body plank-timer">
-          <div id="prepCountdown" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:6px;color:var(--gold);margin-bottom:8px;animation:starPulse .8s ease-in-out infinite">PREPARE-SE</div>
-          <div id="prepNumber" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:120px;color:var(--gold);line-height:1;text-shadow:0 0 40px rgba(212,160,23,.7);margin-bottom:4px"></div>
-          <div class="timer-display" id="timerDisplay">00:00</div>
-          <div class="timer-controls"><button class="btn btn-red" id="btnStartTimer" onclick="startPlankTimer()">▶ INICIAR</button> <button class="btn btn-outline" onclick="stopPlankTimer()">■ PARAR E SALVAR</button> <button class="btn btn-outline" onclick="resetPlankTimer()">↺ RESET</button></div>
-        </div>
-      </div>
-      <div class="card" id="gtgSessionCard" style="margin-top:20px;border-color:rgba(212,160,23,.25)">
-        <div class="card-header" style="border-color:rgba(212,160,23,.2)"><span class="card-title" style="color:var(--gold)">🔗 SESSÃO GTG — MODO COMPRIMIDO</span><span class="text-mono" style="font-size:9px;color:var(--gray-light);max-width:200px;line-height:1.3">Quando não puder espalhar ao longo do dia — mantenha o descanso sagrado de 15 min</span></div>
-        <div class="card-body">
-          <div class="session-setup" id="sessionSetup">
-            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px;">
-              <div class="form-group" style="flex:2;min-width:160px;"><label class="form-label">EXERCÍCIO</label><select class="form-select" id="sessionExSelect" onchange="atualizarSugestaoSessao()" style="width:100%;">
-                  <option value="">SELECIONAR EXERCÍCIO</option>
-                </select></div>
-              <div class="form-group" style="flex:1;min-width:80px;"><label class="form-label">SÉRIES</label><input type="number" class="form-input" id="sessionNumSeries" value="5" min="1" max="20" style="width:100%;"></div>
-              <div class="form-group" style="flex:1;min-width:80px;"><label class="form-label">REPS/SEG</label><input type="number" class="form-input" id="sessionSerieValor" placeholder="—" min="1" style="width:100%;"></div>
+            <div class="stat-card">
+              <div class="stat-card-value" id="statSemana">0</div>
+              <div class="stat-card-label">SÉRIES SEMANA</div>
+              <div class="stat-card-sub" id="statRepsSemanaSub">0 reps esta semana</div>
             </div>
-            <div class="form-group" style="margin-bottom:12px;"><label class="form-label">DESCANSO ENTRE SÉRIES</label><select class="form-select" id="sessionDescanso" style="width:100%;">
-                <option value="900">15 minutos (Pavel recomenda)</option>
-                <option value="1200">20 minutos</option>
-                <option value="1800">30 minutos</option>
-                <option value="60">1 minuto (teste rápido)</option>
-              </select></div>
-            <div class="gtg-principle" style="padding:8px 12px;margin-bottom:12px;border-color:rgba(212,160,23,.2);"><span class="text-mono" style="font-size:10px;color:var(--gray-light);">💡 SUGESTÃO GTG: </span><span class="text-mono" style="font-size:11px;color:var(--gold);" id="sessionSugestao">—</span></div>
-            <div style="display:flex;gap:8px;align-items:center;"><button class="btn btn-red" style="flex:1;font-size:16px;letter-spacing:3px;" onclick="iniciarSessaoGTG()">▶ INICIAR SESSÃO</button></div>
-            <div class="text-mono" style="font-size:9px;color:var(--gray);margin-top:8px;text-align:center">"Frequência é rei, mas recuperação é a coroa." — Pavel Tsatsouline</div>
-          </div>
-          <div class="session-progress" id="sessionProgress" style="display:none;">
-            <div style="text-align:center;margin-bottom:14px;">
-              <div class="text-mono" id="sessionProgressTitle" style="font-size:12px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;">SESSÃO EM ANDAMENTO</div>
-              <div id="sessionSeriesDots" style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;"></div>
+            <div class="stat-card">
+              <div class="stat-card-value" id="statTotal">0</div>
+              <div class="stat-card-label">TOTAL ACUMULADO</div>
+              <div class="stat-card-sub" id="statTotalSub">histórico completo</div>
             </div>
-            <div id="sessionStateBox" style="text-align:center;padding:20px 10px;background:rgba(0,0,0,0.2);border-radius:4px;margin-bottom:12px;">
-              <div id="sessionStateLabel" class="text-mono" style="font-size:11px;color:var(--gray-light);letter-spacing:2px;margin-bottom:6px;">PRÓXIMA SÉRIE</div>
-              <div id="sessionTimerDisplay" style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,160,23,.5);">PRONTO</div>
-            </div>
-            <div style="display:flex;gap:8px;"><button class="btn btn-gold" id="sessionActionBtn" style="flex:1;" onclick="executarSerieSessao()">✓ REGISTRAR SÉRIE AGORA</button><button class="btn btn-outline" onclick="pararSessaoGTG()">■ ENCERRAR</button></div>
-          </div>
-        </div>
-      </div>
-
-      <script>
-        let isRadioPlaying = false;
-        const radioPlayer = document.getElementById('sovietRadioPlayer');
-        const radioToggleBtn = document.getElementById('radioToggleBtn');
-        const radioVolume = document.getElementById('radioVolume');
-        const volumeDisplay = document.getElementById('volumeDisplay');
-        const stationSelect = document.getElementById('sovietRadioStation');
-        const currentStationName = document.getElementById('currentStationName');
-
-        const stationNames = {
-          'http://evcast.mediacp.eu:2070/stream': 'Советская эстрада (Soviet Estrada)',
-          'http://retroserver.streamr.ru:8043/retro256.mp3': 'Ретро FM (Retro FM Rússia)',
-          'http://nashe1.hostingradio.ru/nashe-256': 'Наше Радио (Nashe Radio)',
-          'http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3': 'Радио Шансон (Rádio Chanson)',
-          'http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3': 'Радио Орфей (Clássica Russa)'
-        };
-
-        function changeRadioStation() {
-          const station = stationSelect.value;
-          radioPlayer.src = station;
-          currentStationName.textContent = stationNames[station] || 'Unknown Station';
-          if (isRadioPlaying) {
-            radioPlayer.play();
-          }
-        }
-
-        function toggleRadio() {
-          if (!radioPlayer.src) {
-            radioPlayer.src = stationSelect.value;
-          }
-
-          if (isRadioPlaying) {
-            radioPlayer.pause();
-            radioToggleBtn.textContent = '▶ PLAY';
-            radioToggleBtn.style.background = 'var(--red)';
-            isRadioPlaying = false;
-          } else {
-            radioPlayer.play();
-            radioToggleBtn.textContent = '⏸ PAUSE';
-            radioToggleBtn.style.background = 'var(--gold)';
-            radioToggleBtn.style.color = 'var(--black)';
-            isRadioPlaying = true;
-          }
-        }
-
-        function changeRadioVolume() {
-          const volume = radioVolume.value / 100;
-          radioPlayer.volume = volume;
-          volumeDisplay.textContent = radioVolume.value + '%';
-        }
-
-        // Set initial volume
-        radioPlayer.volume = 0.5;
-
-        // Handle audio errors
-        radioPlayer.addEventListener('error', function() {
-          console.log('Radio stream error, trying next station...');
-          const options = stationSelect.options;
-          const currentIndex = stationSelect.selectedIndex;
-          if (currentIndex < options.length - 1) {
-            stationSelect.selectedIndex = currentIndex + 1;
-            changeRadioStation();
-          }
-        });
-      </script>
-      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px">
-        <div style="flex:1">
-          <div class="card mb-16" style="margin-bottom:12px">
-            <div class="card-body" style="padding:12px 20px">
-              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="text-mono" style="font-size:11px;color:var(--gold);letter-spacing:2px;white-space:nowrap">⚡ QUICK LOG</span> <input id="quickLogInput" class="form-input" style="flex:1;min-width:200px;font-family:Share Tech Mono,monospace;letter-spacing:1px" placeholder="Ex: flex 12  |  barra 5  |  prancha 45"> <button class="btn btn-red" onclick="processarQuickLog()" style="white-space:nowrap">▶ REGISTRAR</button> <span class="text-mono" style="font-size:10px;color:var(--gray-light);white-space:nowrap">? para ajuda</span></div>
-              <div id="quickLogFeedback" style="margin-top:6px;font-family:Share Tech Mono,monospace;font-size:11px;color:var(--gold-dim);display:none"></div>
+            <div class="stat-card" style="background:linear-gradient(135deg,rgba(204,0,0,.15),rgba(139,0,0,.05));border-color:rgba(204,0,0,.4)">
+              <div class="stat-card-value" style="color:var(--red-bright)" id="statStreak">0</div>
+              <div class="stat-card-label">DIAS STREAK</div>
+              <div class="stat-card-sub" id="statStreakRecord">Recorde: 0 dias</div>
             </div>
           </div>
-        </div>
-        <div style="width:280px;flex-shrink:0">
-          <div class="rest-timer-widget" id="restTimerWidget">
-            <div class="rest-timer-title">⏱ DESCANSO ATIVO</div>
-            <div class="rest-timer-countdown" id="restTimerDisplay">15:00</div>
-            <div class="rest-timer-exercise" id="restTimerExercise">—</div>
-            <div class="rest-timer-controls"><button class="btn rest-timer-controls btn-pause-timer" id="btnPauseRestTimer" onclick="toggleRestTimer()">⏸ PAUSAR</button> <button class="btn rest-timer-controls btn-reset-timer" onclick="resetRestTimer()">↺ RESET</button></div>
-          </div>
-        </div>
-      </div>
-      <div class="grid-4 mb-16">
-        <div class="stat-card">
-          <div class="stat-card-value" id="statHoje">0</div>
-          <div class="stat-card-label">SÉRIES HOJE</div>
-          <div class="stat-card-sub" id="statRepsHoje">0 reps</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-value" id="statSemana">0</div>
-          <div class="stat-card-label">SÉRIES SEMANA</div>
-          <div class="stat-card-sub" id="statRepsSemanaSub">0 reps esta semana</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-value" id="statTotal">0</div>
-          <div class="stat-card-label">TOTAL ACUMULADO</div>
-          <div class="stat-card-sub" id="statTotalSub">histórico completo</div>
-        </div>
-        <div class="stat-card" style="background:linear-gradient(135deg,rgba(204,0,0,.15),rgba(139,0,0,.05));border-color:rgba(204,0,0,.4)">
-          <div class="stat-card-value" style="color:var(--red-bright)" id="statStreak">0</div>
-          <div class="stat-card-label">DIAS STREAK</div>
-          <div class="stat-card-sub" id="statStreakRecord">Recorde: 0 dias</div>
-        </div>
-      </div>
       <div class="readiness-card" id="readinessCard">
         <div class="readiness-header"><span class="readiness-title">🎯 ESTADO DE PRONTIDÃO</span> <button class="readiness-reset" onclick="resetReadiness()" title="Resetar avaliação">↻ RESETAR</button></div>
         <div class="readiness-body">
@@ -327,6 +165,120 @@
             <div class="form-group"><label class="form-label">Unidade/Info</label> <input class="form-input" id="newExUnit" placeholder="reps / seg"></div>
             <div class="form-group"><label class="form-label">Instruções</label> <input class="form-input" style="width:200px" id="newExInstructions" placeholder="Como executar..."></div><button class="btn btn-red" onclick="addExercise()">★ ADICIONAR</button>
           </div>
+        </div>
+      </div>
+        </div>
+        <div class="treino-sidebar" style="width:280px; flex-shrink:0; display:flex; flex-direction:column; gap:8px;">
+          <div class="card" style="padding:8px 12px; margin:0;">
+            <div class="card-body" style="padding:8px 12px;">
+              <div style="display:flex;align-items:center;gap:8px;"><span class="text-mono" style="font-size:10px;color:var(--gold);letter-spacing:2px;white-space:nowrap">⚡ QUICK LOG</span> <input id="quickLogInput" class="form-input" style="flex:1;min-width:0;font-family:Share Tech Mono,monospace;font-size:11px;padding:3px 6px;letter-spacing:1px" placeholder="Ex: flex 12"> <button class="btn btn-red" onclick="processarQuickLog()" style="padding:3px 10px;font-size:10px">▶</button></div>
+              <div id="quickLogFeedback" style="margin-top:4px;font-family:Share Tech Mono,monospace;font-size:10px;color:var(--gold-dim);display:none"></div>
+            </div>
+          </div>
+          <div class="card" style="padding:6px 12px; margin:0;">
+            <div id="fraseMotivacional" style="display:flex; align-items:center; gap:6px;">
+              <div class="frase-texto" style="font-size:11px; line-height:1.2;">"A força não tem um fim de semana."</div>
+              <div class="frase-autor" style="font-size:8px; white-space:nowrap;">— Pavel</div>
+              <button class="btn btn-outline btn-sm" onclick="proximaFrase()" style="padding:1px 6px; font-size:9px; flex-shrink:0;">↻</button>
+            </div>
+          </div>
+          <div class="card" style="padding:4px 10px; margin:0; display:flex; align-items:center; gap:4px; flex-wrap:wrap; justify-content:space-between;">
+            <span style="font-size:10px;">⏰ <strong>LEMBRETES GTG</strong></span>
+            <div style="display:flex; gap:4px;">
+              <button class="btn btn-sm" id="btnAtivarLembrete" style="background:rgba(204,0,0,.3);border:1px solid var(--red);color:var(--red-bright);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:9px;padding:2px 8px;" onclick="solicitarPermissaoNotificacao()">⚡ ATIVAR</button>
+              <button class="btn btn-sm" id="btnInstalarPWA" style="display:none;background:rgba(212,160,23,.2);border:1px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:9px;padding:2px 8px;" onclick="instalarPWA()">📲 INSTALAR</button>
+            </div>
+          </div>
+          <div class="card" style="padding:6px 10px; margin:0; display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
+            <span class="text-mono" style="font-size:9px;color:var(--gold);letter-spacing:1px;white-space:nowrap">☭ RÁDIO</span>
+            <select id="sovietRadioStation" onchange="changeRadioStation()" style="flex:1;min-width:0;padding:2px 4px;background:rgba(0,0,0,0.3);border:1px solid rgba(212,168,67,0.3);color:var(--gold);font-family:Share Tech Mono,monospace;font-size:9px;cursor:pointer;">
+              <option value="http://evcast.mediacp.eu:2070/stream">🎵 Soviet Estrada</option>
+              <option value="http://retroserver.streamr.ru:8043/retro256.mp3">🎺 Retro FM</option>
+              <option value="http://nashe1.hostingradio.ru/nashe-256">🎸 Nashe Radio</option>
+              <option value="http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3">🎤 Rádio Chanson</option>
+              <option value="http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3">🎻 Rádio Orfey</option>
+            </select>
+            <button onclick="toggleRadio()" id="radioToggleBtn" style="padding:2px 8px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:Bebas Neue,sans-serif;letter-spacing:2px;font-size:10px;cursor:pointer;">▶ PLAY</button>
+            <input type="range" id="radioVolume" min="0" max="100" value="50" onchange="changeRadioVolume()" style="width:50px;height:4px;cursor:pointer;">
+            <span class="text-mono" style="font-size:8px;color:var(--gold)" id="volumeDisplay">50%</span>
+            <span class="text-mono" style="font-size:8px;color:var(--gray-light);white-space:nowrap">📡 <span id="currentStationName">Soviet Music Radio</span></span>
+            <audio id="sovietRadioPlayer" preload="none" style="display:none"></audio>
+          </div>
+          <div class="card" id="gtgSessionCard" style="border-color:rgba(212,160,23,.25); margin:0;">
+            <div class="card-header" style="border-color:rgba(212,160,23,.2);padding:4px 8px;"><span class="card-title" style="color:var(--gold);font-size:11px;">🔗 SESSÃO GTG</span></div>
+            <div class="card-body" style="padding:4px 8px;">
+              <div class="session-setup" id="sessionSetup">
+                <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:flex-end;">
+                  <div class="form-group" style="flex:2;min-width:80px;"><label class="form-label" style="font-size:8px;">EXERCÍCIO</label><select class="form-select" id="sessionExSelect" onchange="atualizarSugestaoSessao()" style="width:100%;font-size:9px;padding:1px 3px;">
+                      <option value="">SELECIONAR</option>
+                    </select></div>
+                  <div class="form-group" style="flex:1;min-width:40px;"><label class="form-label" style="font-size:8px;">SÉRIES</label><input type="number" class="form-input" id="sessionNumSeries" value="5" min="1" max="20" style="width:100%;font-size:9px;padding:1px 3px;"></div>
+                  <div class="form-group" style="flex:1;min-width:40px;"><label class="form-label" style="font-size:8px;">REPS</label><input type="number" class="form-input" id="sessionSerieValor" placeholder="—" min="1" style="width:100%;font-size:9px;padding:1px 3px;"></div>
+                </div>
+                <div style="display:flex; gap:4px; margin-top:3px; align-items:center;">
+                  <select class="form-select" id="sessionDescanso" style="flex:1;font-size:8px;padding:1px 3px;">
+                    <option value="900">15 min</option>
+                    <option value="1200">20 min</option>
+                    <option value="1800">30 min</option>
+                    <option value="60">1 min</option>
+                  </select>
+                  <span class="text-mono" style="font-size:8px;color:var(--gray-light);">💡 <span id="sessionSugestao">—</span></span>
+                  <button class="btn btn-red" style="font-size:10px;padding:1px 10px;letter-spacing:1px;" onclick="iniciarSessaoGTG()">▶</button>
+                </div>
+              </div>
+              <div class="session-progress" id="sessionProgress" style="display:none;">
+                <div style="text-align:center;">
+                  <div class="text-mono" id="sessionProgressTitle" style="font-size:9px;color:var(--gold);letter-spacing:1px;">SESSÃO EM ANDAMENTO</div>
+                  <div id="sessionSeriesDots" style="display:flex;gap:3px;justify-content:center;flex-wrap:wrap;margin:3px 0;"></div>
+                </div>
+                <div id="sessionStateBox" style="text-align:center;padding:4px;background:rgba(0,0,0,0.2);border-radius:4px;">
+                  <div id="sessionStateLabel" class="text-mono" style="font-size:8px;color:var(--gray-light);">PRÓXIMA SÉRIE</div>
+                  <div id="sessionTimerDisplay" style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);line-height:1;text-shadow:0 0 15px rgba(212,160,23,.5);">PRONTO</div>
+                </div>
+                <div style="display:flex;gap:4px;margin-top:4px;"><button class="btn btn-gold" id="sessionActionBtn" style="flex:1;font-size:9px;padding:3px;" onclick="executarSerieSessao()">✓ REGISTRAR</button><button class="btn btn-outline" style="font-size:9px;padding:3px;" onclick="pararSessaoGTG()">■</button></div>
+              </div>
+            </div>
+          </div>
+          <div class="card" id="plankTimerCard" style="margin:0;">
+            <div class="card-header" style="padding:4px 8px;"><span class="card-title" style="font-size:11px;">⏱ TIMER ISOMÉTRICO</span> <select class="form-select" id="timerExerciseSelect" style="font-size:9px;padding:2px 4px;"></select></div>
+            <div class="card-body plank-timer" style="padding:6px 10px;">
+              <div id="prepCountdown" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;color:var(--gold);animation:starPulse .8s ease-in-out infinite">PREPARE-SE</div>
+              <div id="prepNumber" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:60px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,160,23,.7);"></div>
+              <div class="timer-display" id="timerDisplay" style="font-size:36px;">00:00</div>
+              <div class="timer-controls" style="gap:4px;"><button class="btn btn-red" id="btnStartTimer" onclick="startPlankTimer()" style="padding:4px 8px;font-size:10px;">▶ INICIAR</button> <button class="btn btn-outline" onclick="stopPlankTimer()" style="padding:4px 8px;font-size:10px;">■ PARAR</button> <button class="btn btn-outline" onclick="resetPlankTimer()" style="padding:4px 8px;font-size:10px;">↺</button></div>
+            </div>
+          </div>
+          <div class="card" style="padding:6px 10px; margin:0; display:flex; align-items:center; gap:6px; justify-content:space-between;">
+            <div class="rest-timer-widget" id="restTimerWidget" style="width:100%;border:none;background:none;padding:0;">
+              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <span style="font-size:10px;">⏱ DESCANSO</span>
+                <span class="rest-timer-countdown" id="restTimerDisplay" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gold);">15:00</span>
+                <span class="rest-timer-exercise" id="restTimerExercise" style="font-size:9px;color:var(--gray-light);">—</span>
+              </div>
+              <div class="rest-timer-controls" style="gap:4px;"><button class="btn btn-sm" id="btnPauseRestTimer" onclick="toggleRestTimer()" style="font-size:9px;padding:2px 8px;font-family:Bebas Neue,sans-serif;letter-spacing:1px;">⏸ PAUSAR</button> <button class="btn btn-sm" onclick="resetRestTimer()" style="font-size:9px;padding:2px 8px;font-family:Bebas Neue,sans-serif;letter-spacing:1px;">↺ RESET</button></div>
+            </div>
+          </div>
+          <script>
+            let isRadioPlaying = false;
+            const radioPlayer = document.getElementById('sovietRadioPlayer');
+            const radioToggleBtn = document.getElementById('radioToggleBtn');
+            const radioVolume = document.getElementById('radioVolume');
+            const volumeDisplay = document.getElementById('volumeDisplay');
+            const stationSelect = document.getElementById('sovietRadioStation');
+            const currentStationName = document.getElementById('currentStationName');
+            const stationNames = {
+              'http://evcast.mediacp.eu:2070/stream': 'Советская эстрада (Soviet Estrada)',
+              'http://retroserver.streamr.ru:8043/retro256.mp3': 'Ретро FM (Retro FM Rússia)',
+              'http://nashe1.hostingradio.ru/nashe-256': 'Наше Радио (Nashe Radio)',
+              'http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3': 'Радио Шансон (Rádio Chanson)',
+              'http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3': 'Радио Орфей (Clássica Russa)'
+            };
+            function changeRadioStation() { const station = stationSelect.value; radioPlayer.src = station; currentStationName.textContent = stationNames[station] || 'Unknown Station'; if (isRadioPlaying) { radioPlayer.play(); } }
+            function toggleRadio() { if (!radioPlayer.src) { radioPlayer.src = stationSelect.value; } if (isRadioPlaying) { radioPlayer.pause(); radioToggleBtn.textContent = '▶ PLAY'; radioToggleBtn.style.background = 'var(--red)'; isRadioPlaying = false; } else { radioPlayer.play(); radioToggleBtn.textContent = '⏸ PAUSE'; radioToggleBtn.style.background = 'var(--gold)'; radioToggleBtn.style.color = 'var(--black)'; isRadioPlaying = true; } }
+            function changeRadioVolume() { const volume = radioVolume.value / 100; radioPlayer.volume = volume; volumeDisplay.textContent = radioVolume.value + '%'; }
+            radioPlayer.volume = 0.5;
+            radioPlayer.addEventListener('error', function() { console.log('Radio stream error, trying next station...'); const options = stationSelect.options; const currentIndex = stationSelect.selectedIndex; if (currentIndex < options.length - 1) { stationSelect.selectedIndex = currentIndex + 1; changeRadioStation(); } });
+          </script>
         </div>
       </div>
     </div>
