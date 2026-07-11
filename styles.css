@@ -2200,3 +2200,106 @@ html { transition: background-color 0.5s ease }
   }
   .toast, .confetti-piece { display: none !important }
 }
+
+/* --- 11. CALENDAR HEATMAP --- */
+.cal-wrap {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 12px
+}
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px
+}
+.cal-nav-btn {
+  background: rgba(212,160,23,0.1);
+  border: 1px solid rgba(212,160,23,0.25);
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  transition: all .2s
+}
+.cal-nav-btn:hover {
+  background: rgba(212,160,23,0.2);
+  border-color: var(--gold)
+}
+.cal-nav-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: var(--gold)
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-bottom: 12px
+}
+.cal-day-header {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--gray-light);
+  text-align: center;
+  padding: 4px 0;
+  letter-spacing: 1px;
+  text-transform: uppercase
+}
+.cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--white-dim);
+  transition: all .15s;
+  position: relative
+}
+.cal-day:hover {
+  transform: scale(1.12);
+  z-index: 2;
+  box-shadow: 0 0 12px rgba(212,160,23,0.3)
+}
+.cal-day-empty { cursor: default }
+.cal-day-empty:hover { transform: none; box-shadow: none }
+.cal-day-nivel-0 { background: rgba(255,255,255,0.03); color: var(--gray) }
+.cal-day-nivel-1 { background: rgba(45,122,45,0.12) }
+.cal-day-nivel-2 { background: rgba(45,122,45,0.28) }
+.cal-day-nivel-3 { background: rgba(45,122,45,0.48) }
+.cal-day-nivel-4 { background: rgba(45,122,45,0.68) }
+.cal-day-nivel-5 { background: rgba(45,122,45,0.88); color: #fff }
+.cal-day-today {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+  z-index: 1
+}
+.cal-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 8px
+}
+.cal-legend-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--gray-light);
+  margin: 0 6px;
+  letter-spacing: 1px
+}
+.cal-legend-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px
+}
+.cal-legend-n1 { background: rgba(45,122,45,0.12) }
+.cal-legend-n2 { background: rgba(45,122,45,0.28) }
+.cal-legend-n3 { background: rgba(45,122,45,0.48) }
+.cal-legend-n4 { background: rgba(45,122,45,0.68) }
+.cal-legend-n5 { background: rgba(45,122,45,0.88) }

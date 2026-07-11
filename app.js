@@ -814,7 +814,7 @@ function inicializar() {
       const e = document.getElementById("modoFocoToggle");
       e && e.classList.add("active"), populateFocoSelect(), document.getElementById("modoFocoSelect").value = modoFocoState.exercicioId || "", aplicarModoFoco()
     }
-    setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), inicializarSkillTree();
+    setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), inicializarSkillTree(), renderCalendario();
     const pesoDataEl = document.getElementById("pesoData");
     if (pesoDataEl && !pesoDataEl.value) pesoDataEl.value = new Date().toISOString().slice(0, 10)
   })
@@ -3618,6 +3618,83 @@ function resetarPainelSessao() {
   e && (e.style.display = "block"), a && (a.style.display = "none")
 }
 
+/* === CALENDÁRIO HEATMAP === */
+const CAL_MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const CAL_DIAS = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+
+let calState = { mes: new Date().getMonth(), ano: new Date().getFullYear() };
+
+function renderCalendario() {
+  const grid = document.getElementById("calGrid"), title = document.getElementById("calNavTitle");
+  if (!grid) return;
+  const { mes, ano } = calState;
+  title.textContent = `${CAL_MESES[mes]} ${ano}`;
+  const primeiro = new Date(ano, mes, 1).getDay(),
+    diasNoMes = new Date(ano, mes + 1, 0).getDate(),
+    hoje = new Date(),
+    hojeStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
+  const dias = {};
+  dados.registros.forEach(r => {
+    if (r.data) {
+      const [y, m, d] = r.data.split("-").map(Number);
+      if (y === ano && m === mes + 1) dias[d] = (dias[d] || 0) + ((r.valor || 0) + (r.xp || 0))
+    }
+  });
+  const maxVal = Math.max(...Object.values(dias), 1);
+  let html = CAL_DIAS.map(d => `<div class="cal-day-header">${d}</div>`).join("");
+  for (let i = 0; i < primeiro; i++) html += '<div class="cal-day cal-day-empty"></div>';
+  for (let d = 1; d <= diasNoMes; d++) {
+    const val = dias[d] || 0,
+      nivel = val === 0 ? 0 : Math.min(5, Math.ceil(val / maxVal * 5)),
+      hojeClass = `${ano}-${String(mes + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}` === hojeStr ? " cal-day-today" : "";
+    html += `<div class="cal-day cal-day-nivel-${nivel}${hojeClass}" onclick="mostrarDetalheDia(${ano},${mes},${d})">${d}</div>`
+  }
+  grid.innerHTML = html
+}
+
+function navegarCalendario(delta) {
+  calState.mes += delta;
+  if (calState.mes > 11) { calState.mes = 0; calState.ano++ }
+  if (calState.mes < 0) { calState.mes = 11; calState.ano-- }
+  renderCalendario()
+}
+
+function mostrarDetalheDia(ano, mes, dia) {
+  const data = `${ano}-${String(mes + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`,
+    regs = dados.registros.filter(r => r.data === data),
+    modal = document.getElementById("calDetalheModal");
+  if (!modal || !regs.length) return;
+  document.getElementById("calDetalheTitle").textContent = `📆 ${dia} ${CAL_MESES[mes]} ${ano}`;
+  const totalReps = regs.reduce((a, r) => a + (r.valor || 0), 0),
+    totalXP = regs.reduce((a, r) => a + (r.xp || 0), 0),
+    agrupado = {};
+  regs.forEach(r => {
+    const key = r.exercicioNome || r.exercicioId || "?";
+    agrupado[key] || (agrupado[key] = { series: 0, reps: 0 });
+    agrupado[key].series++, agrupado[key].reps += r.valor || 0
+  });
+  const items = Object.entries(agrupado).map(([nome, st]) =>
+    `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+      <span style="font-family:Rajdhani,sans-serif;font-size:14px;">${nome}</span>
+      <span class="text-mono" style="font-size:12px;color:var(--gold);">${st.series}s &middot; ${st.reps} reps</span>
+    </div>`
+  ).join("");
+  document.getElementById("calDetalheBody").innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+      <div style="text-align:center;background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2);border-radius:4px;padding:10px;">
+        <div style="font-family:Bebas Neue,sans-serif;font-size:26px;color:var(--gold);">${regs.length}</div>
+        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">SÉRIES</div>
+      </div>
+      <div style="text-align:center;background:rgba(45,122,45,0.08);border:1px solid rgba(45,122,45,0.2);border-radius:4px;padding:10px;">
+        <div style="font-family:Bebas Neue,sans-serif;font-size:26px;color:var(--green-bright);">+${totalXP}</div>
+        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">XP</div>
+      </div>
+    </div>
+    ${items}
+    <div style="margin-top:12px;font-family:Share Tech Mono,monospace;font-size:10px;color:var(--gray-light);letter-spacing:1px;text-align:center;">VOLUME TOTAL: ${totalReps} reps</div>
+  `, modal.classList.add("active")
+}
+
 /* === SISTEMA DE IDIOMAS (PT-BR / EN / RU) === */
 const I18N_DICT = {
   pt: {
@@ -3629,6 +3706,7 @@ const I18N_DICT = {
     tab_exportar: "EXPORTAR",
     tab_planejador: "PLANO",
     tab_arvore: "ÁRVORE",
+    tab_calendario: "CALENDÁRIO",
     header_subtitle: "FORÇA E RESISTÊNCIA — GREASE THE GROOVE",
     header_readiness: "PRONTIDÃO",
     header_streak: "DIAS<br>STREAK",
@@ -3643,6 +3721,7 @@ const I18N_DICT = {
     tab_exportar: "EXPORT",
     tab_planejador: "PLAN",
     tab_arvore: "SKILL TREE",
+    tab_calendario: "CALENDAR",
     header_subtitle: "STRENGTH & ENDURANCE — GREASE THE GROOVE",
     header_readiness: "READINESS",
     header_streak: "DAY<br>STREAK",
@@ -3657,6 +3736,7 @@ const I18N_DICT = {
     tab_exportar: "ЭКСПОРТ",
     tab_planejador: "ПЛАН",
     tab_arvore: "ДЕРЕВО",
+    tab_calendario: "КАЛЕНДАРЬ",
     header_subtitle: "СИЛА И ВЫНОСЛИВОСТЬ — GREASE THE GROOVE",
     header_readiness: "ГОТОВНОСТЬ",
     header_streak: "ДНЕЙ<br>ПОДРЯД",

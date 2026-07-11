@@ -62,6 +62,7 @@
       <div class="nav-tab" data-tab="exportar" onclick='switchTab(event,"exportar")'>⬇ <span data-i18n="tab_exportar">EXPORTAR</span></div>
       <div class="nav-tab" data-tab="planejador" onclick='switchTab(event,"planejador")'>📅 <span data-i18n="tab_planejador">PLANO</span></div>
       <div class="nav-tab" data-tab="skilltree" onclick="switchTab(event,'skilltree')">&#x1F5FA; <span data-i18n="tab_arvore">ÁRVORE</span></div>
+      <div class="nav-tab" data-tab="calendario" onclick="switchTab(event,'calendario')">&#x1F4C6; <span data-i18n="tab_calendario">CALENDÁRIO</span></div>
     </nav>
   </header>
   <main class="main">
@@ -864,6 +865,25 @@
 
     <div class="st-tooltip-backdrop" id="stTooltipBackdrop" onclick="fecharTooltipSkilltree()" aria-hidden="true"></div>
   </main>
+  <div class="tab-content" id="tab-calendario">
+    <div class="cal-wrap">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="navegarCalendario(-1)" title="Mês anterior">&#x25C0;</button>
+        <span class="cal-nav-title" id="calNavTitle"></span>
+        <button class="cal-nav-btn" onclick="navegarCalendario(1)" title="Próximo mês">&#x25B6;</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend">
+        <span class="cal-legend-label">MENOS</span>
+        <span class="cal-legend-cell cal-legend-n1"></span>
+        <span class="cal-legend-cell cal-legend-n2"></span>
+        <span class="cal-legend-cell cal-legend-n3"></span>
+        <span class="cal-legend-cell cal-legend-n4"></span>
+        <span class="cal-legend-cell cal-legend-n5"></span>
+        <span class="cal-legend-label">MAIS</span>
+      </div>
+    </div>
+  </div>
   <div class="modal-overlay" id="infoModal">
     <div class="modal">
       <div class="modal-header"><span class="modal-title" id="infoModalTitle">INFORMAÇÕES</span> <button class="modal-close" onclick='closeModal("infoModal")'>✕</button></div>
@@ -961,6 +981,12 @@
     <div class="modal" style="max-width:420px">
       <div class="modal-header" style="border-bottom:2px solid var(--gold)"><span class="modal-title" id="resumoOntemTitle">📊 RESUMO DE ONTEM</span> <button class="modal-close" onclick='document.getElementById("resumoOntemModal").classList.remove("active")'>✕</button></div>
       <div class="modal-body" id="resumoOntemBody"></div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="calDetalheModal">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-header"><span class="modal-title" id="calDetalheTitle">📆 DIA DE TREINO</span> <button class="modal-close" onclick='closeModal("calDetalheModal")'>✕</button></div>
+      <div class="modal-body" id="calDetalheBody"></div>
     </div>
   </div>
   <script src="skilltree.js?v=2"></script>
