@@ -168,112 +168,157 @@
         </div>
       </div>
         </div>
-        <div class="treino-sidebar" style="width:400px; flex-shrink:0; box-sizing:border-box; display:flex; flex-direction:column; gap:12px;">
-          <div class="card" style="padding:14px 18px; margin:0;">
-            <div id="fraseMotivacional" style="display:flex; align-items:center; gap:10px;">
-              <div class="frase-texto" style="font-size:18px; line-height:1.3;">"A força não tem um fim de semana."</div>
-              <div class="frase-autor" style="font-size:14px; white-space:nowrap;">— Pavel</div>
-              <button class="btn btn-outline btn-sm" onclick="proximaFrase()" style="padding:5px 14px; font-size:13px; flex-shrink:0;">↻</button>
+        <div class="treino-sidebar" style="width:400px;flex-shrink:0;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;">
+          <div class="card sb-card" style="padding:16px 18px;margin:0;">
+            <div id="fraseMotivacional" class="sb-quote">
+              <div class="sb-quote-icon">☭</div>
+              <div style="flex:1;min-width:0">
+                <div class="sb-quote-text">"A força não tem um fim de semana."</div>
+                <div class="sb-quote-author">— Pavel</div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="proximaFrase()" style="padding:4px 10px;font-size:12px;flex-shrink:0" title="Próxima frase">↻</button>
+            </div>
+            <div style="border-top:1px solid rgba(212,168,67,.1);margin-top:10px;padding-top:10px">
+              <div class="sb-remind-row">
+                <div style="flex:1;min-width:0">
+                  <span class="sb-remind-chip">⏰ LEMBRETES</span>
+                  <div id="lembreteDesc" style="font-size:10px;color:var(--gray);margin-top:3px;font-family:'Share Tech Mono',monospace;letter-spacing:.5px">DESLIGADOS</div>
+                </div>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-sm" id="btnAtivarLembrete" style="background:rgba(204,0,0,.25);border:1px solid rgba(204,0,0,.5);color:var(--red-bright);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:13px;padding:5px 12px" onclick="solicitarPermissaoNotificacao()">⚡ ATIVAR</button>
+                  <button class="btn btn-sm" id="btnDesativarLembrete" style="display:none;background:rgba(45,122,45,.25);border:1px solid rgba(45,122,45,.5);color:var(--green-bright);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:13px;padding:5px 12px" onclick="desativarLembretes()">■ DESATIVAR</button>
+                  <button class="btn btn-sm" id="btnInstalarPWA" style="display:none;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.4);color:var(--gold);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:13px;padding:5px 12px" onclick="instalarPWA()">📲 INSTALAR</button>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="card" style="padding:12px 18px; margin:0; display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:space-between;">
-            <span style="font-size:16px;">⏰ <strong>LEMBRETES GTG</strong></span>
-            <div style="display:flex; gap:8px;">
-              <button class="btn btn-sm" id="btnAtivarLembrete" style="background:rgba(204,0,0,.3);border:1px solid var(--red);color:var(--red-bright);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:14px;padding:6px 14px;" onclick="solicitarPermissaoNotificacao()">⚡ ATIVAR</button>
-              <button class="btn btn-sm" id="btnInstalarPWA" style="display:none;background:rgba(212,160,23,.2);border:1px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:14px;padding:6px 14px;" onclick="instalarPWA()">📲 INSTALAR</button>
+
+          <div class="card sb-card" style="padding:14px 18px;margin:0;">
+            <div class="sb-radio-top">
+              <div class="sb-radio-title"><span class="sb-radio-star">☭</span> RÁDIO</div>
+              <select id="sovietRadioStation" onchange="radio.changeStation()" class="sb-radio-select">
+                <option value="http://evcast.mediacp.eu:2070/stream">🎵 Soviet Estrada</option>
+                <option value="http://retroserver.streamr.ru:8043/retro256.mp3">🎺 Retro FM</option>
+                <option value="http://nashe1.hostingradio.ru/nashe-256">🎸 Nashe Radio</option>
+                <option value="http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3">🎤 Rádio Chanson</option>
+                <option value="http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3">🎻 Rádio Orfey</option>
+                <option value="https://rusradio.hostingradio.ru/rusradio96.aacp">🎵 Русское Радио</option>
+                <option value="https://radiorecord.hostingradio.ru/rr_main96.aacp">🎧 Радио Рекорд</option>
+                <option value="https://dfm.hostingradio.ru/dfm128.mp3">💃 DFM (Dance)</option>
+                <option value="https://maximum.hostingradio.ru/maximum128.mp3">🎸 Maximum (Rock)</option>
+                <option value="https://hitfm.hostingradio.ru/hitfm128.mp3">🌍 Hit FM (Pop)</option>
+              </select>
             </div>
-          </div>
-          <div class="card" style="padding:14px 18px; margin:0;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-              <span class="text-mono" style="font-size:16px;color:var(--gold);letter-spacing:1px;white-space:nowrap">☭ RÁDIO</span>
-              <select id="sovietRadioStation" onchange="radio.changeStation()" style="flex:1;min-width:0;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid rgba(212,168,67,0.3);color:var(--gold);font-family:Share Tech Mono,monospace;font-size:15px;cursor:pointer;">
-              <option value="http://evcast.mediacp.eu:2070/stream">🎵 Soviet Estrada</option>
-              <option value="http://retroserver.streamr.ru:8043/retro256.mp3">🎺 Retro FM</option>
-              <option value="http://nashe1.hostingradio.ru/nashe-256">🎸 Nashe Radio</option>
-              <option value="http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3">🎤 Rádio Chanson</option>
-              <option value="http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3">🎻 Rádio Orfey</option>
-               <option value="https://rusradio.hostingradio.ru/rusradio96.aacp">🎵 Русское Радио (Russian Radio)</option>
-               <option value="https://radiorecord.hostingradio.ru/rr_main96.aacp">🎧 Радио Рекорд (Record)</option>
-               <option value="https://dfm.hostingradio.ru/dfm128.mp3">💃 DFM (Dance)</option>
-               <option value="https://maximum.hostingradio.ru/maximum128.mp3">🎸 Maximum (Rock)</option>
-               <option value="https://hitfm.hostingradio.ru/hitfm128.mp3">🌍 Hit FM (Pop)</option>
-            </select>
+            <div class="sb-radio-now">
+              <div style="flex:1;min-width:0">
+                <div class="sb-radio-now-label">⚡ TOCANDO AGORA</div>
+                <div id="currentStationName" style="font-size:14px;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Soviet Estrada</div>
+              </div>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-              <button onclick="radio.toggle()" id="radioToggleBtn" style="padding:6px 16px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:Bebas Neue,sans-serif;letter-spacing:2px;font-size:15px;cursor:pointer;">▶ PLAY</button>
-              <input type="range" id="radioVolume" min="0" max="100" value="50" oninput="radio.setVolume(this.value)" style="width:90px;height:6px;cursor:pointer;">
-              <span class="text-mono" style="font-size:14px;color:var(--gold)" id="volumeDisplay">50%</span>
-              <span class="text-mono" style="font-size:13px;color:var(--gray-light)" id="radioStatus">⏹ Parado</span>
+            <div class="sb-radio-ctrls">
+              <button onclick="radio.toggle()" id="radioToggleBtn" style="padding:7px 16px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:14px;cursor:pointer;border-radius:4px;transition:all .2s;flex-shrink:0">▶ PLAY</button>
+              <input type="range" id="radioVolume" min="0" max="100" value="50" oninput="radio.setVolume(this.value)" class="groove-range" style="width:100px">
+              <span class="text-mono" style="font-size:12px;color:var(--gold-dim)" id="volumeDisplay">50%</span>
+              <span class="sb-radio-status" id="radioStatus">⏹ Parado</span>
             </div>
-            <div class="text-mono" style="font-size:13px;color:var(--gold-dim);margin-top:6px;">📡 <span id="currentStationName">Soviet Estrada</span></div>
             <audio id="sovietRadioPlayer" preload="none" style="display:none"></audio>
           </div>
-          <div class="card" id="gtgSessionCard" style="border-color:rgba(212,160,23,.25); margin:0;">
-            <div class="card-header" style="border-color:rgba(212,160,23,.2);padding:12px 16px;"><span class="card-title" style="color:var(--gold);font-size:17px;">🔗 SESSÃO GTG</span></div>
-            <div class="card-body" style="padding:12px 16px;">
+
+          <div class="card sb-card" id="gtgSessionCard" style="border-color:rgba(212,160,23,.25);margin:0">
+            <div class="card-header" style="border-color:rgba(212,160,23,.15);padding:12px 16px">
+              <span class="card-title" style="color:var(--gold);font-size:17px">🔗 SESSÃO GTG</span>
+            </div>
+            <div class="card-body" style="padding:14px 16px">
               <div class="session-setup" id="sessionSetup">
-                <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
-                  <div class="form-group" style="flex:2;min-width:140px;"><label class="form-label" style="font-size:14px;">EXERCÍCIO</label><select class="form-select" id="sessionExSelect" onchange="atualizarSugestaoSessao()" style="width:100%;font-size:15px;padding:6px 8px;">
-                      <option value="">SELECIONAR</option>
-                    </select></div>
-                  <div class="form-group" style="flex:1;min-width:70px;"><label class="form-label" style="font-size:14px;">SÉRIES</label><input type="number" class="form-input" id="sessionNumSeries" value="5" min="1" max="20" style="width:100%;font-size:15px;padding:6px 8px;"></div>
-                  <div class="form-group" style="flex:1;min-width:70px;"><label class="form-label" style="font-size:14px;">REPS</label><input type="number" class="form-input" id="sessionSerieValor" placeholder="—" min="1" style="width:100%;font-size:15px;padding:6px 8px;"></div>
-                </div>
-                <div style="display:flex; gap:10px; margin-top:10px; align-items:center;">
-                  <select class="form-select" id="sessionDescanso" style="flex:1;font-size:14px;padding:6px 8px;">
-                    <option value="900">15 min</option>
-                    <option value="1200">20 min</option>
-                    <option value="1800">30 min</option>
-                    <option value="60">1 min</option>
-                  </select>
-                  <span class="text-mono" style="font-size:13px;color:var(--gray-light);">💡 <span id="sessionSugestao">—</span></span>
-                  <button class="btn btn-red" style="font-size:15px;padding:6px 20px;letter-spacing:1px;" onclick="iniciarSessaoGTG()">▶</button>
+                <div class="sb-session-form">
+                  <div class="sb-session-row">
+                    <div class="form-group">
+                      <label class="form-label sb-session-label">EXERCÍCIO</label>
+                      <select class="form-select sb-session-select" id="sessionExSelect" onchange="atualizarSugestaoSessao()">
+                        <option value="">SELECIONAR</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label sb-session-label">SÉRIES</label>
+                      <input type="number" class="form-input sb-session-input" id="sessionNumSeries" value="5" min="1" max="20">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label sb-session-label">REPS</label>
+                      <input type="number" class="form-input sb-session-input" id="sessionSerieValor" placeholder="—" min="1">
+                    </div>
+                  </div>
+                  <div class="sb-session-meta">
+                    <select class="form-select sb-session-select" id="sessionDescanso" style="flex:0 0 auto">
+                      <option value="900">15 min</option>
+                      <option value="1200">20 min</option>
+                      <option value="1800">30 min</option>
+                      <option value="60">1 min</option>
+                    </select>
+                    <span class="sb-session-hint">💡 <span id="sessionSugestao">—</span></span>
+                    <button class="btn btn-red sb-session-start" onclick="iniciarSessaoGTG()">▶</button>
+                  </div>
                 </div>
               </div>
-              <div class="session-progress" id="sessionProgress" style="display:none;">
-                <div style="text-align:center;">
-                  <div class="text-mono" id="sessionProgressTitle" style="font-size:15px;color:var(--gold);letter-spacing:1px;">SESSÃO EM ANDAMENTO</div>
-                  <div id="sessionSeriesDots" style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:10px 0;"></div>
+              <div class="session-progress" id="sessionProgress" style="display:none">
+                <div class="sb-sprog">
+                  <div class="sb-sprog-title" id="sessionProgressTitle">SESSÃO EM ANDAMENTO</div>
+                  <div id="sessionSeriesDots" class="sb-sprog-dots"></div>
+                  <div id="sessionStateBox">
+                    <div class="sb-sprog-state" id="sessionStateLabel">PRÓXIMA SÉRIE</div>
+                    <div class="sb-sprog-timer" id="sessionTimerDisplay">PRONTO</div>
+                  </div>
+                  <div class="sb-sprog-actions">
+                    <button class="btn btn-gold" id="sessionActionBtn" onclick="executarSerieSessao()">✓ REGISTRAR</button>
+                    <button class="btn btn-outline sb-sprog-stop" onclick="pararSessaoGTG()">■</button>
+                  </div>
                 </div>
-                <div id="sessionStateBox" style="text-align:center;padding:18px;background:rgba(0,0,0,0.2);border-radius:4px;">
-                  <div id="sessionStateLabel" class="text-mono" style="font-size:14px;color:var(--gray-light);">PRÓXIMA SÉRIE</div>
-                  <div id="sessionTimerDisplay" style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--gold);line-height:1;text-shadow:0 0 20px rgba(212,160,23,.5);">PRONTO</div>
-                </div>
-                <div style="display:flex;gap:10px;margin-top:12px;"><button class="btn btn-gold" id="sessionActionBtn" style="flex:1;font-size:15px;padding:8px;" onclick="executarSerieSessao()">✓ REGISTRAR</button><button class="btn btn-outline" style="font-size:15px;padding:8px;" onclick="pararSessaoGTG()">■</button></div>
               </div>
             </div>
           </div>
-          <div class="card" id="plankTimerCard" style="margin:0;">
-            <div class="card-header" style="padding:12px 16px;"><span class="card-title" style="font-size:17px;">⏱ TIMER ISOMÉTRICO</span> <select class="form-select" id="timerExerciseSelect" style="font-size:14px;padding:5px 8px;"></select></div>
-            <div class="card-body plank-timer" style="padding:14px 18px;">
+
+          <div class="card sb-card" id="plankTimerCard" style="margin:0">
+            <div class="card-header" style="padding:10px 16px">
+              <span class="card-title" style="font-size:17px">⏱ TIMER ISOMÉTRICO</span>
+              <select class="form-select" id="timerExerciseSelect" style="font-size:13px;padding:5px 8px"></select>
+            </div>
+            <div class="card-body sb-timer-wrap">
               <div id="prepCountdown" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--gold);animation:starPulse .8s ease-in-out infinite">PREPARE-SE</div>
-              <div id="prepNumber" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:90px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,160,23,.7);"></div>
-              <div class="timer-display" id="timerDisplay" style="font-size:56px;">00:00</div>
-              <div class="timer-controls" style="gap:10px;"><button class="btn btn-red" id="btnStartTimer" onclick="startPlankTimer()" style="padding:10px 18px;font-size:15px;">▶ INICIAR</button> <button class="btn btn-outline" onclick="stopPlankTimer()" style="padding:10px 18px;font-size:15px;">■ PARAR</button> <button class="btn btn-outline" onclick="resetPlankTimer()" style="padding:10px 18px;font-size:15px;">↺</button></div>
-              <div class="groove-toggles" id="plank-groove" style="flex-basis:100%;margin-top:8px;padding:8px 12px 4px;">
+              <div id="prepNumber" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:90px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,160,23,.7)"></div>
+              <div class="timer-display sb-timer-digits" id="timerDisplay">00:00</div>
+              <div class="sb-timer-sub">ISOMÉTRICO</div>
+              <div class="sb-timer-btns">
+                <button class="btn btn-red" id="btnStartTimer" onclick="startPlankTimer()">▶ INICIAR</button>
+                <button class="btn btn-outline" onclick="stopPlankTimer()">■ PARAR</button>
+                <button class="btn btn-outline" onclick="resetPlankTimer()">↺</button>
+              </div>
+              <div class="groove-toggles" id="plank-groove" style="flex-basis:100%;margin-top:10px;padding:8px 12px 4px">
                 <span class="groove-label">⚙ GROOVE</span>
                 <div class="groove-slider" id="plank-groove-amp" title="Amplitude completa">
                   <span class="missile-switch__icon">🏋️</span>
-                  <input type="range" min="0" max="100" value="0" class="groove-range" oninput="document.getElementById('plank-glvl-0').textContent=this.value;plankGroove[0]=parseInt(this.value)">
+                  <input type="range" min="0" max="100" value="0" class="groove-range" oninput="setPlankGrooveLevel(0, this.value)">
                   <span class="groove-lvl" id="plank-glvl-0">0</span>
                   <span>AMP</span>
                 </div>
                 <div class="groove-slider" id="plank-groove-ten" title="Tensão irradiante">
                   <span class="missile-switch__icon">⚡</span>
-                  <input type="range" min="0" max="100" value="0" class="groove-range" oninput="document.getElementById('plank-glvl-1').textContent=this.value;plankGroove[1]=parseInt(this.value)">
+                  <input type="range" min="0" max="100" value="0" class="groove-range" oninput="setPlankGrooveLevel(1, this.value)">
                   <span class="groove-lvl" id="plank-glvl-1">0</span>
                   <span>TEN</span>
                 </div>
                 <div class="groove-slider" id="plank-groove-bal" title="Sem balanço/momentum">
                   <span class="missile-switch__icon">✓</span>
-                  <input type="range" min="0" max="100" value="0" class="groove-range" oninput="document.getElementById('plank-glvl-2').textContent=this.value;plankGroove[2]=parseInt(this.value)">
+                  <input type="range" min="0" max="100" value="0" class="groove-range" oninput="setPlankGrooveLevel(2, this.value)">
                   <span class="groove-lvl" id="plank-glvl-2">0</span>
                   <span>S/B</span>
+                </div>
+                <div class="groove-bonus-preview" id="plank-groove-bonus-wrap">
+                  BÔNUS: <span class="bonus-val" id="plank-groove-bonus">+0%</span>
                 </div>
               </div>
             </div>
           </div>
-          <script>
+        </div>
+        <script>
             window.radio = {
               player: null, toggleBtn: null, volumeSlider: null, volumeLabel: null,
               statusEl: null, stationSelect: null, stationNameEl: null, playing: false,

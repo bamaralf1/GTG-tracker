@@ -378,6 +378,74 @@ body::after{
 .card-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.08em;color:var(--gold);text-shadow:0 0 20px rgba(212,168,67,0.3)}
 .card-body{padding:20px 20px 20px 24px}
 
+/* ================================================================
+   SIDEBAR — Premium Visual System
+   ================================================================ */
+.sb-quote{display:flex;align-items:center;gap:12px;padding:10px 0}
+.sb-quote-icon{font-size:28px;filter:drop-shadow(0 0 12px rgba(204,0,0,.45));flex-shrink:0}
+.sb-quote-text{font-size:17px;line-height:1.35;color:var(--white);flex:1;font-style:italic}
+.sb-quote-text em{color:var(--gold);font-style:normal}
+.sb-quote-author{font-size:13px;color:var(--gold-dim);white-space:nowrap;letter-spacing:1px;font-family:'Share Tech Mono',monospace}
+.sb-remind-row{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.sb-remind-chip{font-size:12px;color:var(--gray-light);letter-spacing:1px;font-family:'Share Tech Mono',monospace;display:flex;align-items:center;gap:6px}
+
+/* === Radio Card === */
+.sb-radio-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sb-radio-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--gold);text-shadow:0 0 16px rgba(212,168,67,.3);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.sb-radio-star{font-size:22px;filter:drop-shadow(0 0 8px rgba(204,0,0,.4))}
+.sb-radio-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--gray-light);letter-spacing:1px;font-family:'Share Tech Mono',monospace;margin-top:1px}
+.sb-radio-status.on{color:var(--green-bright)}
+.sb-radio-status.err{color:var(--red-bright)}
+.sb-radio-now{font-size:13px;color:var(--gold-dim);letter-spacing:.5px;margin-top:8px;padding:6px 10px;background:rgba(0,0,0,.25);border-radius:4px;border-left:2px solid var(--gold);display:flex;align-items:center;gap:6px}
+.sb-radio-now-label{font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:1px}
+.sb-radio-ctrls{display:flex;align-items:center;gap:8px;margin-top:10px}
+.sb-radio-ctrls .groove-range{width:100px}
+.sb-radio-select{flex:1;min-width:0;padding:6px 10px;background:rgba(0,0,0,.35);border:1px solid rgba(212,168,67,.25);color:var(--gold);font-family:'Share Tech Mono',monospace;font-size:13px;cursor:pointer;border-radius:4px;transition:border-color .2s}
+.sb-radio-select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 12px rgba(212,168,67,.2)}
+.sb-radio-select option{background:#111;color:var(--gold);padding:4px 8px}
+
+/* === Session Card === */
+.sb-session-form{display:flex;flex-direction:column;gap:10px}
+.sb-session-row{display:flex;gap:10px;flex-wrap:wrap}
+.sb-session-row>.form-group{flex:1;min-width:70px}
+.sb-session-row>.form-group:first-child{flex:2;min-width:140px}
+.sb-session-label{font-size:10px!important;color:var(--gold-dim)!important}
+.sb-session-select{width:100%;font-size:13px;padding:6px 8px}
+.sb-session-input{width:100%;font-size:15px;padding:6px 8px}
+.sb-session-meta{display:flex;gap:10px;margin-top:4px;align-items:center}
+.sb-session-hint{font-size:12px;color:var(--gray-light);font-family:'Share Tech Mono',monospace;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-session-start{min-width:52px;flex-shrink:0}
+
+/* Session progress */
+.sb-sprog{text-align:center}
+.sb-sprog-title{font-size:13px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.sb-sprog-timer{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,168,67,.45),0 0 60px rgba(212,168,67,.15);margin:16px 0;letter-spacing:6px;font-variant-numeric:tabular-nums}
+.sb-sprog-timer.rest{color:var(--green-bright);text-shadow:0 0 30px rgba(68,204,68,.45)}
+.sb-sprog-state{font-size:12px;color:var(--gray-light);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.sb-sprog-dots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.sb-sprog-actions{display:flex;gap:10px;margin-top:14px}
+.sb-sprog-actions .btn{flex:1;padding:10px 12px;font-size:14px;letter-spacing:1px}
+.sb-sprog-stop{flex:0 0 44px!important;padding:10px!important;font-size:16px!important}
+
+/* === Timer Card === */
+.sb-timer-wrap{padding:20px 16px 16px}
+.sb-timer-digits{font-family:'Bebas Neue',sans-serif;font-size:64px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,168,67,.4);letter-spacing:6px;font-variant-numeric:tabular-nums;margin-bottom:4px}
+.sb-timer-digits.running{color:var(--red-bright);text-shadow:0 0 40px rgba(255,59,48,.55),0 0 80px rgba(255,59,48,.25);animation:sbTimerPulse 1s ease-in-out infinite}
+@keyframes sbTimerPulse{0%,100%{text-shadow:0 0 40px rgba(255,59,48,.55),0 0 80px rgba(255,59,48,.25)}50%{text-shadow:0 0 60px rgba(255,59,48,.7),0 0 100px rgba(255,59,48,.35)}}
+.sb-timer-sub{font-size:11px;color:var(--gray);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+.sb-timer-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.sb-timer-btns .btn{flex:1;padding:10px 12px;font-size:14px;letter-spacing:1px}
+.sb-timer-btns .btn-outline{flex:0 0 auto;padding:10px 16px}
+
+/* === Light Theme Sidebar === */
+[data-theme=light] .sb-radio-title{text-shadow:none}
+[data-theme=light] .sb-radio-now{background:rgba(212,168,67,.05)}
+[data-theme=light] .sb-radio-select{background:rgba(255,255,255,.5);border-color:rgba(0,0,0,.1);color:var(--gray-dark,#555)}
+[data-theme=light] .sb-radio-select option{background:#fff;color:#333}
+[data-theme=light] .sb-sprog-timer{text-shadow:none}
+[data-theme=light] .sb-timer-digits{text-shadow:none}
+[data-theme=light] .sb-timer-digits.running{text-shadow:none}
+
 /* === GRIDS === */
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
@@ -1862,7 +1930,7 @@ body::after{
   font-size:9px;
   letter-spacing:1px;
   color:var(--gray-light);
-  transition:border-color .3s var(--ease-expo);
+  transition:border-color .3s var(--ease-expo),background .3s var(--ease-expo),box-shadow .3s var(--ease-expo);
 }
 .groove-slider:hover{
   border-color:rgba(212,168,67,0.25);
@@ -1888,7 +1956,7 @@ body::after{
   border:1px solid rgba(212,168,67,0.5);
   cursor:pointer;
   box-shadow:0 0 6px rgba(212,168,67,0.4);
-  transition:box-shadow .2s;
+  transition:box-shadow .3s,background .3s,border-color .3s;
 }
 .groove-range::-webkit-slider-thumb:hover{
   box-shadow:0 0 10px rgba(212,168,67,0.7);
@@ -1953,11 +2021,37 @@ body::after{
   filter:none;
   text-shadow:0 0 6px rgba(68,204,68,0.6);
 }
+.groove-slider[data-tier="1"] .groove-range::-webkit-slider-thumb{
+  background:radial-gradient(circle at 30% 30%,#fff8,#ffd700);
+  border-color:rgba(255,215,0,0.6);
+  box-shadow:0 0 6px rgba(255,215,0,0.5);
+}
+.groove-slider[data-tier="2"] .groove-range::-webkit-slider-thumb{
+  background:radial-gradient(circle at 30% 30%,#fff,#ffaa00);
+  border-color:rgba(255,170,0,0.7);
+  box-shadow:0 0 8px rgba(255,170,0,0.6);
+}
 .groove-slider[data-tier="3"] .groove-range::-webkit-slider-thumb,
 .groove-slider[data-tier="4"] .groove-range::-webkit-slider-thumb{
   background:radial-gradient(circle at 30% 30%,#fff,#7fff7f);
   border-color:rgba(68,204,68,0.7);
   box-shadow:0 0 10px rgba(68,204,68,0.8);
+}
+.groove-slider[data-tier="4"] .groove-range::-webkit-slider-thumb{
+  box-shadow:0 0 14px rgba(68,204,68,1),0 0 24px rgba(68,204,68,0.4);
+  animation:grooveMaxPulse 1.2s ease-in-out infinite;
+}
+@keyframes grooveMaxPulse{
+  0%,100%{box-shadow:0 0 14px rgba(68,204,68,1),0 0 24px rgba(68,204,68,0.4)}
+  50%{box-shadow:0 0 20px rgba(68,204,68,1),0 0 36px rgba(68,204,68,0.6)}
+}
+.groove-slider[data-tier="1"] .groove-range::-moz-range-thumb{
+  background:radial-gradient(circle at 30% 30%,#fff8,#ffd700);
+  border-color:rgba(255,215,0,0.6);
+}
+.groove-slider[data-tier="2"] .groove-range::-moz-range-thumb{
+  background:radial-gradient(circle at 30% 30%,#fff,#ffaa00);
+  border-color:rgba(255,170,0,0.7);
 }
 .groove-slider[data-tier="3"] .groove-range::-moz-range-thumb,
 .groove-slider[data-tier="4"] .groove-range::-moz-range-thumb{

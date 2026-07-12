@@ -1017,6 +1017,31 @@ function setGrooveLevel(exId, idx, val) {
   atualizarPreviewGroove(exId);
 }
 
+const PLANK_GROOVE_IDS = ['plank-groove-amp', 'plank-groove-ten', 'plank-groove-bal'];
+
+function setPlankGrooveLevel(idx, val) {
+  const v = Math.min(100, Math.max(0, parseInt(val) || 0));
+  plankGroove[idx] = v;
+  const lvlEl = document.getElementById('plank-glvl-' + idx);
+  if (lvlEl) lvlEl.textContent = v;
+  const sliderEl = document.getElementById(PLANK_GROOVE_IDS[idx]);
+  if (sliderEl) {
+    sliderEl.style.setProperty('--lvl', v);
+    const tier = v >= 100 ? 4 : v >= 75 ? 3 : v >= 50 ? 2 : v >= 25 ? 1 : 0;
+    tier > 0 ? sliderEl.setAttribute('data-tier', tier) : sliderEl.removeAttribute('data-tier');
+  }
+  const total = plankGroove[0] + plankGroove[1] + plankGroove[2];
+  const pct = Math.round(total / 10);
+  const bonusEl = document.getElementById('plank-groove-bonus');
+  if (bonusEl) {
+    bonusEl.textContent = total >= 300 ? '+30% ★' : '+' + pct + '%';
+    bonusEl.classList.toggle('perfeito', total >= 300);
+  }
+  try {
+    if (typeof tocarTom === 'function') tocarTom(220 + 80 * (plankGroove.filter(v => v > 0).length), .04, 'square', .06);
+  } catch(e) {}
+}
+
 function atualizarPreviewGroove(exId) {
   const st = grooveState[exId] || [0, 0, 0];
   const total = st[0] + st[1] + st[2];
@@ -2006,11 +2031,29 @@ function proximaFrase() {
   }, 300))
 }
 
-function iniciarLembretes() {
+function iniciarLembretes(showUI) {
   lembreteInterval && clearInterval(lembreteInterval), lembreteInterval = setInterval(() => {
     const msg = LEMBRETES_GTG[Math.floor(Math.random() * LEMBRETES_GTG.length)];
     mostrarToast("LEMBRETE GTG", msg, "success"), tocarSomLembrete(), enviarNotificacaoSW(msg)
-  }, 12e5)
+  }, 12e5);
+  if (showUI) {
+    document.getElementById("btnAtivarLembrete").style.display = "none";
+    document.getElementById("btnDesativarLembrete").style.display = "inline-block";
+  }
+}
+
+function desativarLembretes() {
+  lembreteInterval && (clearInterval(lembreteInterval), lembreteInterval = null);
+  if (swRegistration && swRegistration.active) {
+    swRegistration.active.postMessage("PARAR_LEMBRETES");
+  }
+  document.getElementById("btnAtivarLembrete").style.display = "inline-block";
+  document.getElementById("btnDesativarLembrete").style.display = "none";
+  document.getElementById("btnAtivarLembrete").textContent = "⚡ ATIVAR";
+  document.getElementById("btnAtivarLembrete").style.background = "rgba(204,0,0,.25)";
+  document.getElementById("btnAtivarLembrete").style.borderColor = "rgba(204,0,0,.5)";
+  document.getElementById("btnAtivarLembrete").style.color = "var(--red-bright)";
+  mostrarToast("Lembretes desativados", "Intervalo de notificações pausado.", "info");
 }
 
 function tocarSomLembrete() {
@@ -2079,7 +2122,7 @@ async function solicitarPermissaoNotificacao() {
       e.installing?.addEventListener("statechange", () => {
         e.active && e.active.postMessage("INICIAR_LEMBRETES")
       })
-    }), document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (BACKGROUND)", document.getElementById("btnAtivarLembrete").textContent = "✓ ATIVO", document.getElementById("btnAtivarLembrete").style.background = "rgba(45,122,45,0.3)", document.getElementById("btnAtivarLembrete").style.borderColor = "var(--green-bright)", document.getElementById("btnAtivarLembrete").style.color = "var(--green-bright)", mostrarToast("✓ Ativado!", "Lembretes a cada 20 min — funcionam mesmo com a tela bloqueada!", "success")) : (document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (PÁGINA ABERTA)", document.getElementById("btnAtivarLembrete").textContent = "✓ ATIVO", mostrarToast("Ativado", "Lembretes a cada 20 min (instale o app para funcionar em background).", "success")), iniciarLembretes(), deferredInstallPrompt && (document.getElementById("btnInstalarPWA").style.display = "inline-block")
+    }),     document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (BACKGROUND)", document.getElementById("btnAtivarLembrete").textContent = "✓ ATIVO", document.getElementById("btnAtivarLembrete").style.background = "rgba(45,122,45,0.3)", document.getElementById("btnAtivarLembrete").style.borderColor = "var(--green-bright)", document.getElementById("btnAtivarLembrete").style.color = "var(--green-bright)", document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", mostrarToast("✓ Ativado!", "Lembretes a cada 20 min — funcionam mesmo com a tela bloqueada!", "success")) : (document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (PÁGINA ABERTA)", document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", mostrarToast("Ativado", "Lembretes a cada 20 min (instale o app para funcionar em background).", "success")), iniciarLembretes(true), deferredInstallPrompt && (document.getElementById("btnInstalarPWA").style.display = "inline-block")
   } else mostrarToast("Bloqueado", "Permissão negada. Habilite notificações nas configurações do navegador.", "error")
 }
 
@@ -3608,7 +3651,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const e = cssVar("--accent-red") || "#CC0000";
   const d = document.querySelector('meta[name="theme-color"]');
   d && d.setAttribute("content", e), "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
-    e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (BACKGROUND)", document.getElementById("btnAtivarLembrete").textContent = "✓ ATIVO", document.getElementById("btnAtivarLembrete").style.background = "rgba(45,122,45,0.3)", document.getElementById("btnAtivarLembrete").style.borderColor = "var(--green-bright)", document.getElementById("btnAtivarLembrete").style.color = "var(--green-bright)"))
+    e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (BACKGROUND)", document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block"))
   }), setupNavTabs(), inicializar();
   const audioBtn = document.getElementById("btnToggleAudio");
   audioBtn && (audioBtn.textContent = audioMuted ? "🔇" : "🔊")
