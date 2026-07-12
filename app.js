@@ -2073,7 +2073,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260712s"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260712t"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");
@@ -2497,8 +2497,10 @@ let _prevReadinessScore = 50;
 let _prevZones = {};
 let _readinessAnimFrame = null;
 let _readinessUIFrame = null;
+let _readinessRafPending = false;
 let _isDragging = false;
 const READINESS_KEY = "gtg_readiness";
+const _rdCache = {};
 
 async function carregarReadiness() {
   try {
@@ -2536,6 +2538,7 @@ function resetReadinessData() {
   readinessData = { sono: 5, stress: 5, dor: 5, energia: 5, hidratacao: 5, alimentacao: 5, motivacao: 5, score: 50, data: null };
   _prevReadinessScore = 50;
   _prevZones = {};
+  Object.keys(_rdCache).forEach(k => delete _rdCache[k]);
   ["sliderSono","sliderStress","sliderDor","sliderEnergia","sliderHidratacao","sliderAlimentacao","sliderMotivacao"].forEach(id => { document.getElementById(id).value = 5; });
   salvarReadiness()
 }
@@ -2601,8 +2604,17 @@ function updateReadiness() {
   readinessData.alimentacao = alimentacao;
   readinessData.motivacao = motivacao;
   readinessData.score = calcularReadiness(sono, stress, dor, energia, hidratacao, alimentacao, motivacao);
-  salvarReadiness();
-  updateReadinessUI()
+  if (_isDragging) {
+    salvarReadiness();
+    updateReadinessUI();
+  } else if (!_readinessRafPending) {
+    _readinessRafPending = true;
+    requestAnimationFrame(() => {
+      _readinessRafPending = false;
+      salvarReadiness();
+      updateReadinessUI();
+    });
+  }
 }
 
 function getZonaSlider(valor, invertido) {
@@ -2610,7 +2622,26 @@ function getZonaSlider(valor, invertido) {
   return pos >= 8 ? "green" : pos >= 6 ? "yellow" : pos >= 4 ? "orange" : "red";
 }
 
+function _cacheReadinessDOM() {
+  if (_rdCache._ready) return;
+  _rdCache.fills = ["fillSono","fillStress","fillDor","fillEnergia","fillHidratacao","fillAlimentacao","fillMotivacao"].map(id => document.getElementById(id));
+  _rdCache.vals = ["valSono","valStress","valDor","valEnergia","valHidratacao","valAlimentacao","valMotivacao"].map(id => document.getElementById(id));
+  _rdCache.tracks = ["trackSono","trackStress","trackDor","trackEnergia","trackHidratacao","trackAlimentacao","trackMotivacao"].map(id => document.getElementById(id));
+  _rdCache.circle = document.getElementById("readinessCircle");
+  _rdCache.score = document.getElementById("readinessScore");
+  _rdCache.label = document.getElementById("readinessLabel");
+  _rdCache.suggestion = document.getElementById("readinessSuggestion");
+  _rdCache.ring = document.getElementById("readinessRingFill");
+  _rdCache.dir = document.getElementById("readinessDirection");
+  _rdCache.sub = document.getElementById("readinessSub");
+  _rdCache.header = document.getElementById("headerReadiness");
+  _rdCache.headerScore = document.getElementById("headerReadinessScore");
+  _rdCache._ready = true;
+}
+
 function updateReadinessUI() {
+  _cacheReadinessDOM();
+  const c = _rdCache;
   const sono = readinessData.sono;
   const stress = readinessData.stress;
   const dor = readinessData.dor;
@@ -2620,114 +2651,82 @@ function updateReadinessUI() {
   const motivacao = readinessData.motivacao ?? 5;
   const o = readinessData.score;
   const dragging = _isDragging;
+  const vals = [sono, stress, dor, energia, hidratacao, alimentacao, motivacao];
 
-  // Fill widths — always instant
-  document.getElementById("fillSono").style.width = 10 * sono + "%";
-  document.getElementById("fillStress").style.width = 10 * stress + "%";
-  document.getElementById("fillDor").style.width = 10 * dor + "%";
-  document.getElementById("fillEnergia").style.width = 10 * energia + "%";
-  document.getElementById("fillHidratacao").style.width = 10 * hidratacao + "%";
-  document.getElementById("fillAlimentacao").style.width = 10 * alimentacao + "%";
-  document.getElementById("fillMotivacao").style.width = 10 * motivacao + "%";
-
-  // Sliders: values + zones — always instant, effects only on release
-  const slidersCfg = [
-    {valId:"valSono", val:sono, trackId:"trackSono", invertido:false},
-    {valId:"valStress", val:stress, trackId:"trackStress", invertido:true},
-    {valId:"valDor", val:dor, trackId:"trackDor", invertido:true},
-    {valId:"valEnergia", val:energia, trackId:"trackEnergia", invertido:false},
-    {valId:"valHidratacao", val:hidratacao, trackId:"trackHidratacao", invertido:false},
-    {valId:"valAlimentacao", val:alimentacao, trackId:"trackAlimentacao", invertido:false},
-    {valId:"valMotivacao", val:motivacao, trackId:"trackMotivacao", invertido:false}
-  ];
-  slidersCfg.forEach(s => {
-    const el = document.getElementById(s.valId);
-    const changed = el.textContent != s.val;
-    el.textContent = s.val;
-    if (changed && !dragging) {
-      el.classList.remove("bounce");
-      void el.offsetWidth;
-      el.classList.add("bounce");
-    }
-    const track = document.getElementById(s.trackId);
-    const newZone = getZonaSlider(s.val, s.invertido);
-    const prevZone = _prevZones[s.trackId];
+  // Fill widths + values + zones — batched
+  for (let j = 0; j < 7; j++) {
+    c.fills[j].style.width = 10 * vals[j] + "%";
+    const el = c.vals[j];
+    const newVal = String(vals[j]);
+    if (el.textContent !== newVal) el.textContent = newVal;
+    const track = c.tracks[j];
+    const newZone = getZonaSlider(vals[j], j === 1 || j === 2);
+    const prevZone = _prevZones[track.id];
     track.setAttribute("data-zone", newZone);
-    if (changed && prevZone && prevZone !== newZone && !dragging) {
+    if (prevZone && prevZone !== newZone && !dragging) {
       track.classList.remove("zone-flash");
       void track.offsetWidth;
       track.classList.add("zone-flash");
     }
-    _prevZones[s.trackId] = newZone;
-  });
+    _prevZones[track.id] = newZone;
+  }
 
-  const r = getReadinessConfig(o),
-    s = document.getElementById("readinessCircle"),
-    n = document.getElementById("readinessScore"),
-    i = document.getElementById("readinessLabel"),
-    d = document.getElementById("readinessSuggestion"),
-    ring = document.getElementById("readinessRingFill"),
-    dir = document.getElementById("readinessDirection");
+  const r = getReadinessConfig(o);
 
-  // Color class + label + ring + header — always instant
-  s.classList.remove("readiness-green", "readiness-yellow", "readiness-orange", "readiness-red");
-  s.classList.add(r.classe);
-  i.textContent = r.label;
-  document.getElementById("readinessSub").style.color = r.corScore;
-  d.innerHTML = r.sugestao;
-  d.style.borderLeftColor = r.corScore;
-  const c = document.getElementById("headerReadiness"),
-    l = document.getElementById("headerReadinessScore");
-  c && l && (c.classList.remove("readiness-yellow-h", "readiness-orange-h", "readiness-red-h"), r.classeHeader && c.classList.add(r.classeHeader), l.textContent = o, l.style.color = r.corScore);
+  // Circle — instant class swap
+  if (c.circle.className.indexOf(r.classe) === -1) {
+    c.circle.classList.remove("readiness-green", "readiness-yellow", "readiness-orange", "readiness-red");
+    c.circle.classList.add(r.classe);
+  }
+  c.label.textContent = r.label;
+  c.sub.style.color = r.corScore;
+  c.suggestion.innerHTML = r.sugestao;
+  c.suggestion.style.borderLeftColor = r.corScore;
 
-  // Ring — instant (CSS .dragging removes transition)
-  const circumference = 263.89;
-  ring.style.strokeDashoffset = circumference - (o / 100) * circumference;
+  if (c.header && c.headerScore) {
+    c.header.classList.remove("readiness-yellow-h", "readiness-orange-h", "readiness-red-h");
+    if (r.classeHeader) c.header.classList.add(r.classeHeader);
+    c.headerScore.textContent = o;
+    c.headerScore.style.color = r.corScore;
+  }
 
-  // Score number — instant during drag, animated on release
+  // Ring — instant
+  c.ring.style.strokeDashoffset = 263.89 - (o / 100) * 263.89;
+
+  // Score — instant during drag
   if (dragging) {
-    n.textContent = o;
+    c.score.textContent = o;
     _prevReadinessScore = o;
   } else {
-    // Release mode: full polish
-    if (_readinessUIFrame) cancelAnimationFrame(_readinessUIFrame);
-    _readinessUIFrame = requestAnimationFrame(() => {
-      const prevScore = _prevReadinessScore;
-      const diff = o - prevScore;
-      if (diff > 0) {
-        dir.className = "readiness-direction up";
-        dir.textContent = "▲ +" + diff;
-        s.classList.remove("flash-red", "flash-green");
-        void s.offsetWidth;
-        s.classList.add("flash-green");
-        _spawnParticles(s, "var(--green-bright)");
-      } else if (diff < 0) {
-        dir.className = "readiness-direction down";
-        dir.textContent = "▼ " + diff;
-        s.classList.remove("flash-green", "flash-red");
-        void s.offsetWidth;
-        s.classList.add("flash-red");
-        _spawnParticles(s, "var(--accent-red-bright)");
-      } else {
-        dir.className = "readiness-direction same";
-        dir.textContent = "";
-      }
-      _prevReadinessScore = o;
+    // Release: effects
+    const prevScore = _prevReadinessScore;
+    const diff = o - prevScore;
+    if (diff !== 0) {
+      c.dir.className = diff > 0 ? "readiness-direction up" : "readiness-direction down";
+      c.dir.textContent = diff > 0 ? "▲ +" + diff : "▼ " + diff;
+      c.circle.classList.remove("flash-red", "flash-green");
+      void c.circle.offsetWidth;
+      c.circle.classList.add(diff > 0 ? "flash-green" : "flash-red");
+      _spawnParticles(c.circle, diff > 0 ? "var(--green-bright)" : "var(--accent-red-bright)");
+    } else {
+      c.dir.className = "readiness-direction same";
+      c.dir.textContent = "";
+    }
+    _prevReadinessScore = o;
 
-      _animateScore(n, parseInt(n.textContent) || 0, o, 200);
-
-      n.classList.remove("pop");
-      void n.offsetWidth;
-      n.classList.add("pop");
-
-      setTimeout(() => { s.classList.remove("flash-green", "flash-red"); }, 700);
-
+    if (_readinessAnimFrame) cancelAnimationFrame(_readinessAnimFrame);
+    _readinessAnimFrame = requestAnimationFrame(() => {
+      _animateScore(c.score, parseInt(c.score.textContent) || 0, o, 180);
+      c.score.classList.remove("pop");
+      void c.score.offsetWidth;
+      c.score.classList.add("pop");
       _renderReadinessPrev();
       _renderReadinessHistory();
       _renderReadinessRec();
-      _saveReadinessHistory();
     });
+    setTimeout(() => { c.circle.classList.remove("flash-green", "flash-red"); }, 700);
   }
+  _saveReadinessHistory();
 }
 
 function _animateScore(el, from, to, duration) {
@@ -3934,11 +3933,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // Drag tracking — only on slider inputs
   const sliderIds = ["sliderSono","sliderStress","sliderDor","sliderEnergia","sliderHidratacao","sliderAlimentacao","sliderMotivacao"];
   const rc = document.getElementById("readinessCard");
-  const startDrag = () => { _isDragging = true; rc && rc.classList.add("dragging"); };
+  const hdr = document.getElementById("headerReadiness");
+  const startDrag = () => { _isDragging = true; rc && rc.classList.add("dragging"); hdr && hdr.classList.add("drag-pulse"); };
   const endDrag = () => {
     if (!_isDragging) return;
     _isDragging = false;
     rc && rc.classList.remove("dragging");
+    hdr && hdr.classList.remove("drag-pulse");
   };
   sliderIds.forEach(id => {
     const el = document.getElementById(id);
