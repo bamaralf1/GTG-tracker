@@ -932,9 +932,12 @@ function adicionarXP(amount) {
     }
   }
 
-  // Floating XP text
+  // Floating XP text — positioned at fill cap
   const floatEl = document.getElementById("xpFloatText");
+  const capEl = document.getElementById("xpFillCap");
   if (floatEl) {
+    const capPct = capEl ? capEl.style.left : "0%";
+    floatEl.style.left = capPct;
     floatEl.textContent = "+" + amount + " XP";
     floatEl.classList.remove("show");
     void floatEl.offsetWidth;
@@ -1007,8 +1010,15 @@ function atualizarXP() {
   // Glow trail position
   const trail = document.getElementById("xpGlowTrail");
   if (trail) {
-    trail.style.left = Math.max(0, pct - 3) + "%";
+    trail.style.left = Math.max(0, pct - 4) + "%";
     trail.classList.toggle("active", pct > 2 && pct < 98);
+  }
+
+  // Fill end cap position
+  const cap = document.getElementById("xpFillCap");
+  if (cap) {
+    cap.style.left = pct + "%";
+    cap.classList.toggle("active", pct > 1 && pct < 99);
   }
 
   // Generate particles on bar
@@ -1045,13 +1055,15 @@ function _renderXPBarParticles(pct) {
   if (!container || _xpParticlesRendered) return;
   _xpParticlesRendered = true;
   container.innerHTML = "";
-  const count = Math.min(12, Math.max(3, Math.floor(pct / 10)));
+  const count = Math.min(16, Math.max(4, Math.floor(pct / 7)));
   for (let i = 0; i < count; i++) {
     const dot = document.createElement("div");
     dot.className = "xp-particle";
-    dot.style.setProperty("--top", (15 + Math.random() * 70) + "%");
-    dot.style.setProperty("--dur", (1.5 + Math.random() * 2) + "s");
-    dot.style.setProperty("--delay", (Math.random() * 3) + "s");
+    const size = 1.5 + Math.random() * 2.5;
+    dot.style.setProperty("--size", size + "px");
+    dot.style.setProperty("--top", (10 + Math.random() * 80) + "%");
+    dot.style.setProperty("--dur", (1.2 + Math.random() * 2.5) + "s");
+    dot.style.setProperty("--delay", (Math.random() * 4) + "s");
     dot.style.setProperty("--peak-opacity", (0.4 + Math.random() * 0.5).toFixed(2));
     container.appendChild(dot);
   }
@@ -2227,7 +2239,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260712u"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260712v"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");
