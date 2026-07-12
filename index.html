@@ -183,19 +183,29 @@
               <button class="btn btn-sm" id="btnInstalarPWA" style="display:none;background:rgba(212,160,23,.2);border:1px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:14px;padding:6px 14px;" onclick="instalarPWA()">📲 INSTALAR</button>
             </div>
           </div>
-          <div class="card" style="padding:14px 18px; margin:0; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-            <span class="text-mono" style="font-size:16px;color:var(--gold);letter-spacing:1px;white-space:nowrap">☭ RÁDIO</span>
-            <select id="sovietRadioStation" onchange="changeRadioStation()" style="flex:1;min-width:0;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid rgba(212,168,67,0.3);color:var(--gold);font-family:Share Tech Mono,monospace;font-size:15px;cursor:pointer;">
+          <div class="card" style="padding:14px 18px; margin:0;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <span class="text-mono" style="font-size:16px;color:var(--gold);letter-spacing:1px;white-space:nowrap">☭ RÁDIO</span>
+              <select id="sovietRadioStation" onchange="radio.changeStation()" style="flex:1;min-width:0;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid rgba(212,168,67,0.3);color:var(--gold);font-family:Share Tech Mono,monospace;font-size:15px;cursor:pointer;">
               <option value="http://evcast.mediacp.eu:2070/stream">🎵 Soviet Estrada</option>
               <option value="http://retroserver.streamr.ru:8043/retro256.mp3">🎺 Retro FM</option>
               <option value="http://nashe1.hostingradio.ru/nashe-256">🎸 Nashe Radio</option>
               <option value="http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3">🎤 Rádio Chanson</option>
               <option value="http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3">🎻 Rádio Orfey</option>
+              <option value="https://icecast-vgtrk.cdnvideo.ru/mayakfm">📡 Radio Mayak</option>
+              <option value="https://icecast-vgtrk.cdnvideo.ru/rrzonam">📻 Radio Rossii</option>
+              <option value="https://icecast-vgtrk.cdnvideo.ru/kulturarn">🎼 Radio Culture</option>
+              <option value="https://stream.hoster.by/unistar/unistar_dacha-128/icecast.audio">🌻 Unistar Dacha</option>
+              <option value="https://stream.hoster.by/unistar/unistar_90e-128/icecast.audio">📀 Unistar 90s</option>
             </select>
-            <button onclick="toggleRadio()" id="radioToggleBtn" style="padding:6px 16px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:Bebas Neue,sans-serif;letter-spacing:2px;font-size:15px;cursor:pointer;">▶ PLAY</button>
-            <input type="range" id="radioVolume" min="0" max="100" value="50" onchange="changeRadioVolume()" style="width:90px;height:6px;cursor:pointer;">
-            <span class="text-mono" style="font-size:14px;color:var(--gold)" id="volumeDisplay">50%</span>
-            <span class="text-mono" style="font-size:14px;color:var(--gray-light);white-space:nowrap">📡 <span id="currentStationName">Soviet Music Radio</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <button onclick="radio.toggle()" id="radioToggleBtn" style="padding:6px 16px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:Bebas Neue,sans-serif;letter-spacing:2px;font-size:15px;cursor:pointer;">▶ PLAY</button>
+              <input type="range" id="radioVolume" min="0" max="100" value="50" oninput="radio.setVolume(this.value)" style="width:90px;height:6px;cursor:pointer;">
+              <span class="text-mono" style="font-size:14px;color:var(--gold)" id="volumeDisplay">50%</span>
+              <span class="text-mono" style="font-size:13px;color:var(--gray-light)" id="radioStatus">⏹ Parado</span>
+            </div>
+            <div class="text-mono" style="font-size:13px;color:var(--gold-dim);margin-top:6px;">📡 <span id="currentStationName">Soviet Estrada</span></div>
             <audio id="sovietRadioPlayer" preload="none" style="display:none"></audio>
           </div>
           <div class="card" id="gtgSessionCard" style="border-color:rgba(212,160,23,.25); margin:0;">
@@ -243,25 +253,64 @@
             </div>
           </div>
           <script>
-            let isRadioPlaying = false;
-            const radioPlayer = document.getElementById('sovietRadioPlayer');
-            const radioToggleBtn = document.getElementById('radioToggleBtn');
-            const radioVolume = document.getElementById('radioVolume');
-            const volumeDisplay = document.getElementById('volumeDisplay');
-            const stationSelect = document.getElementById('sovietRadioStation');
-            const currentStationName = document.getElementById('currentStationName');
-            const stationNames = {
-              'http://evcast.mediacp.eu:2070/stream': 'Советская эстрада (Soviet Estrada)',
-              'http://retroserver.streamr.ru:8043/retro256.mp3': 'Ретро FM (Retro FM Rússia)',
-              'http://nashe1.hostingradio.ru/nashe-256': 'Наше Радио (Nashe Radio)',
-              'http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3': 'Радио Шансон (Rádio Chanson)',
-              'http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3': 'Радио Орфей (Clássica Russa)'
+            window.radio = {
+              player: null, toggleBtn: null, volumeSlider: null, volumeLabel: null,
+              statusEl: null, stationSelect: null, stationNameEl: null, playing: false,
+              stations: {
+                'http://evcast.mediacp.eu:2070/stream': 'Советская эстрада (Soviet Estrada)',
+                'http://retroserver.streamr.ru:8043/retro256.mp3': 'Ретро FM (Retro FM Rússia)',
+                'http://nashe1.hostingradio.ru/nashe-256': 'Наше Радио (Nashe Radio)',
+                'http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3': 'Радио Шансон (Rádio Chanson)',
+                'http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3': 'Радио Орфей (Clássica Russa)',
+                'https://icecast-vgtrk.cdnvideo.ru/mayakfm': 'Радио Маяк (Radio Mayak)',
+                'https://icecast-vgtrk.cdnvideo.ru/rrzonam': 'Радио России (Radio Rossii)',
+                'https://icecast-vgtrk.cdnvideo.ru/kulturarn': 'Радио Культура (Radio Culture)',
+                'https://stream.hoster.by/unistar/unistar_dacha-128/icecast.audio': 'Юнистар Дача (Unistar Dacha)',
+                'https://stream.hoster.by/unistar/unistar_90e-128/icecast.audio': 'Юнистар 90-е (Unistar 90s)'
+              },
+              init() {
+                this.player = document.getElementById('sovietRadioPlayer');
+                this.toggleBtn = document.getElementById('radioToggleBtn');
+                this.volumeSlider = document.getElementById('radioVolume');
+                this.volumeLabel = document.getElementById('volumeDisplay');
+                this.statusEl = document.getElementById('radioStatus');
+                this.stationSelect = document.getElementById('sovietRadioStation');
+                this.stationNameEl = document.getElementById('currentStationName');
+                const saved = JSON.parse(localStorage.getItem('gtg_radio') || '{}');
+                if (saved.station) { this.stationSelect.value = saved.station; this.stationNameEl.textContent = this.stations[saved.station] || '—'; }
+                if (saved.volume != null) { this.volumeSlider.value = saved.volume; this.player.volume = saved.volume / 100; this.volumeLabel.textContent = saved.volume + '%'; }
+                this.player.addEventListener('waiting', () => { if (this.playing) this.statusEl.textContent = '⏳ Conectando...' });
+                this.player.addEventListener('canplay', () => { if (this.playing) this.statusEl.textContent = '▶ Tocando' });
+                this.player.addEventListener('error', () => { this.statusEl.textContent = '✕ Erro'; this.playing = false; this.toggleBtn.textContent = '▶ PLAY'; this.toggleBtn.style.background = 'var(--red)'; });
+              },
+              changeStation() {
+                const val = this.stationSelect.value;
+                this.player.src = val;
+                this.stationNameEl.textContent = this.stations[val] || '—';
+                localStorage.setItem('gtg_radio', JSON.stringify({ station: val, volume: this.volumeSlider.value }));
+                if (this.playing) { this.player.play().catch(() => {}); this.statusEl.textContent = '⏳ Conectando...'; }
+              },
+              toggle() {
+                if (!this.player.src) this.player.src = this.stationSelect.value;
+                if (this.playing) {
+                  this.player.pause(); this.playing = false;
+                  this.toggleBtn.textContent = '▶ PLAY'; this.toggleBtn.style.background = 'var(--red)';
+                  this.statusEl.textContent = '⏹ Parado';
+                } else {
+                  this.playing = true;
+                  this.toggleBtn.textContent = '⏸ PAUSE'; this.toggleBtn.style.background = 'var(--gold)'; this.toggleBtn.style.color = 'var(--black)';
+                  this.statusEl.textContent = '⏳ Conectando...';
+                  this.player.play().catch(() => { this.statusEl.textContent = '✕ Erro'; this.playing = false; this.toggleBtn.textContent = '▶ PLAY'; this.toggleBtn.style.background = 'var(--red)'; });
+                }
+              },
+              setVolume(val) {
+                this.player.volume = val / 100;
+                this.volumeLabel.textContent = val + '%';
+                const saved = JSON.parse(localStorage.getItem('gtg_radio') || '{}');
+                saved.volume = val; localStorage.setItem('gtg_radio', JSON.stringify(saved));
+              }
             };
-            function changeRadioStation() { const station = stationSelect.value; radioPlayer.src = station; currentStationName.textContent = stationNames[station] || 'Unknown Station'; if (isRadioPlaying) { radioPlayer.play(); } }
-            function toggleRadio() { if (!radioPlayer.src) { radioPlayer.src = stationSelect.value; } if (isRadioPlaying) { radioPlayer.pause(); radioToggleBtn.textContent = '▶ PLAY'; radioToggleBtn.style.background = 'var(--red)'; isRadioPlaying = false; } else { radioPlayer.play(); radioToggleBtn.textContent = '⏸ PAUSE'; radioToggleBtn.style.background = 'var(--gold)'; radioToggleBtn.style.color = 'var(--black)'; isRadioPlaying = true; } }
-            function changeRadioVolume() { const volume = radioVolume.value / 100; radioPlayer.volume = volume; volumeDisplay.textContent = radioVolume.value + '%'; }
-            radioPlayer.volume = 0.5;
-            radioPlayer.addEventListener('error', function() { console.log('Radio stream error, trying next station...'); const options = stationSelect.options; const currentIndex = stationSelect.selectedIndex; if (currentIndex < options.length - 1) { stationSelect.selectedIndex = currentIndex + 1; changeRadioStation(); } });
+            document.addEventListener('DOMContentLoaded', () => radio.init());
           </script>
         </div>
       </div>
