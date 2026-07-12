@@ -2699,6 +2699,12 @@ function updateReadinessUI() {
 
   // Clean flash classes after animation
   setTimeout(() => { s.classList.remove("flash-green", "flash-red"); }, 700);
+
+  // Render new elements
+  _renderReadinessPrev();
+  _renderReadinessHistory();
+  _renderReadinessRec();
+  _saveReadinessHistory();
 }
 
 function _animateScore(el, from, to, duration) {
@@ -2730,6 +2736,98 @@ function _spawnParticles(circle, color) {
     container.appendChild(p);
   }
   setTimeout(() => { container.innerHTML = ""; }, 900);
+}
+
+function applyProfile(profile) {
+  const profiles = {
+    morning:     { sono: 7, stress: 3, dor: 2, energia: 6, hidratacao: 5, alimentacao: 5, motivacao: 7 },
+    postworkout: { sono: 5, stress: 4, dor: 7, energia: 3, hidratacao: 4, alimentacao: 6, motivacao: 5 },
+    stressed:    { sono: 3, stress: 9, dor: 3, energia: 2, hidratacao: 4, alimentacao: 3, motivacao: 2 },
+    peak:        { sono: 9, stress: 1, dor: 1, energia: 9, hidratacao: 9, alimentacao: 9, motivacao: 9 }
+  };
+  const p = profiles[profile];
+  if (!p) return;
+  Object.assign(readinessData, p);
+  readinessData.score = calcularReadiness(p.sono, p.stress, p.dor, p.energia, p.hidratacao, p.alimentacao, p.motivacao);
+  document.getElementById("sliderSono").value = p.sono;
+  document.getElementById("sliderStress").value = p.stress;
+  document.getElementById("sliderDor").value = p.dor;
+  document.getElementById("sliderEnergia").value = p.energia;
+  document.getElementById("sliderHidratacao").value = p.hidratacao;
+  document.getElementById("sliderAlimentacao").value = p.alimentacao;
+  document.getElementById("sliderMotivacao").value = p.motivacao;
+  salvarReadiness();
+  updateReadinessUI();
+}
+
+function _renderReadinessPrev() {
+  const el = document.getElementById("readinessPrev");
+  if (!el) return;
+  const today = (new Date).toISOString().slice(0, 10);
+  const history = JSON.parse(localStorage.getItem("gtg_readiness_history") || "{}");
+  let prevDate = null;
+  for (let i = 1; i <= 7; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    if (history[key]) { prevDate = key; break; }
+  }
+  if (!prevDate || !history[prevDate]) { el.textContent = ""; el.className = "readiness-prev"; return; }
+  const prevScore = history[prevDate].score;
+  const curr = readinessData.score;
+  const diff = curr - prevScore;
+  if (diff > 0) { el.textContent = "Ontem: " + prevScore + " ▲+" + diff; el.className = "readiness-prev up"; }
+  else if (diff < 0) { el.textContent = "Ontem: " + prevScore + " ▼" + diff; el.className = "readiness-prev down"; }
+  else { el.textContent = "Ontem: " + prevScore + " — igual"; el.className = "readiness-prev same"; }
+}
+
+function _renderReadinessHistory() {
+  const el = document.getElementById("readinessHistory");
+  if (!el) return;
+  const history = JSON.parse(localStorage.getItem("gtg_readiness_history") || "{}");
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    const label = ["D","S","T","Q","Q","S","S"][d.getDay()];
+    days.push({ key, score: history[key] ? history[key].score : null, label, isToday: i === 0 });
+  }
+  let html = "";
+  days.forEach(day => {
+    if (day.score !== null) {
+      const h = Math.max(4, day.score * 0.24);
+      const cls = day.isToday ? "readiness-history-bar today" : "readiness-history-bar";
+      let bg = "var(--green-bright)";
+      if (day.score < 40) bg = "var(--accent-red-bright)";
+      else if (day.score < 60) bg = "var(--accent-orange)";
+      else if (day.score < 80) bg = "var(--accent-yellow)";
+      html += '<div style="display:flex;flex-direction:column;align-items:center;gap:1px"><div class="' + cls + '" style="height:' + h + 'px;background:' + bg + ';color:' + bg + '" title="' + day.score + '"></div><div class="readiness-history-label">' + day.label + '</div></div>';
+    } else {
+      html += '<div style="display:flex;flex-direction:column;align-items:center;gap:1px"><div class="readiness-history-bar" style="height:2px;background:rgba(255,255,255,0.1)"></div><div class="readiness-history-label">' + day.label + '</div></div>';
+    }
+  });
+  el.innerHTML = html;
+}
+
+function _saveReadinessHistory() {
+  const history = JSON.parse(localStorage.getItem("gtg_readiness_history") || "{}");
+  const today = (new Date).toISOString().slice(0, 10);
+  history[today] = { score: readinessData.score, data: readinessData };
+  const keys = Object.keys(history).sort().slice(-14);
+  const trimmed = {};
+  keys.forEach(k => trimmed[k] = history[k]);
+  localStorage.setItem("gtg_readiness_history", JSON.stringify(trimmed));
+}
+
+function _renderReadinessRec() {
+  const el = document.getElementById("readinessRec");
+  if (!el) return;
+  const s = readinessData.score;
+  let rec = "";
+  if (s >= 80) rec = '<strong>⚡ PICO</strong> — GTG pesado: 15-20 séries no dia';
+  else if (s >= 60) rec = '<strong>✓ NORMAL</strong> — GTG padrão: 8-12 séries no dia';
+  else if (s >= 40) rec = '<strong>⚠ REDUZIDO</strong> — Metade das séries. Foco em qualidade';
+  else rec = '<strong>🛑 DESCANSO</strong> — Sem treino pesado. Alongamento leve';
+  el.innerHTML = rec;
 }
 
 function scrollToReadiness(e) {

@@ -1863,6 +1863,93 @@ body::after{
 
 .readiness-suggestion strong{color:var(--gold);font-family:'Bebas Neue',sans-serif;letter-spacing:0.06em}
 
+/* SVG tick marks */
+.readiness-tick{stroke:rgba(255,255,255,0.25);stroke-width:0.8;stroke-linecap:round}
+
+/* Quick profile buttons */
+.readiness-profiles{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.readiness-profile-btn{
+  font-family:'Share Tech Mono',monospace;
+  font-size:8px;
+  letter-spacing:0.5px;
+  color:var(--gray-light);
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  padding:3px 8px;
+  border-radius:2px;
+  cursor:pointer;
+  transition:all .2s var(--ease-expo);
+}
+.readiness-profile-btn:hover{
+  color:var(--gold);
+  border-color:var(--gold);
+  background:rgba(212,168,67,0.1);
+  box-shadow:0 0 8px rgba(212,168,67,0.2);
+}
+
+/* Previous day comparison */
+.readiness-prev{
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.5px;
+  text-align:center;
+  min-height:14px;
+  transition:all .3s var(--ease-expo);
+}
+.readiness-prev.up{color:var(--green-bright)}
+.readiness-prev.down{color:var(--accent-red-bright)}
+.readiness-prev.same{color:var(--gray)}
+
+/* 7-day history mini bar chart */
+.readiness-history{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:3px;
+  height:28px;
+  padding:4px 8px;
+  background:rgba(0,0,0,0.2);
+  border-radius:4px;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.readiness-history-bar{
+  width:10px;
+  border-radius:2px 2px 0 0;
+  transition:height .4s var(--ease-expo),background .3s;
+  position:relative;
+  min-height:2px;
+}
+.readiness-history-bar.today{
+  box-shadow:0 0 6px currentColor;
+}
+.readiness-history-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:6px;
+  color:var(--gray);
+  text-align:center;
+  line-height:1;
+  margin-top:1px;
+}
+
+/* Training recommendation */
+.readiness-rec{
+  font-family:Rajdhani,sans-serif;
+  font-size:9px;
+  color:var(--green-bright);
+  text-align:center;
+  padding:4px 8px;
+  background:rgba(68,204,68,0.06);
+  border:1px solid rgba(68,204,68,0.15);
+  border-radius:3px;
+  line-height:1.3;
+  max-width:140px;
+}
+.readiness-rec strong{font-family:'Bebas Neue',sans-serif;letter-spacing:0.05em}
+
+/* Tooltip on slider names */
+.readiness-slider-name{position:relative;cursor:help}
+.readiness-slider-name:hover{color:var(--gold)}
+
 /* === HEADER READINESS === */
 .header-readiness{
   display:flex;

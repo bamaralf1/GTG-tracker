@@ -93,52 +93,58 @@
           </div>
       <div class="readiness-card" id="readinessCard">
         <div class="readiness-header"><span class="readiness-title">🎯 ESTADO DE PRONTIDÃO</span> <button class="readiness-reset" onclick="resetReadiness()" title="Resetar avaliação">↻ RESETAR</button></div>
+        <div class="readiness-profiles">
+          <button class="readiness-profile-btn" onclick="applyProfile('morning')" title="Avaliação matinal padrão">🌅 Manhã</button>
+          <button class="readiness-profile-btn" onclick="applyProfile('postworkout')" title="Após treino pesado">💪 Pós-Treino</button>
+          <button class="readiness-profile-btn" onclick="applyProfile('stressed')" title="Dia de muito estresse">😰 Estressado</button>
+          <button class="readiness-profile-btn" onclick="applyProfile('peak')" title="Dia de pico, tudo perfeito">⚡ Pico</button>
+        </div>
         <div class="readiness-body">
           <div class="readiness-sliders">
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name">😴 Qualidade do Sono</span> <span class="readiness-slider-value" id="valSono">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Quantas horas dormiu e qualidade do sono profundo">😴 Qualidade do Sono</span> <span class="readiness-slider-value" id="valSono">5</span></div>
               <div class="readiness-slider-track" id="trackSono">
                 <div class="readiness-slider-fill" id="fillSono" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderSono" min="0" max="10" step="1" value="5" oninput="updateReadiness()">
               </div>
               <div class="readiness-slider-ends"><span>Péssimo</span> <span>Perfeito</span></div>
             </div>
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name">😰 Nível de Stress</span> <span class="readiness-slider-value" id="valStress">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Estresse acumulado do trabalho, vida, treinos">😰 Nível de Stress</span> <span class="readiness-slider-value" id="valStress">5</span></div>
               <div class="readiness-slider-track" id="trackStress">
                 <div class="readiness-slider-fill" id="fillStress" style="width:50%;background:linear-gradient(90deg,var(--green-bright),var(--gold),var(--red),var(--red-dark))"></div><input type="range" class="readiness-slider-input" id="sliderStress" min="0" max="10" step="1" value="5" oninput="updateReadiness()">
               </div>
               <div class="readiness-slider-ends"><span>Nenhum</span> <span>Extremo</span></div>
             </div>
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name">💥 Dor Muscular</span> <span class="readiness-slider-value" id="valDor">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Dor ou rigidez muscular residual do treino anterior">💥 Dor Muscular</span> <span class="readiness-slider-value" id="valDor">5</span></div>
               <div class="readiness-slider-track" id="trackDor">
                 <div class="readiness-slider-fill" id="fillDor" style="width:50%;background:linear-gradient(90deg,var(--green-bright),var(--gold),var(--red),var(--red-dark))"></div><input type="range" class="readiness-slider-input" id="sliderDor" min="0" max="10" step="1" value="5" oninput="updateReadiness()">
               </div>
               <div class="readiness-slider-ends"><span>Nenhuma</span> <span>Incapacitante</span></div>
             </div>
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name">⚡ Nível de Energia</span> <span class="readiness-slider-value" id="valEnergia">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Disposição do sistema nervoso para produzir força">⚡ Nível de Energia</span> <span class="readiness-slider-value" id="valEnergia">5</span></div>
               <div class="readiness-slider-track" id="trackEnergia">
                 <div class="readiness-slider-fill" id="fillEnergia" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderEnergia" min="0" max="10" step="1" value="5" oninput="updateReadiness()">
               </div>
               <div class="readiness-slider-ends"><span>Esgotado</span> <span>Electrizado</span></div>
             </div>
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name">💧 Hidratação</span> <span class="readiness-slider-value" id="valHidratacao">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Nível de hidratação atual — desidratação reduz força 5-10%">💧 Hidratação</span> <span class="readiness-slider-value" id="valHidratacao">5</span></div>
               <div class="readiness-slider-track" id="trackHidratacao">
                 <div class="readiness-slider-fill" id="fillHidratacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderHidratacao" min="0" max="10" step="1" value="5" oninput="updateReadiness()">
               </div>
               <div class="readiness-slider-ends"><span>Desidratado</span> <span>Perfeito</span></div>
             </div>
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name">🍽️ Alimentação</span> <span class="readiness-slider-value" id="valAlimentacao">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Qualidade e timing da última refeição">🍽️ Alimentação</span> <span class="readiness-slider-value" id="valAlimentacao">5</span></div>
               <div class="readiness-slider-track" id="trackAlimentacao">
                 <div class="readiness-slider-fill" id="fillAlimentacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderAlimentacao" min="0" max="10" step="1" value="5" oninput="updateReadiness()">
               </div>
               <div class="readiness-slider-ends"><span>Má</span> <span>Excelente</span></div>
             </div>
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name">🧠 Motivação</span> <span class="readiness-slider-value" id="valMotivacao">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Vontade de treinar — GTG exige disciplina diária">🧠 Motivação</span> <span class="readiness-slider-value" id="valMotivacao">5</span></div>
               <div class="readiness-slider-track" id="trackMotivacao">
                 <div class="readiness-slider-fill" id="fillMotivacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderMotivacao" min="0" max="10" step="1" value="5" oninput="updateReadiness()">
               </div>
@@ -150,6 +156,14 @@
               <svg class="readiness-ring" viewBox="0 0 100 100">
                 <circle class="readiness-ring-bg" cx="50" cy="50" r="42"/>
                 <circle class="readiness-ring-fill" id="readinessRingFill" cx="50" cy="50" r="42"/>
+                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="8" transform="rotate(0,50,50)"/>
+                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="8" transform="rotate(90,50,50)"/>
+                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="8" transform="rotate(180,50,50)"/>
+                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="8" transform="rotate(270,50,50)"/>
+                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="7" transform="rotate(45,50,50)"/>
+                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="7" transform="rotate(135,50,50)"/>
+                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="7" transform="rotate(225,50,50)"/>
+                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="7" transform="rotate(315,50,50)"/>
               </svg>
               <div class="readiness-score-wrap">
                 <div class="readiness-direction" id="readinessDirection"></div>
@@ -159,7 +173,10 @@
               <div class="readiness-circle-sub" id="readinessSub">/ 100</div>
               <div class="readiness-particles" id="readinessParticles"></div>
             </div>
+            <div class="readiness-prev" id="readinessPrev"></div>
             <div class="readiness-suggestion" id="readinessSuggestion"><strong>Volume normal.</strong> Foque na técnica.</div>
+            <div class="readiness-history" id="readinessHistory"></div>
+            <div class="readiness-rec" id="readinessRec"></div>
           </div>
         </div>
       </div>
