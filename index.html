@@ -274,6 +274,7 @@
             </div>
             <audio id="sovietRadioPlayer" preload="none" style="display:none"></audio>
             <audio id="armyPlayerAudio" preload="none" style="display:none"></audio>
+            <div id="armyYTPlayer" style="display:none"></div>
           </div>
 
           <div class="card sb-card" id="gtgSessionCard" style="border-color:rgba(212,160,23,.25);margin:0">
@@ -485,60 +486,69 @@
             };
 
             window.armyPlayer = {
-              player: null, currentIdx: -1, playing: false,
-              _lastVol: 85, _skipCount: 0, _maxSkip: 3,
+              ytPlayer: null, currentIdx: -1, playing: false, ready: false,
+              _lastVol: 85, _progressInterval: null,
               tracks: [
-                { title: 'Красная Армия всех сильней', sub: 'The Red Army is the Strongest', src: 'https://archive.org/download/WhiteArmyBlackBaron/White%20Army,%20Black%20Baron.mp3' },
-                { title: 'Калинка', sub: 'Kalinka', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/01%20-%20Kalinka.mp3' },
-                { title: 'Священная война', sub: 'Sacred War', src: 'https://archive.org/download/soviet-patriotic-songs/Svyashchennaya%20Voyna.mp3' },
-                { title: 'День Победы', sub: 'Day of Victory', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/02%20-%20Den%20Pobedy.mp3' },
-                { title: 'Марш артиллеристов', sub: 'March of the Artillerymen', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/03%20-%20Marsh%20Artilleristov.mp3' },
-                { title: 'Три танкиста', sub: 'Three Tankmen', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/04%20-%20Tri%20Tankista.mp3' },
-                { title: 'В путь', sub: "Let's Go", src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/05%20-%20V%20Put.mp3' },
-                { title: 'Красноармейская', sub: 'Red Army Song', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/06%20-%20Krasnoarmeykaya.mp3' },
-                { title: 'Марш советской армии', sub: 'March of the Soviet Army', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/07%20-%20Marsh%20Sovetskoy%20Armii.mp3' },
-                { title: 'Полюшко-поле', sub: 'The Meadowland', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/08%20-%20Polyushko%20Pole.mp3' },
-                { title: 'Гимн Советского Союза', sub: 'Soviet National Anthem', src: 'https://archive.org/download/american-british-french-and-soviet-anthems-red-army-choir/04%20-%20State%20Anthem%20of%20the%20Soviet%20Union.mp3' },
-                { title: 'Эй, ухнем!', sub: 'Song of the Volga Boatmen', src: 'https://archive.org/download/lp_songs-of-the-russian-cossacks/01.01.%20Song%20Of%20The%20Volga%20Boatmen_sample.mp3' }
+                { title: 'Красная Армия всех сильней', sub: 'The Red Army is the Strongest', yt: 'nHnDonNY7yQ' },
+                { title: 'Калинка', sub: 'Kalinka', yt: 'zGj_5-0Jn2Y' },
+                { title: 'Священная война', sub: 'Sacred War', yt: 'x8A9eULgOD0' },
+                { title: 'День Победы', sub: 'Day of Victory', yt: 'CJnVJMRkP_s' },
+                { title: 'Марш артиллеристов', sub: 'March of the Artillerymen', yt: 'K-8UoLJpODg' },
+                { title: 'Три танкиста', sub: 'Three Tankmen', yt: 'QxDb9W0xJz0' },
+                { title: 'Катюша', sub: 'Katyusha', yt: 'uJ8D1cT7bOY' },
+                { title: 'Красноармейская', sub: 'Red Army Song', yt: 'UxK1mBkR5pQ' },
+                { title: 'Полюшко-поле', sub: 'The Meadowland', yt: 'b2Y0b0W0xjM' },
+                { title: 'Гимн Советского Союза', sub: 'Soviet National Anthem', yt: 'U0bGB-PnB4s' },
+                { title: 'Эй, ухнем!', sub: 'Volga Boatmen', yt: 'U6JclCrA0aM' },
+                { title: 'Смуглянка', sub: 'Smuglyanka', yt: 'fWUJJWK1VdI' }
               ],
               init() {
+                var tag = document.createElement('script');
+                tag.src = 'https://www.youtube.com/iframe_api';
+                document.head.appendChild(tag);
                 var self = this;
-                this.player = document.getElementById('armyPlayerAudio');
-                this.player.volume = 0.85;
+                window.onYouTubeIframeAPIReady = function() {
+                  self.ytPlayer = new YT.Player('armyYTPlayer', {
+                    height: '1', width: '1',
+                    playerVars: { autoplay: 0, controls: 0 },
+                    events: {
+                      onReady: function() { self.ready = true; self.ytPlayer.setVolume(self._lastVol); },
+                      onStateChange: function(e) {
+                        if (e.data === YT.PlayerState.ENDED) { self._skipCount = 0; self.next(); }
+                        else if (e.data === YT.PlayerState.PLAYING) {
+                          self._startProgress();
+                          self._setPlayingUI();
+                        }
+                        else if (e.data === YT.PlayerState.PAUSED) { self._stopProgress(); }
+                      }
+                    }
+                  });
+                };
                 var savedVol = localStorage.getItem('gtg_army_vol');
-                if (savedVol != null) { this.player.volume = Math.min(parseInt(savedVol), 100) / 100; document.getElementById('armyVolume').value = savedVol; document.getElementById('armyVolumeDisplay').textContent = savedVol + '%'; }
-                this.player.addEventListener('ended', function() { self._skipCount = 0; self.next(); });
-                this.player.addEventListener('error', function() {
-                  if (!self.playing) return;
-                  self._skipCount++;
-                  if (self._skipCount < self._maxSkip) {
-                    self.next();
-                  } else {
-                    self._setErrorUI();
-                    self._skipCount = 0;
-                  }
-                });
-                this.player.addEventListener('timeupdate', function() { self._updateProgress(); });
-                this.player.addEventListener('loadedmetadata', function() { self._updateProgress(); });
+                if (savedVol != null) { this._lastVol = parseInt(savedVol); }
                 this._renderTracklist();
               },
+              _startProgress() { this._stopProgress(); var self = this; this._progressInterval = setInterval(function() { self._updateProgress(); }, 500); },
+              _stopProgress() { if (this._progressInterval) { clearInterval(this._progressInterval); this._progressInterval = null; } },
               _formatTime(sec) {
                 if (!sec || !isFinite(sec)) return '0:00';
                 var m = Math.floor(sec / 60), s = Math.floor(sec % 60);
                 return m + ':' + (s < 10 ? '0' : '') + s;
               },
               _updateProgress() {
-                var cur = this.player.currentTime, dur = this.player.duration;
-                if (!dur || !isFinite(dur)) return;
+                if (!this.ytPlayer || !this.ytPlayer.getDuration) return;
+                var cur = this.ytPlayer.getCurrentTime(), dur = this.ytPlayer.getDuration();
+                if (!dur) return;
                 document.getElementById('armyProgressFill').style.width = ((cur / dur) * 100) + '%';
                 document.getElementById('armyTimeCurrent').textContent = this._formatTime(cur);
                 document.getElementById('armyTimeTotal').textContent = this._formatTime(dur);
               },
               seek(e) {
+                if (!this.ytPlayer || !this.ytPlayer.getDuration) return;
                 var bar = document.getElementById('armyProgressBar');
                 var rect = bar.getBoundingClientRect();
                 var pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                if (this.player.duration) this.player.currentTime = pct * this.player.duration;
+                this.ytPlayer.seekTo(pct * this.ytPlayer.getDuration(), true);
               },
               _renderTracklist() {
                 var el = document.getElementById('armyTracklist');
@@ -574,14 +584,6 @@
                 document.getElementById('armyNowPlaying').textContent = idx >= 0 ? this.tracks[idx].title : '\u2014';
                 document.getElementById('armyTrackCount').textContent = (idx + 1) + '/' + this.tracks.length + ' \u2022 ' + this.tracks[idx].sub;
               },
-              _setErrorUI() {
-                this.playing = false;
-                document.getElementById('armyToggleBtn').textContent = '\u25B6 TOCAR';
-                document.getElementById('armyToggleBtn').style.background = 'var(--red)';
-                document.getElementById('armyToggleBtn').style.color = 'white';
-                document.getElementById('sbEq').classList.remove('playing');
-                document.querySelector('.sb-card-radio').classList.remove('playing');
-              },
               _setPlayingUI() {
                 document.getElementById('armyToggleBtn').textContent = '\u23F8 PAUSE';
                 document.getElementById('armyToggleBtn').style.background = 'var(--gold)';
@@ -592,25 +594,31 @@
                 document.getElementById('sbStatusText').textContent = '\u25CF TOCANDO';
                 document.getElementById('sbStatusText').style.color = 'var(--green-bright)';
               },
+              _setErrorUI() {
+                this.playing = false;
+                this._stopProgress();
+                document.getElementById('armyToggleBtn').textContent = '\u25B6 TOCAR';
+                document.getElementById('armyToggleBtn').style.background = 'var(--red)';
+                document.getElementById('armyToggleBtn').style.color = 'white';
+                document.getElementById('sbEq').classList.remove('playing');
+                document.querySelector('.sb-card-radio').classList.remove('playing');
+              },
               playTrack(idx) {
                 if (idx < 0 || idx >= this.tracks.length) return;
-                var self = this;
+                if (!this.ready || !this.ytPlayer) { var self = this; setTimeout(function() { self.playTrack(idx); }, 500); return; }
                 this.currentIdx = idx;
-                this._skipCount = 0;
-                this.player.src = this.tracks[idx].src;
-                this.player.load();
+                this.playing = true;
                 this._highlight(idx);
-                this.player.play().then(function() {
-                  self.playing = true;
-                  self._setPlayingUI();
-                }).catch(function() {
-                  if (self.playing) self.next();
-                });
+                this.ytPlayer.loadVideoById(this.tracks[idx].yt);
+                this.setVolume(document.getElementById('armyVolume').value);
               },
               toggle() {
-                if (!this.player.src && this.tracks.length > 0) { this.playTrack(0); return; }
-                if (this.playing) {
-                  this.player.pause(); this.playing = false;
+                if (!this.ytPlayer || !this.ready) return;
+                if (!this.ytPlayer.getVideoData || !this.ytPlayer.getVideoData().video_id) { this.playTrack(0); return; }
+                var state = this.ytPlayer.getPlayerState();
+                if (state === YT.PlayerState.PLAYING) {
+                  this.ytPlayer.pauseVideo();
+                  this.playing = false;
                   document.getElementById('armyToggleBtn').textContent = '\u25B6 CONTINUAR';
                   document.getElementById('armyToggleBtn').style.background = 'var(--red)';
                   document.getElementById('armyToggleBtn').style.color = 'white';
@@ -620,11 +628,8 @@
                   document.getElementById('sbStatusText').textContent = 'Pausado';
                   document.getElementById('sbStatusText').style.color = 'var(--gray)';
                 } else {
+                  this.ytPlayer.playVideo();
                   this.playing = true;
-                  var self = this;
-                  this.player.play().then(function() {
-                    self._setPlayingUI();
-                  }).catch(function() { self._setErrorUI(); });
                 }
               },
               next() {
@@ -632,24 +637,28 @@
                 this.playTrack(next < this.tracks.length ? next : 0);
               },
               prev() {
-                if (this.player.currentTime > 3) { this.player.currentTime = 0; return; }
+                if (this.ytPlayer && this.ytPlayer.getCurrentTime && this.ytPlayer.getCurrentTime() > 3) {
+                  this.ytPlayer.seekTo(0, true); return;
+                }
                 var prev = this.currentIdx - 1;
                 this.playTrack(prev >= 0 ? prev : this.tracks.length - 1);
               },
               setVolume(val) {
-                this.player.volume = Math.min(val, 100) / 100;
+                this._lastVol = parseInt(val);
+                if (this.ytPlayer && this.ytPlayer.setVolume) this.ytPlayer.setVolume(this._lastVol);
                 document.getElementById('armyVolumeDisplay').textContent = val + '%';
-                this._lastVol = val;
                 localStorage.setItem('gtg_army_vol', val);
               },
               muteToggle() {
                 if (parseInt(document.getElementById('armyVolume').value) > 0) {
                   this._lastVol = document.getElementById('armyVolume').value;
                   document.getElementById('armyVolume').value = 0; this.setVolume(0);
+                  if (this.ytPlayer && this.ytPlayer.mute) this.ytPlayer.mute();
                   document.querySelector('#radioTabArmy .sb-vol-icon').textContent = '\uD83D\uDD07';
                 } else {
                   var v = this._lastVol || 85;
                   document.getElementById('armyVolume').value = v; this.setVolume(v);
+                  if (this.ytPlayer && this.ytPlayer.unMute) this.ytPlayer.unMute();
                   document.querySelector('#radioTabArmy .sb-vol-icon').textContent = '\uD83D\uDD0A';
                 }
               }
