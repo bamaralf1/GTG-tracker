@@ -2489,6 +2489,8 @@ let readinessData = {
   score: 50,
   data: null
 };
+let _prevReadinessScore = 50;
+let _readinessAnimFrame = null;
 const READINESS_KEY = "gtg_readiness";
 
 async function carregarReadiness() {
@@ -2502,6 +2504,7 @@ async function carregarReadiness() {
   } catch (e) {
     console.error("Erro ao carregar readiness:", e)
   }
+  _prevReadinessScore = readinessData.score;
   updateReadinessUI()
 }
 
@@ -2520,7 +2523,7 @@ function resetReadinessData() {
     dor: 5,
     score: 50,
     data: null
-  }, document.getElementById("sliderSono").value = 5, document.getElementById("sliderStress").value = 5, document.getElementById("sliderDor").value = 5, salvarReadiness()
+  }, _prevReadinessScore = 50, document.getElementById("sliderSono").value = 5, document.getElementById("sliderStress").value = 5, document.getElementById("sliderDor").value = 5, salvarReadiness()
 }
 
 function resetReadiness() {
@@ -2585,11 +2588,93 @@ function updateReadinessUI() {
     s = document.getElementById("readinessCircle"),
     n = document.getElementById("readinessScore"),
     i = document.getElementById("readinessLabel"),
-    d = document.getElementById("readinessSuggestion");
-  s.classList.remove("readiness-green", "readiness-yellow", "readiness-orange", "readiness-red"), s.classList.add(r.classe), n.textContent = o, n.style.color = r.corScore, i.textContent = r.label, i.style.color = r.corScore, document.getElementById("readinessSub").style.color = r.corScore, d.innerHTML = r.sugestao, d.style.borderLeftColor = r.corScore;
+    d = document.getElementById("readinessSuggestion"),
+    ring = document.getElementById("readinessRingFill"),
+    dir = document.getElementById("readinessDirection");
+
+  // Direction detection
+  const prevScore = _prevReadinessScore;
+  const diff = o - prevScore;
+  if (diff > 0) {
+    dir.className = "readiness-direction up";
+    dir.textContent = "▲ +" + diff;
+    s.classList.remove("flash-red");
+    s.classList.remove("flash-green");
+    void s.offsetWidth;
+    s.classList.add("flash-green");
+    _spawnParticles(s, "var(--green-bright)");
+  } else if (diff < 0) {
+    dir.className = "readiness-direction down";
+    dir.textContent = "▼ " + diff;
+    s.classList.remove("flash-green");
+    s.classList.remove("flash-red");
+    void s.offsetWidth;
+    s.classList.add("flash-red");
+    _spawnParticles(s, "var(--accent-red-bright)");
+  } else {
+    dir.className = "readiness-direction same";
+    dir.textContent = "";
+  }
+  _prevReadinessScore = o;
+
+  // Animate score counter
+  _animateScore(n, parseInt(n.textContent) || 0, o, 600);
+
+  // Animate SVG ring (circumference = 2π × 42 ≈ 263.89)
+  const circumference = 263.89;
+  const offset = circumference - (o / 100) * circumference;
+  ring.style.strokeDashoffset = offset;
+
+  // Apply color class
+  s.classList.remove("readiness-green", "readiness-yellow", "readiness-orange", "readiness-red");
+  s.classList.add(r.classe);
+  i.textContent = r.label;
+  document.getElementById("readinessSub").style.color = r.corScore;
+  d.innerHTML = r.sugestao;
+  d.style.borderLeftColor = r.corScore;
+
   const c = document.getElementById("headerReadiness"),
     l = document.getElementById("headerReadinessScore");
-  c && l && (c.classList.remove("readiness-yellow-h", "readiness-orange-h", "readiness-red-h"), r.classeHeader && c.classList.add(r.classeHeader), l.textContent = o, l.style.color = r.corScore)
+  c && l && (c.classList.remove("readiness-yellow-h", "readiness-orange-h", "readiness-red-h"), r.classeHeader && c.classList.add(r.classeHeader), l.textContent = o, l.style.color = r.corScore);
+
+  // Score pop animation
+  n.classList.remove("pop");
+  void n.offsetWidth;
+  n.classList.add("pop");
+
+  // Clean flash classes after animation
+  setTimeout(() => { s.classList.remove("flash-green", "flash-red"); }, 700);
+}
+
+function _animateScore(el, from, to, duration) {
+  if (_readinessAnimFrame) cancelAnimationFrame(_readinessAnimFrame);
+  const start = performance.now();
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(from + (to - from) * eased);
+    el.textContent = current;
+    if (progress < 1) _readinessAnimFrame = requestAnimationFrame(tick);
+  }
+  _readinessAnimFrame = requestAnimationFrame(tick);
+}
+
+function _spawnParticles(circle, color) {
+  const container = document.getElementById("readinessParticles");
+  if (!container) return;
+  container.innerHTML = "";
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement("div");
+    p.className = "readiness-particle";
+    const angle = (Math.PI * 2 * i) / 12;
+    const dist = 30 + Math.random() * 25;
+    const px = Math.cos(angle) * dist;
+    const py = Math.sin(angle) * dist;
+    p.style.cssText = "left:50%;top:50%;background:" + color + ";--px:" + px + "px;--py:" + py + "px;animation-delay:" + (i * 0.04) + "s;width:" + (2 + Math.random() * 2) + "px;height:" + (2 + Math.random() * 2) + "px;";
+    container.appendChild(p);
+  }
+  setTimeout(() => { container.innerHTML = ""; }, 900);
 }
 
 function scrollToReadiness(e) {

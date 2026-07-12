@@ -119,9 +119,17 @@
           </div>
           <div class="readiness-display">
             <div class="readiness-circle readiness-yellow" id="readinessCircle">
-              <div class="readiness-circle-score" id="readinessScore">50</div>
+              <svg class="readiness-ring" viewBox="0 0 100 100">
+                <circle class="readiness-ring-bg" cx="50" cy="50" r="42"/>
+                <circle class="readiness-ring-fill" id="readinessRingFill" cx="50" cy="50" r="42"/>
+              </svg>
+              <div class="readiness-score-wrap">
+                <div class="readiness-direction" id="readinessDirection"></div>
+                <div class="readiness-circle-score" id="readinessScore">50</div>
+              </div>
               <div class="readiness-circle-label" id="readinessLabel">MODERADO</div>
               <div class="readiness-circle-sub" id="readinessSub">/ 100</div>
+              <div class="readiness-particles" id="readinessParticles"></div>
             </div>
             <div class="readiness-suggestion" id="readinessSuggestion"><strong>Volume normal.</strong> Foque na técnica.</div>
           </div>
