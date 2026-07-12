@@ -1618,7 +1618,7 @@ body::after{
   transform:translateY(-50%);
   height:6px;
   border-radius:5px;
-  transition:width .35s cubic-bezier(.25,.8,.25,1),background .4s cubic-bezier(.4,0,.2,1),box-shadow .4s cubic-bezier(.4,0,.2,1);
+  transition:background .4s cubic-bezier(.4,0,.2,1),box-shadow .4s cubic-bezier(.4,0,.2,1);
   pointer-events:none;
   z-index:1;
   box-shadow:0 0 10px rgba(212,168,67,0.5),0 1px 3px rgba(0,0,0,0.3);

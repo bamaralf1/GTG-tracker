@@ -2496,6 +2496,7 @@ let readinessData = {
 let _prevReadinessScore = 50;
 let _prevZones = {};
 let _readinessAnimFrame = null;
+let _readinessUIFrame = null;
 const READINESS_KEY = "gtg_readiness";
 
 async function carregarReadiness() {
@@ -2662,64 +2663,63 @@ function updateReadinessUI() {
     ring = document.getElementById("readinessRingFill"),
     dir = document.getElementById("readinessDirection");
 
-  // Direction detection
-  const prevScore = _prevReadinessScore;
-  const diff = o - prevScore;
-  if (diff > 0) {
-    dir.className = "readiness-direction up";
-    dir.textContent = "▲ +" + diff;
-    s.classList.remove("flash-red");
-    s.classList.remove("flash-green");
-    void s.offsetWidth;
-    s.classList.add("flash-green");
-    _spawnParticles(s, "var(--green-bright)");
-  } else if (diff < 0) {
-    dir.className = "readiness-direction down";
-    dir.textContent = "▼ " + diff;
-    s.classList.remove("flash-green");
-    s.classList.remove("flash-red");
-    void s.offsetWidth;
-    s.classList.add("flash-red");
-    _spawnParticles(s, "var(--accent-red-bright)");
-  } else {
-    dir.className = "readiness-direction same";
-    dir.textContent = "";
-  }
-  _prevReadinessScore = o;
-
-  // Animate score counter
-  _animateScore(n, parseInt(n.textContent) || 0, o, 600);
-
-  // Animate SVG ring (circumference = 2π × 42 ≈ 263.89)
-  const circumference = 263.89;
-  const offset = circumference - (o / 100) * circumference;
-  ring.style.strokeDashoffset = offset;
-
-  // Apply color class
+  // Apply color class + label + suggestion (cheap, do immediately)
   s.classList.remove("readiness-green", "readiness-yellow", "readiness-orange", "readiness-red");
   s.classList.add(r.classe);
   i.textContent = r.label;
   document.getElementById("readinessSub").style.color = r.corScore;
   d.innerHTML = r.sugestao;
   d.style.borderLeftColor = r.corScore;
-
   const c = document.getElementById("headerReadiness"),
     l = document.getElementById("headerReadinessScore");
   c && l && (c.classList.remove("readiness-yellow-h", "readiness-orange-h", "readiness-red-h"), r.classeHeader && c.classList.add(r.classeHeader), l.textContent = o, l.style.color = r.corScore);
 
-  // Score pop animation
-  n.classList.remove("pop");
-  void n.offsetWidth;
-  n.classList.add("pop");
+  // Animate SVG ring immediately (cheap)
+  const circumference = 263.89;
+  ring.style.strokeDashoffset = circumference - (o / 100) * circumference;
 
-  // Clean flash classes after animation
-  setTimeout(() => { s.classList.remove("flash-green", "flash-red"); }, 700);
+  // Defer heavy visual effects to next frame for fluid dragging
+  if (_readinessUIFrame) cancelAnimationFrame(_readinessUIFrame);
+  _readinessUIFrame = requestAnimationFrame(() => {
+    // Direction detection
+    const prevScore = _prevReadinessScore;
+    const diff = o - prevScore;
+    if (diff > 0) {
+      dir.className = "readiness-direction up";
+      dir.textContent = "▲ +" + diff;
+      s.classList.remove("flash-red"); s.classList.remove("flash-green");
+      void s.offsetWidth;
+      s.classList.add("flash-green");
+      _spawnParticles(s, "var(--green-bright)");
+    } else if (diff < 0) {
+      dir.className = "readiness-direction down";
+      dir.textContent = "▼ " + diff;
+      s.classList.remove("flash-green"); s.classList.remove("flash-red");
+      void s.offsetWidth;
+      s.classList.add("flash-red");
+      _spawnParticles(s, "var(--accent-red-bright)");
+    } else {
+      dir.className = "readiness-direction same";
+      dir.textContent = "";
+    }
+    _prevReadinessScore = o;
 
-  // Render new elements
-  _renderReadinessPrev();
-  _renderReadinessHistory();
-  _renderReadinessRec();
-  _saveReadinessHistory();
+    // Animate score counter
+    _animateScore(n, parseInt(n.textContent) || 0, o, 600);
+
+    // Score pop animation
+    n.classList.remove("pop");
+    void n.offsetWidth;
+    n.classList.add("pop");
+
+    setTimeout(() => { s.classList.remove("flash-green", "flash-red"); }, 700);
+
+    // Render new elements
+    _renderReadinessPrev();
+    _renderReadinessHistory();
+    _renderReadinessRec();
+    _saveReadinessHistory();
+  });
 }
 
 function _animateScore(el, from, to, duration) {
