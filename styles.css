@@ -522,10 +522,12 @@ body::after{
   display:flex;
   align-items:center;
   justify-content:space-between;
+  flex-wrap:wrap;
+  row-gap:8px;
   border-bottom:1px solid rgba(212,168,67,0.15);
 }
 .exercise-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.06em;color:var(--white);text-shadow:0 0 12px rgba(255,255,255,0.1)}
-.exercise-card-actions{display:flex;gap:6px}
+.exercise-card-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:100%}
 .btn-icon{
   background:transparent;
   border:1px solid rgba(212,168,67,0.3);
@@ -1532,6 +1534,43 @@ body::after{
 .readiness-slider-input::-webkit-slider-runnable-track{width:100%;height:5px;background:transparent;border-radius:5px;border:none}
 .readiness-slider-input::-moz-range-track{width:100%;height:5px;background:transparent;border-radius:5px;border:none}
 .readiness-slider-ends{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--gray);margin-top:3px;padding:0 4px}
+
+/* === READINESS SLIDER — GLOW DINÂMICO POR ZONA === */
+.readiness-slider-track{transition:border-color .3s var(--ease-expo),box-shadow .3s var(--ease-expo)}
+.readiness-slider-track[data-zone]{animation:zonaPulse 2.2s ease-in-out infinite}
+@keyframes zonaPulse{
+  0%,100%{box-shadow:0 0 8px var(--zone-glow,transparent) inset,0 0 0 1px var(--zone-border,transparent) inset}
+  50%{box-shadow:0 0 16px var(--zone-glow,transparent) inset,0 0 4px var(--zone-glow,transparent),0 0 0 1px var(--zone-border,transparent) inset}
+}
+.readiness-slider-track[data-zone="green"]{--zone-glow:rgba(68,204,68,0.55);--zone-border:rgba(68,204,68,0.5);border-color:rgba(68,204,68,0.4)}
+.readiness-slider-track[data-zone="yellow"]{--zone-glow:rgba(255,204,0,0.5);--zone-border:rgba(255,204,0,0.45);border-color:rgba(255,204,0,0.35)}
+.readiness-slider-track[data-zone="orange"]{--zone-glow:rgba(255,136,0,0.5);--zone-border:rgba(255,136,0,0.45);border-color:rgba(255,136,0,0.35)}
+.readiness-slider-track[data-zone="red"]{--zone-glow:rgba(255,26,26,0.55);--zone-border:rgba(255,26,26,0.5);border-color:rgba(255,26,26,0.4)}
+.readiness-slider-track[data-zone="green"] .readiness-slider-input::-webkit-slider-thumb{
+  background:radial-gradient(circle at 30% 30%,#a8ffa8,var(--green-bright));
+  box-shadow:0 0 0 3px var(--black),0 0 0 5px var(--green-bright),0 4px 12px rgba(0,0,0,0.8),0 0 20px rgba(68,204,68,0.8),inset 0 1px 2px rgba(255,255,255,0.3);
+}
+.readiness-slider-track[data-zone="yellow"] .readiness-slider-input::-webkit-slider-thumb{
+  background:radial-gradient(circle at 30% 30%,#fff2a8,var(--accent-yellow));
+  box-shadow:0 0 0 3px var(--black),0 0 0 5px var(--accent-yellow),0 4px 12px rgba(0,0,0,0.8),0 0 20px rgba(255,204,0,0.75),inset 0 1px 2px rgba(255,255,255,0.3);
+}
+.readiness-slider-track[data-zone="orange"] .readiness-slider-input::-webkit-slider-thumb{
+  background:radial-gradient(circle at 30% 30%,#ffcf8a,var(--accent-orange));
+  box-shadow:0 0 0 3px var(--black),0 0 0 5px var(--accent-orange),0 4px 12px rgba(0,0,0,0.8),0 0 20px rgba(255,136,0,0.75),inset 0 1px 2px rgba(255,255,255,0.3);
+}
+.readiness-slider-track[data-zone="green"] .readiness-slider-input::-moz-range-thumb{
+  background:radial-gradient(circle at 30% 30%,#a8ffa8,var(--green-bright));
+  box-shadow:0 0 0 3px var(--black),0 0 0 5px var(--green-bright),0 4px 12px rgba(0,0,0,0.8),0 0 20px rgba(68,204,68,0.8),inset 0 1px 2px rgba(255,255,255,0.3);
+}
+.readiness-slider-track[data-zone="yellow"] .readiness-slider-input::-moz-range-thumb{
+  background:radial-gradient(circle at 30% 30%,#fff2a8,var(--accent-yellow));
+  box-shadow:0 0 0 3px var(--black),0 0 0 5px var(--accent-yellow),0 4px 12px rgba(0,0,0,0.8),0 0 20px rgba(255,204,0,0.75),inset 0 1px 2px rgba(255,255,255,0.3);
+}
+.readiness-slider-track[data-zone="orange"] .readiness-slider-input::-moz-range-thumb{
+  background:radial-gradient(circle at 30% 30%,#ffcf8a,var(--accent-orange));
+  box-shadow:0 0 0 3px var(--black),0 0 0 5px var(--accent-orange),0 4px 12px rgba(0,0,0,0.8),0 0 20px rgba(255,136,0,0.75),inset 0 1px 2px rgba(255,255,255,0.3);
+}
+/* zona vermelha mantém o vermelho padrão do botão-míssil, já definido acima */
 
 /* Readiness display - concentric radar rings + flame-style animations */
 .readiness-display{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:100%;min-height:0;align-self:center}

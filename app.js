@@ -2512,12 +2512,20 @@ function updateReadiness() {
   readinessData.sono = e, readinessData.stress = a, readinessData.dor = t, readinessData.score = calcularReadiness(e, a, t), salvarReadiness(), updateReadinessUI()
 }
 
+function getZonaSlider(valor, invertido) {
+  const pos = invertido ? 10 - valor : valor;
+  return pos >= 8 ? "green" : pos >= 6 ? "yellow" : pos >= 4 ? "orange" : "red";
+}
+
 function updateReadinessUI() {
   const e = readinessData.sono,
     a = readinessData.stress,
     t = readinessData.dor,
     o = readinessData.score;
   document.getElementById("valSono").textContent = e, document.getElementById("valStress").textContent = a, document.getElementById("valDor").textContent = t, document.getElementById("fillSono").style.width = 10 * e + "%", document.getElementById("fillStress").style.width = 10 * a + "%", document.getElementById("fillDor").style.width = 10 * t + "%";
+  document.getElementById("trackSono").setAttribute("data-zone", getZonaSlider(e, false));
+  document.getElementById("trackStress").setAttribute("data-zone", getZonaSlider(a, true));
+  document.getElementById("trackDor").setAttribute("data-zone", getZonaSlider(t, true));
   const r = getReadinessConfig(o),
     s = document.getElementById("readinessCircle"),
     n = document.getElementById("readinessScore"),
