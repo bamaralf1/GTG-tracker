@@ -203,38 +203,54 @@
       <div class="card mb-16 xp-card" id="xpCard">
         <div class="xp-card-border"></div>
         <div class="xp-card-energy"></div>
+        <div class="xp-card-grid"></div>
         <div class="card-body" style="padding:16px 24px;position:relative;z-index:1">
           <div class="flex" style="align-items:center;gap:20px;flex-wrap:wrap">
             <div class="level-badge" id="levelBadge">
               <div class="level-badge-glow"></div>
               <div class="level-badge-holo"></div>
+              <div class="level-badge-rays"></div>
               <div class="level-ring-wrap">
-                <svg class="level-ring" viewBox="0 0 60 60"><circle class="level-ring-bg" cx="30" cy="30" r="26"/><circle class="level-ring-fill" id="levelRingFill" cx="30" cy="30" r="26"/><circle class="level-ring-glow" cx="30" cy="30" r="26"/></svg>
+                <svg class="level-ring" viewBox="0 0 60 60">
+                  <circle class="level-ring-bg" cx="30" cy="30" r="26"/>
+                  <circle class="level-ring-track" cx="30" cy="30" r="26"/>
+                  <circle class="level-ring-fill" id="levelRingFill" cx="30" cy="30" r="26"/>
+                  <circle class="level-ring-glow" cx="30" cy="30" r="26"/>
+                </svg>
                 <span class="level-icon" id="levelIcon">🎖</span>
+                <div class="level-ring-dots" id="levelRingDots"></div>
               </div>
               <div class="level-info">
                 <span class="level-rank-label" id="levelRankLabel">POSTO</span>
                 <span class="level-name" id="levelName">RECRUTA</span>
-                <span class="level-sub" id="levelSub">NÍVEL 1</span>
+                <span class="level-stars" id="levelStars">★</span>
               </div>
             </div>
             <div class="xp-main" style="flex:1;min-width:200px">
               <div class="xp-header-row">
-                <span class="xp-title">FORÇA E RESISTÊNCIA — XP</span>
-                <span class="xp-numbers-inline" id="xpNumbers"><span class="xp-current" id="xpCurrentNum">0</span> / <span class="xp-target" id="xpTargetNum">1.000</span> XP</span>
+                <div class="xp-title-wrap">
+                  <span class="xp-title">FORÇA E RESISTÊNCIA — XP</span>
+                  <span class="xp-subtitle" id="levelSub">NÍVEL 1</span>
+                </div>
+                <div class="xp-numbers-wrap">
+                  <span class="xp-numbers-inline" id="xpNumbers"><span class="xp-current" id="xpCurrentNum">0</span> / <span class="xp-target" id="xpTargetNum">1.000</span> XP</span>
+                  <span class="xp-pct" id="xpPct">0%</span>
+                </div>
               </div>
+              <div class="xp-bar-energy" id="xpBarEnergy"></div>
               <div class="xp-bar-outer" id="xpBarOuter">
                 <div class="xp-bar-fill" id="xpBarFill" style="width:0%">
                   <div class="xp-bar-liquid"></div>
                   <div class="xp-bar-particles" id="xpBarParticles"></div>
                 </div>
                 <div class="xp-bar-endcap" id="xpBarEndcap"></div>
-                <div class="xp-milestone" style="left:25%"><span class="xp-milestone-mark"></span></div>
-                <div class="xp-milestone" style="left:50%"><span class="xp-milestone-mark"></span></div>
-                <div class="xp-milestone" style="left:75%"><span class="xp-milestone-mark"></span></div>
+                <div class="xp-milestone" style="left:25%"><span class="xp-milestone-mark"></span><span class="xp-milestone-label">25</span></div>
+                <div class="xp-milestone" style="left:50%"><span class="xp-milestone-mark"></span><span class="xp-milestone-label">50</span></div>
+                <div class="xp-milestone" style="left:75%"><span class="xp-milestone-mark"></span><span class="xp-milestone-label">75</span></div>
                 <div class="xp-glow-trail" id="xpGlowTrail"></div>
                 <div class="xp-float-text" id="xpFloatText"></div>
                 <div class="xp-bar-shine"></div>
+                <div class="xp-pct-bar" id="xpPctBar">0%</div>
               </div>
               <div class="xp-bottom-row">
                 <span class="xp-total-label" id="xpTotalLabel">XP TOTAL: 0</span>
@@ -247,27 +263,40 @@
               </div>
             </div>
             <div class="streak-box" id="streakBox">
+              <div class="streak-fire-border"></div>
               <div class="streak-flame-wrap">
                 <span class="streak-flame" id="streakFlame">🔥</span>
                 <div class="streak-particles" id="streakParticles"></div>
               </div>
               <div class="streak-days" id="streakDays">0</div>
               <div class="text-mono streak-label">DIAS STREAK</div>
-              <div class="streak-value" id="streakBonus">+0%</div>
+              <div class="streak-bonus-wrap">
+                <span class="streak-value" id="streakBonus">+0%</span>
+                <span class="streak-bonus-label">BÔNUS</span>
+              </div>
               <div class="streak-progress" id="streakProgress">
                 <div class="streak-progress-fill" id="streakProgressFill"></div>
               </div>
               <div class="streak-next" id="streakNext">Próximo: 7 dias → +10%</div>
+              <div class="streak-milestone-badges" id="streakMilestoneBadges">
+                <span class="streak-mb" data-days="7">7d</span>
+                <span class="streak-mb" data-days="14">14d</span>
+                <span class="streak-mb" data-days="30">30d</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div class="xp-levelup-overlay" id="xpLevelUpOverlay">
+        <div class="xp-levelup-cinematic-bar xp-levelup-bar-top"></div>
+        <div class="xp-levelup-cinematic-bar xp-levelup-bar-bottom"></div>
+        <div class="xp-levelup-particles" id="levelUpParticles"></div>
         <div class="xp-levelup-content">
           <div class="xp-levelup-star">★</div>
           <div class="xp-levelup-title">PROMOÇÃO!</div>
           <div class="xp-levelup-icon" id="levelUpIcon">🎖</div>
           <div class="xp-levelup-name" id="levelUpName">SOLDADO</div>
+          <div class="xp-levelup-stars" id="levelUpStars">★ ★ ★</div>
           <div class="xp-levelup-desc" id="levelUpDesc">Você ascendeu de posto!</div>
           <div class="xp-levelup-close" onclick="closeLevelUp()">CONTINUAR</div>
         </div>

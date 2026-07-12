@@ -961,12 +961,23 @@ function atualizarXP() {
     ratio = (xpData.total - level.min) / (level.proximo - level.min),
     pct = Math.min(100, Math.round(100 * ratio));
   const circumference = 163.36;
+  const levelIdx = NIVEIS.indexOf(level);
   document.getElementById("levelIcon").textContent = level.icone;
   document.getElementById("levelName").textContent = level.nome;
-  document.getElementById("levelSub").textContent = "NÍVEL " + (NIVEIS.indexOf(level) + 1);
+  document.getElementById("levelSub").textContent = "NÍVEL " + (levelIdx + 1);
+  document.getElementById("levelRankLabel").textContent = "POSTO";
+  const starsEl = document.getElementById("levelStars");
+  if (starsEl) starsEl.textContent = "★".repeat(Math.min(levelIdx + 1, 5));
   document.getElementById("xpBarFill").style.width = pct + "%";
   document.getElementById("xpNumbers").innerHTML = '<span class="xp-current" id="xpCurrentNum">' + xpData.total.toLocaleString("pt-BR") + '</span> / <span class="xp-target" id="xpTargetNum">' + level.proximo.toLocaleString("pt-BR") + '</span> XP';
   document.getElementById("xpTotalLabel").textContent = "XP TOTAL: " + xpData.total.toLocaleString("pt-BR");
+  const pctEl = document.getElementById("xpPct");
+  if (pctEl) pctEl.textContent = pct + "%";
+  const pctBar = document.getElementById("xpPctBar");
+  if (pctBar) {
+    pctBar.textContent = pct + "%";
+    pctBar.classList.toggle("visible", pct > 5);
+  }
   const today = (new Date).toISOString().slice(0, 10);
   if (xpData.dailyDate === today) {
     document.getElementById("xpDailyLabel").textContent = "HOJE: +" + xpData.dailyXP + " XP";
@@ -979,7 +990,7 @@ function atualizarXP() {
   if (ringGlow) ringGlow.style.strokeDashoffset = circumference * (1 - pct / 100);
   const endcap = document.getElementById("xpBarEndcap");
   if (endcap) {
-    if (pct > 2) { endcap.classList.add("visible"); endcap.style.left = pct + "%"; }
+    if (pct > 2) { endcap.classList.add("visible"); endcap.style.left = "calc(" + pct + "% - 5px)"; }
     else { endcap.classList.remove("visible"); }
   }
   const bar = document.getElementById("xpBarOuter");
@@ -989,7 +1000,7 @@ function atualizarXP() {
   }
   const trail = document.getElementById("xpGlowTrail");
   if (trail) {
-    if (pct > 2) { trail.classList.add("active"); trail.style.left = "calc(" + pct + "% - 24px)"; }
+    if (pct > 2) { trail.classList.add("active"); trail.style.left = "calc(" + pct + "% - 28px)"; }
     else trail.classList.remove("active");
   }
   document.querySelectorAll(".xp-milestone").forEach(m => {
@@ -997,14 +1008,15 @@ function atualizarXP() {
     if (pct >= pos) m.classList.add("reached");
     else m.classList.remove("reached");
   });
-  const nextLevel = NIVEIS[NIVEIS.indexOf(level) + 1];
+  const nextLevel = NIVEIS[levelIdx + 1];
   document.getElementById("xpNextLabel").textContent = nextLevel ? "PRÓXIMO: " + nextLevel.nome : "NÍVEL MÁXIMO";
   document.getElementById("headerRank").textContent = level.nome;
   document.getElementById("headerXpBar").style.width = pct + "%";
   _initXPBarParticles();
   _initStreakParticles();
   _updateStreakBox();
-  _renderXPSparkline()
+  _renderXPSparkline();
+  _updateStreakMilestones()
 }
 
 let _xpAnimFrame = null;
@@ -1088,7 +1100,7 @@ function _renderXPSparkline() {
     byDay[h.date] = (byDay[h.date] || 0) + h.xp;
   });
   const dates = Object.keys(byDay).sort().slice(-7);
-  if (dates.length < 2) { svg.innerHTML = ""; return; }
+  if (dates.length < 2) { svg.innerHTML = '<text x="100" y="18" text-anchor="middle" fill="var(--gray)" font-size="8" font-family="Share Tech Mono">—</text>'; return; }
   const vals = dates.map(d => byDay[d]);
   const max = Math.max(...vals, 1);
   const w = 200, h = 28;
@@ -1096,11 +1108,26 @@ function _renderXPSparkline() {
   let pathD = "";
   vals.forEach((v, i) => {
     const x = i * stepX;
-    const y = h - (v / max) * (h - 4) - 2;
+    const y = h - (v / max) * (h - 6) - 3;
     pathD += (i === 0 ? "M" : "L") + x.toFixed(1) + "," + y.toFixed(1);
   });
   let areaD = pathD + "L" + ((dates.length - 1) * stepX) + "," + h + "L0," + h + "Z";
-  svg.innerHTML = '<defs><linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--gold)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--gold)" stop-opacity="0"/></linearGradient></defs><path d="' + areaD + '" fill="url(#sparkGrad)"/><path d="' + pathD + '" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>';
+  let dotsHtml = "";
+  vals.forEach((v, i) => {
+    const x = i * stepX;
+    const y = h - (v / max) * (h - 6) - 3;
+    dotsHtml += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="2" fill="var(--gold)" opacity="0.7"/><circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="4" fill="var(--gold)" opacity="0.15"/>';
+  });
+  svg.innerHTML = '<defs><linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--gold)" stop-opacity="0.35"/><stop offset="100%" stop-color="var(--gold)" stop-opacity="0"/></linearGradient></defs><path d="' + areaD + '" fill="url(#sparkGrad)"/><path d="' + pathD + '" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>' + dotsHtml;
+}
+
+function _updateStreakMilestones() {
+  const days = streakData.atual || 0;
+  document.querySelectorAll(".streak-mb").forEach(el => {
+    const req = parseInt(el.dataset.days);
+    if (days >= req) el.classList.add("reached");
+    else el.classList.remove("reached");
+  });
 }
 
 function showLevelUpOverlay(level) {
@@ -1108,8 +1135,40 @@ function showLevelUpOverlay(level) {
   if (!overlay) return;
   document.getElementById("levelUpIcon").textContent = level.icone;
   document.getElementById("levelUpName").textContent = level.nome;
+  const starsEl = document.getElementById("levelUpStars");
+  const levelIdx = NIVEIS.indexOf(level);
+  if (starsEl) starsEl.textContent = "★".repeat(Math.min(levelIdx + 1, 5));
   overlay.classList.add("active");
+  _spawnLevelUpParticles();
   dispararConfetti();
+  setTimeout(() => dispararConfetti(), 400);
+  setTimeout(() => dispararConfetti(), 800);
+}
+
+function _spawnLevelUpParticles() {
+  const wrap = document.getElementById("levelUpParticles");
+  if (!wrap) { wrap.innerHTML = ""; return; }
+  wrap.innerHTML = "";
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement("div");
+    p.style.cssText = "position:absolute;width:" + (2 + Math.random() * 4) + "px;height:" + (2 + Math.random() * 4) + "px;border-radius:50%;background:var(--gold);left:50%;top:50%;opacity:0;";
+    const angle = (i / 30) * Math.PI * 2;
+    const dist = 80 + Math.random() * 200;
+    const tx = Math.cos(angle) * dist;
+    const ty = Math.sin(angle) * dist;
+    const dur = 0.8 + Math.random() * 0.6;
+    const delay = Math.random() * 0.3;
+    p.style.animation = "luParticle " + dur + "s cubic-bezier(.25,.8,.25,1) " + delay + "s forwards";
+    p.style.setProperty("--tx", tx + "px");
+    p.style.setProperty("--ty", ty + "px");
+    wrap.appendChild(p);
+  }
+  if (!document.getElementById("luParticleKeyframes")) {
+    const style = document.createElement("style");
+    style.id = "luParticleKeyframes";
+    style.textContent = "@keyframes luParticle{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}}";
+    document.head.appendChild(style);
+  }
 }
 
 function closeLevelUp() {
@@ -2248,7 +2307,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260712y"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260712z"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");
