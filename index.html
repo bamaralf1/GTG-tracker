@@ -487,7 +487,11 @@
             window.armyPlayer = {
               currentIdx: -1, playing: false, _lastVol: 85, _progressInterval: null,
               _audio: null,
-              _base: 'https://ia801801.us.archive.org/4/items/red-star-red-army-chorus-kalinka/',
+              _base: 'https://archive.org/download/red-star-red-army-chorus-kalinka/',
+              _extra: [
+                { title: '\u0411\u0435\u043B\u0430\u044F \u0430\u0440\u043C\u0438\u044F', sub: 'White Army, Black Baron', url: 'https://archive.org/download/WhiteArmyBlackBaron/White%20Army%2C%20Black%20Baron.mp3' },
+                { title: '\u0413\u0438\u043C\u043D \u0421\u043E\u0432\u0435\u0442\u0441\u043A\u043E\u0433\u043E \u0421\u043E\u044E\u0437\u0430', sub: 'Soviet National Anthem', url: 'https://archive.org/download/american-british-french-and-soviet-anthems-red-army-choir/American%2C%20British%2C%20French%2C%20and%20Soviet%20Anthems%20-%20Red%20Army%20Choir.mp3' }
+              ],
               tracks: [
                 { title: '\u041A\u0430\u043B\u0438\u043D\u043A\u0430', sub: 'Kalinka', src: 'Kalinka/03%20Kalinka.mp3' },
                 { title: '\u041F\u043E\u043B\u044E\u0448\u043A\u043E-\u043F\u043E\u043B\u0435', sub: 'Meadowland', src: 'Kalinka/02%20Meadowland.mp3' },
@@ -500,8 +504,19 @@
                 { title: '\u0420\u0435\u0433\u0438\u043C\u0435\u043D\u0442\u0441\u043A\u0430\u044F \u043F\u043E\u043B\u044C\u043A\u0430', sub: 'Regimental Polka', src: 'Kalinka/01%20Regimental%20Polka.mp3' },
                 { title: '\u0423\u0442\u0451\u0441', sub: 'The Cliff', src: 'Kalinka/15%20The%20Cliff.mp3' },
                 { title: '\u0421\u043E\u0441\u043D\u044B \u0445\u0432\u043E\u044F\u0442', sub: 'The Pine Trees Are Rustling', src: 'Kalinka/07%20The%20Pine%20Trees%20Are%20Rustling%201.mp3' },
-                { title: '\u041C\u044B \u043D\u0430 \u043C\u0430\u0440\u0448\u0435', sub: 'On The March', src: 'Kalinka/18%20On%20The%20March.mp3' }
+                { title: '\u041C\u044B \u043D\u0430 \u043C\u0430\u0440\u0448\u0435', sub: 'On The March', src: 'Kalinka/18%20On%20The%20March.mp3' },
+                { title: '\u0414\u043E\u043D\u0441\u043A\u0438\u0435 \u043A\u043E\u0437\u0430\u043A\u0438', sub: 'The Brave Don Cossacks', src: 'Kalinka/09%20The%20Brave%20Don%20Cossacks%201.mp3' },
+                { title: '\u0416\u0434\u0451\u0442 \u0441\u043E\u043B\u0434\u0430\u0442\u044B', sub: 'Wait For Your Soldier', src: 'Kalinka/10%20Wait%20For%20Your%20Soldier%201.mp3' },
+                { title: '\u0427\u044C\u044F \u043B\u043E\u0448\u0430\u0434\u044C', sub: "Someone's Horse Is Standing", src: 'Kalinka/12%20Someone%27s%20Horse%20Is%20Standing.mp3' },
+                { title: '\u0421\u043E\u043B\u043D\u0435\u0447\u043D\u044B\u0439 \u043F\u043E\u043B\u044F\u043D\u0430', sub: 'In The Sunny Meadow', src: 'Kalinka/13%20In%20The%20Sunny%20Meadow.mp3' },
+                { title: '\u041F\u043E\u043B\u0451\u0442 \u0448\u043C\u0435\u043B\u044F', sub: 'Flight Of The Bumblebee', src: 'Kalinka/14%20Flight%20Of%20The%20Bumblebee.mp3' },
+                { title: '\u0422\u0451\u043C\u043D\u044B\u0435 \u0431\u0440\u043E\u0432\u0438', sub: 'Dark Eyebrows', src: 'Kalinka/16%20Dark%20Eyebrows.mp3' }
               ],
+              _allTracks: null,
+              _getAll() {
+                if (!this._allTracks) this._allTracks = this.tracks.concat(this._extra);
+                return this._allTracks;
+              },
               init() {
                 var savedVol = localStorage.getItem('gtg_army_vol');
                 if (savedVol != null) this._lastVol = parseInt(savedVol);
@@ -517,10 +532,11 @@
                 return m + ':' + (s < 10 ? '0' : '') + s;
               },
               _renderTracklist() {
+                var all = this._getAll();
                 var el = document.getElementById('armyTracklist');
                 var html = '';
-                for (var i = 0; i < this.tracks.length; i++) {
-                  var t = this.tracks[i];
+                for (var i = 0; i < all.length; i++) {
+                  var t = all[i];
                   html += '<div class="sb-army-track" data-idx="' + i + '" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;transition:all .15s;border:1px solid transparent">';
                   html += '<span class="sb-army-idx" style="font-size:11px;color:var(--gray);width:20px;text-align:center;font-family:Bebas Neue,sans-serif">' + (i + 1 < 10 ? '0' : '') + (i + 1) + '</span>';
                   html += '<div style="flex:1;min-width:0">';
@@ -536,17 +552,18 @@
                 }
               },
               _highlight(idx) {
-                var all = document.querySelectorAll('.sb-army-track');
-                for (var i = 0; i < all.length; i++) {
-                  all[i].style.borderColor = i === idx ? 'rgba(204,0,0,0.3)' : 'transparent';
-                  all[i].style.background = i === idx ? 'rgba(204,0,0,0.06)' : '';
-                  var num = all[i].querySelector('.sb-army-idx');
+                var all = this._getAll();
+                var allEl = document.querySelectorAll('.sb-army-track');
+                for (var i = 0; i < allEl.length; i++) {
+                  allEl[i].style.borderColor = i === idx ? 'rgba(204,0,0,0.3)' : 'transparent';
+                  allEl[i].style.background = i === idx ? 'rgba(204,0,0,0.06)' : '';
+                  var num = allEl[i].querySelector('.sb-army-idx');
                   if (i === idx) { num.style.color = 'var(--red-bright)'; num.textContent = '\u25B6'; }
                   else { num.style.color = 'var(--gray)'; num.textContent = (i + 1 < 10 ? '0' : '') + (i + 1); }
                 }
-                if (idx >= 0 && all[idx]) all[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                document.getElementById('armyNowPlaying').textContent = idx >= 0 ? this.tracks[idx].title : '\u2014';
-                document.getElementById('armyTrackCount').textContent = (idx + 1) + '/' + this.tracks.length + ' \u2022 ' + this.tracks[idx].sub;
+                if (idx >= 0 && allEl[idx]) allEl[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                document.getElementById('armyNowPlaying').textContent = idx >= 0 ? all[idx].title : '\u2014';
+                document.getElementById('armyTrackCount').textContent = (idx + 1) + '/' + all.length + ' \u2022 ' + all[idx].sub;
               },
               _startProgress() {
                 this._stopProgress();
@@ -567,11 +584,13 @@
                 if (this._progressInterval) { clearInterval(this._progressInterval); this._progressInterval = null; }
               },
               playTrack(idx) {
-                if (idx < 0 || idx >= this.tracks.length) return;
+                var all = this._getAll();
+                if (idx < 0 || idx >= all.length) return;
                 this.currentIdx = idx;
                 this.playing = true;
                 this._highlight(idx);
-                this._audio.src = this._base + this.tracks[idx].src;
+                var t = all[idx];
+                this._audio.src = t.url ? t.url : (this._base + t.src);
                 this._audio.load();
                 var self = this;
                 this._audio.oncanplay = function() {
@@ -597,12 +616,14 @@
                 }
               },
               next() {
+                var all = this._getAll();
                 var next = this.currentIdx + 1;
-                this.playTrack(next < this.tracks.length ? next : 0);
+                this.playTrack(next < all.length ? next : 0);
               },
               prev() {
+                var all = this._getAll();
                 var prev = this.currentIdx - 1;
-                this.playTrack(prev >= 0 ? prev : this.tracks.length - 1);
+                this.playTrack(prev >= 0 ? prev : all.length - 1);
               },
               seek(e) {
                 if (!this._audio || !this._audio.duration) return;
