@@ -2073,7 +2073,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260712r"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260712s"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");
@@ -2586,13 +2586,13 @@ function getReadinessConfig(e) {
 }
 
 function updateReadiness() {
-  const sono = parseInt(document.getElementById("sliderSono").value);
-  const stress = parseInt(document.getElementById("sliderStress").value);
-  const dor = parseInt(document.getElementById("sliderDor").value);
-  const energia = parseInt(document.getElementById("sliderEnergia").value);
-  const hidratacao = parseInt(document.getElementById("sliderHidratacao").value);
-  const alimentacao = parseInt(document.getElementById("sliderAlimentacao").value);
-  const motivacao = parseInt(document.getElementById("sliderMotivacao").value);
+  const sono = Math.round(parseFloat(document.getElementById("sliderSono").value));
+  const stress = Math.round(parseFloat(document.getElementById("sliderStress").value));
+  const dor = Math.round(parseFloat(document.getElementById("sliderDor").value));
+  const energia = Math.round(parseFloat(document.getElementById("sliderEnergia").value));
+  const hidratacao = Math.round(parseFloat(document.getElementById("sliderHidratacao").value));
+  const alimentacao = Math.round(parseFloat(document.getElementById("sliderAlimentacao").value));
+  const motivacao = Math.round(parseFloat(document.getElementById("sliderMotivacao").value));
   readinessData.sono = sono;
   readinessData.stress = stress;
   readinessData.dor = dor;
@@ -3931,21 +3931,24 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("animationend", e => {
     if (e.target.classList?.contains("zone-flash")) e.target.classList.remove("zone-flash");
   }, true);
-  // Drag tracking for instant slider response
+  // Drag tracking — only on slider inputs
+  const sliderIds = ["sliderSono","sliderStress","sliderDor","sliderEnergia","sliderHidratacao","sliderAlimentacao","sliderMotivacao"];
   const rc = document.getElementById("readinessCard");
-  if (rc) {
-    const startDrag = () => { _isDragging = true; rc.classList.add("dragging"); };
-    const endDrag = () => {
-      if (!_isDragging) return;
-      _isDragging = false;
-      rc.classList.remove("dragging");
-      updateReadinessUI();
-    };
-    rc.addEventListener("mousedown", startDrag);
-    rc.addEventListener("touchstart", startDrag, { passive: true });
-    document.addEventListener("mouseup", endDrag);
-    document.addEventListener("touchend", endDrag);
-  }
+  const startDrag = () => { _isDragging = true; rc && rc.classList.add("dragging"); };
+  const endDrag = () => {
+    if (!_isDragging) return;
+    _isDragging = false;
+    rc && rc.classList.remove("dragging");
+  };
+  sliderIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener("mousedown", startDrag);
+      el.addEventListener("touchstart", startDrag, { passive: true });
+    }
+  });
+  document.addEventListener("mouseup", endDrag);
+  document.addEventListener("touchend", endDrag);
 });
 
 
