@@ -555,8 +555,9 @@ body::after{
   background:linear-gradient(135deg,rgba(212,168,67,0.3),transparent 50%,rgba(212,168,67,0.1));
   opacity:.5;
   pointer-events:none;
-  animation:badgeGlow 3s ease-in-out infinite;
+  animation:badgeGlow 3s ease-in-out infinite,badgeBreathe 4s ease-in-out infinite;
 }
+@keyframes badgeBreathe{0%,100%{transform:scale(1);filter:blur(0px)}50%{transform:scale(1.02);filter:blur(1px)}}
 .level-badge-holo{
   position:absolute;
   inset:0;
@@ -578,6 +579,20 @@ body::after{
 @keyframes badgeGlow{0%,100%{opacity:.35}50%{opacity:.75}}
 @keyframes badgeHolo{0%{background-position:300% 0}100%{background-position:-300% 0}}
 @keyframes badgeRays{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.level-badge-scan{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,transparent 0%,rgba(212,168,67,0.12) 50%,transparent 100%);
+  background-size:100% 200%;
+  animation:badgeScan 3s ease-in-out infinite;
+  pointer-events:none;
+  clip-path:inherit;
+}
+@keyframes badgeScan{0%{background-position:0 -200%}100%{background-position:0 200%}}
+.level-badge[data-tier="4"]{border-color:rgba(255,59,48,0.4);background:linear-gradient(135deg,rgba(255,59,48,0.15),rgba(212,168,67,0.04))}
+.level-badge[data-tier="4"] .level-ring-fill{stroke:var(--red-bright)}
+.level-badge[data-tier="3"]{border-color:rgba(0,229,255,0.4);background:linear-gradient(135deg,rgba(0,229,255,0.12),rgba(212,168,67,0.04))}
+.level-badge[data-tier="3"] .level-ring-fill{stroke:var(--accent-cyan)}
 .level-ring-wrap{
   position:relative;
   width:56px;height:56px;
@@ -733,6 +748,16 @@ body::after{
   z-index:5;
 }
 @keyframes xpFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+
+.xp-bar-scanlines{
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(180deg,transparent 0px,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);
+  pointer-events:none;
+  z-index:3;
+  animation:scanlinesMove 8s linear infinite;
+}
+@keyframes scanlinesMove{0%{background-position:0 0}100%{background-position:0 40px}}
 
 .xp-bar-fill::after{
   content:'';
@@ -948,17 +973,21 @@ body::after{
     radial-gradient(circle at 85% 60%,rgba(0,229,255,0.03) 0%,transparent 45%);
   pointer-events:none;
 }
-.xp-card-border{
+.xp-card-animated-border{
   position:absolute;
-  inset:-1px;
-  border:1px solid transparent;
-  border-image:linear-gradient(90deg,transparent,var(--gold),transparent) 1;
+  inset:-2px;
+  z-index:0;
+  border-radius:inherit;
+  background:conic-gradient(from var(--card-border-angle,0deg),transparent 0%,var(--gold) 10%,transparent 20%);
   opacity:0;
   transition:opacity .5s ease;
   pointer-events:none;
+  animation:cardBorderSpin 6s linear infinite;
 }
-.xp-card:hover .xp-card-border{opacity:.35}
-.xp-card-energy{
+@property --card-border-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes cardBorderSpin{0%{--card-border-angle:0deg}100%{--card-border-angle:360deg}}
+.xp-card:hover .xp-card-animated-border{opacity:.25}
+.xp-card-grid{
   position:absolute;
   top:0;left:-100%;
   width:80px;height:100%;
@@ -1010,6 +1039,17 @@ body::after{
 }
 .streak-box.active .streak-fire-border{opacity:1;animation:fireBorderPulse 2s ease-in-out infinite}
 @keyframes fireBorderPulse{0%,100%{opacity:.5}50%{opacity:1}}
+.streak-fire-overlay{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:40%;
+  background:linear-gradient(180deg,transparent,rgba(255,80,0,0.06));
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .4s ease;
+}
+.streak-box.active .streak-fire-overlay{opacity:1;animation:fireGlow 2.5s ease-in-out infinite}
+@keyframes fireGlow{0%,100%{opacity:.4}50%{opacity:.8}}
 .streak-box.active{
   border-color:rgba(68,204,68,0.4);
   box-shadow:0 0 24px rgba(68,204,68,0.15),0 0 48px rgba(68,204,68,0.05),inset 0 0 24px rgba(68,204,68,0.05);
@@ -1166,6 +1206,13 @@ body::after{
   color:var(--gold);letter-spacing:0.35em;
   text-shadow:0 0 36px rgba(212,168,67,0.9),0 0 72px rgba(212,168,67,0.3);
   margin:14px 0 10px;
+  animation:levelUpGlitch 4s ease-in-out infinite;
+}
+@keyframes levelUpGlitch{
+  0%,90%,100%{text-shadow:0 0 36px rgba(212,168,67,0.9),0 0 72px rgba(212,168,67,0.3);transform:translate(0)}
+  91%{text-shadow:3px 0 var(--red),-3px 0 var(--accent-cyan);transform:translate(-2px,1px)}
+  92%{text-shadow:-2px 0 var(--red),2px 0 var(--accent-cyan);transform:translate(2px,-1px)}
+  93%{text-shadow:0 0 36px rgba(212,168,67,0.9);transform:translate(0)}
 }
 .xp-levelup-icon{
   font-size:72px;

@@ -968,6 +968,11 @@ function atualizarXP() {
   document.getElementById("levelRankLabel").textContent = "POSTO";
   const starsEl = document.getElementById("levelStars");
   if (starsEl) starsEl.textContent = "★".repeat(Math.min(levelIdx + 1, 5));
+  const badge = document.getElementById("levelBadge");
+  if (badge) {
+    const tier = levelIdx >= 10 ? 4 : levelIdx >= 7 ? 3 : levelIdx >= 4 ? 2 : 1;
+    badge.setAttribute("data-tier", tier);
+  }
   document.getElementById("xpBarFill").style.width = pct + "%";
   document.getElementById("xpNumbers").innerHTML = '<span class="xp-current" id="xpCurrentNum">' + xpData.total.toLocaleString("pt-BR") + '</span> / <span class="xp-target" id="xpTargetNum">' + level.proximo.toLocaleString("pt-BR") + '</span> XP';
   document.getElementById("xpTotalLabel").textContent = "XP TOTAL: " + xpData.total.toLocaleString("pt-BR");
@@ -2307,7 +2312,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260712z"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260713a"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");

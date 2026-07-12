@@ -201,15 +201,16 @@
         </div>
       </div>
       <div class="card mb-16 xp-card" id="xpCard">
-        <div class="xp-card-border"></div>
+        <div class="xp-card-animated-border"></div>
         <div class="xp-card-energy"></div>
         <div class="xp-card-grid"></div>
         <div class="card-body" style="padding:16px 24px;position:relative;z-index:1">
           <div class="flex" style="align-items:center;gap:20px;flex-wrap:wrap">
-            <div class="level-badge" id="levelBadge">
+            <div class="level-badge" id="levelBadge" data-tier="1">
               <div class="level-badge-glow"></div>
               <div class="level-badge-holo"></div>
               <div class="level-badge-rays"></div>
+              <div class="level-badge-scan"></div>
               <div class="level-ring-wrap">
                 <svg class="level-ring" viewBox="0 0 60 60">
                   <circle class="level-ring-bg" cx="30" cy="30" r="26"/>
@@ -243,6 +244,7 @@
                   <div class="xp-bar-liquid"></div>
                   <div class="xp-bar-particles" id="xpBarParticles"></div>
                 </div>
+                <div class="xp-bar-scanlines"></div>
                 <div class="xp-bar-endcap" id="xpBarEndcap"></div>
                 <div class="xp-milestone" style="left:25%"><span class="xp-milestone-mark"></span><span class="xp-milestone-label">25</span></div>
                 <div class="xp-milestone" style="left:50%"><span class="xp-milestone-mark"></span><span class="xp-milestone-label">50</span></div>
@@ -264,6 +266,7 @@
             </div>
             <div class="streak-box" id="streakBox">
               <div class="streak-fire-border"></div>
+              <div class="streak-fire-overlay"></div>
               <div class="streak-flame-wrap">
                 <span class="streak-flame" id="streakFlame">🔥</span>
                 <div class="streak-particles" id="streakParticles"></div>
