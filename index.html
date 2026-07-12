@@ -486,7 +486,7 @@
 
             window.armyPlayer = {
               player: null, currentIdx: -1, playing: false,
-              _lastVol: 85,
+              _lastVol: 85, _skipCount: 0, _maxSkip: 3,
               tracks: [
                 { title: 'Красная Армия всех сильней', sub: 'The Red Army is the Strongest', src: 'https://archive.org/download/WhiteArmyBlackBaron/White%20Army,%20Black%20Baron.mp3' },
                 { title: 'Калинка', sub: 'Kalinka', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/01%20-%20Kalinka.mp3' },
@@ -502,53 +502,75 @@
                 { title: 'Эй, ухнем!', sub: 'Song of the Volga Boatmen', src: 'https://archive.org/download/lp_songs-of-the-russian-cossacks/01.01.%20Song%20Of%20The%20Volga%20Boatmen_sample.mp3' }
               ],
               init() {
+                var self = this;
                 this.player = document.getElementById('armyPlayerAudio');
                 this.player.volume = 0.85;
-                const savedVol = localStorage.getItem('gtg_army_vol');
+                var savedVol = localStorage.getItem('gtg_army_vol');
                 if (savedVol != null) { this.player.volume = Math.min(parseInt(savedVol), 100) / 100; document.getElementById('armyVolume').value = savedVol; document.getElementById('armyVolumeDisplay').textContent = savedVol + '%'; }
-                this.player.addEventListener('ended', () => this.next());
-                this.player.addEventListener('error', () => { if (this.playing) this._setErrorUI(); });
-                this.player.addEventListener('timeupdate', () => this._updateProgress());
+                this.player.addEventListener('ended', function() { self._skipCount = 0; self.next(); });
+                this.player.addEventListener('error', function() {
+                  if (!self.playing) return;
+                  self._skipCount++;
+                  if (self._skipCount < self._maxSkip) {
+                    self.next();
+                  } else {
+                    self._setErrorUI();
+                    self._skipCount = 0;
+                  }
+                });
+                this.player.addEventListener('timeupdate', function() { self._updateProgress(); });
+                this.player.addEventListener('loadedmetadata', function() { self._updateProgress(); });
                 this._renderTracklist();
               },
               _formatTime(sec) {
                 if (!sec || !isFinite(sec)) return '0:00';
-                const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
-                return m + ':' + String(s).padStart(2, '0');
+                var m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+                return m + ':' + (s < 10 ? '0' : '') + s;
               },
               _updateProgress() {
-                const cur = this.player.currentTime, dur = this.player.duration;
-                if (!dur) return;
+                var cur = this.player.currentTime, dur = this.player.duration;
+                if (!dur || !isFinite(dur)) return;
                 document.getElementById('armyProgressFill').style.width = ((cur / dur) * 100) + '%';
                 document.getElementById('armyTimeCurrent').textContent = this._formatTime(cur);
                 document.getElementById('armyTimeTotal').textContent = this._formatTime(dur);
               },
               seek(e) {
-                const bar = document.getElementById('armyProgressBar');
-                const rect = bar.getBoundingClientRect();
-                const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                var bar = document.getElementById('armyProgressBar');
+                var rect = bar.getBoundingClientRect();
+                var pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
                 if (this.player.duration) this.player.currentTime = pct * this.player.duration;
               },
               _renderTracklist() {
-                const el = document.getElementById('armyTracklist');
-                el.innerHTML = this.tracks.map((t, i) =>
-                  '<div class="sb-army-track" id="armyTrack' + i + '" onclick="armyPlayer.playTrack(' + i + ')" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;transition:all .15s;border:1px solid transparent">' +
-                    '<span class="sb-army-idx" style="font-size:11px;color:var(--gray);width:20px;text-align:center;font-family:Bebas Neue,sans-serif">' + String(i + 1).padStart(2, '0') + '</span>' +
-                    '<div style="flex:1;min-width:0">' +
-                      '<div style="font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">' + t.title + '</div>' +
-                      '<div style="font-size:10px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + t.sub + '</div>' +
-                    '</div>' +
-                  '</div>'
-                ).join('');
+                var el = document.getElementById('armyTracklist');
+                var html = '';
+                for (var i = 0; i < this.tracks.length; i++) {
+                  var t = this.tracks[i];
+                  html += '<div class="sb-army-track" data-idx="' + i + '" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;transition:all .15s;border:1px solid transparent">';
+                  html += '<span class="sb-army-idx" style="font-size:11px;color:var(--gray);width:20px;text-align:center;font-family:Bebas Neue,sans-serif">' + (i + 1 < 10 ? '0' : '') + (i + 1) + '</span>';
+                  html += '<div style="flex:1;min-width:0">';
+                  html += '<div style="font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">' + t.title + '</div>';
+                  html += '<div style="font-size:10px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + t.sub + '</div>';
+                  html += '</div></div>';
+                }
+                el.innerHTML = html;
+                var self = this;
+                var tracks = el.querySelectorAll('.sb-army-track');
+                for (var j = 0; j < tracks.length; j++) {
+                  tracks[j].addEventListener('click', (function(idx) {
+                    return function() { self.playTrack(idx); };
+                  })(j));
+                }
               },
               _highlight(idx) {
-                document.querySelectorAll('.sb-army-track').forEach((el, i) => {
-                  el.style.borderColor = i === idx ? 'rgba(204,0,0,0.3)' : 'transparent';
-                  el.style.background = i === idx ? 'rgba(204,0,0,0.06)' : '';
-                  const num = el.querySelector('.sb-army-idx');
+                var all = document.querySelectorAll('.sb-army-track');
+                for (var i = 0; i < all.length; i++) {
+                  all[i].style.borderColor = i === idx ? 'rgba(204,0,0,0.3)' : 'transparent';
+                  all[i].style.background = i === idx ? 'rgba(204,0,0,0.06)' : '';
+                  var num = all[i].querySelector('.sb-army-idx');
                   if (i === idx) { num.style.color = 'var(--red-bright)'; num.textContent = '\u25B6'; }
-                  else { num.style.color = 'var(--gray)'; num.textContent = String(i + 1).padStart(2, '0'); }
-                });
+                  else { num.style.color = 'var(--gray)'; num.textContent = (i + 1 < 10 ? '0' : '') + (i + 1); }
+                }
+                if (idx >= 0 && all[idx]) all[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 document.getElementById('armyNowPlaying').textContent = idx >= 0 ? this.tracks[idx].title : '\u2014';
                 document.getElementById('armyTrackCount').textContent = (idx + 1) + '/' + this.tracks.length + ' \u2022 ' + this.tracks[idx].sub;
               },
@@ -560,23 +582,30 @@
                 document.getElementById('sbEq').classList.remove('playing');
                 document.querySelector('.sb-card-radio').classList.remove('playing');
               },
+              _setPlayingUI() {
+                document.getElementById('armyToggleBtn').textContent = '\u23F8 PAUSE';
+                document.getElementById('armyToggleBtn').style.background = 'var(--gold)';
+                document.getElementById('armyToggleBtn').style.color = 'var(--black)';
+                document.getElementById('sbEq').classList.add('playing');
+                document.querySelector('.sb-card-radio').classList.add('playing');
+                document.getElementById('sbStatusDot').className = 'sb-status-dot on';
+                document.getElementById('sbStatusText').textContent = '\u25CF TOCANDO';
+                document.getElementById('sbStatusText').style.color = 'var(--green-bright)';
+              },
               playTrack(idx) {
                 if (idx < 0 || idx >= this.tracks.length) return;
+                var self = this;
                 this.currentIdx = idx;
+                this._skipCount = 0;
                 this.player.src = this.tracks[idx].src;
                 this.player.load();
-                this.player.play().then(() => {
-                  this.playing = true;
-                  this._highlight(idx);
-                  document.getElementById('armyToggleBtn').textContent = '\u23F8 PAUSE';
-                  document.getElementById('armyToggleBtn').style.background = 'var(--gold)';
-                  document.getElementById('armyToggleBtn').style.color = 'var(--black)';
-                  document.getElementById('sbEq').classList.add('playing');
-                  document.querySelector('.sb-card-radio').classList.add('playing');
-                  document.getElementById('sbStatusDot').className = 'sb-status-dot on';
-                  document.getElementById('sbStatusText').textContent = '\u25CF TOCANDO';
-                  document.getElementById('sbStatusText').style.color = 'var(--green-bright)';
-                }).catch(function() { armyPlayer._setErrorUI(); });
+                this._highlight(idx);
+                this.player.play().then(function() {
+                  self.playing = true;
+                  self._setPlayingUI();
+                }).catch(function() {
+                  if (self.playing) self.next();
+                });
               },
               toggle() {
                 if (!this.player.src && this.tracks.length > 0) { this.playTrack(0); return; }
@@ -594,14 +623,7 @@
                   this.playing = true;
                   var self = this;
                   this.player.play().then(function() {
-                    document.getElementById('armyToggleBtn').textContent = '\u23F8 PAUSE';
-                    document.getElementById('armyToggleBtn').style.background = 'var(--gold)';
-                    document.getElementById('armyToggleBtn').style.color = 'var(--black)';
-                    document.getElementById('sbEq').classList.add('playing');
-                    document.querySelector('.sb-card-radio').classList.add('playing');
-                    document.getElementById('sbStatusDot').className = 'sb-status-dot on';
-                    document.getElementById('sbStatusText').textContent = '\u25CF TOCANDO';
-                    document.getElementById('sbStatusText').style.color = 'var(--green-bright)';
+                    self._setPlayingUI();
                   }).catch(function() { self._setErrorUI(); });
                 }
               },
