@@ -191,7 +191,7 @@ const EXERCICIOS_DEFAULT = [{
     desc: "7 dias seguidos sem falhas"
   }, {
     id: "centuriao",
-    icone: "🛡",
+    icone: "⭐",
     nome: "Centurião",
     desc: "100 séries totais históricas"
   }, {
@@ -316,7 +316,7 @@ const EXERCICIOS_DEFAULT = [{
     "desc": "200 séries totais históricas — o combate esquenta"
   }, {
     "id": "quinhentas_series",
-    "icone": "🛡",
+    "icone": "⭐",
     "nome": "Escudo de Ferro",
     "desc": "500 séries totais históricas — nada te penetra"
   }, {
@@ -456,9 +456,9 @@ const EXERCICIOS_DEFAULT = [{
     "desc": "Treine 10 exercícios diferentes em um único dia — obra de arte do movimento"
   }, {
     "id": "shield_10",
-    "icone": "🛡",
+    "icone": "⭐",
     "nome": "Muralha de Escudos",
-    "desc": "Compre 10 Streak Shields — defesa total da streak"
+    "desc": "Compre 10 Escudos de Streak — defesa total da streak"
   }, {
     "id": "radio_10h",
     "icone": "🎵",
@@ -512,7 +512,7 @@ const EXERCICIOS_DEFAULT = [{
     proximo: 5e4
   }, {
     nome: "CAPITAO",
-    icone: "🛡",
+    icone: "⭐",
     min: 5e4,
     proximo: 75e3
   }, {
@@ -886,7 +886,7 @@ function verificarStreak() {
   else if (temHoje) {
     if (streakData.ultimaData !== ontem && streakData.ultimaData) {
       const diff = streakData.ultimaData ? Math.floor((new Date(hoje) - new Date(streakData.ultimaData)) / 864e5) : 999;
-      2 === diff && streakData.diasFolgaUsados < 1 ? (streakData.diasFolgaUsados += 1, streakData.atual += 2, mostrarToast("Dia de Folga Usado", "Sua streak foi preservada! (1 folga/semana)", "warning")) : diff > 1 && diff < 999 && (usarShield() ? streakData.atual += diff : (streakData.atual = 1, streakData.diasFolgaUsados = 0, mostrarToast("💔 Streak Quebrada", "Sua streak foi resetada. Compre shields para proteção!", "error")))
+      2 === diff && streakData.diasFolgaUsados < 1 ? (streakData.diasFolgaUsados += 1, streakData.atual += 2, mostrarToast("Dia de Folga Usado", "Sua streak foi preservada! (1 folga/semana)", "warning")) : diff > 1 && diff < 999 && (usarShield() ? streakData.atual += diff : (streakData.atual = 1, streakData.diasFolgaUsados = 0, mostrarToast("💔 Streak Quebrada", "Sua streak foi resetada. Compre escudos para proteção!", "error")))
     } else streakData.atual += 1;
     streakData.ultimaData = hoje, streakData.atual > streakData.recorde && (streakData.recorde = streakData.atual);
     const inicioSemana = getInicioSemana(hoje);
@@ -2355,11 +2355,11 @@ function atualizarDisplayShields() {
 }
 
 function comprarShield() {
-  streakData.streakShields >= 3 ? mostrarToast("Máximo Atingido", "Você já tem 3 shields.", "warning") : xpData.total < streakData.shieldCost ? mostrarToast("XP Insuficiente", "Você precisa de " + streakData.shieldCost + " XP.", "error") : (xpData.total -= streakData.shieldCost, streakData.streakShields += 1, salvarDados(), atualizarXP(), atualizarDisplayShields(), mostrarToast("🛡 Shield Adquirido!", "Streak Shield comprado. Proteção ativa.", "success"), tocarSomRegistro())
+  streakData.streakShields >= 3 ? mostrarToast("Máximo Atingido", "Você já tem 3 escudos.", "warning") : xpData.total < streakData.shieldCost ? mostrarToast("XP Insuficiente", "Você precisa de " + streakData.shieldCost + " XP.", "error") : (xpData.total -= streakData.shieldCost, streakData.streakShields += 1, salvarDados(), atualizarXP(), atualizarDisplayShields(), mostrarToast("⭐ Escudo Adquirido!", "Escudo de Streak comprado. Proteção ativa.", "success"), tocarSomRegistro())
 }
 
 function usarShield() {
-  return streakData.streakShields > 0 && (streakData.streakShields -= 1, salvarDados(), atualizarDisplayShields(), mostrarToast("🔒 Shield Ativado!", "Sua streak foi preservada pelo Streak Shield!", "warning"), dispararConfetti(), !0)
+  return streakData.streakShields > 0 && (streakData.streakShields -= 1, salvarDados(), atualizarDisplayShields(), mostrarToast("⭐ Escudo Ativado!", "Sua streak foi preservada pelo Escudo de Streak!", "warning"), dispararConfetti(), !0)
 }
 
 function mostrarUndoBar(e) {
