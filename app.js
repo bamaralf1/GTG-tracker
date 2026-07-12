@@ -2494,6 +2494,7 @@ let readinessData = {
   data: null
 };
 let _prevReadinessScore = 50;
+let _prevZones = {};
 let _readinessAnimFrame = null;
 const READINESS_KEY = "gtg_readiness";
 
@@ -2532,6 +2533,7 @@ function salvarReadiness() {
 function resetReadinessData() {
   readinessData = { sono: 5, stress: 5, dor: 5, energia: 5, hidratacao: 5, alimentacao: 5, motivacao: 5, score: 50, data: null };
   _prevReadinessScore = 50;
+  _prevZones = {};
   ["sliderSono","sliderStress","sliderDor","sliderEnergia","sliderHidratacao","sliderAlimentacao","sliderMotivacao"].forEach(id => { document.getElementById(id).value = 5; });
   salvarReadiness()
 }
@@ -2616,14 +2618,6 @@ function updateReadinessUI() {
   const motivacao = readinessData.motivacao ?? 5;
   const o = readinessData.score;
 
-  document.getElementById("valSono").textContent = sono;
-  document.getElementById("valStress").textContent = stress;
-  document.getElementById("valDor").textContent = dor;
-  document.getElementById("valEnergia").textContent = energia;
-  document.getElementById("valHidratacao").textContent = hidratacao;
-  document.getElementById("valAlimentacao").textContent = alimentacao;
-  document.getElementById("valMotivacao").textContent = motivacao;
-
   document.getElementById("fillSono").style.width = 10 * sono + "%";
   document.getElementById("fillStress").style.width = 10 * stress + "%";
   document.getElementById("fillDor").style.width = 10 * dor + "%";
@@ -2632,13 +2626,34 @@ function updateReadinessUI() {
   document.getElementById("fillAlimentacao").style.width = 10 * alimentacao + "%";
   document.getElementById("fillMotivacao").style.width = 10 * motivacao + "%";
 
-  document.getElementById("trackSono").setAttribute("data-zone", getZonaSlider(sono, false));
-  document.getElementById("trackStress").setAttribute("data-zone", getZonaSlider(stress, true));
-  document.getElementById("trackDor").setAttribute("data-zone", getZonaSlider(dor, true));
-  document.getElementById("trackEnergia").setAttribute("data-zone", getZonaSlider(energia, false));
-  document.getElementById("trackHidratacao").setAttribute("data-zone", getZonaSlider(hidratacao, false));
-  document.getElementById("trackAlimentacao").setAttribute("data-zone", getZonaSlider(alimentacao, false));
-  document.getElementById("trackMotivacao").setAttribute("data-zone", getZonaSlider(motivacao, false));
+  const sliders = [
+    {valId:"valSono", val:sono, trackId:"trackSono", invertido:false},
+    {valId:"valStress", val:stress, trackId:"trackStress", invertido:true},
+    {valId:"valDor", val:dor, trackId:"trackDor", invertido:true},
+    {valId:"valEnergia", val:energia, trackId:"trackEnergia", invertido:false},
+    {valId:"valHidratacao", val:hidratacao, trackId:"trackHidratacao", invertido:false},
+    {valId:"valAlimentacao", val:alimentacao, trackId:"trackAlimentacao", invertido:false},
+    {valId:"valMotivacao", val:motivacao, trackId:"trackMotivacao", invertido:false}
+  ];
+  sliders.forEach(s => {
+    const el = document.getElementById(s.valId);
+    if (el.textContent != s.val) {
+      el.textContent = s.val;
+      el.classList.remove("bounce");
+      void el.offsetWidth;
+      el.classList.add("bounce");
+    }
+    const track = document.getElementById(s.trackId);
+    const newZone = getZonaSlider(s.val, s.invertido);
+    const prevZone = _prevZones[s.trackId];
+    track.setAttribute("data-zone", newZone);
+    if (prevZone && prevZone !== newZone) {
+      track.classList.remove("zone-flash");
+      void track.offsetWidth;
+      track.classList.add("zone-flash");
+    }
+    _prevZones[s.trackId] = newZone;
+  });
   const r = getReadinessConfig(o),
     s = document.getElementById("readinessCircle"),
     n = document.getElementById("readinessScore"),
@@ -3904,7 +3919,10 @@ document.addEventListener("DOMContentLoaded", () => {
     e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (BACKGROUND)", document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block"))
   }), setupNavTabs(), inicializar();
   const audioBtn = document.getElementById("btnToggleAudio");
-  audioBtn && (audioBtn.textContent = audioMuted ? "🔇" : "🔊")
+  audioBtn && (audioBtn.textContent = audioMuted ? "🔇" : "🔊");
+  document.addEventListener("animationend", e => {
+    if (e.target.classList?.contains("zone-flash")) e.target.classList.remove("zone-flash");
+  }, true);
 });
 
 
