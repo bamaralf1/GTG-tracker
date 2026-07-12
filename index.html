@@ -274,7 +274,9 @@
             </div>
             <audio id="sovietRadioPlayer" preload="none" style="display:none"></audio>
             <audio id="armyPlayerAudio" preload="none" style="display:none"></audio>
-            <div id="armyYTPlayer" style="display:none"></div>
+            <div id="armyYTWrap" style="width:100%;height:0;overflow:hidden;position:relative;border-radius:6px;margin-bottom:8px;display:none">
+              <iframe id="armyYTFrame" width="100%" height="60" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:60px;border-radius:6px"></iframe>
+            </div>
           </div>
 
           <div class="card sb-card" id="gtgSessionCard" style="border-color:rgba(212,160,23,.25);margin:0">
@@ -486,8 +488,7 @@
             };
 
             window.armyPlayer = {
-              ytPlayer: null, currentIdx: -1, playing: false, ready: false,
-              _lastVol: 85, _progressInterval: null,
+              currentIdx: -1, playing: false, _lastVol: 85, _progressInterval: null,
               tracks: [
                 { title: 'Красная Армия всех сильней', sub: 'The Red Army is the Strongest', yt: 'nHnDonNY7yQ' },
                 { title: 'Калинка', sub: 'Kalinka', yt: 'zGj_5-0Jn2Y' },
@@ -503,52 +504,24 @@
                 { title: 'Смуглянка', sub: 'Smuglyanka', yt: 'fWUJJWK1VdI' }
               ],
               init() {
-                var tag = document.createElement('script');
-                tag.src = 'https://www.youtube.com/iframe_api';
-                document.head.appendChild(tag);
-                var self = this;
-                window.onYouTubeIframeAPIReady = function() {
-                  self.ytPlayer = new YT.Player('armyYTPlayer', {
-                    height: '1', width: '1',
-                    playerVars: { autoplay: 0, controls: 0 },
-                    events: {
-                      onReady: function() { self.ready = true; self.ytPlayer.setVolume(self._lastVol); },
-                      onStateChange: function(e) {
-                        if (e.data === YT.PlayerState.ENDED) { self._skipCount = 0; self.next(); }
-                        else if (e.data === YT.PlayerState.PLAYING) {
-                          self._startProgress();
-                          self._setPlayingUI();
-                        }
-                        else if (e.data === YT.PlayerState.PAUSED) { self._stopProgress(); }
-                      }
-                    }
-                  });
-                };
                 var savedVol = localStorage.getItem('gtg_army_vol');
-                if (savedVol != null) { this._lastVol = parseInt(savedVol); }
+                if (savedVol != null) this._lastVol = parseInt(savedVol);
                 this._renderTracklist();
               },
-              _startProgress() { this._stopProgress(); var self = this; this._progressInterval = setInterval(function() { self._updateProgress(); }, 500); },
-              _stopProgress() { if (this._progressInterval) { clearInterval(this._progressInterval); this._progressInterval = null; } },
+              _loadVideo(ytId) {
+                var frame = document.getElementById('armyYTFrame');
+                var wrap = document.getElementById('armyYTWrap');
+                wrap.style.display = 'block';
+                frame.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
+              },
+              _stopVideo() {
+                document.getElementById('armyYTFrame').src = '';
+                document.getElementById('armyYTWrap').style.display = 'none';
+              },
               _formatTime(sec) {
                 if (!sec || !isFinite(sec)) return '0:00';
                 var m = Math.floor(sec / 60), s = Math.floor(sec % 60);
                 return m + ':' + (s < 10 ? '0' : '') + s;
-              },
-              _updateProgress() {
-                if (!this.ytPlayer || !this.ytPlayer.getDuration) return;
-                var cur = this.ytPlayer.getCurrentTime(), dur = this.ytPlayer.getDuration();
-                if (!dur) return;
-                document.getElementById('armyProgressFill').style.width = ((cur / dur) * 100) + '%';
-                document.getElementById('armyTimeCurrent').textContent = this._formatTime(cur);
-                document.getElementById('armyTimeTotal').textContent = this._formatTime(dur);
-              },
-              seek(e) {
-                if (!this.ytPlayer || !this.ytPlayer.getDuration) return;
-                var bar = document.getElementById('armyProgressBar');
-                var rect = bar.getBoundingClientRect();
-                var pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                this.ytPlayer.seekTo(pct * this.ytPlayer.getDuration(), true);
               },
               _renderTracklist() {
                 var el = document.getElementById('armyTracklist');
@@ -596,7 +569,6 @@
               },
               _setErrorUI() {
                 this.playing = false;
-                this._stopProgress();
                 document.getElementById('armyToggleBtn').textContent = '\u25B6 TOCAR';
                 document.getElementById('armyToggleBtn').style.background = 'var(--red)';
                 document.getElementById('armyToggleBtn').style.color = 'white';
@@ -605,47 +577,28 @@
               },
               playTrack(idx) {
                 if (idx < 0 || idx >= this.tracks.length) return;
-                if (!this.ready || !this.ytPlayer) { var self = this; setTimeout(function() { self.playTrack(idx); }, 500); return; }
                 this.currentIdx = idx;
                 this.playing = true;
                 this._highlight(idx);
-                this.ytPlayer.loadVideoById(this.tracks[idx].yt);
-                this.setVolume(document.getElementById('armyVolume').value);
+                this._loadVideo(this.tracks[idx].yt);
+                this._setPlayingUI();
               },
               toggle() {
-                if (!this.ytPlayer || !this.ready) return;
-                if (!this.ytPlayer.getVideoData || !this.ytPlayer.getVideoData().video_id) { this.playTrack(0); return; }
-                var state = this.ytPlayer.getPlayerState();
-                if (state === YT.PlayerState.PLAYING) {
-                  this.ytPlayer.pauseVideo();
-                  this.playing = false;
-                  document.getElementById('armyToggleBtn').textContent = '\u25B6 CONTINUAR';
-                  document.getElementById('armyToggleBtn').style.background = 'var(--red)';
-                  document.getElementById('armyToggleBtn').style.color = 'white';
-                  document.getElementById('sbEq').classList.remove('playing');
-                  document.querySelector('.sb-card-radio').classList.remove('playing');
-                  document.getElementById('sbStatusDot').className = 'sb-status-dot off';
-                  document.getElementById('sbStatusText').textContent = 'Pausado';
-                  document.getElementById('sbStatusText').style.color = 'var(--gray)';
-                } else {
-                  this.ytPlayer.playVideo();
-                  this.playing = true;
-                }
+                if (!this.playing) { this.playTrack(this.currentIdx >= 0 ? this.currentIdx : 0); return; }
+                this.playing = false;
+                this._stopVideo();
+                this._setErrorUI();
               },
               next() {
                 var next = this.currentIdx + 1;
                 this.playTrack(next < this.tracks.length ? next : 0);
               },
               prev() {
-                if (this.ytPlayer && this.ytPlayer.getCurrentTime && this.ytPlayer.getCurrentTime() > 3) {
-                  this.ytPlayer.seekTo(0, true); return;
-                }
                 var prev = this.currentIdx - 1;
                 this.playTrack(prev >= 0 ? prev : this.tracks.length - 1);
               },
               setVolume(val) {
                 this._lastVol = parseInt(val);
-                if (this.ytPlayer && this.ytPlayer.setVolume) this.ytPlayer.setVolume(this._lastVol);
                 document.getElementById('armyVolumeDisplay').textContent = val + '%';
                 localStorage.setItem('gtg_army_vol', val);
               },
@@ -653,12 +606,10 @@
                 if (parseInt(document.getElementById('armyVolume').value) > 0) {
                   this._lastVol = document.getElementById('armyVolume').value;
                   document.getElementById('armyVolume').value = 0; this.setVolume(0);
-                  if (this.ytPlayer && this.ytPlayer.mute) this.ytPlayer.mute();
                   document.querySelector('#radioTabArmy .sb-vol-icon').textContent = '\uD83D\uDD07';
                 } else {
                   var v = this._lastVol || 85;
                   document.getElementById('armyVolume').value = v; this.setVolume(v);
-                  if (this.ytPlayer && this.ytPlayer.unMute) this.ytPlayer.unMute();
                   document.querySelector('#radioTabArmy .sb-vol-icon').textContent = '\uD83D\uDD0A';
                 }
               }
