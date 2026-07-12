@@ -1713,15 +1713,24 @@ function tocarSomInicioExercicio() {
   [523, 659, 784, 1047].forEach((f, i) => tocarNota(f, { vol: .16 - i * .02, dur: .2 + i * .05, rev: .2 + i * .05, delay: i * .12 }))
 }
 
+function updateTimerRing() {
+  const fill = document.getElementById('timerRingFill');
+  if (!fill) return;
+  const circumference = 502;
+  const pct = (plankTimer.segundos % 60) / 60;
+  fill.style.strokeDashoffset = circumference - (circumference * pct);
+}
+
 function startPlankTimer() {
   if (plankTimer.rodando || plankTimer.preparando) return;
   if (plankTimer.pausado) {
     plankTimer.pausado = !1, plankTimer.rodando = !0, document.getElementById("timerDisplay").classList.add("running"), document.getElementById("btnStartTimer").textContent = "▶ RODANDO...";
+    const fill = document.getElementById('timerRingFill'); if (fill) fill.classList.add('running');
     plankTimer.intervalo = setInterval(() => {
       plankTimer.segundos++;
       const mins = String(Math.floor(plankTimer.segundos / 60)).padStart(2, "0"),
         secs = String(plankTimer.segundos % 60).padStart(2, "0");
-      document.getElementById("timerDisplay").textContent = `${mins}:${secs}`, plankTimer.segundos % 30 == 0 && tocarBeepCronometro()
+      document.getElementById("timerDisplay").textContent = `${mins}:${secs}`, updateTimerRing(), plankTimer.segundos % 30 == 0 && tocarBeepCronometro()
     }, 1e3);
     return
   }
@@ -1731,11 +1740,11 @@ function startPlankTimer() {
     prepNum = document.getElementById("prepNumber");
   prepOverlay.style.display = "block", prepNum.style.display = "block", prepNum.textContent = countdown, tocarSomPreparo(countdown);
   const prepInterval = setInterval(() => {
-    countdown--, countdown <= 0 ? (clearInterval(prepInterval), prepOverlay.style.display = "none", prepNum.style.display = "none", document.getElementById("timerDisplay").style.opacity = "1", document.getElementById("btnStartTimer").textContent = "▶ RODANDO...", document.getElementById("btnStartTimer").disabled = !1, plankTimer.preparando = !1, tocarSomInicioExercicio(), plankTimer.rodando = !0, document.getElementById("timerDisplay").classList.add("running"), plankTimer.intervalo = setInterval(() => {
+    countdown--, countdown <= 0 ? (clearInterval(prepInterval), prepOverlay.style.display = "none", prepNum.style.display = "none", document.getElementById("timerDisplay").style.opacity = "1", document.getElementById("btnStartTimer").textContent = "▶ RODANDO...", document.getElementById("btnStartTimer").disabled = !1, plankTimer.preparando = !1, tocarSomInicioExercicio(), plankTimer.rodando = !0, document.getElementById("timerDisplay").classList.add("running"), document.getElementById("timerRingFill").classList.add('running'), plankTimer.intervalo = setInterval(() => {
       plankTimer.segundos++;
       const mins = String(Math.floor(plankTimer.segundos / 60)).padStart(2, "0"),
         secs = String(plankTimer.segundos % 60).padStart(2, "0");
-      document.getElementById("timerDisplay").textContent = `${mins}:${secs}`, plankTimer.segundos % 30 == 0 && tocarBeepCronometro()
+      document.getElementById("timerDisplay").textContent = `${mins}:${secs}`, updateTimerRing(), plankTimer.segundos % 30 == 0 && tocarBeepCronometro()
     }, 1e3)) : (prepNum.textContent = countdown, tocarSomPreparo(countdown))
   }, 1e3)
 }
@@ -1743,6 +1752,7 @@ function startPlankTimer() {
 function stopPlankTimer() {
   if (!plankTimer.rodando) return;
   clearInterval(plankTimer.intervalo), plankTimer.rodando = !1, plankTimer.pausado = !1, document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("btnStartTimer").textContent = "▶ INICIAR", somTimer();
+  const fill = document.getElementById('timerRingFill'); if (fill) { fill.classList.remove('running'); fill.style.strokeDashoffset = 502; }
   const selectedExId = document.getElementById("timerExerciseSelect").value;
   if (selectedExId && plankTimer.segundos > 0) {
     grooveState[selectedExId] = window.plankGroove ? [...window.plankGroove] : [0, 0, 0];
@@ -1760,12 +1770,14 @@ function resetPlankTimer() {
     rodando: !1,
     preparando: !1,
     pausado: !1
-  }, document.getElementById("timerDisplay").textContent = "00:00", document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("timerDisplay").style.opacity = "1", document.getElementById("btnStartTimer").textContent = "▶ INICIAR", document.getElementById("btnStartTimer").disabled = !1, document.getElementById("prepCountdown").style.display = "none", document.getElementById("prepNumber").style.display = "none"
+  }, document.getElementById("timerDisplay").textContent = "00:00", document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("timerDisplay").style.opacity = "1", document.getElementById("btnStartTimer").textContent = "▶ INICIAR", document.getElementById("btnStartTimer").disabled = !1, document.getElementById("prepCountdown").style.display = "none", document.getElementById("prepNumber").style.display = "none";
+  const fill = document.getElementById('timerRingFill'); if (fill) { fill.classList.remove('running'); fill.style.strokeDashoffset = 502; }
 }
 
 function pausePlankTimer() {
   if (!plankTimer.rodando) return;
-  clearInterval(plankTimer.intervalo), plankTimer.rodando = !1, plankTimer.pausado = !0, document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("btnStartTimer").textContent = "▶ RETOMAR"
+  clearInterval(plankTimer.intervalo), plankTimer.rodando = !1, plankTimer.pausado = !0, document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("btnStartTimer").textContent = "▶ RETOMAR";
+  const fill = document.getElementById('timerRingFill'); if (fill) fill.classList.remove('running');
 }
 let restTimerExIdPendente = null;
 
@@ -2061,7 +2073,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260712a"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260712c"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");

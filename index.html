@@ -193,8 +193,15 @@
             </div>
           </div>
 
-          <div class="card sb-card" style="padding:14px 18px;margin:0;">
+          <div class="card sb-card sb-card-radio" style="padding:14px 18px;margin:0;">
             <div class="sb-radio-top">
+              <div class="sb-eq" id="sbEq">
+                <div class="sb-eq-bar" style="height:4px"></div>
+                <div class="sb-eq-bar" style="height:8px"></div>
+                <div class="sb-eq-bar" style="height:5px"></div>
+                <div class="sb-eq-bar" style="height:10px"></div>
+                <div class="sb-eq-bar" style="height:3px"></div>
+              </div>
               <div class="sb-radio-title"><span class="sb-radio-star">☭</span> RÁDIO</div>
               <select id="sovietRadioStation" onchange="radio.changeStation()" class="sb-radio-select">
                 <option value="http://evcast.mediacp.eu:2070/stream">🎵 Soviet Estrada</option>
@@ -216,10 +223,10 @@
               </div>
             </div>
             <div class="sb-radio-ctrls">
-              <button onclick="radio.toggle()" id="radioToggleBtn" style="padding:7px 16px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:14px;cursor:pointer;border-radius:4px;transition:all .2s;flex-shrink:0">▶ PLAY</button>
+              <button onclick="radio.toggle()" id="radioToggleBtn" class="sb-radio-play" style="padding:7px 16px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:14px;cursor:pointer;border-radius:4px;transition:all .2s;flex-shrink:0">▶ PLAY</button>
               <input type="range" id="radioVolume" min="0" max="100" value="50" oninput="radio.setVolume(this.value)" class="groove-range" style="width:100px">
               <span class="text-mono" style="font-size:12px;color:var(--gold-dim)" id="volumeDisplay">50%</span>
-              <span class="sb-radio-status" id="radioStatus">⏹ Parado</span>
+              <div class="sb-radio-status" id="radioStatus"><span class="sb-status-dot off" id="sbStatusDot"></span> <span id="sbStatusText">Parado</span></div>
             </div>
             <audio id="sovietRadioPlayer" preload="none" style="display:none"></audio>
           </div>
@@ -282,10 +289,18 @@
               <select class="form-select" id="timerExerciseSelect" style="font-size:13px;padding:5px 8px"></select>
             </div>
             <div class="card-body sb-timer-wrap">
-              <div id="prepCountdown" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--gold);animation:starPulse .8s ease-in-out infinite">PREPARE-SE</div>
-              <div id="prepNumber" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:90px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,160,23,.7)"></div>
-              <div class="timer-display sb-timer-digits" id="timerDisplay">00:00</div>
-              <div class="sb-timer-sub">ISOMÉTRICO</div>
+              <div id="prepCountdown" style="display:none;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--gold);animation:starPulse .8s ease-in-out infinite">PREPARE-SE</div>
+              <div id="prepNumber" style="display:none;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:90px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,160,23,.7)"></div>
+              <div class="sb-timer-ring-wrap">
+                <svg class="sb-timer-ring" viewBox="0 0 180 180">
+                  <circle class="sb-timer-ring-bg" cx="90" cy="90" r="80"/>
+                  <circle class="sb-timer-ring-fill" id="timerRingFill" cx="90" cy="90" r="80"/>
+                </svg>
+                <div class="sb-timer-center">
+                  <div class="sb-timer-label">ISOMÉTRICO</div>
+                  <div class="timer-display sb-timer-digits" id="timerDisplay" style="font-size:48px">00:00</div>
+                </div>
+              </div>
               <div class="sb-timer-btns">
                 <button class="btn btn-red" id="btnStartTimer" onclick="startPlankTimer()">▶ INICIAR</button>
                 <button class="btn btn-outline" onclick="stopPlankTimer()">■ PARAR</button>
@@ -322,6 +337,7 @@
             window.radio = {
               player: null, toggleBtn: null, volumeSlider: null, volumeLabel: null,
               statusEl: null, stationSelect: null, stationNameEl: null, playing: false,
+              eqEl: null, cardEl: null, statusDot: null, statusText: null,
               stations: {
                 'http://evcast.mediacp.eu:2070/stream': 'Советская эстрада (Soviet Estrada)',
                 'http://retroserver.streamr.ru:8043/retro256.mp3': 'Ретро FM (Retro FM Rússia)',
@@ -342,12 +358,50 @@
                 this.statusEl = document.getElementById('radioStatus');
                 this.stationSelect = document.getElementById('sovietRadioStation');
                 this.stationNameEl = document.getElementById('currentStationName');
+                this.eqEl = document.getElementById('sbEq');
+                this.cardEl = this.toggleBtn.closest('.sb-card-radio');
+                this.statusDot = document.getElementById('sbStatusDot');
+                this.statusText = document.getElementById('sbStatusText');
                 const saved = JSON.parse(localStorage.getItem('gtg_radio') || '{}');
                 if (saved.station) { this.stationSelect.value = saved.station; this.stationNameEl.textContent = this.stations[saved.station] || '—'; }
                 if (saved.volume != null) { this.volumeSlider.value = saved.volume; this.player.volume = saved.volume / 100; this.volumeLabel.textContent = saved.volume + '%'; }
-                this.player.addEventListener('waiting', () => { if (this.playing) this.statusEl.textContent = '⏳ Conectando...' });
-                this.player.addEventListener('canplay', () => { if (this.playing) this.statusEl.textContent = '▶ Tocando' });
-                this.player.addEventListener('error', () => { this.statusEl.textContent = '✕ Erro'; this.playing = false; this.toggleBtn.textContent = '▶ PLAY'; this.toggleBtn.style.background = 'var(--red)'; });
+                this.player.addEventListener('waiting', () => { if (this.playing) this._setStatus('wait'); });
+                this.player.addEventListener('canplay', () => { if (this.playing) this._setStatus('play'); });
+                this.player.addEventListener('error', () => { this.playing = false; this._updateUI(); this._setStatus('err'); });
+              },
+              _setStatus(s) {
+                if (s === 'play') {
+                  this.statusDot.className = 'sb-status-dot on';
+                  this.statusText.textContent = 'Tocando';
+                  this.statusEl.querySelector('span:last-child').style.color = 'var(--green-bright)';
+                } else if (s === 'wait') {
+                  this.statusDot.className = 'sb-status-dot';
+                  this.statusDot.style.background = 'var(--gold)';
+                  this.statusText.textContent = 'Conectando...';
+                  this.statusEl.querySelector('span:last-child').style.color = 'var(--gold)';
+                } else if (s === 'err') {
+                  this.statusDot.className = 'sb-status-dot err';
+                  this.statusText.textContent = 'Erro';
+                  this.statusEl.querySelector('span:last-child').style.color = 'var(--red-bright)';
+                } else {
+                  this.statusDot.className = 'sb-status-dot off';
+                  this.statusText.textContent = 'Parado';
+                  this.statusDot.style.background = '';
+                  this.statusEl.querySelector('span:last-child').style.color = 'var(--gray)';
+                }
+              },
+              _updateUI() {
+                if (this.playing) {
+                  this.toggleBtn.textContent = '⏸ PAUSE'; this.toggleBtn.style.background = 'var(--gold)'; this.toggleBtn.style.color = 'var(--black)';
+                  this.toggleBtn.classList.add('active');
+                  this.eqEl.classList.add('playing');
+                  this.cardEl.classList.add('playing');
+                } else {
+                  this.toggleBtn.textContent = '▶ PLAY'; this.toggleBtn.style.background = 'var(--red)'; this.toggleBtn.style.color = '';
+                  this.toggleBtn.classList.remove('active');
+                  this.eqEl.classList.remove('playing');
+                  this.cardEl.classList.remove('playing');
+                }
               },
               changeStation() {
                 const val = this.stationSelect.value;
@@ -360,13 +414,11 @@
                 if (!this.player.src) this.player.src = this.stationSelect.value;
                 if (this.playing) {
                   this.player.pause(); this.playing = false;
-                  this.toggleBtn.textContent = '▶ PLAY'; this.toggleBtn.style.background = 'var(--red)';
-                  this.statusEl.textContent = '⏹ Parado';
+                  this._updateUI(); this._setStatus('off');
                 } else {
                   this.playing = true;
-                  this.toggleBtn.textContent = '⏸ PAUSE'; this.toggleBtn.style.background = 'var(--gold)'; this.toggleBtn.style.color = 'var(--black)';
-                  this.statusEl.textContent = '⏳ Conectando...';
-                  this.player.play().catch(() => { this.statusEl.textContent = '✕ Erro'; this.playing = false; this.toggleBtn.textContent = '▶ PLAY'; this.toggleBtn.style.background = 'var(--red)'; });
+                  this._updateUI(); this._setStatus('wait');
+                  this.player.play().catch(() => { this.playing = false; this._updateUI(); this._setStatus('err'); });
                 }
               },
               setVolume(val) {

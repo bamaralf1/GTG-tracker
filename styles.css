@@ -2062,6 +2062,83 @@ body::after{
 [data-theme=light] .groove-slider{background:rgba(255,255,255,0.5);border-color:rgba(0,0,0,0.08);color:var(--gray-dark,#555)}
 [data-theme=light] .groove-range{background:rgba(0,0,0,0.15)}
 
+/* ================================================================
+   SIDEBAR 2.0 — ANIMATIONS & PREMIUM EFFECTS
+   ================================================================ */
+
+/* === RADIO EQUALIZER === */
+.sb-eq{display:flex;align-items:flex-end;gap:2px;height:18px;flex-shrink:0}
+.sb-eq-bar{width:3px;border-radius:1px;background:var(--gold);transition:height .15s ease}
+.sb-eq.playing .sb-eq-bar{animation:eqBounce .6s ease-in-out infinite alternate}
+.sb-eq.playing .sb-eq-bar:nth-child(1){animation-delay:0s;animation-duration:.5s}
+.sb-eq.playing .sb-eq-bar:nth-child(2){animation-delay:.1s;animation-duration:.65s}
+.sb-eq.playing .sb-eq-bar:nth-child(3){animation-delay:.05s;animation-duration:.45s}
+.sb-eq.playing .sb-eq-bar:nth-child(4){animation-delay:.15s;animation-duration:.55s}
+.sb-eq.playing .sb-eq-bar:nth-child(5){animation-delay:.08s;animation-duration:.6s}
+@keyframes eqBounce{0%{height:3px}100%{height:16px}}
+
+/* === RADIO CARD GLOW === */
+.sb-card-radio{position:relative;overflow:visible}
+.sb-card-radio::before{content:'';position:absolute;inset:-1px;border-radius:var(--card-radius);background:linear-gradient(135deg,rgba(204,0,0,0.15),transparent 40%,transparent 60%,rgba(212,168,67,0.1));opacity:0;transition:opacity .4s;pointer-events:none;z-index:0}
+.sb-card-radio.playing::before{opacity:1;animation:radioGlow 3s ease-in-out infinite}
+@keyframes radioGlow{0%,100%{opacity:.6}50%{opacity:1}}
+
+/* === RADIO PLAY BUTTON GLOW === */
+.sb-radio-play{position:relative;overflow:hidden}
+.sb-radio-play::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(255,255,255,0.15),transparent 70%);opacity:0;transition:opacity .3s}
+.sb-radio-play.active::after{opacity:1}
+.sb-radio-play.active{box-shadow:0 0 20px rgba(212,168,67,0.5),0 0 40px rgba(212,168,67,0.2)}
+
+/* === SESSION CARD ENHANCED === */
+.sb-session-card{position:relative}
+.sb-session-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--gold),var(--red));opacity:0;transition:opacity .3s;pointer-events:none}
+.sb-session-card.active::after{opacity:1;animation:sessionBar 2s linear infinite}
+@keyframes sessionBar{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+
+/* === TIMER CIRCULAR PROGRESS === */
+.sb-timer-ring-wrap{position:relative;width:180px;height:180px;margin:0 auto 12px}
+.sb-timer-ring{width:100%;height:100%;transform:rotate(-90deg)}
+.sb-timer-ring-bg{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:6}
+.sb-timer-ring-fill{fill:none;stroke:var(--gold);stroke-width:6;stroke-linecap:round;stroke-dasharray:502;stroke-dashoffset:502;transition:stroke-dashoffset .8s var(--ease-expo),stroke .3s}
+.sb-timer-ring-fill.running{stroke:var(--red-bright);filter:drop-shadow(0 0 8px rgba(255,59,48,0.6))}
+.sb-timer-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sb-timer-label{font-size:10px;color:var(--gray);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px}
+
+/* === TIMER BUTTONS ENHANCED === */
+.sb-timer-btns .btn{position:relative;overflow:hidden}
+.sb-timer-btns .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.08),transparent);opacity:0;transition:opacity .2s}
+.sb-timer-btns .btn:hover::after{opacity:1}
+
+/* === QUOTE CARD PREMIUM === */
+.sb-card-quote{background:linear-gradient(135deg,rgba(204,0,0,0.08),rgba(18,18,18,0.95) 40%,rgba(18,18,18,0.95) 60%,rgba(212,168,67,0.06))}
+.sb-card-quote .sb-quote-icon{animation:starSpin 8s linear infinite}
+@keyframes starSpin{0%{transform:rotate(0deg) scale(1)}25%{transform:rotate(5deg) scale(1.05)}50%{transform:rotate(0deg) scale(1)}75%{transform:rotate(-5deg) scale(1.05)}100%{transform:rotate(0deg) scale(1)}}
+
+/* === CARD HOVER LIFT ENHANCED === */
+.sb-card{transition:transform .35s var(--ease-expo),box-shadow .35s var(--ease-expo),border-color .35s var(--ease-expo)}
+.sb-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 20px rgba(212,168,67,0.08)}
+
+/* === GROOVE BONUS PULSE === */
+.groove-bonus-preview.perfeito .bonus-val{animation:bonusPulse 1.5s ease-in-out infinite}
+@keyframes bonusPulse{0%,100%{text-shadow:0 0 8px rgba(68,204,68,0.5)}50%{text-shadow:0 0 16px rgba(68,204,68,0.9),0 0 24px rgba(68,204,68,0.4)}}
+
+/* === STATUS DOT ANIMATION === */
+.sb-status-dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
+.sb-status-dot.on{background:var(--green-bright);box-shadow:0 0 8px rgba(68,204,68,0.8);animation:dotPulse 1.5s ease-in-out infinite}
+.sb-status-dot.off{background:var(--gray)}
+.sb-status-dot.err{background:var(--red-bright);box-shadow:0 0 8px rgba(255,59,48,0.6)}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.8)}}
+
+/* === REMINDER CHIP ENHANCED === */
+.sb-remind-chip{position:relative;padding:4px 10px;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.06);border-radius:8px}
+.sb-remind-chip .sb-remind-dot{position:absolute;top:-2px;right:-2px;width:7px;height:7px;border-radius:50%;background:var(--gray);border:1px solid rgba(0,0,0,0.3);transition:all .3s}
+.sb-remind-chip.active .sb-remind-dot{background:var(--green-bright);box-shadow:0 0 6px rgba(68,204,68,0.8)}
+
+/* === LIGHT THEME OVERRIDES === */
+[data-theme=light] .sb-card-quote{background:linear-gradient(135deg,rgba(204,0,0,0.04),#fff 40%,#fff 60%,rgba(212,168,67,0.03))}
+[data-theme=light] .sb-eq-bar{background:var(--gold)}
+[data-theme=light] .sb-card-radio.playing::before{background:linear-gradient(135deg,rgba(204,0,0,0.08),transparent 40%,transparent 60%,rgba(212,168,67,0.05))}
+
 .missile-switch[data-tip]:hover::after{
   content:attr(data-tip);
   position:absolute;
