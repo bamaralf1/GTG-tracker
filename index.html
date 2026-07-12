@@ -241,7 +241,7 @@
                 <button onclick="radio.toggle()" id="radioToggleBtn" class="sb-radio-play" style="padding:8px 20px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:15px;cursor:pointer;border-radius:4px;transition:all .2s;flex-shrink:0">▶ PLAY</button>
                 <div class="sb-vol-wrap">
                   <span class="sb-vol-icon" onclick="radio.muteToggle()" title="Mudo">🔊</span>
-                  <input type="range" id="radioVolume" min="0" max="150" value="80" oninput="radio.setVolume(this.value)" class="sb-vol-slider">
+                  <input type="range" id="radioVolume" min="0" max="100" value="80" oninput="radio.setVolume(this.value)" class="sb-vol-slider">
                   <span class="sb-vol-pct" id="volumeDisplay">80%</span>
                 </div>
               </div>
@@ -268,7 +268,7 @@
               </div>
               <div class="sb-vol-wrap" style="margin-top:8px">
                 <span class="sb-vol-icon" onclick="armyPlayer.muteToggle()" title="Mudo">🔊</span>
-                <input type="range" id="armyVolume" min="0" max="150" value="85" oninput="armyPlayer.setVolume(this.value)" class="sb-vol-slider">
+                <input type="range" id="armyVolume" min="0" max="100" value="85" oninput="armyPlayer.setVolume(this.value)" class="sb-vol-slider">
                 <span class="sb-vol-pct" id="armyVolumeDisplay">85%</span>
               </div>
             </div>
@@ -383,7 +383,7 @@
               player: null, toggleBtn: null, volumeSlider: null, volumeLabel: null,
               statusEl: null, stationSelect: null, stationNameEl: null, playing: false,
               eqEl: null, cardEl: null, statusDot: null, statusText: null,
-              audioCtx: null, gainNode: null, _lastVol: 80,
+              _lastVol: 80,
               init() {
                 this.player = document.getElementById('sovietRadioPlayer');
                 this.toggleBtn = document.getElementById('radioToggleBtn');
@@ -399,27 +399,10 @@
                 if (saved.station) { this.stationSelect.value = saved.station; this.stationNameEl.textContent = this._getStationName(saved.station); }
                 const vol = saved.volume != null ? saved.volume : 80;
                 this.volumeSlider.value = vol; this.volumeLabel.textContent = vol + '%';
-                this._applyVolume(vol);
+                this.player.volume = vol / 100;
                 this.player.addEventListener('waiting', () => { if (this.playing) this._setStatus('wait'); });
                 this.player.addEventListener('canplay', () => { if (this.playing) this._setStatus('play'); });
                 this.player.addEventListener('error', () => { this.playing = false; this._updateUI(); this._setStatus('err'); });
-              },
-              _initAudioCtx() {
-                if (this.audioCtx) return;
-                this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                this.gainNode = this.audioCtx.createGain();
-                const source = this.audioCtx.createMediaElementSource(this.player);
-                source.connect(this.gainNode);
-                this.gainNode.connect(this.audioCtx.destination);
-              },
-              _applyVolume(val) {
-                const v = parseInt(val);
-                this.player.volume = Math.min(v, 100) / 100;
-                if (v > 100) {
-                  try { this._initAudioCtx(); this.gainNode.gain.value = 1 + (v - 100) / 50; } catch(e) {}
-                } else {
-                  try { if (this.gainNode) this.gainNode.gain.value = 1; } catch(e) {}
-                }
               },
               _getStationName(url) {
                 const opt = this.stationSelect.querySelector(`option[value="${url}"]`);
@@ -478,9 +461,8 @@
                 }
               },
               setVolume(val) {
-                this._applyVolume(val);
+                this.player.volume = Math.min(val, 100) / 100;
                 this.volumeLabel.textContent = val + '%';
-                this._lastVol = val;
                 const saved = JSON.parse(localStorage.getItem('gtg_radio') || '{}');
                 saved.volume = val; localStorage.setItem('gtg_radio', JSON.stringify(saved));
               },
@@ -504,7 +486,7 @@
 
             window.armyPlayer = {
               player: null, currentIdx: -1, playing: false,
-              _progressInterval: null, _lastVol: 85, audioCtx: null, gainNode: null,
+              _lastVol: 85,
               tracks: [
                 { title: 'Красная Армия всех сильней', sub: 'The Red Army is the Strongest', src: 'https://archive.org/download/WhiteArmyBlackBaron/White%20Army,%20Black%20Baron.mp3' },
                 { title: 'Калинка', sub: 'Kalinka', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/01%20-%20Kalinka.mp3' },
@@ -512,7 +494,7 @@
                 { title: 'День Победы', sub: 'Day of Victory', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/02%20-%20Den%20Pobedy.mp3' },
                 { title: 'Марш артиллеристов', sub: 'March of the Artillerymen', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/03%20-%20Marsh%20Artilleristov.mp3' },
                 { title: 'Три танкиста', sub: 'Three Tankmen', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/04%20-%20Tri%20Tankista.mp3' },
-                { title: 'В путь', sub: 'Let\'s Go', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/05%20-%20V%20Put.mp3' },
+                { title: 'В путь', sub: "Let's Go", src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/05%20-%20V%20Put.mp3' },
                 { title: 'Красноармейская', sub: 'Red Army Song', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/06%20-%20Krasnoarmeykaya.mp3' },
                 { title: 'Марш советской армии', sub: 'March of the Soviet Army', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/07%20-%20Marsh%20Sovetskoy%20Armii.mp3' },
                 { title: 'Полюшко-поле', sub: 'The Meadowland', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/08%20-%20Polyushko%20Pole.mp3' },
@@ -529,23 +511,6 @@
                 this.player.addEventListener('timeupdate', () => this._updateProgress());
                 this._renderTracklist();
               },
-              _initAudioCtx() {
-                if (this.audioCtx) return;
-                this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                this.gainNode = this.audioCtx.createGain();
-                const source = this.audioCtx.createMediaElementSource(this.player);
-                source.connect(this.gainNode);
-                this.gainNode.connect(this.audioCtx.destination);
-              },
-              _applyVolume(val) {
-                const v = parseInt(val);
-                this.player.volume = Math.min(v, 100) / 100;
-                if (v > 100) {
-                  try { this._initAudioCtx(); this.gainNode.gain.value = 1 + (v - 100) / 50; } catch(e) {}
-                } else {
-                  try { if (this.gainNode) this.gainNode.gain.value = 1; } catch(e) {}
-                }
-              },
               _formatTime(sec) {
                 if (!sec || !isFinite(sec)) return '0:00';
                 const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
@@ -554,8 +519,7 @@
               _updateProgress() {
                 const cur = this.player.currentTime, dur = this.player.duration;
                 if (!dur) return;
-                const pct = (cur / dur) * 100;
-                document.getElementById('armyProgressFill').style.width = pct + '%';
+                document.getElementById('armyProgressFill').style.width = ((cur / dur) * 100) + '%';
                 document.getElementById('armyTimeCurrent').textContent = this._formatTime(cur);
                 document.getElementById('armyTimeTotal').textContent = this._formatTime(dur);
               },
@@ -568,13 +532,13 @@
               _renderTracklist() {
                 const el = document.getElementById('armyTracklist');
                 el.innerHTML = this.tracks.map((t, i) =>
-                  `<div class="sb-army-track" id="armyTrack${i}" onclick="armyPlayer.playTrack(${i})" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;transition:all .15s;border:1px solid transparent">
-                    <span class="sb-army-idx" style="font-size:11px;color:var(--gray);width:20px;text-align:center;font-family:'Bebas Neue',sans-serif">${String(i + 1).padStart(2, '0')}</span>
-                    <div style="flex:1;min-width:0">
-                      <div style="font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${t.title}</div>
-                      <div style="font-size:10px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.sub}</div>
-                    </div>
-                  </div>`
+                  '<div class="sb-army-track" id="armyTrack' + i + '" onclick="armyPlayer.playTrack(' + i + ')" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;transition:all .15s;border:1px solid transparent">' +
+                    '<span class="sb-army-idx" style="font-size:11px;color:var(--gray);width:20px;text-align:center;font-family:Bebas Neue,sans-serif">' + String(i + 1).padStart(2, '0') + '</span>' +
+                    '<div style="flex:1;min-width:0">' +
+                      '<div style="font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">' + t.title + '</div>' +
+                      '<div style="font-size:10px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + t.sub + '</div>' +
+                    '</div>' +
+                  '</div>'
                 ).join('');
               },
               _highlight(idx) {
@@ -582,15 +546,15 @@
                   el.style.borderColor = i === idx ? 'rgba(204,0,0,0.3)' : 'transparent';
                   el.style.background = i === idx ? 'rgba(204,0,0,0.06)' : '';
                   const num = el.querySelector('.sb-army-idx');
-                  if (i === idx) { num.style.color = 'var(--red-bright)'; num.textContent = '▶'; }
+                  if (i === idx) { num.style.color = 'var(--red-bright)'; num.textContent = '\u25B6'; }
                   else { num.style.color = 'var(--gray)'; num.textContent = String(i + 1).padStart(2, '0'); }
                 });
-                document.getElementById('armyNowPlaying').textContent = idx >= 0 ? this.tracks[idx].title : '—';
-                document.getElementById('armyTrackCount').textContent = `${idx + 1}/${this.tracks.length} • ${this.tracks[idx].sub}`;
+                document.getElementById('armyNowPlaying').textContent = idx >= 0 ? this.tracks[idx].title : '\u2014';
+                document.getElementById('armyTrackCount').textContent = (idx + 1) + '/' + this.tracks.length + ' \u2022 ' + this.tracks[idx].sub;
               },
               _setErrorUI() {
                 this.playing = false;
-                document.getElementById('armyToggleBtn').textContent = '▶ TOCAR';
+                document.getElementById('armyToggleBtn').textContent = '\u25B6 TOCAR';
                 document.getElementById('armyToggleBtn').style.background = 'var(--red)';
                 document.getElementById('armyToggleBtn').style.color = 'white';
                 document.getElementById('sbEq').classList.remove('playing');
@@ -600,24 +564,25 @@
                 if (idx < 0 || idx >= this.tracks.length) return;
                 this.currentIdx = idx;
                 this.player.src = this.tracks[idx].src;
+                this.player.load();
                 this.player.play().then(() => {
                   this.playing = true;
                   this._highlight(idx);
-                  document.getElementById('armyToggleBtn').textContent = '⏸ PAUSE';
+                  document.getElementById('armyToggleBtn').textContent = '\u23F8 PAUSE';
                   document.getElementById('armyToggleBtn').style.background = 'var(--gold)';
                   document.getElementById('armyToggleBtn').style.color = 'var(--black)';
                   document.getElementById('sbEq').classList.add('playing');
                   document.querySelector('.sb-card-radio').classList.add('playing');
                   document.getElementById('sbStatusDot').className = 'sb-status-dot on';
-                  document.getElementById('sbStatusText').textContent = '● TOCANDO';
+                  document.getElementById('sbStatusText').textContent = '\u25CF TOCANDO';
                   document.getElementById('sbStatusText').style.color = 'var(--green-bright)';
-                }).catch(() => { this._setErrorUI(); });
+                }).catch(function() { armyPlayer._setErrorUI(); });
               },
               toggle() {
                 if (!this.player.src && this.tracks.length > 0) { this.playTrack(0); return; }
                 if (this.playing) {
                   this.player.pause(); this.playing = false;
-                  document.getElementById('armyToggleBtn').textContent = '▶ CONTINUAR';
+                  document.getElementById('armyToggleBtn').textContent = '\u25B6 CONTINUAR';
                   document.getElementById('armyToggleBtn').style.background = 'var(--red)';
                   document.getElementById('armyToggleBtn').style.color = 'white';
                   document.getElementById('sbEq').classList.remove('playing');
@@ -627,29 +592,30 @@
                   document.getElementById('sbStatusText').style.color = 'var(--gray)';
                 } else {
                   this.playing = true;
-                  this.player.play().then(() => {
-                    document.getElementById('armyToggleBtn').textContent = '⏸ PAUSE';
+                  var self = this;
+                  this.player.play().then(function() {
+                    document.getElementById('armyToggleBtn').textContent = '\u23F8 PAUSE';
                     document.getElementById('armyToggleBtn').style.background = 'var(--gold)';
                     document.getElementById('armyToggleBtn').style.color = 'var(--black)';
                     document.getElementById('sbEq').classList.add('playing');
                     document.querySelector('.sb-card-radio').classList.add('playing');
                     document.getElementById('sbStatusDot').className = 'sb-status-dot on';
-                    document.getElementById('sbStatusText').textContent = '● TOCANDO';
+                    document.getElementById('sbStatusText').textContent = '\u25CF TOCANDO';
                     document.getElementById('sbStatusText').style.color = 'var(--green-bright)';
-                  }).catch(() => { this._setErrorUI(); });
+                  }).catch(function() { self._setErrorUI(); });
                 }
               },
               next() {
-                const next = this.currentIdx + 1;
+                var next = this.currentIdx + 1;
                 this.playTrack(next < this.tracks.length ? next : 0);
               },
               prev() {
                 if (this.player.currentTime > 3) { this.player.currentTime = 0; return; }
-                const prev = this.currentIdx - 1;
+                var prev = this.currentIdx - 1;
                 this.playTrack(prev >= 0 ? prev : this.tracks.length - 1);
               },
               setVolume(val) {
-                this._applyVolume(val);
+                this.player.volume = Math.min(val, 100) / 100;
                 document.getElementById('armyVolumeDisplay').textContent = val + '%';
                 this._lastVol = val;
                 localStorage.setItem('gtg_army_vol', val);
@@ -658,15 +624,16 @@
                 if (parseInt(document.getElementById('armyVolume').value) > 0) {
                   this._lastVol = document.getElementById('armyVolume').value;
                   document.getElementById('armyVolume').value = 0; this.setVolume(0);
-                  document.querySelector('#radioTabArmy .sb-vol-icon').textContent = '🔇';
+                  document.querySelector('#radioTabArmy .sb-vol-icon').textContent = '\uD83D\uDD07';
                 } else {
-                  document.getElementById('armyVolume').value = this._lastVol || 85; this.setVolume(this._lastVol || 85);
-                  document.querySelector('#radioTabArmy .sb-vol-icon').textContent = '🔊';
+                  var v = this._lastVol || 85;
+                  document.getElementById('armyVolume').value = v; this.setVolume(v);
+                  document.querySelector('#radioTabArmy .sb-vol-icon').textContent = '\uD83D\uDD0A';
                 }
               }
             };
 
-            document.addEventListener('DOMContentLoaded', () => { radio.init(); armyPlayer.init(); });
+            document.addEventListener('DOMContentLoaded', function() { radio.init(); armyPlayer.init(); });
           </script>
         </div>
       </div>

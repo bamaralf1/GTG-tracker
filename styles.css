@@ -405,15 +405,16 @@ body::after{
 .sb-vol-wrap{display:flex;align-items:center;gap:8px;flex:1}
 .sb-vol-icon{font-size:14px;flex-shrink:0;cursor:pointer;user-select:none;opacity:.7;transition:opacity .2s}
 .sb-vol-icon:hover{opacity:1}
-.sb-vol-slider{flex:1;-webkit-appearance:none;appearance:none;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;outline:none;cursor:pointer;position:relative}
-.sb-vol-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold);border:2px solid rgba(212,168,67,0.6);cursor:pointer;box-shadow:0 0 8px rgba(212,168,67,0.4);transition:all .2s;position:relative;z-index:2}
+.sb-vol-slider{flex:1;-webkit-appearance:none;appearance:none;height:20px;background:transparent;outline:none;cursor:pointer;position:relative;margin:0}
+.sb-vol-slider::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:rgba(255,255,255,0.08)}
+.sb-vol-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold);border:2px solid rgba(212,168,67,0.6);cursor:pointer;box-shadow:0 0 8px rgba(212,168,67,0.4);transition:all .2s;margin-top:-5px}
 .sb-vol-slider::-webkit-slider-thumb:hover{transform:scale(1.15);box-shadow:0 0 14px rgba(212,168,67,0.7)}
+.sb-vol-slider::-moz-range-track{height:6px;border-radius:3px;background:rgba(255,255,255,0.08);border:none}
 .sb-vol-slider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold);border:2px solid rgba(212,168,67,0.6);cursor:pointer;box-shadow:0 0 8px rgba(212,168,67,0.4)}
-.sb-vol-slider::-webkit-slider-runnable-track{height:6px;border-radius:3px}
-.sb-vol-slider::-moz-range-track{height:6px;border-radius:3px;background:rgba(255,255,255,0.08)}
+.sb-vol-slider::-moz-range-thumb:hover{transform:scale(1.15);box-shadow:0 0 14px rgba(212,168,67,0.7)}
 .sb-vol-pct{font-size:12px;color:var(--gold-dim);min-width:38px;text-align:right;font-family:'Bebas Neue',sans-serif;letter-spacing:1px}
-[data-theme=light] .sb-vol-slider{background:rgba(0,0,0,0.1)}
-[data-theme=light] .sb-vol-slider::-webkit-slider-thumb{border-color:rgba(212,168,67,0.4)}
+[data-theme=light] .sb-vol-slider::-webkit-slider-runnable-track{background:rgba(0,0,0,0.1)}
+[data-theme=light] .sb-vol-slider::-moz-range-track{background:rgba(0,0,0,0.1)}
 .sb-radio-select{flex:1;min-width:0;padding:6px 10px;background:rgba(0,0,0,.35);border:1px solid rgba(212,168,67,.25);color:var(--gold);font-family:'Share Tech Mono',monospace;font-size:13px;cursor:pointer;border-radius:4px;transition:border-color .2s}
 .sb-radio-select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 12px rgba(212,168,67,.2)}
 .sb-radio-select option{background:#111;color:var(--gold);padding:4px 8px}
