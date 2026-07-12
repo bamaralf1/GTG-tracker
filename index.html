@@ -192,11 +192,11 @@
               <option value="http://nashe1.hostingradio.ru/nashe-256">🎸 Nashe Radio</option>
               <option value="http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3">🎤 Rádio Chanson</option>
               <option value="http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3">🎻 Rádio Orfey</option>
-              <option value="https://icecast-vgtrk.cdnvideo.ru/mayakfm">📡 Radio Mayak</option>
-              <option value="https://icecast-vgtrk.cdnvideo.ru/rrzonam">📻 Radio Rossii</option>
-              <option value="https://icecast-vgtrk.cdnvideo.ru/kulturarn">🎼 Radio Culture</option>
-              <option value="https://stream.hoster.by/unistar/unistar_dacha-128/icecast.audio">🌻 Unistar Dacha</option>
-              <option value="https://stream.hoster.by/unistar/unistar_90e-128/icecast.audio">📀 Unistar 90s</option>
+               <option value="https://rusradio.hostingradio.ru/rusradio96.aacp">🎵 Русское Радио (Russian Radio)</option>
+               <option value="https://radiorecord.hostingradio.ru/rr_main96.aacp">🎧 Радио Рекорд (Record)</option>
+               <option value="https://dfm.hostingradio.ru/dfm128.mp3">💃 DFM (Dance)</option>
+               <option value="https://maximum.hostingradio.ru/maximum128.mp3">🎸 Maximum (Rock)</option>
+               <option value="https://hitfm.hostingradio.ru/hitfm128.mp3">🌍 Hit FM (Pop)</option>
             </select>
             </div>
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -250,6 +250,27 @@
               <div id="prepNumber" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:90px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,160,23,.7);"></div>
               <div class="timer-display" id="timerDisplay" style="font-size:56px;">00:00</div>
               <div class="timer-controls" style="gap:10px;"><button class="btn btn-red" id="btnStartTimer" onclick="startPlankTimer()" style="padding:10px 18px;font-size:15px;">▶ INICIAR</button> <button class="btn btn-outline" onclick="stopPlankTimer()" style="padding:10px 18px;font-size:15px;">■ PARAR</button> <button class="btn btn-outline" onclick="resetPlankTimer()" style="padding:10px 18px;font-size:15px;">↺</button></div>
+              <div class="groove-toggles" id="plank-groove" style="flex-basis:100%;margin-top:8px;padding:8px 12px 4px;">
+                <span class="groove-label">⚙ GROOVE</span>
+                <div class="groove-slider" id="plank-groove-amp" title="Amplitude completa">
+                  <span class="missile-switch__icon">🏋️</span>
+                  <input type="range" min="0" max="100" value="0" class="groove-range" oninput="document.getElementById('plank-glvl-0').textContent=this.value;plankGroove[0]=parseInt(this.value)">
+                  <span class="groove-lvl" id="plank-glvl-0">0</span>
+                  <span>AMP</span>
+                </div>
+                <div class="groove-slider" id="plank-groove-ten" title="Tensão irradiante">
+                  <span class="missile-switch__icon">⚡</span>
+                  <input type="range" min="0" max="100" value="0" class="groove-range" oninput="document.getElementById('plank-glvl-1').textContent=this.value;plankGroove[1]=parseInt(this.value)">
+                  <span class="groove-lvl" id="plank-glvl-1">0</span>
+                  <span>TEN</span>
+                </div>
+                <div class="groove-slider" id="plank-groove-bal" title="Sem balanço/momentum">
+                  <span class="missile-switch__icon">✓</span>
+                  <input type="range" min="0" max="100" value="0" class="groove-range" oninput="document.getElementById('plank-glvl-2').textContent=this.value;plankGroove[2]=parseInt(this.value)">
+                  <span class="groove-lvl" id="plank-glvl-2">0</span>
+                  <span>S/B</span>
+                </div>
+              </div>
             </div>
           </div>
           <script>
@@ -262,11 +283,11 @@
                 'http://nashe1.hostingradio.ru/nashe-256': 'Наше Радио (Nashe Radio)',
                 'http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3': 'Радио Шансон (Rádio Chanson)',
                 'http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3': 'Радио Орфей (Clássica Russa)',
-                'https://icecast-vgtrk.cdnvideo.ru/mayakfm': 'Радио Маяк (Radio Mayak)',
-                'https://icecast-vgtrk.cdnvideo.ru/rrzonam': 'Радио России (Radio Rossii)',
-                'https://icecast-vgtrk.cdnvideo.ru/kulturarn': 'Радио Культура (Radio Culture)',
-                'https://stream.hoster.by/unistar/unistar_dacha-128/icecast.audio': 'Юнистар Дача (Unistar Dacha)',
-                'https://stream.hoster.by/unistar/unistar_90e-128/icecast.audio': 'Юнистар 90-е (Unistar 90s)'
+                'https://rusradio.hostingradio.ru/rusradio96.aacp': 'Русское Радио (Russian Radio)',
+                'https://radiorecord.hostingradio.ru/rr_main96.aacp': 'Радио Рекорд (Radio Record)',
+                'https://dfm.hostingradio.ru/dfm128.mp3': 'DFM (Dance)',
+                'https://maximum.hostingradio.ru/maximum128.mp3': 'Maximum (Rock)',
+                'https://hitfm.hostingradio.ru/hitfm128.mp3': 'Hit FM (Pop)'
               },
               init() {
                 this.player = document.getElementById('sovietRadioPlayer');

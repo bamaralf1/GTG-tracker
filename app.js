@@ -790,6 +790,7 @@ let fraseAtualIndex = -1,
     rodando: !1,
     preparando: !1
   },
+  plankGroove = [0, 0, 0],
   restTimer = {
     intervalo: null,
     segundos: 0,
@@ -997,52 +998,61 @@ function renderBadges() {
 function atualizarUIBadges() {
   renderBadges()
 } // ===== GROOVE QUALITY SCORE =====
-const grooveState = {}; // {exercicioId: [amp:bool, ten:bool, bal:bool]}
+const grooveState = {}; // {exercicioId: [amp:0-100, ten:0-100, bal:0-100]}
 
-function toggleGroove(exId, idx, el) {
-  if (!grooveState[exId]) grooveState[exId] = [false, false, false];
-  grooveState[exId][idx] = !grooveState[exId][idx];
-  el.classList.toggle('active', grooveState[exId][idx]);
-  // play a tiny click tone if available
-  try {
-    if (typeof tocarTom === 'function') tocarTom(220 + 80 * grooveState[exId].filter(Boolean).length, .04, 'square', .06)
-  } catch (e) {
-    console.warn("[toggleGroove] Falha ao tocar tom de clique:", e)
+const GROOVE_SLIDER_PREFIX = ['groove-amp-', 'groove-ten-', 'groove-bal-'];
+
+function setGrooveLevel(exId, idx, val) {
+  if (!grooveState[exId]) grooveState[exId] = [0, 0, 0];
+  const v = Math.min(100, Math.max(0, parseInt(val) || 0));
+  grooveState[exId][idx] = v;
+  const lvlEl = document.getElementById('groove-lvl-' + exId + '-' + idx);
+  if (lvlEl) lvlEl.textContent = v;
+  const sliderEl = document.getElementById(GROOVE_SLIDER_PREFIX[idx] + exId);
+  if (sliderEl) {
+    sliderEl.style.setProperty('--lvl', v);
+    const tier = v >= 100 ? 4 : v >= 75 ? 3 : v >= 50 ? 2 : v >= 25 ? 1 : 0;
+    tier > 0 ? sliderEl.setAttribute('data-tier', tier) : sliderEl.removeAttribute('data-tier');
   }
   atualizarPreviewGroove(exId);
 }
 
 function atualizarPreviewGroove(exId) {
-  const st = grooveState[exId] || [false, false, false];
-  const n = st.filter(Boolean).length;
-  const pct = n * 10;
+  const st = grooveState[exId] || [0, 0, 0];
+  const total = st[0] + st[1] + st[2];
+  const pct = Math.round(total / 10);
   const bonusEl = document.getElementById('groove-bonus-preview-' + exId);
   if (bonusEl) {
     const valEl = bonusEl.querySelector('.bonus-val');
-    if (valEl) valEl.textContent = (n === 3 ? '+30% ★' : ('+' + pct + '%'));
-    bonusEl.classList.toggle('perfeito', n === 3);
+    if (valEl) valEl.textContent = (total >= 300 ? '+30% ★' : ('+' + pct + '%'));
+    bonusEl.classList.toggle('perfeito', total >= 300);
   }
 }
 
 function renderQualityIcons(groove) {
   if (!Array.isArray(groove)) return '<span class="log-quality empty" title="Série sem dados de Groove">—</span>';
-  const cls = groove.filter(Boolean).length;
-  const icons = ['⭐', '⚡', '✓']; // amplitude, tensão, sem balanço
-  let html = '<span class="log-quality' + (cls === 3 ? ' perfeito' : '') + '">';
-  for (let i = 0; i < 3; i++) html += '<span class="qi ' + (groove[i] ? 'on' : '') + '">' + icons[i] + '</span>';
+  const lvl = groove.map(v => Math.min(100, Math.max(0, parseInt(v) || 0)));
+  const total = lvl[0] + lvl[1] + lvl[2];
+  const icons = ['⭐', '⚡', '✓'];
+  let html = '<span class="log-quality' + (total >= 300 ? ' perfeito' : '') + '" title="A:' + lvl[0] + '% T:' + lvl[1] + '% S/B:' + lvl[2] + '%">';
+  for (let i = 0; i < 3; i++) html += '<span class="qi ' + (lvl[i] >= 50 ? 'on' : (lvl[i] > 0 ? 'half' : '')) + '">' + icons[i] + '</span>';
   html += '</span>';
   return html;
 }
 
 function renderQualityClass(groove) {
   if (!Array.isArray(groove)) return 'empty';
-  return groove.filter(Boolean).length === 3 ? 'perfeito' : '';
+  const lvl = groove.map(v => Math.min(100, Math.max(0, parseInt(v) || 0)));
+  return (lvl[0] + lvl[1] + lvl[2]) >= 300 ? 'perfeito' : '';
 }
 
 function calcularQualityMedia(exId) {
   const regs = dados.registros.filter(e => e.exercicioId === exId && Array.isArray(e.groove));
   if (regs.length === 0) return 0;
-  const sum = regs.reduce((acc, r) => acc + (r.groove.filter(Boolean).length / 3), 0);
+  const sum = regs.reduce((acc, r) => {
+    const lvl = r.groove.map(v => Math.min(100, Math.max(0, parseInt(v) || 0)));
+    return acc + ((lvl[0] + lvl[1] + lvl[2]) / 300);
+  }, 0);
   return Math.round((sum / regs.length) * 100);
 }
 
@@ -1056,7 +1066,7 @@ function atualizarQualityBadges() {
       return
     }
     const pct = calcularQualityMedia(ex.id);
-    const perfeitos = regs.filter(r => r.groove.filter(Boolean).length === 3).length;
+    const perfeitos = regs.filter(r => Array.isArray(r.groove) && r.groove.filter(Boolean).length === 3).length;
     let tier = 'baixa';
     if (pct >= 80) tier = 'alta';
     else if (pct >= 50) tier = 'media';
@@ -1096,7 +1106,28 @@ function renderExercicios() {
         i = o.length,
         d = o.reduce((e, a) => e + (a.valor || 0), 0),
         se = calcularStreakExercicio(a.id);
-      e.innerHTML += `\n      <div class="exercise-card" id="excard-${a.id}" style="--i:${idx}">\n        <div class="exercise-card-header">\n          <div class="exercise-name">${a.nome}</div>\n          <div class="sugestao-gtg" id="sugestao-${a.id}" onclick="aplicarSugestaoGTG('${a.id}', event)">\n            <span class="bulb">💡</span>\n            <span class="gtg-val" id="gtg-val-${a.id}">GTG: --</span>\n            <span class="gtg-label">reps</span>\n            <div class="gtg-tooltip">\n              <strong style="color:var(--gold)">SÉRIE SUGERIDA — MÉTODO GTG</strong><br>\n              PR (30 dias): <span id="tooltip-pr-${a.id}">0</span> ${"tempo"===a.tipo?"seg":a.unidade||"reps"}<br>\n              Sugestão: 50% do máximo<br>\n              <em style="color:var(--gold-dim)">"Nunca vá ao fracasso" — Pavel</em>\n            </div>\n          </div>\n          <div class="exercise-card-actions">\n            <button class="btn-icon btn-meta" onclick="abrirModalMeta('${a.id}')">🎯</button>\n            <button class="btn-icon" onclick="mostrarInfoExercicio('${a.id}')" title="Informações">ℹ</button>\n            <button class="btn-icon" onclick="editarExercicio('${a.id}')" title="Editar">✏️</button><button class="btn-icon danger" onclick="removerExercicio('${a.id}')" title="Remover">✕</button>\n            <div class="quality-badge-wrap" id="qbadge-wrap-${a.id}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;"></div>\n          </div>\n        </div>\n        <div class="exercise-stats">\n          <div class="ex-stat">\n            <div class="ex-stat-val">${i}</div>\n            <div class="ex-stat-lbl">SÉRIES HOJE</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${d}</div>\n            <div class="ex-stat-lbl">${"tempo"===a.tipo?"SEG HOJE":"REPS HOJE"}</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${r}</div>\n            <div class="ex-stat-lbl">TOTAL SÉRIES</div>\n          </div>\n          <div class="ex-stat" title="Dias consecutivos treinando este exercício">\n            <div class="ex-stat-val" style="color:var(--gold);">${se}<span class="exercise-streak-fire${se>0?'':' no-streak'}">${se>0?'🔥':'🙅'}</span></div>\n            <div class="ex-stat-lbl">STREAK DIAS</div>\n          </div>\n        </div>\n        <div class="pr-display">\n          <div>\n            <div class="pr-display-label">PR (30 DIAS)</div>\n            <div class="pr-display-val" id="pr-display-${a.id}">0 ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</div>\n          </div>\n          <button class="test-max-btn" onclick="abrirTesteMaximo('${a.id}')">🎯 TESTAR MÁXIMO</button>\n        </div>\n        <div class="exercise-pr">\n          <span class="pr-label">PR ESTIMADO:</span>\n          <span class="pr-value">${n} ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</span>\n          <span style="margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gray);">${s} total acum.</span>\n        </div>\n        <div class="rpe-avg-display" id="rpe-avg-${a.id}">\n          RPE MÉDIO HOJE: <span class="rpe-avg-val" id="rpe-avg-val-${a.id}">—</span>\n        </div>\n        <div class="exercise-add-form">\n          ${"peso"===a.tipo?`\n            <div class="form-group">\n              <label class="form-label">Peso (kg)</label>\n              <input type="number" class="form-input" id="peso-${a.id}" placeholder="0" min="0" step="0.5">\n            </div>`:""}\n          <div class="form-group">\n            <label class="form-label">${"tempo"===a.tipo?"Segundos":"Reps"}</label>\n            <input type="number" class="form-input" id="valor-${a.id}" placeholder="${"tempo"===a.tipo?"60":"10"}" min="1">\n          </div>\n          <button class="btn btn-red" onclick="adicionarSerie('${a.id}')">+ REGISTRAR</button>\n          <button class="btn btn-outline btn-sm" onclick="abrirTimerDescanso('${a.id}')">⏱ DESCANSO</button>\n          <div class="groove-toggles" id="groove-toggles-${a.id}" style="flex-basis:100%;">\n            <span class="groove-label">⚙ GROOVE</span>\n            <div class="missile-switch" id="groove-amp-${a.id}" data-tip="Amplitude completa: do topo ao fundo, sem truncar." data-key="amp" onclick="toggleGroove('${a.id}', 0, this)">\n              <span class="missile-switch__icon">📏</span>\n              <span class="missile-switch__track"><span class="missile-switch__knob"></span></span>\n              <span>AMPLITUDE</span>\n            </div>\n            <div class="missile-switch" id="groove-ten-${a.id}" data-tip="Tensão irradiante: contraia glúteos, abdômen e punhos antes de cada rep." data-key="ten" onclick="toggleGroove('${a.id}', 1, this)">\n              <span class="missile-switch__icon">⚡</span>\n              <span class="missile-switch__track"><span class="missile-switch__knob"></span></span>\n              <span>TENSÃO</span>\n            </div>\n            <div class="missile-switch" id="groove-bal-${a.id}" data-tip="Sem balanço/momentum: cada rep começa do zero, sem trapaça." data-key="bal" onclick="toggleGroove('${a.id}', 2, this)">\n              <span class="missile-switch__icon">⚖</span>\n              <span class="missile-switch__track"><span class="missile-switch__knob"></span></span>\n              <span>SEM BALANÇO</span>\n            </div>\n            <div class="groove-bonus-preview" id="groove-bonus-preview-${a.id}">BÔNUS: <span class="bonus-val">+0%</span></div>\n          </div>\n        </div>\n        <div class="meta-bar-wrap" id="meta-wrap-${a.id}" style="display:none; padding:10px 16px 0;">\n          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">\n            <span class="text-mono" style="font-size:10px; color:var(--gold-dim);">🎯 META: <span id="meta-label-${a.id}"></span></span>\n            <span class="text-mono" style="font-size:10px; color:var(--gold);" id="meta-pct-${a.id}">0%</span>\n          </div>\n          <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:1px; overflow:hidden;">\n            <div id="meta-fill-${a.id}" style="height:100%; background:linear-gradient(90deg,var(--red-dark),var(--red)); border-radius:1px; transition:width 0.5s ease; width:0%;"></div>\n          </div>\n        </div>\n        <div class="rest-warning" id="warn-${a.id}">\n          ⚠ Pavel recomenda 15min de descanso entre séries do mesmo exercício.\n        </div>\n      </div>`
+      e.innerHTML += `\n      <div class="exercise-card" id="excard-${a.id}" style="--i:${idx}">\n        <div class="exercise-card-header">\n          <div class="exercise-name">${a.nome}</div>\n          <div class="sugestao-gtg" id="sugestao-${a.id}" onclick="aplicarSugestaoGTG('${a.id}', event)">\n            <span class="bulb">💡</span>\n            <span class="gtg-val" id="gtg-val-${a.id}">GTG: --</span>\n            <span class="gtg-label">reps</span>\n            <div class="gtg-tooltip">\n              <strong style="color:var(--gold)">SÉRIE SUGERIDA — MÉTODO GTG</strong><br>\n              PR (30 dias): <span id="tooltip-pr-${a.id}">0</span> ${"tempo"===a.tipo?"seg":a.unidade||"reps"}<br>\n              Sugestão: 50% do máximo<br>\n              <em style="color:var(--gold-dim)">"Nunca vá ao fracasso" — Pavel</em>\n            </div>\n          </div>\n          <div class="exercise-card-actions">\n            <button class="btn-icon btn-meta" onclick="abrirModalMeta('${a.id}')">🎯</button>\n            <button class="btn-icon" onclick="mostrarInfoExercicio('${a.id}')" title="Informações">ℹ</button>\n            <button class="btn-icon" onclick="editarExercicio('${a.id}')" title="Editar">✏️</button><button class="btn-icon danger" onclick="removerExercicio('${a.id}')" title="Remover">✕</button>\n            <div class="quality-badge-wrap" id="qbadge-wrap-${a.id}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;"></div>\n          </div>\n        </div>\n        <div class="exercise-stats">\n          <div class="ex-stat">\n            <div class="ex-stat-val">${i}</div>\n            <div class="ex-stat-lbl">SÉRIES HOJE</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${d}</div>\n            <div class="ex-stat-lbl">${"tempo"===a.tipo?"SEG HOJE":"REPS HOJE"}</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${r}</div>\n            <div class="ex-stat-lbl">TOTAL SÉRIES</div>\n          </div>\n          <div class="ex-stat" title="Dias consecutivos treinando este exercício">\n            <div class="ex-stat-val" style="color:var(--gold);">${se}<span class="exercise-streak-fire${se>0?'':' no-streak'}">${se>0?'🔥':'🙅'}</span></div>\n            <div class="ex-stat-lbl">STREAK DIAS</div>\n          </div>\n        </div>\n        <div class="pr-display">\n          <div>\n            <div class="pr-display-label">PR (30 DIAS)</div>\n            <div class="pr-display-val" id="pr-display-${a.id}">0 ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</div>\n          </div>\n          <button class="test-max-btn" onclick="abrirTesteMaximo('${a.id}')">🎯 TESTAR MÁXIMO</button>\n        </div>\n        <div class="exercise-pr">\n          <span class="pr-label">PR ESTIMADO:</span>\n          <span class="pr-value">${n} ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</span>\n          <span style="margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gray);">${s} total acum.</span>\n        </div>\n        <div class="rpe-avg-display" id="rpe-avg-${a.id}">\n          RPE MÉDIO HOJE: <span class="rpe-avg-val" id="rpe-avg-val-${a.id}">—</span>\n        </div>\n        <div class="exercise-add-form">\n          ${"peso"===a.tipo?`\n            <div class="form-group">\n              <label class="form-label">Peso (kg)</label>\n              <input type="number" class="form-input" id="peso-${a.id}" placeholder="0" min="0" step="0.5">\n            </div>`:""}\n          <div class="form-group">\n            <label class="form-label">${"tempo"===a.tipo?"Segundos":"Reps"}</label>\n            <input type="number" class="form-input" id="valor-${a.id}" placeholder="${"tempo"===a.tipo?"60":"10"}" min="1">\n          </div>\n          <button class="btn btn-red" onclick="adicionarSerie('${a.id}')">+ REGISTRAR</button>\n          <button class="btn btn-outline btn-sm" onclick="abrirTimerDescanso('${a.id}')">⏱ DESCANSO</button>\n          <div class="groove-toggles" id="groove-toggles-${a.id}" style="flex-basis:100%;">
+            <span class="groove-label">⚙ GROOVE</span>
+            <div class="groove-slider" id="groove-amp-${a.id}" title="Amplitude completa: do topo ao fundo, sem truncar.">
+              <span class="missile-switch__icon">🏋️</span>
+              <input type="range" min="0" max="100" value="0" class="groove-range" oninput="setGrooveLevel('${a.id}', 0, this.value)">
+              <span class="groove-lvl" id="groove-lvl-${a.id}-0">0</span>
+              <span>AMP</span>
+            </div>
+            <div class="groove-slider" id="groove-ten-${a.id}" title="Tensão irradiante: contraia glúteos, abdômen e punhos antes de cada rep.">
+              <span class="missile-switch__icon">⚡</span>
+              <input type="range" min="0" max="100" value="0" class="groove-range" oninput="setGrooveLevel('${a.id}', 1, this.value)">
+              <span class="groove-lvl" id="groove-lvl-${a.id}-1">0</span>
+              <span>TEN</span>
+            </div>
+            <div class="groove-slider" id="groove-bal-${a.id}" title="Sem balanço/momentum: cada rep começa do zero, sem trapaça.">
+              <span class="missile-switch__icon">✓</span>
+              <input type="range" min="0" max="100" value="0" class="groove-range" oninput="setGrooveLevel('${a.id}', 2, this.value)">
+              <span class="groove-lvl" id="groove-lvl-${a.id}-2">0</span>
+              <span>S/B</span>
+            </div>
+            <div class="groove-bonus-preview" id="groove-bonus-preview-${a.id}">BÔNUS: <span class="bonus-val">+0%</span></div>
+          </div>\n          </div>\n        <div class="meta-bar-wrap" id="meta-wrap-${a.id}" style="display:none; padding:10px 16px 0;">\n          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">\n            <span class="text-mono" style="font-size:10px; color:var(--gold-dim);">🎯 META: <span id="meta-label-${a.id}"></span></span>\n            <span class="text-mono" style="font-size:10px; color:var(--gold);" id="meta-pct-${a.id}">0%</span>\n          </div>\n          <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:1px; overflow:hidden;">\n            <div id="meta-fill-${a.id}" style="height:100%; background:linear-gradient(90deg,var(--red-dark),var(--red)); border-radius:1px; transition:width 0.5s ease; width:0%;"></div>\n          </div>\n        </div>\n        <div class="rest-warning" id="warn-${a.id}">\n          ⚠ Pavel recomenda 15min de descanso entre séries do mesmo exercício.\n        </div>\n      </div>`
     }), preencherSelects();
     const a = (new Date).toISOString().slice(0, 10);
     atualizarQualityBadges();
@@ -1143,13 +1174,10 @@ function adicionarSerie(exId) {
     } else desbloquearBadge("descanso_digno")
   }
 
-  const groovRaw = grooveState[exId] || [false, false, false];
-  const groovAmp = !!groovRaw[0],
-    groovTen = !!groovRaw[1],
-    groovBal = !!groovRaw[2];
-  const groovChecks = [groovAmp, groovTen, groovBal];
-  const groovCount = groovChecks.filter(Boolean).length;
-  const groovBonusMult = 1 + groovCount * 0.1;
+  const groovRaw = grooveState[exId] || [0, 0, 0];
+  const groovLvls = groovRaw.map(v => Math.min(100, Math.max(0, parseInt(v) || 0)));
+  const groovTotal = groovLvls[0] + groovLvls[1] + groovLvls[2];
+  const groovBonusMult = 1 + groovTotal / 1000;
   const xpBase = calcularXPSerie(ex, valor, peso);
   const xpFinal = Math.round(xpBase * groovBonusMult);
   const rpeVal = rpeSelecionado[exId] || null;
@@ -1165,8 +1193,8 @@ function adicionarSerie(exId) {
     xp: xpFinal,
     xpBase: xpBase,
     rpe: rpeVal,
-    groove: groovChecks,
-    perfeito: groovCount === 3
+    groove: groovLvls,
+    perfeito: groovTotal >= 300
   };
   dados.registros.push(registro), adicionarXP(xpFinal), verificarStreak(), verificarBadges(), salvarDados(), input.value = "", document.getElementById(`peso-${exId}`) && (document.getElementById(`peso-${exId}`).value = ""), delete rpeSelecionado[exId];
   const rpeScaleEl = document.getElementById("rpe-scale-" + exId);
@@ -1174,13 +1202,13 @@ function adicionarSerie(exId) {
   const rpeWarnEl = document.getElementById("rpe-warn-" + exId);
   rpeWarnEl && rpeWarnEl.classList.remove("show");
 
-  const bonusPct = groovCount * 10;
-  const bonusMsg = groovCount > 0 ? (` · ⚙ GROOVE +${bonusPct}% XP` + (groovCount === 3 ? " · ★ SÉRIE PERFEITA" : "")) : "";
+  const bonusPct = Math.round(groovTotal / 10);
+  const bonusMsg = groovTotal > 0 ? (` · ⚙ GROOVE +${bonusPct}% XP` + (groovTotal >= 300 ? " · ★ SÉRIE PERFEITA" : "")) : "";
   const toastVal = `+${valor} ${"tempo"===ex.tipo?"seg":"reps"}`;
-  const xpToast = groovCount > 0 ? `+${xpBase} → +${xpFinal} XP — ${ex.nome}${bonusMsg}` : `+${xpFinal} XP — ${ex.nome}`;
+  const xpToast = groovTotal > 0 ? `+${xpBase} → +${xpFinal} XP — ${ex.nome}${bonusMsg}` : `+${xpFinal} XP — ${ex.nome}`;
   mostrarToast(toastVal, xpToast, "success"), mostrarUndoBar(registro);
 
-  grooveState[exId] = [false, false, false];
+  grooveState[exId] = [0, 0, 0];
 
   renderExercicios(), atualizarStats(), renderHistory(), setTimeout(() => {
     renderGraficos(), renderProgresso(), renderEstatisticasMensais()
@@ -1691,7 +1719,13 @@ function stopPlankTimer() {
   if (!plankTimer.rodando) return;
   clearInterval(plankTimer.intervalo), plankTimer.rodando = !1, plankTimer.pausado = !1, document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("btnStartTimer").textContent = "▶ INICIAR", somTimer();
   const selectedExId = document.getElementById("timerExerciseSelect").value;
-  selectedExId && plankTimer.segundos > 0 && (document.getElementById(`valor-${selectedExId}`).value = plankTimer.segundos, adicionarSerie(selectedExId), mostrarToast("Timer Salvo", `${plankTimer.segundos}s registrados`, "success")), resetPlankTimer()
+  if (selectedExId && plankTimer.segundos > 0) {
+    grooveState[selectedExId] = window.plankGroove ? [...window.plankGroove] : [0, 0, 0];
+    document.getElementById(`valor-${selectedExId}`).value = plankTimer.segundos;
+    adicionarSerie(selectedExId);
+    mostrarToast("Timer Salvo", `${plankTimer.segundos}s registrados`, "success");
+  }
+  resetPlankTimer()
 }
 
 function resetPlankTimer() {
@@ -1984,7 +2018,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260711b"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260712a"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");
@@ -2515,7 +2549,7 @@ function _initDragDrop() {
   e && e.querySelectorAll(".exercise-card").forEach(a => {
     const t = a.id.replace("excard-", ""),
       o = a.querySelector(".exercise-card-header");
-    o && (o.style.cursor = "grab", o.title = "Arraste para reordenar"), a.setAttribute("draggable", "true"), a.addEventListener("dragstart", e => {
+    o && (o.style.cursor = "grab", o.title = "Arraste para reordenar", o.setAttribute("draggable", "true")), a.addEventListener("dragstart", e => {
       _dragSrcId = t, e.dataTransfer.effectAllowed = "move", setTimeout(() => a.style.opacity = "0.4", 0)
     }), a.addEventListener("dragend", () => {
       a.style.opacity = "", e.querySelectorAll(".exercise-card").forEach(e => {

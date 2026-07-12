@@ -18,7 +18,7 @@ const PRECACHE_URLS = [
   "./manifest.webmanifest"
 ];
 
-let CACHE_NAME = "gtg-cache-v2";
+let CACHE_NAME = "gtg-cache-v3";
 
 const LEMBRETES = [
   "Hora de uma serie! Lembre: 50-60% do seu maximo. Qualidade acima de tudo.",
