@@ -918,14 +918,42 @@ function calcularXPSerie(exercicio, valor, peso) {
 }
 
 function adicionarXP(amount) {
+  const oldTotal = xpData.total;
   xpData.total += amount;
   const level = getNivel(xpData.total),
     oldLevelName = xpData.nivel;
+  let leveledUp = false;
   if (xpData.nivel = level.nome, xpData.nivelAtualEm = level.min, xpData.proximoNivelEm = level.proximo, oldLevelName !== level.nome && "RECRUTA" !== oldLevelName || xpData.total > level.min) {
     const old = NIVEIS.find(n => n.nome === oldLevelName);
-    old && old.min < level.min && (mostrarToast("★ PROMOÇÃO!", `Você avançou para ${level.nome} ${level.icone}`, "success"), dispararConfetti())
+    if (old && old.min < level.min) {
+      mostrarToast("★ PROMOÇÃO!", `Você avançou para ${level.nome} ${level.icone}`, "success");
+      dispararConfetti();
+      leveledUp = true;
+    }
   }
-  atualizarXP(), salvarDados()
+
+  // Floating XP text
+  const floatEl = document.getElementById("xpFloatText");
+  if (floatEl) {
+    floatEl.textContent = "+" + amount + " XP";
+    floatEl.classList.remove("show");
+    void floatEl.offsetWidth;
+    floatEl.classList.add("show");
+  }
+
+  // Card flash
+  const card = document.getElementById("xpCard");
+  if (card && !leveledUp) {
+    card.style.boxShadow = "0 0 30px rgba(212,168,67,0.4),inset 0 0 30px rgba(212,168,67,0.1)";
+    setTimeout(() => { card.style.boxShadow = ""; }, 500);
+  }
+
+  // Reset particles so they regenerate at new pct
+  _xpParticlesRendered = false;
+  _xpCurrentAnimated = oldTotal;
+
+  atualizarXP();
+  salvarDados();
 }
 
 function getNivel(xp) {
@@ -938,9 +966,135 @@ function atualizarXP() {
   const level = getNivel(xpData.total),
     ratio = (xpData.total - level.min) / (level.proximo - level.min),
     pct = Math.min(100, Math.round(100 * ratio));
-  document.getElementById("levelIcon").textContent = level.icone, document.getElementById("levelName").textContent = level.nome, document.getElementById("xpBarFill").style.width = pct + "%", document.getElementById("xpNumbers").textContent = `${xpData.total.toLocaleString("pt-BR")} / ${level.proximo.toLocaleString("pt-BR")} XP`, document.getElementById("xpTotalLabel").textContent = `XP TOTAL: ${xpData.total.toLocaleString("pt-BR")}`;
-  const nextLevel = NIVEIS[NIVEIS.indexOf(level) + 1];
-  document.getElementById("xpNextLabel").textContent = nextLevel ? `PRÓXIMO: ${nextLevel.nome}` : "NÍVEL MÁXIMO", document.getElementById("headerRank").textContent = level.nome, document.getElementById("headerXpBar").style.width = pct + "%"
+
+  // Level badge
+  document.getElementById("levelIcon").textContent = level.icone;
+  document.getElementById("levelName").textContent = level.nome;
+  const lvlIdx = NIVEIS.indexOf(level);
+  document.getElementById("levelSub").textContent = "NÍVEL " + (lvlIdx + 1);
+
+  // Level ring (circumference = 2π × 26 ≈ 163.36)
+  const ringFill = document.getElementById("levelRingFill");
+  if (ringFill) ringFill.style.strokeDashoffset = 163.36 - (pct / 100) * 163.36;
+
+  // XP bar fill
+  document.getElementById("xpBarFill").style.width = pct + "%";
+
+  // XP numbers — animated counter
+  _animateXPNumber("xpCurrentNum", xpData.total);
+  document.getElementById("xpTargetNum").textContent = level.proximo.toLocaleString("pt-BR");
+
+  // Bottom labels
+  document.getElementById("xpTotalLabel").textContent = "XP TOTAL: " + xpData.total.toLocaleString("pt-BR");
+  const nextLevel = NIVEIS[lvlIdx + 1];
+  document.getElementById("xpNextLabel").textContent = nextLevel ? "PRÓXIMO: " + nextLevel.nome : "NÍVEL MÁXIMO";
+
+  // Header sync
+  document.getElementById("headerRank").textContent = level.nome;
+  document.getElementById("headerXpBar").style.width = pct + "%";
+
+  // Milestone markers
+  const barOuter = document.getElementById("xpBarOuter");
+  if (barOuter) {
+    barOuter.querySelectorAll(".xp-milestone").forEach(m => {
+      const mPct = parseFloat(m.style.left);
+      m.classList.toggle("reached", pct >= mPct);
+    });
+    // Level-up anticipation (>80%)
+    barOuter.classList.toggle("anticipate", pct >= 80 && pct < 100);
+  }
+
+  // Glow trail position
+  const trail = document.getElementById("xpGlowTrail");
+  if (trail) {
+    trail.style.left = Math.max(0, pct - 3) + "%";
+    trail.classList.toggle("active", pct > 2 && pct < 98);
+  }
+
+  // Generate particles on bar
+  _renderXPBarParticles(pct);
+
+  // Streak box
+  _updateStreakBox();
+}
+
+let _xpCurrentAnimated = 0;
+let _xpAnimFrame = null;
+function _animateXPNumber(id, target) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (_xpAnimFrame) cancelAnimationFrame(_xpAnimFrame);
+  const from = _xpCurrentAnimated;
+  if (from === target) { el.textContent = target.toLocaleString("pt-BR"); return; }
+  const start = performance.now();
+  const dur = Math.min(600, Math.abs(target - from) * 3);
+  function tick(now) {
+    const p = Math.min((now - start) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const val = Math.round(from + (target - from) * eased);
+    el.textContent = val.toLocaleString("pt-BR");
+    if (p < 1) _xpAnimFrame = requestAnimationFrame(tick);
+    else _xpCurrentAnimated = target;
+  }
+  _xpAnimFrame = requestAnimationFrame(tick);
+}
+
+let _xpParticlesRendered = false;
+function _renderXPBarParticles(pct) {
+  const container = document.getElementById("xpBarParticles");
+  if (!container || _xpParticlesRendered) return;
+  _xpParticlesRendered = true;
+  container.innerHTML = "";
+  const count = Math.min(12, Math.max(3, Math.floor(pct / 10)));
+  for (let i = 0; i < count; i++) {
+    const dot = document.createElement("div");
+    dot.className = "xp-particle";
+    dot.style.setProperty("--top", (15 + Math.random() * 70) + "%");
+    dot.style.setProperty("--dur", (1.5 + Math.random() * 2) + "s");
+    dot.style.setProperty("--delay", (Math.random() * 3) + "s");
+    dot.style.setProperty("--peak-opacity", (0.4 + Math.random() * 0.5).toFixed(2));
+    container.appendChild(dot);
+  }
+}
+
+function _updateStreakBox() {
+  const box = document.getElementById("streakBox");
+  if (!box) return;
+  const s = streakData.atual;
+  const bonus = calcularBonusStreak();
+  const active = s >= 3;
+  box.classList.toggle("active", active);
+
+  // Streak progress (next tier)
+  let nextThresh = 0, nextBonus = 0;
+  if (s < 7) { nextThresh = 7; nextBonus = 10; }
+  else if (s < 14) { nextThresh = 14; nextBonus = 15; }
+  else if (s < 30) { nextThresh = 30; nextBonus = 25; }
+  else { nextThresh = 60; nextBonus = 25; }
+
+  const prevThresh = s < 7 ? 0 : s < 14 ? 7 : s < 30 ? 14 : 30;
+  const progress = Math.min(100, ((s - prevThresh) / (nextThresh - prevThresh)) * 100);
+  const pFill = document.getElementById("streakProgressFill");
+  if (pFill) pFill.style.width = progress + "%";
+
+  const nextLabel = document.getElementById("streakNext");
+  if (nextLabel) nextLabel.textContent = s >= 30 ? "BÔNUS MÁXIMO!" : `Próximo: ${nextThresh} dias → +${nextBonus}%`;
+
+  // Streak particles (only if active)
+  if (active) {
+    const sp = document.getElementById("streakParticles");
+    if (sp && !sp.children.length) {
+      for (let i = 0; i < 6; i++) {
+        const p = document.createElement("div");
+        p.className = "streak-particle";
+        p.style.setProperty("--tx", (Math.random() * 20 - 10) + "px");
+        p.style.setProperty("--ty", (-8 - Math.random() * 12) + "px");
+        p.style.setProperty("--dur", (0.8 + Math.random() * 0.6) + "s");
+        p.style.setProperty("--delay", (Math.random() * 2) + "s");
+        sp.appendChild(p);
+      }
+    }
+  }
 }
 
 function verificarBadges() {
@@ -2073,7 +2227,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260712t"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260712u"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");

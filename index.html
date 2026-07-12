@@ -180,20 +180,51 @@
           </div>
         </div>
       </div>
-      <div class="card mb-16">
+      <div class="card mb-16 xp-card" id="xpCard">
         <div class="card-body" style="padding:16px 24px">
           <div class="flex" style="align-items:center;gap:20px;flex-wrap:wrap">
-            <div class="level-badge"><span class="level-icon" id="levelIcon">🎖</span> <span class="level-name" id="levelName">RECRUTA</span></div>
-            <div style="flex:1;min-width:200px">
-              <div class="flex" style="justify-content:space-between;margin-bottom:6px"><span class="text-mono">FORÇA E RESISTÊNCIA — XP</span> <span class="text-mono" id="xpNumbers">0 / 1000 XP</span></div>
-              <div class="xp-bar-container">
-                <div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div>
+            <div class="level-badge" id="levelBadge">
+              <div class="level-badge-glow"></div>
+              <div class="level-ring-wrap">
+                <svg class="level-ring" viewBox="0 0 60 60"><circle class="level-ring-bg" cx="30" cy="30" r="26"/><circle class="level-ring-fill" id="levelRingFill" cx="30" cy="30" r="26"/></svg>
+                <span class="level-icon" id="levelIcon">🎖</span>
               </div>
-              <div class="xp-numbers"><span id="xpTotalLabel">XP TOTAL: 0</span> <span id="xpNextLabel">PRÓXIMO: SOLDADO</span></div>
+              <div class="level-info">
+                <span class="level-name" id="levelName">RECRUTA</span>
+                <span class="level-sub" id="levelSub">NÍVEL 1</span>
+              </div>
             </div>
-            <div style="text-align:right">
-              <div class="text-mono">STREAK BÔNUS</div>
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--green-bright)" id="streakBonus">+0%</div>
+            <div class="xp-main" style="flex:1;min-width:200px">
+              <div class="flex" style="justify-content:space-between;margin-bottom:4px">
+                <span class="xp-title">FORÇA E RESISTÊNCIA — XP</span>
+                <span class="xp-numbers-inline" id="xpNumbers"><span class="xp-current" id="xpCurrentNum">0</span> / <span class="xp-target" id="xpTargetNum">1.000</span> XP</span>
+              </div>
+              <div class="xp-bar-outer" id="xpBarOuter">
+                <div class="xp-bar-fill" id="xpBarFill" style="width:0%">
+                  <div class="xp-bar-particles" id="xpBarParticles"></div>
+                </div>
+                <div class="xp-milestone" style="left:25%"></div>
+                <div class="xp-milestone" style="left:50%"></div>
+                <div class="xp-milestone" style="left:75%"></div>
+                <div class="xp-glow-trail" id="xpGlowTrail"></div>
+                <div class="xp-float-text" id="xpFloatText"></div>
+              </div>
+              <div class="xp-bottom-row">
+                <span class="xp-total-label" id="xpTotalLabel">XP TOTAL: 0</span>
+                <span class="xp-next-label" id="xpNextLabel">PRÓXIMO: SOLDADO</span>
+              </div>
+            </div>
+            <div class="streak-box" id="streakBox">
+              <div class="streak-flame-wrap">
+                <span class="streak-flame" id="streakFlame">🔥</span>
+                <div class="streak-particles" id="streakParticles"></div>
+              </div>
+              <div class="text-mono streak-label">STREAK BÔNUS</div>
+              <div class="streak-value" id="streakBonus">+0%</div>
+              <div class="streak-progress" id="streakProgress">
+                <div class="streak-progress-fill" id="streakProgressFill"></div>
+              </div>
+              <div class="streak-next" id="streakNext">Próximo: 7 dias → +10%</div>
             </div>
           </div>
         </div>
