@@ -1579,8 +1579,8 @@ body::after{
   display:flex;
   align-items:center;
   background:
-    repeating-linear-gradient(0deg,transparent 0px,transparent 2px,rgba(255,255,255,0.015) 2px,rgba(255,255,255,0.015) 3px),
-    linear-gradient(180deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.2) 40%,rgba(0,0,0,0.45) 100%);
+    repeating-linear-gradient(0deg,transparent 0px,transparent 2px,rgba(255,255,255,0.04) 2px,rgba(255,255,255,0.04) 3px),
+    linear-gradient(180deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.15) 40%,rgba(0,0,0,0.45) 100%);
   border-radius:14px;
   overflow:visible;
   padding:0 4px;
@@ -1594,7 +1594,7 @@ body::after{
   position:absolute;
   inset:0;
   border-radius:14px;
-  background:radial-gradient(ellipse at 50% 50%,transparent 60%,rgba(0,0,0,0.25) 100%);
+  background:radial-gradient(ellipse at 50% 50%,transparent 50%,rgba(0,0,0,0.3) 100%);
   pointer-events:none;
   z-index:0;
 }
@@ -1603,7 +1603,7 @@ body::after{
   position:absolute;
   inset:0;
   border-radius:14px;
-  background:linear-gradient(90deg,rgba(255,255,255,0.015) 0%,rgba(255,255,255,0.03) 50%,rgba(255,255,255,0.015) 100%);
+  background:linear-gradient(90deg,rgba(255,255,255,0.02) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.02) 100%);
   pointer-events:none;
   z-index:0;
 }
@@ -1634,12 +1634,11 @@ body::after{
 .readiness-slider-fill::after{
   content:'';
   position:absolute;
-  top:-1px;right:-3px;
-  width:8px;height:8px;
-  border-radius:50%;
-  background:inherit;
-  box-shadow:0 0 6px currentColor;
-  opacity:0.7;
+  top:0;left:-100%;
+  width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);
+  border-radius:5px;
+  animation:fillShimmer 3s ease-in-out infinite;
   pointer-events:none;
 }
 @keyframes fillShimmer{
@@ -1650,7 +1649,7 @@ body::after{
 .readiness-slider-track[data-zone="green"] .readiness-slider-fill{animation:fillBreathe 2.5s ease-in-out infinite}
 @keyframes fillBreathe{
   0%,100%{box-shadow:0 0 10px rgba(68,204,68,0.5),0 1px 3px rgba(0,0,0,0.3);filter:brightness(1)}
-  50%{box-shadow:0 0 18px rgba(68,204,68,0.8),0 0 4px rgba(68,204,68,0.3);filter:brightness(1.15)}
+  50%{box-shadow:0 0 20px rgba(68,204,68,0.9),0 0 8px rgba(68,204,68,0.4);filter:brightness(1.25)}
 }
 .readiness-slider-input{
   -webkit-appearance:none;appearance:none;
@@ -1752,7 +1751,7 @@ body::after{
   50%{box-shadow:inset 0 1px 3px rgba(0,0,0,0.4),inset 0 -1px 1px rgba(255,255,255,0.03),0 0 18px var(--zone-glow,transparent) inset,0 0 6px var(--zone-glow,transparent),0 0 0 1px var(--zone-border,transparent) inset}
 }
 @keyframes zoneFlash{
-  0%{filter:brightness(1.6) saturate(1.3)}
+  0%{filter:brightness(1.8) saturate(1.5)}
   100%{filter:brightness(1) saturate(1)}
 }
 .readiness-slider-track[data-zone="green"]{--zone-glow:rgba(68,204,68,0.5);--zone-border:rgba(68,204,68,0.45);border-color:rgba(68,204,68,0.35)}
