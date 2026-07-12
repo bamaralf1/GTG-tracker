@@ -193,42 +193,76 @@
             </div>
           </div>
 
-          <div class="card sb-card sb-card-radio" style="padding:14px 18px;margin:0;">
-            <div class="sb-radio-top">
-              <div class="sb-eq" id="sbEq">
-                <div class="sb-eq-bar" style="height:4px"></div>
-                <div class="sb-eq-bar" style="height:8px"></div>
-                <div class="sb-eq-bar" style="height:5px"></div>
-                <div class="sb-eq-bar" style="height:10px"></div>
-                <div class="sb-eq-bar" style="height:3px"></div>
+          <div class="card sb-card sb-card-radio" style="padding:0;margin:0;overflow:hidden">
+            <div class="sb-radio-header" style="padding:14px 18px 0">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                <div class="sb-eq" id="sbEq">
+                  <div class="sb-eq-bar" style="height:4px"></div>
+                  <div class="sb-eq-bar" style="height:8px"></div>
+                  <div class="sb-eq-bar" style="height:5px"></div>
+                  <div class="sb-eq-bar" style="height:10px"></div>
+                  <div class="sb-eq-bar" style="height:3px"></div>
+                  <div class="sb-eq-bar" style="height:7px"></div>
+                  <div class="sb-eq-bar" style="height:4px"></div>
+                </div>
+                <div style="flex:1">
+                  <div class="sb-radio-title"><span class="sb-radio-star">☭</span> RÁDIO SOVIÉTICA</div>
+                  <div style="font-size:10px;color:var(--gray);letter-spacing:1px;margin-top:1px">MÚSICA PARA TREINAR</div>
+                </div>
+                <div class="sb-status-dot off" id="sbStatusDot" style="width:8px;height:8px"></div>
               </div>
-              <div class="sb-radio-title"><span class="sb-radio-star">☭</span> RÁDIO</div>
-              <select id="sovietRadioStation" onchange="radio.changeStation()" class="sb-radio-select">
-                <option value="http://evcast.mediacp.eu:2070/stream">🎵 Soviet Estrada</option>
-                <option value="http://retroserver.streamr.ru:8043/retro256.mp3">🎺 Retro FM</option>
-                <option value="http://nashe1.hostingradio.ru/nashe-256">🎸 Nashe Radio</option>
-                <option value="http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3">🎤 Rádio Chanson</option>
-                <option value="http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3">🎻 Rádio Orfey</option>
-                <option value="https://rusradio.hostingradio.ru/rusradio96.aacp">🎵 Русское Радио</option>
-                <option value="https://radiorecord.hostingradio.ru/rr_main96.aacp">🎧 Радио Рекорд</option>
-                <option value="https://dfm.hostingradio.ru/dfm128.mp3">💃 DFM (Dance)</option>
-                <option value="https://maximum.hostingradio.ru/maximum128.mp3">🎸 Maximum (Rock)</option>
-                <option value="https://hitfm.hostingradio.ru/hitfm128.mp3">🌍 Hit FM (Pop)</option>
+              <div class="sb-radio-tabs">
+                <button class="sb-radio-tab active" id="tabLive" onclick="radio.switchTab('live')">🔴 AO VIVO</button>
+                <button class="sb-radio-tab" id="tabArmy" onclick="radio.switchTab('army')">⭐ КРАСНАЯ АРМИЯ</button>
+              </div>
+            </div>
+
+            <div id="radioTabLive" style="padding:12px 18px 14px">
+              <div class="sb-radio-now" style="margin-bottom:10px">
+                <div style="flex:1;min-width:0">
+                  <div class="sb-radio-now-label">⚡ TOCANDO AGORA</div>
+                  <div id="currentStationName" style="font-size:14px;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600">Europa Plus</div>
+                </div>
+                <span id="sbStatusText" style="font-size:11px;color:var(--gray)">Parado</span>
+              </div>
+              <select id="sovietRadioStation" onchange="radio.changeStation()" class="sb-radio-select" style="width:100%;margin-bottom:10px">
+                <option value="http://ep256.hostingradio.ru:8052/europaplus256.mp3">⚡ Europa Plus (Pop/Dance)</option>
+                <option value="http://nashe1.hostingradio.ru/rock-128.mp3">🎸 НАШЕ Rock (Rock)</option>
+                <option value="http://retroserver.streamr.ru:8043/retro256.mp3">🎺 Ретро FM (Clássicos)</option>
+                <option value="http://dorognoe.hostingradio.ru:8000/radio">🚗 Дорожное Радио (320k)</option>
+                <option value="http://chanson.hostingradio.ru:8041/chanson128.mp3">🎤 Шансон (Chanson)</option>
+                <option value="http://icecast.vgtrk.cdnvideo.ru/vestifm_mp3_192kbps">📡 Вести FM (News 192k)</option>
+                <option value="http://ic4.101.ru:8000/v3_1">🎙️ Авторадио (256k)</option>
+                <option value="http://listen.rusongs.ru/ru-mp3-128">🎵 Русские Песни (Pop)</option>
+                <option value="https://dfm-dfmrusdance.hostingradio.ru/dfmrusdance96.aacp">💃 DFM Russian Dance</option>
+                <option value="https://dfm-disc90.hostingradio.ru/disc9096.aacp">🕺 DFM Дискотека 90-х</option>
               </select>
-            </div>
-            <div class="sb-radio-now">
-              <div style="flex:1;min-width:0">
-                <div class="sb-radio-now-label">⚡ TOCANDO AGORA</div>
-                <div id="currentStationName" style="font-size:14px;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Soviet Estrada</div>
+              <div class="sb-radio-ctrls">
+                <button onclick="radio.toggle()" id="radioToggleBtn" class="sb-radio-play" style="padding:8px 20px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:15px;cursor:pointer;border-radius:4px;transition:all .2s;flex-shrink:0">▶ PLAY</button>
+                <input type="range" id="radioVolume" min="0" max="100" value="50" oninput="radio.setVolume(this.value)" class="groove-range" style="flex:1">
+                <span class="text-mono" style="font-size:12px;color:var(--gold-dim);min-width:36px;text-align:right" id="volumeDisplay">50%</span>
               </div>
             </div>
-            <div class="sb-radio-ctrls">
-              <button onclick="radio.toggle()" id="radioToggleBtn" class="sb-radio-play" style="padding:7px 16px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:14px;cursor:pointer;border-radius:4px;transition:all .2s;flex-shrink:0">▶ PLAY</button>
-              <input type="range" id="radioVolume" min="0" max="100" value="50" oninput="radio.setVolume(this.value)" class="groove-range" style="width:100px">
-              <span class="text-mono" style="font-size:12px;color:var(--gold-dim)" id="volumeDisplay">50%</span>
-              <div class="sb-radio-status" id="radioStatus"><span class="sb-status-dot off" id="sbStatusDot"></span> <span id="sbStatusText">Parado</span></div>
+
+            <div id="radioTabArmy" style="display:none;padding:12px 18px 14px">
+              <div class="sb-army-now" style="margin-bottom:10px;padding:10px 12px;background:rgba(204,0,0,0.08);border:1px solid rgba(204,0,0,0.15);border-radius:8px">
+                <div style="font-size:10px;color:var(--red-bright);letter-spacing:2px;margin-bottom:4px;font-weight:600">⭐ КРАСНАЯ АРМИЯ — CORO DO EXÉRCITO VERMELHO</div>
+                <div id="armyNowPlaying" style="font-size:14px;color:var(--gold);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+                <div id="armyTrackCount" style="font-size:11px;color:var(--gray);margin-top:2px">12 faixas • ~45 min</div>
+              </div>
+              <div id="armyTracklist" class="sb-army-tracklist" style="max-height:200px;overflow-y:auto;margin-bottom:10px"></div>
+              <div class="sb-radio-ctrls" style="gap:6px">
+                <button class="btn btn-outline" onclick="armyPlayer.prev()" style="padding:6px 10px;font-size:13px">⏮</button>
+                <button onclick="armyPlayer.toggle()" id="armyToggleBtn" class="sb-radio-play" style="padding:8px 20px;background:var(--red);border:1px solid var(--red-bright);color:white;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:15px;cursor:pointer;border-radius:4px;transition:all .2s;flex:1">▶ TOCAR</button>
+                <button class="btn btn-outline" onclick="armyPlayer.next()" style="padding:6px 10px;font-size:13px">⏭</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+                <input type="range" id="armyVolume" min="0" max="100" value="70" oninput="armyPlayer.setVolume(this.value)" class="groove-range" style="flex:1">
+                <span class="text-mono" style="font-size:11px;color:var(--gold-dim)" id="armyVolumeDisplay">70%</span>
+              </div>
             </div>
             <audio id="sovietRadioPlayer" preload="none" style="display:none"></audio>
+            <audio id="armyPlayerAudio" preload="none" style="display:none"></audio>
           </div>
 
           <div class="card sb-card" id="gtgSessionCard" style="border-color:rgba(212,160,23,.25);margin:0">
@@ -338,24 +372,11 @@
               player: null, toggleBtn: null, volumeSlider: null, volumeLabel: null,
               statusEl: null, stationSelect: null, stationNameEl: null, playing: false,
               eqEl: null, cardEl: null, statusDot: null, statusText: null,
-              stations: {
-                'http://evcast.mediacp.eu:2070/stream': 'Советская эстрада (Soviet Estrada)',
-                'http://retroserver.streamr.ru:8043/retro256.mp3': 'Ретро FM (Retro FM Rússia)',
-                'http://nashe1.hostingradio.ru/nashe-256': 'Наше Радио (Nashe Radio)',
-                'http://chanson.hostingradio.ru:8041/chanson-uncensored128.mp3': 'Радио Шансон (Rádio Chanson)',
-                'http://orfeyfm.hostingradio.ru:8034/orfeyfm192.mp3': 'Радио Орфей (Clássica Russa)',
-                'https://rusradio.hostingradio.ru/rusradio96.aacp': 'Русское Радио (Russian Radio)',
-                'https://radiorecord.hostingradio.ru/rr_main96.aacp': 'Радио Рекорд (Radio Record)',
-                'https://dfm.hostingradio.ru/dfm128.mp3': 'DFM (Dance)',
-                'https://maximum.hostingradio.ru/maximum128.mp3': 'Maximum (Rock)',
-                'https://hitfm.hostingradio.ru/hitfm128.mp3': 'Hit FM (Pop)'
-              },
               init() {
                 this.player = document.getElementById('sovietRadioPlayer');
                 this.toggleBtn = document.getElementById('radioToggleBtn');
                 this.volumeSlider = document.getElementById('radioVolume');
                 this.volumeLabel = document.getElementById('volumeDisplay');
-                this.statusEl = document.getElementById('radioStatus');
                 this.stationSelect = document.getElementById('sovietRadioStation');
                 this.stationNameEl = document.getElementById('currentStationName');
                 this.eqEl = document.getElementById('sbEq');
@@ -363,31 +384,35 @@
                 this.statusDot = document.getElementById('sbStatusDot');
                 this.statusText = document.getElementById('sbStatusText');
                 const saved = JSON.parse(localStorage.getItem('gtg_radio') || '{}');
-                if (saved.station) { this.stationSelect.value = saved.station; this.stationNameEl.textContent = this.stations[saved.station] || '—'; }
+                if (saved.station) { this.stationSelect.value = saved.station; this.stationNameEl.textContent = this._getStationName(saved.station); }
                 if (saved.volume != null) { this.volumeSlider.value = saved.volume; this.player.volume = saved.volume / 100; this.volumeLabel.textContent = saved.volume + '%'; }
                 this.player.addEventListener('waiting', () => { if (this.playing) this._setStatus('wait'); });
                 this.player.addEventListener('canplay', () => { if (this.playing) this._setStatus('play'); });
                 this.player.addEventListener('error', () => { this.playing = false; this._updateUI(); this._setStatus('err'); });
               },
+              _getStationName(url) {
+                const opt = this.stationSelect.querySelector(`option[value="${url}"]`);
+                return opt ? opt.textContent.replace(/^[^\s]+\s/, '') : '—';
+              },
               _setStatus(s) {
                 if (s === 'play') {
                   this.statusDot.className = 'sb-status-dot on';
-                  this.statusText.textContent = 'Tocando';
-                  this.statusEl.querySelector('span:last-child').style.color = 'var(--green-bright)';
+                  this.statusText.textContent = '● AO VIVO';
+                  this.statusText.style.color = 'var(--green-bright)';
                 } else if (s === 'wait') {
                   this.statusDot.className = 'sb-status-dot';
                   this.statusDot.style.background = 'var(--gold)';
-                  this.statusText.textContent = 'Conectando...';
-                  this.statusEl.querySelector('span:last-child').style.color = 'var(--gold)';
+                  this.statusText.textContent = '○ Conectando...';
+                  this.statusText.style.color = 'var(--gold)';
                 } else if (s === 'err') {
                   this.statusDot.className = 'sb-status-dot err';
-                  this.statusText.textContent = 'Erro';
-                  this.statusEl.querySelector('span:last-child').style.color = 'var(--red-bright)';
+                  this.statusText.textContent = '✕ Erro';
+                  this.statusText.style.color = 'var(--red-bright)';
                 } else {
                   this.statusDot.className = 'sb-status-dot off';
                   this.statusText.textContent = 'Parado';
                   this.statusDot.style.background = '';
-                  this.statusEl.querySelector('span:last-child').style.color = 'var(--gray)';
+                  this.statusText.style.color = 'var(--gray)';
                 }
               },
               _updateUI() {
@@ -406,9 +431,9 @@
               changeStation() {
                 const val = this.stationSelect.value;
                 this.player.src = val;
-                this.stationNameEl.textContent = this.stations[val] || '—';
+                this.stationNameEl.textContent = this._getStationName(val);
                 localStorage.setItem('gtg_radio', JSON.stringify({ station: val, volume: this.volumeSlider.value }));
-                if (this.playing) { this.player.play().catch(() => {}); this.statusEl.textContent = '⏳ Conectando...'; }
+                if (this.playing) { this.player.play().catch(() => {}); this._setStatus('wait'); }
               },
               toggle() {
                 if (!this.player.src) this.player.src = this.stationSelect.value;
@@ -426,9 +451,144 @@
                 this.volumeLabel.textContent = val + '%';
                 const saved = JSON.parse(localStorage.getItem('gtg_radio') || '{}');
                 saved.volume = val; localStorage.setItem('gtg_radio', JSON.stringify(saved));
+              },
+              switchTab(tab) {
+                document.getElementById('radioTabLive').style.display = tab === 'live' ? '' : 'none';
+                document.getElementById('radioTabArmy').style.display = tab === 'army' ? '' : 'none';
+                document.getElementById('tabLive').classList.toggle('active', tab === 'live');
+                document.getElementById('tabArmy').classList.toggle('active', tab === 'army');
               }
             };
-            document.addEventListener('DOMContentLoaded', () => radio.init());
+
+            window.armyPlayer = {
+              player: null, playlist: [], currentIdx: -1, playing: false,
+              tracks: [
+                { title: 'Красная Армия всех сильней', sub: 'The Red Army is the Strongest', src: 'https://archive.org/download/WhiteArmyBlackBaron/White%20Army,%20Black%20Baron.mp3' },
+                { title: 'Калинка', sub: 'Kalinka', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/01%20-%20Kalinka.mp3' },
+                { title: 'Священная война', sub: 'Sacred War', src: 'https://archive.org/download/soviet-patriotic-songs/Svyashchennaya%20Voyna.mp3' },
+                { title: 'День Победы', sub: 'Day of Victory', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/02%20-%20Den%20Pobedy.mp3' },
+                { title: 'Марш артиллеристов', sub: 'March of the Artillerymen', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/03%20-%20Marsh%20Artilleristov.mp3' },
+                { title: 'Три танкиста', sub: 'Three Tankmen', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/04%20-%20Tri%20Tankista.mp3' },
+                { title: 'В путь', sub: 'Let\'s Go', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/05%20-%20V%20Put.mp3' },
+                { title: 'Красноармейская', sub: 'Red Army Song', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/06%20-%20Krasnoarmeykaya.mp3' },
+                { title: 'Марш советской армии', sub: 'March of the Soviet Army', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/07%20-%20Marsh%20Sovetskoy%20Armii.mp3' },
+                { title: 'Полюшко-поле', sub: 'The Meadowland', src: 'https://archive.org/download/one-hour-of-soviet-red-army-music/08%20-%20Polyushko%20Pole.mp3' },
+                { title: 'Гимн Советского Союза', sub: 'Soviet National Anthem', src: 'https://archive.org/download/american-british-french-and-soviet-anthems-red-army-choir/04%20-%20State%20Anthem%20of%20the%20Soviet%20Union.mp3' },
+                { title: 'Эй, ухнем!', sub: 'Song of the Volga Boatmen', src: 'https://archive.org/download/lp_songs-of-the-russian-cossacks/01.01.%20Song%20Of%20The%20Volga%20Boatmen_sample.mp3' }
+              ],
+              init() {
+                this.player = document.getElementById('armyPlayerAudio');
+                this.player.volume = 0.7;
+                const savedVol = localStorage.getItem('gtg_army_vol');
+                if (savedVol != null) { this.player.volume = savedVol / 100; document.getElementById('armyVolume').value = savedVol; document.getElementById('armyVolumeDisplay').textContent = savedVol + '%'; }
+                this.player.addEventListener('ended', () => this.next());
+                this.player.addEventListener('error', () => {
+                  if (this.playing) { this._setErrorUI(); }
+                });
+                this._renderTracklist();
+                this._updateTotalTime();
+              },
+              _renderTracklist() {
+                const el = document.getElementById('armyTracklist');
+                el.innerHTML = this.tracks.map((t, i) =>
+                  `<div class="sb-army-track" id="armyTrack${i}" onclick="armyPlayer.playTrack(${i})" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;transition:all .15s;border:1px solid transparent">
+                    <span class="sb-army-idx" style="font-size:11px;color:var(--gray);width:20px;text-align:center;font-family:'Bebas Neue',sans-serif">${String(i + 1).padStart(2, '0')}</span>
+                    <div style="flex:1;min-width:0">
+                      <div style="font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${t.title}</div>
+                      <div style="font-size:10px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.sub}</div>
+                    </div>
+                    <span class="sb-army-dur" style="font-size:10px;color:var(--gray);font-family:'Bebas Neue',sans-serif">♪</span>
+                  </div>`
+                ).join('');
+              },
+              _highlight(idx) {
+                document.querySelectorAll('.sb-army-track').forEach((el, i) => {
+                  el.style.borderColor = i === idx ? 'rgba(204,0,0,0.3)' : 'transparent';
+                  el.style.background = i === idx ? 'rgba(204,0,0,0.06)' : '';
+                  const num = el.querySelector('.sb-army-idx');
+                  if (i === idx) { num.style.color = 'var(--red-bright)'; num.textContent = '▶'; }
+                  else { num.style.color = 'var(--gray)'; num.textContent = String(i + 1).padStart(2, '0'); }
+                });
+                document.getElementById('armyNowPlaying').textContent = idx >= 0 ? this.tracks[idx].title : '—';
+                document.getElementById('armyTrackCount').textContent = `${idx + 1}/${this.tracks.length} • ${this.tracks[idx].sub}`;
+              },
+              _updateTotalTime() {
+                const total = this.tracks.length;
+                document.getElementById('armyTrackCount').textContent = `${total} faixas •播放列表`;
+              },
+              _setErrorUI() {
+                this.playing = false;
+                document.getElementById('armyToggleBtn').textContent = '▶ TOCAR';
+                document.getElementById('armyToggleBtn').style.background = 'var(--red)';
+                document.getElementById('armyToggleBtn').style.color = 'white';
+                this.eqEl = document.getElementById('sbEq');
+                if (this.eqEl) this.eqEl.classList.remove('playing');
+                const cardEl = document.querySelector('.sb-card-radio');
+                if (cardEl) cardEl.classList.remove('playing');
+              },
+              playTrack(idx) {
+                if (idx < 0 || idx >= this.tracks.length) return;
+                this.currentIdx = idx;
+                this.player.src = this.tracks[idx].src;
+                this.player.play().then(() => {
+                  this.playing = true;
+                  this._highlight(idx);
+                  document.getElementById('armyToggleBtn').textContent = '⏸ PAUSE';
+                  document.getElementById('armyToggleBtn').style.background = 'var(--gold)';
+                  document.getElementById('armyToggleBtn').style.color = 'var(--black)';
+                  document.getElementById('sbEq').classList.add('playing');
+                  document.querySelector('.sb-card-radio').classList.add('playing');
+                  document.getElementById('sbStatusDot').className = 'sb-status-dot on';
+                  document.getElementById('sbStatusText').textContent = '● TOCANDO';
+                  document.getElementById('sbStatusText').style.color = 'var(--green-bright)';
+                }).catch(() => {
+                  this._setErrorUI();
+                });
+              },
+              toggle() {
+                if (!this.player.src && this.tracks.length > 0) { this.playTrack(0); return; }
+                if (this.playing) {
+                  this.player.pause(); this.playing = false;
+                  document.getElementById('armyToggleBtn').textContent = '▶ CONTINUAR';
+                  document.getElementById('armyToggleBtn').style.background = 'var(--red)';
+                  document.getElementById('armyToggleBtn').style.color = 'white';
+                  document.getElementById('sbEq').classList.remove('playing');
+                  document.querySelector('.sb-card-radio').classList.remove('playing');
+                  document.getElementById('sbStatusDot').className = 'sb-status-dot off';
+                  document.getElementById('sbStatusText').textContent = 'Pausado';
+                  document.getElementById('sbStatusText').style.color = 'var(--gray)';
+                } else {
+                  this.playing = true;
+                  this.player.play().then(() => {
+                    document.getElementById('armyToggleBtn').textContent = '⏸ PAUSE';
+                    document.getElementById('armyToggleBtn').style.background = 'var(--gold)';
+                    document.getElementById('armyToggleBtn').style.color = 'var(--black)';
+                    document.getElementById('sbEq').classList.add('playing');
+                    document.querySelector('.sb-card-radio').classList.add('playing');
+                    document.getElementById('sbStatusDot').className = 'sb-status-dot on';
+                    document.getElementById('sbStatusText').textContent = '● TOCANDO';
+                    document.getElementById('sbStatusText').style.color = 'var(--green-bright)';
+                  }).catch(() => { this._setErrorUI(); });
+                }
+              },
+              next() {
+                const next = this.currentIdx + 1;
+                if (next < this.tracks.length) this.playTrack(next);
+                else { this.currentIdx = 0; this.playTrack(0); }
+              },
+              prev() {
+                const prev = this.currentIdx - 1;
+                if (prev >= 0) this.playTrack(prev);
+                else { this.currentIdx = this.tracks.length - 1; this.playTrack(this.currentIdx); }
+              },
+              setVolume(val) {
+                this.player.volume = val / 100;
+                document.getElementById('armyVolumeDisplay').textContent = val + '%';
+                localStorage.setItem('gtg_army_vol', val);
+              }
+            };
+
+            document.addEventListener('DOMContentLoaded', () => { radio.init(); armyPlayer.init(); });
           </script>
         </div>
       </div>

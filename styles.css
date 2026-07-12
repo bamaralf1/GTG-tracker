@@ -2067,15 +2067,17 @@ body::after{
    ================================================================ */
 
 /* === RADIO EQUALIZER === */
-.sb-eq{display:flex;align-items:flex-end;gap:2px;height:18px;flex-shrink:0}
-.sb-eq-bar{width:3px;border-radius:1px;background:var(--gold);transition:height .15s ease}
+.sb-eq{display:flex;align-items:flex-end;gap:2px;height:20px;flex-shrink:0}
+.sb-eq-bar{width:3px;border-radius:1px;background:var(--red);transition:height .15s ease}
 .sb-eq.playing .sb-eq-bar{animation:eqBounce .6s ease-in-out infinite alternate}
 .sb-eq.playing .sb-eq-bar:nth-child(1){animation-delay:0s;animation-duration:.5s}
 .sb-eq.playing .sb-eq-bar:nth-child(2){animation-delay:.1s;animation-duration:.65s}
 .sb-eq.playing .sb-eq-bar:nth-child(3){animation-delay:.05s;animation-duration:.45s}
 .sb-eq.playing .sb-eq-bar:nth-child(4){animation-delay:.15s;animation-duration:.55s}
 .sb-eq.playing .sb-eq-bar:nth-child(5){animation-delay:.08s;animation-duration:.6s}
-@keyframes eqBounce{0%{height:3px}100%{height:16px}}
+.sb-eq.playing .sb-eq-bar:nth-child(6){animation-delay:.12s;animation-duration:.52s}
+.sb-eq.playing .sb-eq-bar:nth-child(7){animation-delay:0s;animation-duration:.58s}
+@keyframes eqBounce{0%{height:3px}100%{height:18px}}
 
 /* === RADIO CARD GLOW === */
 .sb-card-radio{position:relative;overflow:visible}
@@ -2083,11 +2085,25 @@ body::after{
 .sb-card-radio.playing::before{opacity:1;animation:radioGlow 3s ease-in-out infinite}
 @keyframes radioGlow{0%,100%{opacity:.6}50%{opacity:1}}
 
+/* === RADIO TABS === */
+.sb-radio-tabs{display:flex;gap:0;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.06)}
+.sb-radio-tab{flex:1;padding:8px 12px;background:rgba(0,0,0,0.2);border:none;color:var(--gray);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;cursor:pointer;transition:all .2s;text-align:center}
+.sb-radio-tab:hover{background:rgba(255,255,255,0.03);color:var(--text)}
+.sb-radio-tab.active{background:rgba(204,0,0,0.15);color:var(--red-bright);font-weight:600;box-shadow:inset 0 -2px 0 var(--red)}
+[data-theme=light] .sb-radio-tab{background:rgba(0,0,0,0.03);color:var(--gray)}
+[data-theme=light] .sb-radio-tab.active{background:rgba(204,0,0,0.08);color:var(--red)}
+
 /* === RADIO PLAY BUTTON GLOW === */
 .sb-radio-play{position:relative;overflow:hidden}
 .sb-radio-play::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(255,255,255,0.15),transparent 70%);opacity:0;transition:opacity .3s}
 .sb-radio-play.active::after{opacity:1}
 .sb-radio-play.active{box-shadow:0 0 20px rgba(212,168,67,0.5),0 0 40px rgba(212,168,67,0.2)}
+
+/* === ARMY TRACKLIST === */
+.sb-army-tracklist{display:flex;flex-direction:column;gap:2px}
+.sb-army-track{transition:all .15s}
+.sb-army-track:hover{background:rgba(204,0,0,0.06);border-color:rgba(204,0,0,0.12) !important}
+.sb-army-track:active{transform:scale(0.98)}
 
 /* === SESSION CARD ENHANCED === */
 .sb-session-card{position:relative}
@@ -2136,8 +2152,9 @@ body::after{
 
 /* === LIGHT THEME OVERRIDES === */
 [data-theme=light] .sb-card-quote{background:linear-gradient(135deg,rgba(204,0,0,0.04),#fff 40%,#fff 60%,rgba(212,168,67,0.03))}
-[data-theme=light] .sb-eq-bar{background:var(--gold)}
+[data-theme=light] .sb-eq-bar{background:var(--red)}
 [data-theme=light] .sb-card-radio.playing::before{background:linear-gradient(135deg,rgba(204,0,0,0.08),transparent 40%,transparent 60%,rgba(212,168,67,0.05))}
+[data-theme=light] .sb-army-track:hover{background:rgba(204,0,0,0.04)}
 
 .missile-switch[data-tip]:hover::after{
   content:attr(data-tip);
