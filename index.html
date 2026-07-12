@@ -16,6 +16,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>window._ytDeferred=[];window.onYouTubeIframeAPIReady=function(){var a=window._ytDeferred;if(Array.isArray(a)){a.forEach(function(f){f()});window._ytDeferred={push:function(f){f()}}}};</script>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="skilltree.css">
   <link rel="manifest" href="manifest.webmanifest">
@@ -273,10 +275,8 @@
               </div>
             </div>
             <audio id="sovietRadioPlayer" preload="none" style="display:none"></audio>
-            <audio id="armyPlayerAudio" preload="none" style="display:none"></audio>
-            <div id="armyYTWrap" style="width:100%;height:0;overflow:hidden;position:relative;border-radius:6px;margin-bottom:8px;display:none">
-              <iframe id="armyYTFrame" width="100%" height="60" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:60px;border-radius:6px"></iframe>
-            </div>
+            <div id="armyYTPlayer" style="width:100%;height:0;border-radius:6px;margin-bottom:8px;overflow:hidden;background:#000;transition:height .3s"></div>
+          </div>
           </div>
 
           <div class="card sb-card" id="gtgSessionCard" style="border-color:rgba(212,160,23,.25);margin:0">
@@ -489,6 +489,7 @@
 
             window.armyPlayer = {
               currentIdx: -1, playing: false, _lastVol: 85, _progressInterval: null,
+              _player: null,
               tracks: [
                 { title: 'Красная Армия всех сильней', sub: 'The Red Army is the Strongest', yt: 'nHnDonNY7yQ' },
                 { title: 'Калинка', sub: 'Kalinka', yt: 'zGj_5-0Jn2Y' },
@@ -507,23 +508,105 @@
                 var savedVol = localStorage.getItem('gtg_army_vol');
                 if (savedVol != null) this._lastVol = parseInt(savedVol);
                 this._renderTracklist();
-              },
-              _loadVideo(ytId) {
-                var frame = document.getElementById('armyYTFrame');
-                var wrap = document.getElementById('armyYTWrap');
-                wrap.style.display = 'block';
-                frame.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&mute=1&enablejsapi=1&controls=0&rel=0';
                 var self = this;
-                setTimeout(function() {
-                  try { frame.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*'); } catch(e) {}
-                  setTimeout(function() {
-                    try { frame.contentWindow.postMessage('{"event":"command","func":"setVolume","args":[' + self._lastVol + ']}', '*'); } catch(e) {}
-                  }, 500);
-                }, 1500);
+                var create = function() {
+                  self._player = new YT.Player('armyYTPlayer', {
+                    height: 80, width: '100%',
+                    playerVars: { autoplay: 0, controls: 0, rel: 0, modestbranding: 1 },
+                    events: {
+                      onReady: function() {
+                        document.getElementById('armyYTPlayer').style.height = '0';
+                        self._player.setVolume(self._lastVol);
+                      },
+                      onStateChange: function(e) {
+                        var state = e.data;
+                        if (state === YT.PlayerState.PLAYING) {
+                          self.playing = true; self._setPlayingUI(); self._startProgress();
+                        } else if (state === YT.PlayerState.ENDED) { self.next(); }
+                        else if (state === YT.PlayerState.PAUSED || state === YT.PlayerState.CUED) { self._stopProgress(); }
+                      }
+                    }
+                  });
+                };
+                if (typeof YT !== 'undefined' && YT.Player) { create(); }
+                else { window._ytDeferred.push(create); }
               },
-              _stopVideo() {
-                document.getElementById('armyYTFrame').src = '';
-                document.getElementById('armyYTWrap').style.display = 'none';
+              _startProgress() {
+                this._stopProgress();
+                var self = this;
+                var fill = document.getElementById('armyProgressFill');
+                var cur = document.getElementById('armyTimeCurrent');
+                var tot = document.getElementById('armyTimeTotal');
+                this._progressInterval = setInterval(function() {
+                  if (!self._player || !self._player.getCurrentTime) { self._stopProgress(); return; }
+                  try {
+                    var t = self._player.getCurrentTime();
+                    var d = self._player.getDuration();
+                    var pct = d > 0 ? (t / d * 100) : 0;
+                    fill.style.width = Math.min(pct, 100) + '%';
+                    cur.textContent = self._formatTime(t);
+                    tot.textContent = self._formatTime(d);
+                  } catch(e) {}
+                }, 250);
+              },
+              _stopProgress() {
+                if (this._progressInterval) { clearInterval(this._progressInterval); this._progressInterval = null; }
+              },
+              playTrack(idx) {
+                if (idx < 0 || idx >= this.tracks.length) return;
+                this.currentIdx = idx;
+                this._highlight(idx);
+                document.getElementById('armyYTPlayer').style.height = '80px';
+                if (this._player && this._player.loadVideoById) {
+                  this._player.loadVideoById(this.tracks[idx].yt);
+                }
+              },
+              toggle() {
+                if (!this._player || !this._player.getPlayerState) return;
+                if (this._player.getPlayerState() === YT.PlayerState.PLAYING) {
+                  this._player.pauseVideo();
+                  this.playing = false;
+                  this._setErrorUI();
+                } else {
+                  if (this.currentIdx < 0) { this.playTrack(0); return; }
+                  this._player.playVideo();
+                  this.playing = true;
+                  this._setPlayingUI();
+                  this._startProgress();
+                }
+              },
+              next() {
+                var next = this.currentIdx + 1;
+                this.playTrack(next < this.tracks.length ? next : 0);
+              },
+              prev() {
+                var prev = this.currentIdx - 1;
+                this.playTrack(prev >= 0 ? prev : this.tracks.length - 1);
+              },
+              seek(e) {
+                if (!this._player || !this._player.seekTo) return;
+                var bar = document.getElementById('armyProgressBar');
+                var rect = bar.getBoundingClientRect();
+                var x = (e.clientX - rect.left) / rect.width;
+                var d = this._player.getDuration();
+                this._player.seekTo(x * d, true);
+              },
+              setVolume(val) {
+                this._lastVol = parseInt(val);
+                document.getElementById('armyVolumeDisplay').textContent = val + '%';
+                localStorage.setItem('gtg_army_vol', val);
+                if (this._player && this._player.setVolume) this._player.setVolume(val);
+              },
+              muteToggle() {
+                if (parseInt(document.getElementById('armyVolume').value) > 0) {
+                  this._lastVol = document.getElementById('armyVolume').value;
+                  document.getElementById('armyVolume').value = 0; this.setVolume(0);
+                  document.querySelector('#radioTabArmy .sb-vol-icon').textContent = '\uD83D\uDD07';
+                } else {
+                  var v = this._lastVol || 85;
+                  document.getElementById('armyVolume').value = v; this.setVolume(v);
+                  document.querySelector('#radioTabArmy .sb-vol-icon').textContent = '\uD83D\uDD0A';
+                }
               },
               _formatTime(sec) {
                 if (!sec || !isFinite(sec)) return '0:00';
@@ -546,9 +629,7 @@
                 var self = this;
                 var tracks = el.querySelectorAll('.sb-army-track');
                 for (var j = 0; j < tracks.length; j++) {
-                  tracks[j].addEventListener('click', (function(idx) {
-                    return function() { self.playTrack(idx); };
-                  })(j));
+                  tracks[j].addEventListener('click', (function(idx) { return function() { self.playTrack(idx); }; })(j));
                 }
               },
               _highlight(idx) {
@@ -581,50 +662,6 @@
                 document.getElementById('armyToggleBtn').style.color = 'white';
                 document.getElementById('sbEq').classList.remove('playing');
                 document.querySelector('.sb-card-radio').classList.remove('playing');
-              },
-              playTrack(idx) {
-                if (idx < 0 || idx >= this.tracks.length) return;
-                this.currentIdx = idx;
-                this.playing = true;
-                this._highlight(idx);
-                this._loadVideo(this.tracks[idx].yt);
-                this._setPlayingUI();
-              },
-              toggle() {
-                if (!this.playing) { this.playTrack(this.currentIdx >= 0 ? this.currentIdx : 0); return; }
-                this.playing = false;
-                this._stopVideo();
-                this._setErrorUI();
-              },
-              next() {
-                var next = this.currentIdx + 1;
-                this.playTrack(next < this.tracks.length ? next : 0);
-              },
-              prev() {
-                var prev = this.currentIdx - 1;
-                this.playTrack(prev >= 0 ? prev : this.tracks.length - 1);
-              },
-              setVolume(val) {
-                this._lastVol = parseInt(val);
-                document.getElementById('armyVolumeDisplay').textContent = val + '%';
-                localStorage.setItem('gtg_army_vol', val);
-                try {
-                  var frame = document.getElementById('armyYTFrame');
-                  if (frame && frame.src) {
-                    frame.contentWindow.postMessage('{"event":"command","func":"setVolume","args":[' + val + ']}', '*');
-                  }
-                } catch(e) {}
-              },
-              muteToggle() {
-                if (parseInt(document.getElementById('armyVolume').value) > 0) {
-                  this._lastVol = document.getElementById('armyVolume').value;
-                  document.getElementById('armyVolume').value = 0; this.setVolume(0);
-                  document.querySelector('#radioTabArmy .sb-vol-icon').textContent = '\uD83D\uDD07';
-                } else {
-                  var v = this._lastVol || 85;
-                  document.getElementById('armyVolume').value = v; this.setVolume(v);
-                  document.querySelector('#radioTabArmy .sb-vol-icon').textContent = '\uD83D\uDD0A';
-                }
               }
             };
 
