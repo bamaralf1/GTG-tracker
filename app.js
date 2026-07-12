@@ -2497,6 +2497,7 @@ let _prevReadinessScore = 50;
 let _prevZones = {};
 let _readinessAnimFrame = null;
 let _readinessUIFrame = null;
+let _isDragging = false;
 const READINESS_KEY = "gtg_readiness";
 
 async function carregarReadiness() {
@@ -2618,7 +2619,9 @@ function updateReadinessUI() {
   const alimentacao = readinessData.alimentacao ?? 5;
   const motivacao = readinessData.motivacao ?? 5;
   const o = readinessData.score;
+  const dragging = _isDragging;
 
+  // Fill widths — always instant
   document.getElementById("fillSono").style.width = 10 * sono + "%";
   document.getElementById("fillStress").style.width = 10 * stress + "%";
   document.getElementById("fillDor").style.width = 10 * dor + "%";
@@ -2627,7 +2630,8 @@ function updateReadinessUI() {
   document.getElementById("fillAlimentacao").style.width = 10 * alimentacao + "%";
   document.getElementById("fillMotivacao").style.width = 10 * motivacao + "%";
 
-  const sliders = [
+  // Sliders: values + zones — always instant, effects only on release
+  const slidersCfg = [
     {valId:"valSono", val:sono, trackId:"trackSono", invertido:false},
     {valId:"valStress", val:stress, trackId:"trackStress", invertido:true},
     {valId:"valDor", val:dor, trackId:"trackDor", invertido:true},
@@ -2636,10 +2640,11 @@ function updateReadinessUI() {
     {valId:"valAlimentacao", val:alimentacao, trackId:"trackAlimentacao", invertido:false},
     {valId:"valMotivacao", val:motivacao, trackId:"trackMotivacao", invertido:false}
   ];
-  sliders.forEach(s => {
+  slidersCfg.forEach(s => {
     const el = document.getElementById(s.valId);
-    if (el.textContent != s.val) {
-      el.textContent = s.val;
+    const changed = el.textContent != s.val;
+    el.textContent = s.val;
+    if (changed && !dragging) {
       el.classList.remove("bounce");
       void el.offsetWidth;
       el.classList.add("bounce");
@@ -2648,13 +2653,14 @@ function updateReadinessUI() {
     const newZone = getZonaSlider(s.val, s.invertido);
     const prevZone = _prevZones[s.trackId];
     track.setAttribute("data-zone", newZone);
-    if (prevZone && prevZone !== newZone) {
+    if (changed && prevZone && prevZone !== newZone && !dragging) {
       track.classList.remove("zone-flash");
       void track.offsetWidth;
       track.classList.add("zone-flash");
     }
     _prevZones[s.trackId] = newZone;
   });
+
   const r = getReadinessConfig(o),
     s = document.getElementById("readinessCircle"),
     n = document.getElementById("readinessScore"),
@@ -2663,7 +2669,7 @@ function updateReadinessUI() {
     ring = document.getElementById("readinessRingFill"),
     dir = document.getElementById("readinessDirection");
 
-  // Apply color class + label + suggestion (cheap, do immediately)
+  // Color class + label + ring + header — always instant
   s.classList.remove("readiness-green", "readiness-yellow", "readiness-orange", "readiness-red");
   s.classList.add(r.classe);
   i.textContent = r.label;
@@ -2674,52 +2680,54 @@ function updateReadinessUI() {
     l = document.getElementById("headerReadinessScore");
   c && l && (c.classList.remove("readiness-yellow-h", "readiness-orange-h", "readiness-red-h"), r.classeHeader && c.classList.add(r.classeHeader), l.textContent = o, l.style.color = r.corScore);
 
-  // Animate SVG ring immediately (cheap)
+  // Ring — instant (CSS .dragging removes transition)
   const circumference = 263.89;
   ring.style.strokeDashoffset = circumference - (o / 100) * circumference;
 
-  // Defer heavy visual effects to next frame for fluid dragging
-  if (_readinessUIFrame) cancelAnimationFrame(_readinessUIFrame);
-  _readinessUIFrame = requestAnimationFrame(() => {
-    // Direction detection
-    const prevScore = _prevReadinessScore;
-    const diff = o - prevScore;
-    if (diff > 0) {
-      dir.className = "readiness-direction up";
-      dir.textContent = "▲ +" + diff;
-      s.classList.remove("flash-red"); s.classList.remove("flash-green");
-      void s.offsetWidth;
-      s.classList.add("flash-green");
-      _spawnParticles(s, "var(--green-bright)");
-    } else if (diff < 0) {
-      dir.className = "readiness-direction down";
-      dir.textContent = "▼ " + diff;
-      s.classList.remove("flash-green"); s.classList.remove("flash-red");
-      void s.offsetWidth;
-      s.classList.add("flash-red");
-      _spawnParticles(s, "var(--accent-red-bright)");
-    } else {
-      dir.className = "readiness-direction same";
-      dir.textContent = "";
-    }
+  // Score number — instant during drag, animated on release
+  if (dragging) {
+    n.textContent = o;
     _prevReadinessScore = o;
+  } else {
+    // Release mode: full polish
+    if (_readinessUIFrame) cancelAnimationFrame(_readinessUIFrame);
+    _readinessUIFrame = requestAnimationFrame(() => {
+      const prevScore = _prevReadinessScore;
+      const diff = o - prevScore;
+      if (diff > 0) {
+        dir.className = "readiness-direction up";
+        dir.textContent = "▲ +" + diff;
+        s.classList.remove("flash-red", "flash-green");
+        void s.offsetWidth;
+        s.classList.add("flash-green");
+        _spawnParticles(s, "var(--green-bright)");
+      } else if (diff < 0) {
+        dir.className = "readiness-direction down";
+        dir.textContent = "▼ " + diff;
+        s.classList.remove("flash-green", "flash-red");
+        void s.offsetWidth;
+        s.classList.add("flash-red");
+        _spawnParticles(s, "var(--accent-red-bright)");
+      } else {
+        dir.className = "readiness-direction same";
+        dir.textContent = "";
+      }
+      _prevReadinessScore = o;
 
-    // Animate score counter
-    _animateScore(n, parseInt(n.textContent) || 0, o, 600);
+      _animateScore(n, parseInt(n.textContent) || 0, o, 200);
 
-    // Score pop animation
-    n.classList.remove("pop");
-    void n.offsetWidth;
-    n.classList.add("pop");
+      n.classList.remove("pop");
+      void n.offsetWidth;
+      n.classList.add("pop");
 
-    setTimeout(() => { s.classList.remove("flash-green", "flash-red"); }, 700);
+      setTimeout(() => { s.classList.remove("flash-green", "flash-red"); }, 700);
 
-    // Render new elements
-    _renderReadinessPrev();
-    _renderReadinessHistory();
-    _renderReadinessRec();
-    _saveReadinessHistory();
-  });
+      _renderReadinessPrev();
+      _renderReadinessHistory();
+      _renderReadinessRec();
+      _saveReadinessHistory();
+    });
+  }
 }
 
 function _animateScore(el, from, to, duration) {
@@ -3923,6 +3931,21 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("animationend", e => {
     if (e.target.classList?.contains("zone-flash")) e.target.classList.remove("zone-flash");
   }, true);
+  // Drag tracking for instant slider response
+  const rc = document.getElementById("readinessCard");
+  if (rc) {
+    const startDrag = () => { _isDragging = true; rc.classList.add("dragging"); };
+    const endDrag = () => {
+      if (!_isDragging) return;
+      _isDragging = false;
+      rc.classList.remove("dragging");
+      updateReadinessUI();
+    };
+    rc.addEventListener("mousedown", startDrag);
+    rc.addEventListener("touchstart", startDrag, { passive: true });
+    document.addEventListener("mouseup", endDrag);
+    document.addEventListener("touchend", endDrag);
+  }
 });
 
 
