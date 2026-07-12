@@ -116,6 +116,34 @@
               </div>
               <div class="readiness-slider-ends"><span>Nenhuma</span> <span>Incapacitante</span></div>
             </div>
+            <div class="readiness-slider-group">
+              <div class="readiness-slider-label"><span class="readiness-slider-name">⚡ Nível de Energia</span> <span class="readiness-slider-value" id="valEnergia">5</span></div>
+              <div class="readiness-slider-track" id="trackEnergia">
+                <div class="readiness-slider-fill" id="fillEnergia" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderEnergia" min="0" max="10" step="1" value="5" oninput="updateReadiness()">
+              </div>
+              <div class="readiness-slider-ends"><span>Esgotado</span> <span>Electrizado</span></div>
+            </div>
+            <div class="readiness-slider-group">
+              <div class="readiness-slider-label"><span class="readiness-slider-name">💧 Hidratação</span> <span class="readiness-slider-value" id="valHidratacao">5</span></div>
+              <div class="readiness-slider-track" id="trackHidratacao">
+                <div class="readiness-slider-fill" id="fillHidratacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderHidratacao" min="0" max="10" step="1" value="5" oninput="updateReadiness()">
+              </div>
+              <div class="readiness-slider-ends"><span>Desidratado</span> <span>Perfeito</span></div>
+            </div>
+            <div class="readiness-slider-group">
+              <div class="readiness-slider-label"><span class="readiness-slider-name">🍽️ Alimentação</span> <span class="readiness-slider-value" id="valAlimentacao">5</span></div>
+              <div class="readiness-slider-track" id="trackAlimentacao">
+                <div class="readiness-slider-fill" id="fillAlimentacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderAlimentacao" min="0" max="10" step="1" value="5" oninput="updateReadiness()">
+              </div>
+              <div class="readiness-slider-ends"><span>Má</span> <span>Excelente</span></div>
+            </div>
+            <div class="readiness-slider-group">
+              <div class="readiness-slider-label"><span class="readiness-slider-name">🧠 Motivação</span> <span class="readiness-slider-value" id="valMotivacao">5</span></div>
+              <div class="readiness-slider-track" id="trackMotivacao">
+                <div class="readiness-slider-fill" id="fillMotivacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderMotivacao" min="0" max="10" step="1" value="5" oninput="updateReadiness()">
+              </div>
+              <div class="readiness-slider-ends"><span>Zero</span> <span>Máxima</span></div>
+            </div>
           </div>
           <div class="readiness-display">
             <div class="readiness-circle readiness-yellow" id="readinessCircle">

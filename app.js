@@ -2486,6 +2486,10 @@ let readinessData = {
   sono: 5,
   stress: 5,
   dor: 5,
+  energia: 5,
+  hidratacao: 5,
+  alimentacao: 5,
+  motivacao: 5,
   score: 50,
   data: null
 };
@@ -2499,7 +2503,16 @@ async function carregarReadiness() {
     if (e) {
       const a = JSON.parse(e),
         t = (new Date).toISOString().slice(0, 10);
-      a.data === t ? (readinessData = a, document.getElementById("sliderSono").value = readinessData.sono, document.getElementById("sliderStress").value = readinessData.stress, document.getElementById("sliderDor").value = readinessData.dor) : resetReadinessData()
+      if (a.data === t) {
+        readinessData = a;
+        document.getElementById("sliderSono").value = readinessData.sono;
+        document.getElementById("sliderStress").value = readinessData.stress;
+        document.getElementById("sliderDor").value = readinessData.dor;
+        document.getElementById("sliderEnergia").value = readinessData.energia ?? 5;
+        document.getElementById("sliderHidratacao").value = readinessData.hidratacao ?? 5;
+        document.getElementById("sliderAlimentacao").value = readinessData.alimentacao ?? 5;
+        document.getElementById("sliderMotivacao").value = readinessData.motivacao ?? 5;
+      } else resetReadinessData()
     }
   } catch (e) {
     console.error("Erro ao carregar readiness:", e)
@@ -2517,22 +2530,27 @@ function salvarReadiness() {
 }
 
 function resetReadinessData() {
-  readinessData = {
-    sono: 5,
-    stress: 5,
-    dor: 5,
-    score: 50,
-    data: null
-  }, _prevReadinessScore = 50, document.getElementById("sliderSono").value = 5, document.getElementById("sliderStress").value = 5, document.getElementById("sliderDor").value = 5, salvarReadiness()
+  readinessData = { sono: 5, stress: 5, dor: 5, energia: 5, hidratacao: 5, alimentacao: 5, motivacao: 5, score: 50, data: null };
+  _prevReadinessScore = 50;
+  ["sliderSono","sliderStress","sliderDor","sliderEnergia","sliderHidratacao","sliderAlimentacao","sliderMotivacao"].forEach(id => { document.getElementById(id).value = 5; });
+  salvarReadiness()
 }
 
 function resetReadiness() {
   resetReadinessData(), updateReadinessUI(), mostrarToast("🔄 Resetado", "Estado de Prontidão resetado para padrão.", "success")
 }
 
-function calcularReadiness(e, a, t) {
-  const o = Math.round((10 * e + 10 * (10 - a) + 10 * (10 - t)) / 3);
-  return Math.max(0, Math.min(100, o))
+function calcularReadiness(sono, stress, dor, energia, hidratacao, alimentacao, motivacao) {
+  const pts = (
+    sono * 10 +
+    (10 - stress) * 10 +
+    (10 - dor) * 10 +
+    energia * 10 +
+    hidratacao * 10 +
+    alimentacao * 10 +
+    motivacao * 10
+  ) / 7;
+  return Math.max(0, Math.min(100, Math.round(pts)))
 }
 
 function getReadinessConfig(e) {
@@ -2564,10 +2582,23 @@ function getReadinessConfig(e) {
 }
 
 function updateReadiness() {
-  const e = parseInt(document.getElementById("sliderSono").value),
-    a = parseInt(document.getElementById("sliderStress").value),
-    t = parseInt(document.getElementById("sliderDor").value);
-  readinessData.sono = e, readinessData.stress = a, readinessData.dor = t, readinessData.score = calcularReadiness(e, a, t), salvarReadiness(), updateReadinessUI()
+  const sono = parseInt(document.getElementById("sliderSono").value);
+  const stress = parseInt(document.getElementById("sliderStress").value);
+  const dor = parseInt(document.getElementById("sliderDor").value);
+  const energia = parseInt(document.getElementById("sliderEnergia").value);
+  const hidratacao = parseInt(document.getElementById("sliderHidratacao").value);
+  const alimentacao = parseInt(document.getElementById("sliderAlimentacao").value);
+  const motivacao = parseInt(document.getElementById("sliderMotivacao").value);
+  readinessData.sono = sono;
+  readinessData.stress = stress;
+  readinessData.dor = dor;
+  readinessData.energia = energia;
+  readinessData.hidratacao = hidratacao;
+  readinessData.alimentacao = alimentacao;
+  readinessData.motivacao = motivacao;
+  readinessData.score = calcularReadiness(sono, stress, dor, energia, hidratacao, alimentacao, motivacao);
+  salvarReadiness();
+  updateReadinessUI()
 }
 
 function getZonaSlider(valor, invertido) {
@@ -2576,14 +2607,38 @@ function getZonaSlider(valor, invertido) {
 }
 
 function updateReadinessUI() {
-  const e = readinessData.sono,
-    a = readinessData.stress,
-    t = readinessData.dor,
-    o = readinessData.score;
-  document.getElementById("valSono").textContent = e, document.getElementById("valStress").textContent = a, document.getElementById("valDor").textContent = t, document.getElementById("fillSono").style.width = 10 * e + "%", document.getElementById("fillStress").style.width = 10 * a + "%", document.getElementById("fillDor").style.width = 10 * t + "%";
-  document.getElementById("trackSono").setAttribute("data-zone", getZonaSlider(e, false));
-  document.getElementById("trackStress").setAttribute("data-zone", getZonaSlider(a, true));
-  document.getElementById("trackDor").setAttribute("data-zone", getZonaSlider(t, true));
+  const sono = readinessData.sono;
+  const stress = readinessData.stress;
+  const dor = readinessData.dor;
+  const energia = readinessData.energia ?? 5;
+  const hidratacao = readinessData.hidratacao ?? 5;
+  const alimentacao = readinessData.alimentacao ?? 5;
+  const motivacao = readinessData.motivacao ?? 5;
+  const o = readinessData.score;
+
+  document.getElementById("valSono").textContent = sono;
+  document.getElementById("valStress").textContent = stress;
+  document.getElementById("valDor").textContent = dor;
+  document.getElementById("valEnergia").textContent = energia;
+  document.getElementById("valHidratacao").textContent = hidratacao;
+  document.getElementById("valAlimentacao").textContent = alimentacao;
+  document.getElementById("valMotivacao").textContent = motivacao;
+
+  document.getElementById("fillSono").style.width = 10 * sono + "%";
+  document.getElementById("fillStress").style.width = 10 * stress + "%";
+  document.getElementById("fillDor").style.width = 10 * dor + "%";
+  document.getElementById("fillEnergia").style.width = 10 * energia + "%";
+  document.getElementById("fillHidratacao").style.width = 10 * hidratacao + "%";
+  document.getElementById("fillAlimentacao").style.width = 10 * alimentacao + "%";
+  document.getElementById("fillMotivacao").style.width = 10 * motivacao + "%";
+
+  document.getElementById("trackSono").setAttribute("data-zone", getZonaSlider(sono, false));
+  document.getElementById("trackStress").setAttribute("data-zone", getZonaSlider(stress, true));
+  document.getElementById("trackDor").setAttribute("data-zone", getZonaSlider(dor, true));
+  document.getElementById("trackEnergia").setAttribute("data-zone", getZonaSlider(energia, false));
+  document.getElementById("trackHidratacao").setAttribute("data-zone", getZonaSlider(hidratacao, false));
+  document.getElementById("trackAlimentacao").setAttribute("data-zone", getZonaSlider(alimentacao, false));
+  document.getElementById("trackMotivacao").setAttribute("data-zone", getZonaSlider(motivacao, false));
   const r = getReadinessConfig(o),
     s = document.getElementById("readinessCircle"),
     n = document.getElementById("readinessScore"),
