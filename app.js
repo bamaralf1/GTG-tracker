@@ -918,45 +918,14 @@ function calcularXPSerie(exercicio, valor, peso) {
 }
 
 function adicionarXP(amount) {
-  const oldTotal = xpData.total;
   xpData.total += amount;
   const level = getNivel(xpData.total),
     oldLevelName = xpData.nivel;
-  let leveledUp = false;
   if (xpData.nivel = level.nome, xpData.nivelAtualEm = level.min, xpData.proximoNivelEm = level.proximo, oldLevelName !== level.nome && "RECRUTA" !== oldLevelName || xpData.total > level.min) {
     const old = NIVEIS.find(n => n.nome === oldLevelName);
-    if (old && old.min < level.min) {
-      mostrarToast("★ PROMOÇÃO!", `Você avançou para ${level.nome} ${level.icone}`, "success");
-      dispararConfetti();
-      leveledUp = true;
-    }
+    old && old.min < level.min && (mostrarToast("★ PROMOÇÃO!", `Você avançou para ${level.nome} ${level.icone}`, "success"), dispararConfetti())
   }
-
-  // Floating XP text — positioned at fill cap
-  const floatEl = document.getElementById("xpFloatText");
-  const capEl = document.getElementById("xpFillCap");
-  if (floatEl) {
-    const capPct = capEl ? capEl.style.left : "0%";
-    floatEl.style.left = capPct;
-    floatEl.textContent = "+" + amount + " XP";
-    floatEl.classList.remove("show");
-    void floatEl.offsetWidth;
-    floatEl.classList.add("show");
-  }
-
-  // Card flash
-  const card = document.getElementById("xpCard");
-  if (card && !leveledUp) {
-    card.style.boxShadow = "0 0 30px rgba(212,168,67,0.4),inset 0 0 30px rgba(212,168,67,0.1)";
-    setTimeout(() => { card.style.boxShadow = ""; }, 500);
-  }
-
-  // Reset particles so they regenerate at new pct
-  _xpParticlesRendered = false;
-  _xpCurrentAnimated = oldTotal;
-
-  atualizarXP();
-  salvarDados();
+  atualizarXP(), salvarDados()
 }
 
 function getNivel(xp) {
@@ -969,144 +938,9 @@ function atualizarXP() {
   const level = getNivel(xpData.total),
     ratio = (xpData.total - level.min) / (level.proximo - level.min),
     pct = Math.min(100, Math.round(100 * ratio));
-
-  // Level badge
-  document.getElementById("levelIcon").textContent = level.icone;
-  document.getElementById("levelName").textContent = level.nome;
-  const lvlIdx = NIVEIS.indexOf(level);
-  document.getElementById("levelSub").textContent = "NÍVEL " + (lvlIdx + 1);
-
-  // Level ring (circumference = 2π × 26 ≈ 163.36)
-  const ringFill = document.getElementById("levelRingFill");
-  if (ringFill) ringFill.style.strokeDashoffset = 163.36 - (pct / 100) * 163.36;
-
-  // XP bar fill
-  document.getElementById("xpBarFill").style.width = pct + "%";
-
-  // XP numbers — animated counter
-  _animateXPNumber("xpCurrentNum", xpData.total);
-  document.getElementById("xpTargetNum").textContent = level.proximo.toLocaleString("pt-BR");
-
-  // Bottom labels
-  document.getElementById("xpTotalLabel").textContent = "XP TOTAL: " + xpData.total.toLocaleString("pt-BR");
-  const nextLevel = NIVEIS[lvlIdx + 1];
-  document.getElementById("xpNextLabel").textContent = nextLevel ? "PRÓXIMO: " + nextLevel.nome : "NÍVEL MÁXIMO";
-
-  // Header sync
-  document.getElementById("headerRank").textContent = level.nome;
-  document.getElementById("headerXpBar").style.width = pct + "%";
-
-  // Milestone markers
-  const barOuter = document.getElementById("xpBarOuter");
-  if (barOuter) {
-    barOuter.querySelectorAll(".xp-milestone").forEach(m => {
-      const mPct = parseFloat(m.style.left);
-      m.classList.toggle("reached", pct >= mPct);
-    });
-    // Level-up anticipation (>80%)
-    barOuter.classList.toggle("anticipate", pct >= 80 && pct < 100);
-  }
-
-  // Glow trail position
-  const trail = document.getElementById("xpGlowTrail");
-  if (trail) {
-    trail.style.left = Math.max(0, pct - 4) + "%";
-    trail.classList.toggle("active", pct > 2 && pct < 98);
-  }
-
-  // Fill end cap position
-  const cap = document.getElementById("xpFillCap");
-  if (cap) {
-    cap.style.left = pct + "%";
-    cap.classList.toggle("active", pct > 1 && pct < 99);
-  }
-
-  // Generate particles on bar
-  _renderXPBarParticles(pct);
-
-  // Streak box
-  _updateStreakBox();
-}
-
-let _xpCurrentAnimated = 0;
-let _xpAnimFrame = null;
-function _animateXPNumber(id, target) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (_xpAnimFrame) cancelAnimationFrame(_xpAnimFrame);
-  const from = _xpCurrentAnimated;
-  if (from === target) { el.textContent = target.toLocaleString("pt-BR"); return; }
-  const start = performance.now();
-  const dur = Math.min(600, Math.abs(target - from) * 3);
-  function tick(now) {
-    const p = Math.min((now - start) / dur, 1);
-    const eased = 1 - Math.pow(1 - p, 3);
-    const val = Math.round(from + (target - from) * eased);
-    el.textContent = val.toLocaleString("pt-BR");
-    if (p < 1) _xpAnimFrame = requestAnimationFrame(tick);
-    else _xpCurrentAnimated = target;
-  }
-  _xpAnimFrame = requestAnimationFrame(tick);
-}
-
-let _xpParticlesRendered = false;
-function _renderXPBarParticles(pct) {
-  const container = document.getElementById("xpBarParticles");
-  if (!container || _xpParticlesRendered) return;
-  _xpParticlesRendered = true;
-  container.innerHTML = "";
-  const count = Math.min(16, Math.max(4, Math.floor(pct / 7)));
-  for (let i = 0; i < count; i++) {
-    const dot = document.createElement("div");
-    dot.className = "xp-particle";
-    const size = 1.5 + Math.random() * 2.5;
-    dot.style.setProperty("--size", size + "px");
-    dot.style.setProperty("--top", (10 + Math.random() * 80) + "%");
-    dot.style.setProperty("--dur", (1.2 + Math.random() * 2.5) + "s");
-    dot.style.setProperty("--delay", (Math.random() * 4) + "s");
-    dot.style.setProperty("--peak-opacity", (0.4 + Math.random() * 0.5).toFixed(2));
-    container.appendChild(dot);
-  }
-}
-
-function _updateStreakBox() {
-  const box = document.getElementById("streakBox");
-  if (!box) return;
-  const s = streakData.atual;
-  const bonus = calcularBonusStreak();
-  const active = s >= 3;
-  box.classList.toggle("active", active);
-
-  // Streak progress (next tier)
-  let nextThresh = 0, nextBonus = 0;
-  if (s < 7) { nextThresh = 7; nextBonus = 10; }
-  else if (s < 14) { nextThresh = 14; nextBonus = 15; }
-  else if (s < 30) { nextThresh = 30; nextBonus = 25; }
-  else { nextThresh = 60; nextBonus = 25; }
-
-  const prevThresh = s < 7 ? 0 : s < 14 ? 7 : s < 30 ? 14 : 30;
-  const progress = Math.min(100, ((s - prevThresh) / (nextThresh - prevThresh)) * 100);
-  const pFill = document.getElementById("streakProgressFill");
-  if (pFill) pFill.style.width = progress + "%";
-
-  const nextLabel = document.getElementById("streakNext");
-  if (nextLabel) nextLabel.textContent = s >= 30 ? "BÔNUS MÁXIMO!" : `Próximo: ${nextThresh} dias → +${nextBonus}%`;
-
-  // Streak particles (only if active)
-  if (active) {
-    const sp = document.getElementById("streakParticles");
-    if (sp && !sp.children.length) {
-      for (let i = 0; i < 6; i++) {
-        const p = document.createElement("div");
-        p.className = "streak-particle";
-        p.style.setProperty("--tx", (Math.random() * 20 - 10) + "px");
-        p.style.setProperty("--ty", (-8 - Math.random() * 12) + "px");
-        p.style.setProperty("--dur", (0.8 + Math.random() * 0.6) + "s");
-        p.style.setProperty("--delay", (Math.random() * 2) + "s");
-        sp.appendChild(p);
-      }
-    }
-  }
+  document.getElementById("levelIcon").textContent = level.icone, document.getElementById("levelName").textContent = level.nome, document.getElementById("xpBarFill").style.width = pct + "%", document.getElementById("xpNumbers").textContent = `${xpData.total.toLocaleString("pt-BR")} / ${level.proximo.toLocaleString("pt-BR")} XP`, document.getElementById("xpTotalLabel").textContent = `XP TOTAL: ${xpData.total.toLocaleString("pt-BR")}`;
+  const nextLevel = NIVEIS[NIVEIS.indexOf(level) + 1];
+  document.getElementById("xpNextLabel").textContent = nextLevel ? `PRÓXIMO: ${nextLevel.nome}` : "NÍVEL MÁXIMO", document.getElementById("headerRank").textContent = level.nome, document.getElementById("headerXpBar").style.width = pct + "%"
 }
 
 function verificarBadges() {
@@ -1478,6 +1312,7 @@ function atualizarStats() {
     registrosHoje = dados.registros.filter(r => r.data === hoje),
     registrosSemana = dados.registros.filter(r => r.data >= inicioSemana);
   document.getElementById("statHoje").textContent = registrosHoje.length, document.getElementById("statRepsHoje").textContent = registrosHoje.reduce((acc, r) => acc + (r.valor || 0), 0) + " reps", document.getElementById("statSemana").textContent = registrosSemana.length, document.getElementById("statRepsSemanaSub").textContent = registrosSemana.reduce((acc, r) => acc + (r.valor || 0), 0) + " reps esta semana", document.getElementById("statTotal").textContent = dados.registros.length, document.getElementById("statTotalSub").textContent = dados.registros.reduce((acc, r) => acc + (r.valor || 0), 0).toLocaleString("pt-BR") + " reps acum."
+  typeof _renderReadinessCorrelation === "function" && _renderReadinessCorrelation();
 }
 
 function getDadosUltimasSemanas(numSemanas = 8, registrosSource) {
@@ -2239,7 +2074,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260712v"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260712x"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");
@@ -2666,9 +2501,65 @@ let _readinessUIFrame = null;
 let _readinessRafPending = false;
 let _isDragging = false;
 const READINESS_KEY = "gtg_readiness";
+const READINESS_WEIGHTS_KEY = "gtg_readiness_weights";
 const _rdCache = {};
 
+/* === Pesos de prioridade por fator ===
+ * Cada fator cicla entre BAIXA (0.7x), NORMAL (1x) e ALTA (1.5x) prioridade,
+ * permitindo personalizar quanto cada um pesa na nota final de prontidão. */
+const READINESS_FACTOR_KEYS = ["sono", "stress", "dor", "energia", "hidratacao", "alimentacao", "motivacao"];
+const PRIORITY_LEVELS = [
+  { valor: 0.7, nivel: "baixa", label: "0.7×" },
+  { valor: 1, nivel: "normal", label: "1×" },
+  { valor: 1.5, nivel: "alta", label: "1.5×" }
+];
+let readinessWeights = { sono: 1, stress: 1, dor: 1, energia: 1, hidratacao: 1, alimentacao: 1, motivacao: 1 };
+
+function carregarPesosReadiness() {
+  try {
+    const salvo = localStorage.getItem(READINESS_WEIGHTS_KEY);
+    if (salvo) Object.assign(readinessWeights, JSON.parse(salvo));
+  } catch (e) {
+    console.error("Erro ao carregar pesos de prontidão:", e);
+  }
+  READINESS_FACTOR_KEYS.forEach(atualizarChipPrioridade);
+}
+
+function salvarPesosReadiness() {
+  try {
+    localStorage.setItem(READINESS_WEIGHTS_KEY, JSON.stringify(readinessWeights));
+  } catch (e) {
+    console.error("Erro ao salvar pesos de prontidão:", e);
+  }
+}
+
+function atualizarChipPrioridade(fator) {
+  const idMap = { sono: "prioSono", stress: "prioStress", dor: "prioDor", energia: "prioEnergia", hidratacao: "prioHidratacao", alimentacao: "prioAlimentacao", motivacao: "prioMotivacao" };
+  const chip = document.getElementById(idMap[fator]);
+  if (!chip) return;
+  const atual = readinessWeights[fator] ?? 1;
+  const info = PRIORITY_LEVELS.find(p => p.valor === atual) || PRIORITY_LEVELS[1];
+  chip.textContent = info.label;
+  chip.setAttribute("data-lvl", info.nivel);
+  chip.title = "Prioridade: " + info.nivel.toUpperCase() + " — clique para alternar (afeta o cálculo da nota final)";
+}
+
+function cyclePriority(fator) {
+  const atual = readinessWeights[fator] ?? 1;
+  const idxAtual = PRIORITY_LEVELS.findIndex(p => p.valor === atual);
+  const prox = PRIORITY_LEVELS[(idxAtual + 1) % PRIORITY_LEVELS.length];
+  readinessWeights[fator] = prox.valor;
+  atualizarChipPrioridade(fator);
+  salvarPesosReadiness();
+  readinessData.score = calcularReadiness(readinessData.sono, readinessData.stress, readinessData.dor, readinessData.energia, readinessData.hidratacao, readinessData.alimentacao, readinessData.motivacao);
+  salvarReadiness();
+  updateReadinessUI();
+  const chip = document.getElementById({ sono: "prioSono", stress: "prioStress", dor: "prioDor", energia: "prioEnergia", hidratacao: "prioHidratacao", alimentacao: "prioAlimentacao", motivacao: "prioMotivacao" }[fator]);
+  if (chip) { chip.style.transform = "scale(1.25)"; setTimeout(() => { chip.style.transform = ""; }, 200); }
+}
+
 async function carregarReadiness() {
+  carregarPesosReadiness();
   try {
     const e = await getItem(READINESS_KEY) || localStorage.getItem(READINESS_KEY);
     if (e) {
@@ -2714,15 +2605,18 @@ function resetReadiness() {
 }
 
 function calcularReadiness(sono, stress, dor, energia, hidratacao, alimentacao, motivacao) {
-  const pts = (
-    sono * 10 +
-    (10 - stress) * 10 +
-    (10 - dor) * 10 +
-    energia * 10 +
-    hidratacao * 10 +
-    alimentacao * 10 +
-    motivacao * 10
-  ) / 7;
+  const w = readinessWeights;
+  const normalizados = {
+    sono: sono, stress: 10 - stress, dor: 10 - dor, energia: energia,
+    hidratacao: hidratacao, alimentacao: alimentacao, motivacao: motivacao
+  };
+  let somaPts = 0, somaPesos = 0;
+  READINESS_FACTOR_KEYS.forEach(k => {
+    const peso = w[k] ?? 1;
+    somaPts += normalizados[k] * 10 * peso;
+    somaPesos += peso;
+  });
+  const pts = somaPts / (somaPesos || 1);
   return Math.max(0, Math.min(100, Math.round(pts)))
 }
 
@@ -2889,6 +2783,9 @@ function updateReadinessUI() {
       _renderReadinessPrev();
       _renderReadinessHistory();
       _renderReadinessRec();
+      _renderReadinessInsight();
+      _renderReadinessCorrelation();
+      _renderReadinessTrendChart();
     });
     setTimeout(() => { c.circle.classList.remove("flash-green", "flash-red"); }, 700);
   }
@@ -3016,6 +2913,160 @@ function _renderReadinessRec() {
   else if (s >= 40) rec = '<strong>⚠ REDUZIDO</strong> — Metade das séries. Foco em qualidade';
   else rec = '<strong>🛑 DESCANSO</strong> — Sem treino pesado. Alongamento leve';
   el.innerHTML = rec;
+}
+
+/* === Insight automático — aponta o fator que mais está puxando a nota para baixo === */
+const READINESS_FACTOR_INFO = {
+  sono: { label: "Sono", icon: "😴", tip: "priorize dormir mais e mais cedo hoje — é a base da recuperação neural." },
+  stress: { label: "Stress", icon: "😰", tip: "uma respiração de 2min antes de treinar pode baixar o stress percebido." },
+  dor: { label: "Dor Muscular", icon: "💥", tip: "priorize mobilidade leve hoje e evite levar séries à falha." },
+  energia: { label: "Energia", icon: "⚡", tip: "considere treinar mais tarde ou reduzir a intensidade das séries." },
+  hidratacao: { label: "Hidratação", icon: "💧", tip: "beba água antes da próxima série — desidratação reduz força em até 10%." },
+  alimentacao: { label: "Alimentação", icon: "🍽️", tip: "uma refeição leve 60-90min antes melhora bastante o desempenho." },
+  motivacao: { label: "Motivação", icon: "🧠", tip: "comece com 1 série fácil só para destravar — a motivação vem depois da ação." }
+};
+
+function _renderReadinessInsight() {
+  const el = document.getElementById("readinessInsight");
+  if (!el) return;
+  const d = readinessData;
+  const normalizados = {
+    sono: d.sono, stress: 10 - d.stress, dor: 10 - d.dor, energia: d.energia,
+    hidratacao: d.hidratacao, alimentacao: d.alimentacao, motivacao: d.motivacao
+  };
+  const fatores = READINESS_FACTOR_KEYS.map(k => {
+    const peso = readinessWeights[k] ?? 1;
+    const norm = normalizados[k];
+    return { key: k, norm, peso, drag: peso * (10 - norm) };
+  }).sort((a, b) => b.drag - a.drag);
+  const pior = fatores[0];
+  if (!pior || pior.drag <= 6) {
+    el.innerHTML = '<span class="readiness-insight-icon">✅</span><span><strong>Equilíbrio total.</strong> Nenhum fator específico está te atrapalhando hoje.</span>';
+    el.style.borderLeftColor = "var(--green-bright)";
+    el.classList.remove("warn");
+  } else {
+    const info = READINESS_FACTOR_INFO[pior.key];
+    el.innerHTML = '<span class="readiness-insight-icon">' + info.icon + '</span><span><strong>' + info.label + ' (' + pior.norm.toFixed(0) + '/10)</strong> está puxando sua nota para baixo — ' + info.tip + '</span>';
+    el.style.borderLeftColor = pior.drag > 12 ? "var(--accent-red-bright)" : "var(--accent-orange)";
+    el.classList.add("warn");
+  }
+}
+
+/* === Correlação — compara a nota de prontidão com o volume realmente treinado hoje === */
+function getReadinessRange(score) {
+  if (score >= 80) return [15, 20];
+  if (score >= 60) return [8, 12];
+  if (score >= 40) return [4, 7];
+  return [0, 3];
+}
+
+function _renderReadinessCorrelation() {
+  const el = document.getElementById("readinessCorrelation");
+  if (!el) return;
+  const hoje = (new Date).toISOString().slice(0, 10);
+  const feitas = (typeof dados !== "undefined" && dados.registros) ? dados.registros.filter(r => r.data === hoje).length : 0;
+  const [min, max] = getReadinessRange(readinessData.score);
+  el.classList.remove("match", "under", "over", "pending");
+  if (feitas === 0) {
+    el.innerHTML = '<span class="readiness-corr-icon">◌</span>Nenhuma série hoje ainda — meta: <strong>' + min + '-' + max + '</strong> séries.';
+    el.classList.add("pending");
+    return;
+  }
+  let statusTxt, cls;
+  if (feitas < min) { statusTxt = "▼ ABAIXO do recomendado"; cls = "under"; }
+  else if (feitas > max) { statusTxt = "▲ ACIMA do recomendado"; cls = "over"; }
+  else { statusTxt = "✓ CONDIZENTE com a prontidão"; cls = "match"; }
+  el.innerHTML = '<span class="readiness-corr-icon">📊</span><strong>' + feitas + '</strong> séries hoje (' + min + '-' + max + ' esperado) — ' + statusTxt;
+  el.classList.add(cls);
+}
+
+/* === Tendência de 30 dias com média móvel === */
+let _readinessTrendChart = null;
+
+function toggleReadinessTrend() {
+  const panel = document.getElementById("readinessTrendPanel");
+  const btn = document.getElementById("btnReadinessTrend");
+  if (!panel) return;
+  const abrindo = !panel.classList.contains("open");
+  panel.classList.toggle("open", abrindo);
+  btn && btn.classList.toggle("active", abrindo);
+  if (abrindo) requestAnimationFrame(() => _renderReadinessTrendChart());
+}
+
+function _mediaMovelComGaps(valores, janela) {
+  return valores.map((_, i) => {
+    const inicio = Math.max(0, i - janela + 1);
+    const fatia = valores.slice(inicio, i + 1).filter(v => v !== null && v !== undefined);
+    if (!fatia.length) return null;
+    return Math.round(fatia.reduce((a, b) => a + b, 0) / fatia.length);
+  });
+}
+
+function _renderReadinessTrendChart() {
+  const canvas = document.getElementById("readinessTrendChart");
+  if (!canvas || typeof Chart === "undefined") return;
+  const panel = document.getElementById("readinessTrendPanel");
+  if (!panel || !panel.classList.contains("open")) return;
+  const history = JSON.parse(localStorage.getItem("gtg_readiness_history") || "{}");
+  const dias = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    dias.push({ key, score: history[key] ? history[key].score : null, label: d.getDate() + "/" + (d.getMonth() + 1) });
+  }
+  const scores = dias.map(d => d.score);
+  const media = _mediaMovelComGaps(scores, 3);
+  if (_readinessTrendChart) { _readinessTrendChart.destroy(); }
+  _readinessTrendChart = new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: {
+      labels: dias.map(d => d.label),
+      datasets: [
+        {
+          label: "Prontidão",
+          data: scores,
+          borderColor: cssVar("--gold") || "#D4A843",
+          backgroundColor: "rgba(212,168,67,0.08)",
+          spanGaps: true,
+          pointRadius: 2,
+          pointBackgroundColor: cssVar("--gold") || "#D4A843",
+          borderWidth: 1.5,
+          tension: 0.3,
+          fill: true
+        },
+        {
+          label: "Média móvel (3d)",
+          data: media,
+          spanGaps: true,
+          borderColor: cssVar("--accent-red-bright") || "#FF1A1A",
+          borderDash: [4, 3],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          tension: 0.35,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { labels: { color: "#9A9A9A", font: { family: "Share Tech Mono", size: 9 }, boxWidth: 10 } }
+      },
+      scales: {
+        y: {
+          min: 0, max: 100,
+          ticks: { color: "#9A9A9A", font: { family: "Share Tech Mono", size: 8 } },
+          grid: { color: "rgba(255,255,255,0.05)" }
+        },
+        x: {
+          ticks: { color: "#9A9A9A", font: { family: "Share Tech Mono", size: 8 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
+          grid: { display: false }
+        }
+      }
+    }
+  });
 }
 
 function scrollToReadiness(e) {

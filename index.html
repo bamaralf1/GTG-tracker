@@ -92,7 +92,15 @@
             </div>
           </div>
       <div class="readiness-card" id="readinessCard">
-        <div class="readiness-header"><span class="readiness-title">🎯 ESTADO DE PRONTIDÃO</span> <button class="readiness-reset" onclick="resetReadiness()" title="Resetar avaliação">↻ RESETAR</button></div>
+        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
+        <div class="readiness-header">
+          <span class="readiness-title">🎯 ESTADO DE PRONTIDÃO</span>
+          <span class="readiness-scan-status" id="readinessScanStatus"><span class="scan-dot"></span>MONITORANDO</span>
+          <div class="readiness-header-actions">
+            <button class="readiness-trend-btn" id="btnReadinessTrend" onclick="toggleReadinessTrend()" title="Ver tendência de 30 dias">📈 TENDÊNCIA</button>
+            <button class="readiness-reset" onclick="resetReadiness()" title="Resetar avaliação">↻ RESETAR</button>
+          </div>
+        </div>
         <div class="readiness-profiles">
           <button class="readiness-profile-btn" onclick="applyProfile('morning')" title="Avaliação matinal padrão">🌅 Manhã</button>
           <button class="readiness-profile-btn" onclick="applyProfile('postworkout')" title="Após treino pesado">💪 Pós-Treino</button>
@@ -102,49 +110,49 @@
         <div class="readiness-body">
           <div class="readiness-sliders">
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Quantas horas dormiu e qualidade do sono profundo">😴 Qualidade do Sono</span> <span class="readiness-slider-value" id="valSono">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Quantas horas dormiu e qualidade do sono profundo">😴 Qualidade do Sono</span> <button class="readiness-prio-chip" id="prioSono" onclick="cyclePriority('sono')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valSono">5</span></div>
               <div class="readiness-slider-track" id="trackSono">
                 <div class="readiness-slider-fill" id="fillSono" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderSono" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
               <div class="readiness-slider-ends"><span>Péssimo</span> <span>Perfeito</span></div>
             </div>
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Estresse acumulado do trabalho, vida, treinos">😰 Nível de Stress</span> <span class="readiness-slider-value" id="valStress">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Estresse acumulado do trabalho, vida, treinos">😰 Nível de Stress</span> <button class="readiness-prio-chip" id="prioStress" onclick="cyclePriority('stress')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valStress">5</span></div>
               <div class="readiness-slider-track" id="trackStress">
                 <div class="readiness-slider-fill" id="fillStress" style="width:50%;background:linear-gradient(90deg,var(--green-bright),var(--gold),var(--red),var(--red-dark))"></div><input type="range" class="readiness-slider-input" id="sliderStress" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
               <div class="readiness-slider-ends"><span>Nenhum</span> <span>Extremo</span></div>
             </div>
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Dor ou rigidez muscular residual do treino anterior">💥 Dor Muscular</span> <span class="readiness-slider-value" id="valDor">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Dor ou rigidez muscular residual do treino anterior">💥 Dor Muscular</span> <button class="readiness-prio-chip" id="prioDor" onclick="cyclePriority('dor')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valDor">5</span></div>
               <div class="readiness-slider-track" id="trackDor">
                 <div class="readiness-slider-fill" id="fillDor" style="width:50%;background:linear-gradient(90deg,var(--green-bright),var(--gold),var(--red),var(--red-dark))"></div><input type="range" class="readiness-slider-input" id="sliderDor" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
               <div class="readiness-slider-ends"><span>Nenhuma</span> <span>Incapacitante</span></div>
             </div>
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Disposição do sistema nervoso para produzir força">⚡ Nível de Energia</span> <span class="readiness-slider-value" id="valEnergia">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Disposição do sistema nervoso para produzir força">⚡ Nível de Energia</span> <button class="readiness-prio-chip" id="prioEnergia" onclick="cyclePriority('energia')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valEnergia">5</span></div>
               <div class="readiness-slider-track" id="trackEnergia">
                 <div class="readiness-slider-fill" id="fillEnergia" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderEnergia" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
               <div class="readiness-slider-ends"><span>Esgotado</span> <span>Electrizado</span></div>
             </div>
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Nível de hidratação atual — desidratação reduz força 5-10%">💧 Hidratação</span> <span class="readiness-slider-value" id="valHidratacao">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Nível de hidratação atual — desidratação reduz força 5-10%">💧 Hidratação</span> <button class="readiness-prio-chip" id="prioHidratacao" onclick="cyclePriority('hidratacao')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valHidratacao">5</span></div>
               <div class="readiness-slider-track" id="trackHidratacao">
                 <div class="readiness-slider-fill" id="fillHidratacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderHidratacao" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
               <div class="readiness-slider-ends"><span>Desidratado</span> <span>Perfeito</span></div>
             </div>
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Qualidade e timing da última refeição">🍽️ Alimentação</span> <span class="readiness-slider-value" id="valAlimentacao">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Qualidade e timing da última refeição">🍽️ Alimentação</span> <button class="readiness-prio-chip" id="prioAlimentacao" onclick="cyclePriority('alimentacao')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valAlimentacao">5</span></div>
               <div class="readiness-slider-track" id="trackAlimentacao">
                 <div class="readiness-slider-fill" id="fillAlimentacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderAlimentacao" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
               <div class="readiness-slider-ends"><span>Má</span> <span>Excelente</span></div>
             </div>
             <div class="readiness-slider-group">
-              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Vontade de treinar — GTG exige disciplina diária">🧠 Motivação</span> <span class="readiness-slider-value" id="valMotivacao">5</span></div>
+              <div class="readiness-slider-label"><span class="readiness-slider-name" title="Vontade de treinar — GTG exige disciplina diária">🧠 Motivação</span> <button class="readiness-prio-chip" id="prioMotivacao" onclick="cyclePriority('motivacao')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valMotivacao">5</span></div>
               <div class="readiness-slider-track" id="trackMotivacao">
                 <div class="readiness-slider-fill" id="fillMotivacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderMotivacao" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
@@ -174,9 +182,21 @@
               <div class="readiness-particles" id="readinessParticles"></div>
             </div>
             <div class="readiness-prev" id="readinessPrev"></div>
-            <div class="readiness-suggestion" id="readinessSuggestion"><strong>Volume normal.</strong> Foque na técnica.</div>
+            <div class="readiness-info-grid">
+              <div class="readiness-suggestion" id="readinessSuggestion"><strong>Volume normal.</strong> Foque na técnica.</div>
+              <div class="readiness-rec" id="readinessRec"></div>
+            </div>
             <div class="readiness-history" id="readinessHistory"></div>
-            <div class="readiness-rec" id="readinessRec"></div>
+            <div class="readiness-info-grid">
+              <div class="readiness-insight" id="readinessInsight"></div>
+              <div class="readiness-correlation" id="readinessCorrelation"></div>
+            </div>
+          </div>
+        </div>
+        <div class="readiness-trend-panel" id="readinessTrendPanel">
+          <div class="readiness-trend-inner">
+            <div class="readiness-trend-title"><span>📡 TENDÊNCIA — ÚLTIMOS 30 DIAS</span> <span class="readiness-trend-sub">Linha sólida: nota diária · Tracejada: média móvel de 3 dias</span></div>
+            <div class="readiness-trend-canvas-wrap"><canvas id="readinessTrendChart"></canvas></div>
           </div>
         </div>
       </div>
@@ -202,9 +222,7 @@
               <div class="xp-bar-outer" id="xpBarOuter">
                 <div class="xp-bar-fill" id="xpBarFill" style="width:0%">
                   <div class="xp-bar-particles" id="xpBarParticles"></div>
-                  <div class="xp-liquid-wave"></div>
                 </div>
-                <div class="xp-fill-cap" id="xpFillCap"></div>
                 <div class="xp-milestone" style="left:25%"></div>
                 <div class="xp-milestone" style="left:50%"></div>
                 <div class="xp-milestone" style="left:75%"></div>
