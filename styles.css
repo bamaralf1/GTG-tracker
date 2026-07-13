@@ -3321,6 +3321,334 @@ body::after{
   50%{box-shadow:0 0 18px rgba(212,168,67,0.5)}
 }
 
+/* ===========================================================================
+   READINESS CARD — ULTRA-PREMIUM SOVIET MILITARY DESIGN
+   =========================================================================== */
+
+/* --- Noise overlay --- */
+.rdy-noise{
+  position:absolute;
+  inset:0;
+  opacity:.04;
+  pointer-events:none;
+  z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:128px 128px;
+  mix-blend-mode:overlay;
+}
+
+/* --- Accent bar (replaces ::before) --- */
+.rdy-accent-bar{
+  position:absolute;
+  top:0;left:0;
+  width:4px;height:100%;
+  background:linear-gradient(180deg,var(--gold),var(--gold-dim),rgba(212,168,67,0.3));
+  box-shadow:0 0 14px rgba(212,168,67,0.5),0 0 28px rgba(212,168,67,0.2);
+  z-index:3;
+  transition:background .5s ease,box-shadow .5s ease;
+}
+.readiness-card:has(.readiness-green) .rdy-accent-bar{background:linear-gradient(180deg,var(--green-bright),rgba(68,204,68,0.4));box-shadow:0 0 14px rgba(68,204,68,0.5),0 0 28px rgba(68,204,68,0.2)}
+.readiness-card:has(.readiness-orange) .rdy-accent-bar{background:linear-gradient(180deg,var(--accent-orange),rgba(255,136,0,0.4));box-shadow:0 0 14px rgba(255,136,0,0.5),0 0 28px rgba(255,136,0,0.2)}
+.readiness-card:has(.readiness-red) .rdy-accent-bar{background:linear-gradient(180deg,var(--accent-red-bright),rgba(255,26,26,0.4));box-shadow:0 0 14px rgba(255,26,26,0.5),0 0 28px rgba(255,26,26,0.2)}
+
+/* --- Corner glow orbs --- */
+.rdy-corner-glow{
+  position:absolute;
+  width:140px;height:140px;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:0;
+  opacity:.12;
+  transition:opacity .5s ease,background .5s ease;
+}
+.rdy-corner-glow-tl{top:-40px;left:-40px;background:radial-gradient(circle,rgba(212,168,67,0.6) 0%,transparent 70%)}
+.rdy-corner-glow-br{bottom:-40px;right:-40px;background:radial-gradient(circle,rgba(212,168,67,0.4) 0%,transparent 70%)}
+.readiness-card:hover .rdy-corner-glow{opacity:.22}
+.readiness-card:has(.readiness-green) .rdy-corner-glow-tl{background:radial-gradient(circle,rgba(68,204,68,0.6) 0%,transparent 70%)}
+.readiness-card:has(.readiness-green) .rdy-corner-glow-br{background:radial-gradient(circle,rgba(68,204,68,0.4) 0%,transparent 70%)}
+.readiness-card:has(.readiness-orange) .rdy-corner-glow-tl{background:radial-gradient(circle,rgba(255,136,0,0.6) 0%,transparent 70%)}
+.readiness-card:has(.readiness-orange) .rdy-corner-glow-br{background:radial-gradient(circle,rgba(255,136,0,0.4) 0%,transparent 70%)}
+.readiness-card:has(.readiness-red) .rdy-corner-glow-tl{background:radial-gradient(circle,rgba(255,26,26,0.6) 0%,transparent 70%)}
+.readiness-card:has(.readiness-red) .rdy-corner-glow-br{background:radial-gradient(circle,rgba(255,26,26,0.4) 0%,transparent 70%)}
+
+/* --- Card background grid pattern --- */
+.readiness-card{
+  background:
+    linear-gradient(rgba(212,168,67,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(212,168,67,0.03) 1px,transparent 1px),
+    linear-gradient(135deg,rgba(212,168,67,0.08),rgba(204,0,0,0.04));
+  background-size:20px 20px,20px 20px,100% 100%;
+}
+
+/* --- Remove old ::before accent bar (replaced by div) --- */
+.readiness-card::before{display:none}
+
+/* --- Border scanner on hover --- */
+@keyframes rdyBorderScan{
+  0%{background-position:0% 0%}
+  100%{background-position:200% 0%}
+}
+.readiness-card::after{
+  content:'';
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(212,168,67,0.5) 25%,rgba(212,168,67,0.8) 50%,rgba(212,168,67,0.5) 75%,transparent 100%);
+  background-size:200% 100%;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+  z-index:4;
+  opacity:0;
+  transition:opacity .4s ease;
+  animation:rdyBorderScan 2.5s linear infinite;
+}
+.readiness-card:hover::after{opacity:1}
+.readiness-card:has(.readiness-green) ::after{background:linear-gradient(90deg,transparent 0%,rgba(68,204,68,0.5) 25%,rgba(68,204,68,0.8) 50%,rgba(68,204,68,0.5) 75%,transparent 100%);background-size:200% 100%}
+.readiness-card:has(.readiness-orange) ::after{background:linear-gradient(90deg,transparent 0%,rgba(255,136,0,0.5) 25%,rgba(255,136,0,0.8) 50%,rgba(255,136,0,0.5) 75%,transparent 100%);background-size:200% 100%}
+.readiness-card:has(.readiness-red) ::after{background:linear-gradient(90deg,transparent 0%,rgba(255,26,26,0.5) 25%,rgba(255,26,26,0.8) 50%,rgba(255,26,26,0.5) 75%,transparent 100%);background-size:200% 100%}
+
+/* --- Profile buttons — military command strip --- */
+.readiness-profile-btn{
+  font-family:'Share Tech Mono',monospace;
+  font-size:8px;
+  letter-spacing:0.8px;
+  color:var(--gray-light);
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  padding:4px 10px;
+  border-radius:2px;
+  cursor:pointer;
+  transition:all .25s var(--ease-expo);
+  position:relative;
+  overflow:hidden;
+  text-transform:uppercase;
+}
+.readiness-profile-btn::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0.06) 0%,transparent 50%);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .25s ease;
+}
+.readiness-profile-btn:hover{
+  color:var(--gold);
+  border-color:rgba(212,168,67,0.4);
+  background:rgba(212,168,67,0.08);
+  box-shadow:0 0 12px rgba(212,168,67,0.2),inset 0 0 8px rgba(212,168,67,0.1);
+  transform:translateY(-1px);
+}
+.readiness-profile-btn:hover::before{opacity:1}
+.readiness-profile-btn:active{
+  transform:translateY(0);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,0.4);
+}
+
+/* --- Score circle — enhanced ring glow pulse --- */
+.readiness-circle{
+  box-shadow:
+    0 0 30px rgba(0,0,0,0.5),
+    inset 0 0 20px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.05);
+}
+.readiness-green .readiness-circle{
+  box-shadow:
+    0 0 40px rgba(68,204,68,0.3),
+    inset 0 0 24px rgba(68,204,68,0.12),
+    0 0 0 1px rgba(68,204,68,0.2),
+    0 0 60px rgba(68,204,68,0.15);
+  animation:rdyRingPulseGreen 3s ease-in-out infinite;
+}
+.readiness-yellow .readiness-circle{
+  box-shadow:
+    0 0 40px rgba(255,204,0,0.3),
+    inset 0 0 24px rgba(255,204,0,0.12),
+    0 0 0 1px rgba(255,204,0,0.2),
+    0 0 60px rgba(255,204,0,0.15);
+  animation:rdyRingPulseYellow 3s ease-in-out infinite;
+}
+.readiness-orange .readiness-circle{
+  box-shadow:
+    0 0 40px rgba(255,136,0,0.35),
+    inset 0 0 24px rgba(255,136,0,0.12),
+    0 0 0 1px rgba(255,136,0,0.2),
+    0 0 60px rgba(255,136,0,0.15);
+  animation:rdyRingPulseOrange 3s ease-in-out infinite;
+}
+.readiness-red .readiness-circle{
+  box-shadow:
+    0 0 40px rgba(255,26,26,0.35),
+    inset 0 0 24px rgba(255,26,26,0.12),
+    0 0 0 1px rgba(255,26,26,0.2),
+    0 0 60px rgba(255,26,26,0.15);
+  animation:rdyRingPulseRed 3s ease-in-out infinite;
+}
+@keyframes rdyRingPulseGreen{0%,100%{box-shadow:0 0 40px rgba(68,204,68,0.3),inset 0 0 24px rgba(68,204,68,0.12),0 0 0 1px rgba(68,204,68,0.2),0 0 60px rgba(68,204,68,0.15)}50%{box-shadow:0 0 50px rgba(68,204,68,0.45),inset 0 0 30px rgba(68,204,68,0.18),0 0 0 1px rgba(68,204,68,0.3),0 0 80px rgba(68,204,68,0.25)}}
+@keyframes rdyRingPulseYellow{0%,100%{box-shadow:0 0 40px rgba(255,204,0,0.3),inset 0 0 24px rgba(255,204,0,0.12),0 0 0 1px rgba(255,204,0,0.2),0 0 60px rgba(255,204,0,0.15)}50%{box-shadow:0 0 50px rgba(255,204,0,0.45),inset 0 0 30px rgba(255,204,0,0.18),0 0 0 1px rgba(255,204,0,0.3),0 0 80px rgba(255,204,0,0.25)}}
+@keyframes rdyRingPulseOrange{0%,100%{box-shadow:0 0 40px rgba(255,136,0,0.35),inset 0 0 24px rgba(255,136,0,0.12),0 0 0 1px rgba(255,136,0,0.2),0 0 60px rgba(255,136,0,0.15)}50%{box-shadow:0 0 50px rgba(255,136,0,0.5),inset 0 0 30px rgba(255,136,0,0.18),0 0 0 1px rgba(255,136,0,0.3),0 0 80px rgba(255,136,0,0.25)}}
+@keyframes rdyRingPulseRed{0%,100%{box-shadow:0 0 40px rgba(255,26,26,0.35),inset 0 0 24px rgba(255,26,26,0.12),0 0 0 1px rgba(255,26,26,0.2),0 0 60px rgba(255,26,26,0.15)}50%{box-shadow:0 0 50px rgba(255,26,26,0.5),inset 0 0 30px rgba(255,26,26,0.18),0 0 0 1px rgba(255,26,26,0.3),0 0 80px rgba(255,26,26,0.25)}}
+
+/* --- Slider track — enhanced border glow --- */
+.readiness-slider-track{
+  border:1px solid rgba(212,168,67,0.15);
+  transition:border-color .3s ease,box-shadow .3s ease,background .3s ease;
+}
+.readiness-slider-track:hover{
+  border-color:rgba(212,168,67,0.3);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.5),0 0 8px rgba(212,168,67,0.15);
+}
+
+/* --- Suggestion box — military intel style --- */
+.readiness-suggestion{
+  border-left:3px solid var(--gold);
+  position:relative;
+  overflow:hidden;
+}
+.readiness-suggestion::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,rgba(212,168,67,0.04) 0%,transparent 30%);
+  pointer-events:none;
+}
+
+/* --- History bar chart — enhanced --- */
+.readiness-history{
+  border:1px solid rgba(255,255,255,0.06);
+  position:relative;
+}
+.readiness-history::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(212,168,67,0.02) 0%,transparent 100%);
+  pointer-events:none;
+}
+
+/* --- Insight banner — enhanced left accent --- */
+.readiness-insight{
+  border-left:3px solid var(--gold);
+  position:relative;
+}
+.readiness-insight::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,rgba(212,168,67,0.03) 0%,transparent 25%);
+  pointer-events:none;
+}
+
+/* --- Correlation chip — enhanced --- */
+.readiness-correlation{
+  position:relative;
+  overflow:hidden;
+}
+.readiness-correlation::before{
+  content:'';
+  position:absolute;
+  top:50%;left:-100%;
+  width:60%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+  animation:corrShimmer 4s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes corrShimmer{
+  0%{left:-100%}
+  100%{left:200%}
+}
+
+/* --- Trend panel — enhanced --- */
+.readiness-trend-inner{
+  position:relative;
+}
+.readiness-trend-inner::before{
+  content:'';
+  position:absolute;
+  top:0;left:10%;right:10%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(212,168,67,0.3),transparent);
+}
+
+/* --- Priority chips — enhanced --- */
+.readiness-prio-chip{
+  position:relative;
+  overflow:hidden;
+}
+.readiness-prio-chip::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.08) 0%,transparent 70%);
+  opacity:0;
+  transition:opacity .2s ease;
+  pointer-events:none;
+}
+.readiness-prio-chip:hover::before{opacity:1}
+
+/* --- Reset button — enhanced --- */
+.readiness-reset{
+  position:relative;
+  overflow:hidden;
+}
+.readiness-reset::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0.06) 0%,transparent 50%);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .2s ease;
+}
+.readiness-reset:hover::before{opacity:1}
+
+/* --- Trend button — enhanced --- */
+.readiness-trend-btn{
+  position:relative;
+  overflow:hidden;
+}
+.readiness-trend-btn::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0.06) 0%,transparent 50%);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .2s ease;
+}
+.readiness-trend-btn:hover::before{opacity:1}
+
+/* ===========================================================================
+   LIGHT THEME OVERRIDES — READINESS PREMIUM
+   =========================================================================== */
+[data-theme=light] .rdy-noise{opacity:.025;mix-blend-mode:multiply}
+[data-theme=light] .rdy-accent-bar{box-shadow:0 0 8px rgba(184,134,11,0.3),0 0 16px rgba(184,134,11,0.1)}
+[data-theme=light] .rdy-corner-glow{opacity:.08}
+[data-theme=light] .readiness-card:hover .rdy-corner-glow{opacity:.14}
+[data-theme=light] .readiness-card{
+  background:
+    linear-gradient(rgba(184,134,11,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(184,134,11,0.04) 1px,transparent 1px),
+    linear-gradient(135deg,rgba(184,134,11,0.06),rgba(139,0,0,0.03));
+  background-size:20px 20px,20px 20px,100% 100%;
+}
+[data-theme=light] .readiness-card::after{opacity:0!important}
+[data-theme=light] .readiness-card:hover::after{opacity:.6!important}
+[data-theme=light] .readiness-profile-btn{background:rgba(0,0,0,0.02);border-color:rgba(0,0,0,0.08)}
+[data-theme=light] .readiness-profile-btn:hover{background:rgba(184,134,11,0.06);border-color:rgba(184,134,11,0.3);box-shadow:0 0 8px rgba(184,134,11,0.15)}
+[data-theme=light] .readiness-slider-track{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.08)}
+[data-theme=light] .readiness-slider-track:hover{border-color:rgba(184,134,11,0.2)}
+[data-theme=light] .readiness-history{background:rgba(0,0,0,0.02);border-color:rgba(0,0,0,0.06)}
+[data-theme=light] .readiness-suggestion{background:rgba(184,134,11,0.04);border-color:rgba(184,134,11,0.15)}
+[data-theme=light] .readiness-insight{background:rgba(184,134,11,0.03);border-color:rgba(184,134,11,0.12)}
+[data-theme=light] .readiness-correlation{background:rgba(0,0,0,0.02);border-color:rgba(0,0,0,0.06)}
+[data-theme=light] .readiness-rec{background:rgba(45,139,45,0.04);border-color:rgba(45,139,45,0.12)}
+
 /* === LIGHT THEME (Warm off-white, elevated) === */
 [data-theme=light]{
   --red:#8B0000;
