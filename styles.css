@@ -628,15 +628,15 @@ body::after{
 .tp-corner-glow-br{bottom:-15px;right:-15px;background:radial-gradient(circle,rgba(212,168,67,.08),transparent);animation-delay:2.5s}
 @keyframes tpCornerPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.9;transform:scale(1.12)}}
 .tp-header-row{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.tp-header-row .card-title{white-space:nowrap}
 .tp-icon-wrap{position:relative;width:28px;height:28px;flex-shrink:0}
 .tp-icon-ring{position:absolute;inset:-2px;border-radius:50%;border:1.5px solid rgba(204,0,0,.2);animation:tpRingPulse 3s ease-in-out infinite}
 @keyframes tpRingPulse{0%,100%{border-color:rgba(204,0,0,.2)}50%{border-color:rgba(212,168,67,.35);box-shadow:0 0 10px rgba(212,168,67,.12)}}
 .tp-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;filter:drop-shadow(0 0 6px rgba(204,0,0,.4))}
-.sb-card-timer-premium .sb-timer-ring-wrap{position:relative}
+.sb-card-timer-premium .sb-timer-ring-wrap{position:relative;width:180px;height:180px;margin:0 auto 12px}
 .sb-card-timer-premium .sb-timer-ring-bg{stroke:rgba(255,255,255,.04)}
 .sb-card-timer-premium .sb-timer-ring-fill{filter:drop-shadow(0 0 6px rgba(212,168,67,.3))}
 .sb-card-timer-premium .sb-timer-ring-fill.running{filter:drop-shadow(0 0 12px rgba(255,59,48,.6))}
-.sb-card-timer-premium .sb-timer-center{position:relative}
 .sb-card-timer-premium .sb-timer-label{letter-spacing:4px}
 .sb-card-timer-premium .sb-timer-digits{position:relative}
 .sb-card-timer-premium .sb-timer-btns .btn{transition:all .25s var(--ease-expo);position:relative;overflow:hidden}
