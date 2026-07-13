@@ -2429,110 +2429,57 @@ body::after{
 }
 .foco-banner.active{display:block;animation:tabFade .4s var(--ease-expo)}
 
-/* === SHIELD DISPLAY === */
-.streak-shield-display{display:flex;align-items:center;gap:6px;margin-left:8px}
-.shield-icon{
+/* === SHIELD STAR — SINGLE ANIMATED RED STAR === */
+.streak-shield-display{display:flex;align-items:center;margin-left:8px}
+.shield-star{
   position:relative;
-  display:inline-flex;
+  display:none;
   align-items:center;
   justify-content:center;
-  width:26px;height:26px;
-  filter:grayscale(1) opacity(0.3);
-  transition:all .4s var(--ease-expo);
+  width:32px;height:32px;
+  border-radius:50%;
   cursor:default;
 }
-.shield-shape{
-  font-size:18px;
-  color:var(--gray);
-  transition:all .4s var(--ease-expo);
+.shield-star.has-shields{display:flex}
+.shield-star-icon{
+  font-size:22px;
+  color:var(--red-bright);
   position:relative;
   z-index:2;
+  filter:drop-shadow(0 0 6px rgba(255,59,48,0.6)) drop-shadow(0 0 12px rgba(255,59,48,0.3));
+  animation:shieldStarFloat 3s ease-in-out infinite,shieldStarGlow 2s ease-in-out infinite;
 }
-.shield-glow{
+.shield-star-count{
   position:absolute;
-  inset:-6px;
+  bottom:-2px;right:-4px;
+  background:var(--red);
+  color:#fff;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:10px;
+  min-width:16px;height:16px;
   border-radius:50%;
-  background:radial-gradient(circle,rgba(255,26,26,0.4) 0%,transparent 70%);
-  opacity:0;
-  transition:opacity .4s ease;
-  pointer-events:none;
-  z-index:0;
+  display:flex;align-items:center;justify-content:center;
+  z-index:3;
+  box-shadow:0 0 8px rgba(255,59,48,0.5);
+  line-height:1;
 }
-.shield-ring{
-  position:absolute;
-  inset:-3px;
-  border-radius:50%;
-  border:2px solid transparent;
-  transition:all .4s var(--ease-expo);
-  pointer-events:none;
-  z-index:1;
+@keyframes shieldStarFloat{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  25%{transform:translateY(-2px) rotate(-4deg)}
+  50%{transform:translateY(1px) rotate(2deg)}
+  75%{transform:translateY(-1px) rotate(-2deg)}
 }
-/* Active shield — RED MILITARY with insane animation */
-.shield-icon.active{
-  filter:none;
-  opacity:1;
-}
-.shield-icon.active .shield-shape{
-  color:var(--red-bright);
-  text-shadow:
-    0 0 10px rgba(255,59,48,0.8),
-    0 0 20px rgba(255,59,48,0.5),
-    0 0 40px rgba(255,59,48,0.3),
-    0 0 60px rgba(255,59,48,0.15);
-  animation:shieldRedPulse 2s ease-in-out infinite;
-}
-.shield-icon.active .shield-glow{
-  opacity:1;
-  animation:shieldGlowPulse 2s ease-in-out infinite;
-}
-.shield-icon.active .shield-ring{
-  border-color:rgba(255,59,48,0.5);
-  box-shadow:0 0 8px rgba(255,59,48,0.4),inset 0 0 8px rgba(255,59,48,0.2);
-  animation:shieldRingSpin 4s linear infinite,shieldRingPulse 2s ease-in-out infinite;
-}
-@keyframes shieldRedPulse{
+@keyframes shieldStarGlow{
   0%,100%{
-    transform:scale(1);
-    text-shadow:0 0 10px rgba(255,59,48,0.8),0 0 20px rgba(255,59,48,0.5),0 0 40px rgba(255,59,48,0.3);
-  }
-  25%{
-    transform:scale(1.15) rotate(-3deg);
-    text-shadow:0 0 15px rgba(255,59,48,1),0 0 30px rgba(255,59,48,0.7),0 0 50px rgba(255,59,48,0.4),0 0 70px rgba(255,59,48,0.2);
+    filter:drop-shadow(0 0 6px rgba(255,59,48,0.6)) drop-shadow(0 0 12px rgba(255,59,48,0.3));
   }
   50%{
-    transform:scale(1.05) rotate(2deg);
-    text-shadow:0 0 12px rgba(255,59,48,0.9),0 0 25px rgba(255,59,48,0.6),0 0 45px rgba(255,59,48,0.35);
-  }
-  75%{
-    transform:scale(1.18) rotate(-1deg);
-    text-shadow:0 0 18px rgba(255,59,48,1),0 0 35px rgba(255,59,48,0.8),0 0 55px rgba(255,59,48,0.45),0 0 80px rgba(255,59,48,0.25);
+    filter:drop-shadow(0 0 10px rgba(255,59,48,0.9)) drop-shadow(0 0 20px rgba(255,59,48,0.5)) drop-shadow(0 0 30px rgba(255,59,48,0.2));
   }
 }
-@keyframes shieldGlowPulse{
-  0%,100%{opacity:.5;transform:scale(1)}
-  50%{opacity:1;transform:scale(1.3)}
-}
-@keyframes shieldRingSpin{
-  0%{transform:rotate(0deg)}
-  100%{transform:rotate(360deg)}
-}
-@keyframes shieldRingPulse{
-  0%,100%{box-shadow:0 0 8px rgba(255,59,48,0.4),inset 0 0 8px rgba(255,59,48,0.2)}
-  50%{box-shadow:0 0 16px rgba(255,59,48,0.7),inset 0 0 12px rgba(255,59,48,0.3),0 0 32px rgba(255,59,48,0.3)}
-}
-/* Shield burst on activate */
-.shield-icon.active .shield-shape::after{
-  content:'';
-  position:absolute;
-  inset:-8px;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(255,59,48,0.6) 0%,transparent 70%);
-  animation:shieldBurst .6s ease-out;
-  pointer-events:none;
-}
-@keyframes shieldBurst{
-  0%{transform:scale(0.3);opacity:1}
-  100%{transform:scale(2.5);opacity:0}
+@keyframes shieldStarBurst{
+  0%{transform:scale(0.5);opacity:1}
+  100%{transform:scale(3);opacity:0}
 }
 .btn-shield{
   background:rgba(212,168,67,0.15);
@@ -2886,12 +2833,13 @@ body::after{
 [data-theme=light] .exercise-card .ex-corner-glow{opacity:.03}
 [data-theme=light] .exercise-card:hover .ex-corner-glow{opacity:.08}
 [data-theme=light] .level-badge::before{opacity:.15}
-[data-theme=light] .shield-icon.active .shield-shape{
-  color:#1A4A7A;
-  text-shadow:0 0 10px rgba(26,74,122,0.5),0 0 20px rgba(80,160,240,0.2);
+[data-theme=light] .shield-star-icon{
+  color:#1A4A7A !important;
+  filter:drop-shadow(0 0 6px rgba(26,74,122,0.4)) drop-shadow(0 0 12px rgba(26,74,122,0.2)) !important;
 }
-[data-theme=light] .shield-icon.active .shield-glow{
-  background:radial-gradient(circle,rgba(26,74,122,0.2) 0%,rgba(80,160,240,0.08) 50%,transparent 70%);
+[data-theme=light] .shield-star-count{
+  background:#1A4A7A !important;
+  box-shadow:0 0 8px rgba(26,74,122,0.4) !important;
 }
 
 /* === UNDO BAR === */
@@ -6489,8 +6437,8 @@ html { transition: background-color 0.5s ease }
 
 /* ── LEVEL BADGE / SHIELD ──────────────────────────────────────────── */
 [data-theme=light] .level-badge::before{opacity:.3 !important}
-[data-theme=light] .shield-icon.active .shield-shape{color:#2A6DB0 !important;text-shadow:0 0 8px rgba(42,109,176,0.2) !important}
-[data-theme=light] .shield-icon.active .shield-glow{background:radial-gradient(circle,rgba(42,109,176,0.12) 0%,transparent 70%) !important}
+[data-theme=light] .shield-star-icon{color:#2A6DB0 !important;filter:drop-shadow(0 0 6px rgba(42,109,176,0.3)) !important}
+[data-theme=light] .shield-star-count{background:#2A6DB0 !important;box-shadow:0 0 8px rgba(42,109,176,0.3) !important}
 
 /* ████████████████████████████████████████████████████████████████████████
    ██  СИБИРЬ — LAYOUT RESHAPE: SINGLE COLUMN, MINIMAL, MODERN       ██
@@ -6674,7 +6622,6 @@ html { transition: background-color 0.5s ease }
 }
 [data-theme=light] .streak-fire{filter:none !important;font-size:14px !important}
 [data-theme=light] .streak-label{display:none !important}
-[data-theme=light] .streak-shield-display{display:none !important}
 [data-theme=light] .header-date{
   font-size:10px !important;
   color:#8FA4BC !important;

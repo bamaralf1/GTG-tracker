@@ -2473,7 +2473,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260713o"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260713p"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");
@@ -2741,9 +2741,11 @@ function aplicarModoFoco() {
 }
 
 function atualizarDisplayShields() {
-  for (let i = 1; i <= 3; i++) {
-    const icon = document.getElementById("shieldIcon" + i);
-    icon && icon.classList.toggle("active", i <= streakData.streakShields)
+  const star = document.getElementById("shieldStar");
+  const count = document.getElementById("shieldCount");
+  if (star) {
+    star.classList.toggle("has-shields", streakData.streakShields > 0);
+    if (count) count.textContent = streakData.streakShields;
   }
   const countDisplay = document.getElementById("shieldCountDisplay");
   countDisplay && (countDisplay.textContent = streakData.streakShields + " / 3");
