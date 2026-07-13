@@ -621,13 +621,18 @@ body::after{
    ================================================================ */
 .sb-card-timer-premium{position:relative;background:linear-gradient(135deg,rgba(204,0,0,.05),rgba(12,12,12,.98) 25%,rgba(12,12,12,.98) 75%,rgba(212,168,67,.04));border:1px solid rgba(255,255,255,.06)}
 .sb-card-timer-premium::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(204,0,0,.3),transparent)}
+.sb-card-timer-premium::after{content:'';position:absolute;top:-1px;left:-1px;right:-1px;bottom:-1px;border-radius:inherit;background:conic-gradient(from var(--tp-scan,0deg),transparent 0%,rgba(204,0,0,.2) 8%,transparent 16%);pointer-events:none;opacity:0;transition:opacity .4s;z-index:0;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:xor;-webkit-mask-composite:xor;padding:1px}
+.sb-card-timer-premium:hover::after{opacity:1;animation:tpBorderScan 3s linear infinite}
+@keyframes tpBorderScan{from{--tp-scan:0deg}to{--tp-scan:360deg}}
+@property --tp-scan{syntax:'<angle>';initial-value:0deg;inherits:false}
 .tp-accent-bar{position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--red),rgba(204,0,0,.1));border-radius:0 2px 2px 0}
 .tp-noise{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:128px 128px}
 .tp-corner-glow{position:absolute;width:70px;height:70px;border-radius:50%;filter:blur(25px);pointer-events:none;animation:tpCornerPulse 5s ease-in-out infinite}
 .tp-corner-glow-tl{top:-15px;left:-15px;background:radial-gradient(circle,rgba(204,0,0,.12),transparent);animation-delay:0s}
 .tp-corner-glow-br{bottom:-15px;right:-15px;background:radial-gradient(circle,rgba(212,168,67,.08),transparent);animation-delay:2.5s}
 @keyframes tpCornerPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.9;transform:scale(1.12)}}
-.tp-header-row{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.sb-card-timer-premium .card-header{flex-direction:column;align-items:stretch;gap:8px;padding:12px 16px}
+.tp-header-row{display:flex;align-items:center;gap:8px}
 .tp-header-row .card-title{white-space:nowrap}
 .tp-icon-wrap{position:relative;width:28px;height:28px;flex-shrink:0}
 .tp-icon-ring{position:absolute;inset:-2px;border-radius:50%;border:1.5px solid rgba(204,0,0,.2);animation:tpRingPulse 3s ease-in-out infinite}
@@ -635,10 +640,14 @@ body::after{
 .tp-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;filter:drop-shadow(0 0 6px rgba(204,0,0,.4))}
 .sb-card-timer-premium .sb-timer-ring-wrap{position:relative;width:180px;height:180px;margin:0 auto 12px}
 .sb-card-timer-premium .sb-timer-ring-bg{stroke:rgba(255,255,255,.04)}
-.sb-card-timer-premium .sb-timer-ring-fill{filter:drop-shadow(0 0 6px rgba(212,168,67,.3))}
-.sb-card-timer-premium .sb-timer-ring-fill.running{filter:drop-shadow(0 0 12px rgba(255,59,48,.6))}
+.sb-card-timer-premium .sb-timer-ring-fill{filter:drop-shadow(0 0 6px rgba(212,168,67,.3));transition:filter .4s}
+.sb-card-timer-premium .sb-timer-ring-fill.running{filter:drop-shadow(0 0 16px rgba(255,59,48,.7));animation:tpRingRunningGlow 1.5s ease-in-out infinite}
+@keyframes tpRingRunningGlow{0%,100%{filter:drop-shadow(0 0 16px rgba(255,59,48,.7))}50%{filter:drop-shadow(0 0 28px rgba(255,59,48,.9)) drop-shadow(0 0 8px rgba(255,59,48,.4))}}
 .sb-card-timer-premium .sb-timer-label{letter-spacing:4px}
 .sb-card-timer-premium .sb-timer-digits{position:relative}
+.sb-card-timer-premium .sb-timer-digits.running{animation:tpDigitPulse 1s ease-in-out infinite}
+@keyframes tpDigitPulse{0%,100%{text-shadow:0 0 40px rgba(255,59,48,.55),0 0 80px rgba(255,59,48,.25)}50%{text-shadow:0 0 60px rgba(255,59,48,.7),0 0 100px rgba(255,59,48,.35),0 0 4px rgba(255,59,48,.9)}}
+.sb-card-timer-premium .sb-timer-btns{position:relative;z-index:1}
 .sb-card-timer-premium .sb-timer-btns .btn{transition:all .25s var(--ease-expo);position:relative;overflow:hidden}
 .sb-card-timer-premium .sb-timer-btns .btn:hover{transform:scale(1.03)}
 .sb-card-timer-premium .sb-timer-btns .btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);opacity:0;transition:opacity .2s}
@@ -679,6 +688,8 @@ body::after{
 [data-theme=light] .sb-card-timer-premium .tp-accent-bar{background:linear-gradient(180deg,var(--red),rgba(204,0,0,.15))}
 [data-theme=light] .sb-card-timer-premium .tp-noise{opacity:.015}
 [data-theme=light] .sb-card-timer-premium .sb-timer-ring-bg{stroke:rgba(0,0,0,.06)}
+[data-theme=light] .sb-card-timer-premium::after{background:conic-gradient(from var(--tp-scan,0deg),transparent 0%,rgba(204,0,0,.12) 8%,transparent 16%)}
+[data-theme=light] .sb-card-timer-premium:hover{box-shadow:0 8px 32px rgba(0,0,0,.06),0 0 12px rgba(204,0,0,.04)}
 
 /* === GRIDS === */
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
