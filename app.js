@@ -2473,7 +2473,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260713k"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260713l"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");
@@ -4065,18 +4065,22 @@ function aplicarTema(e) {
   if (a) {
     if (e === "light") {
       a.textContent = "❄";
-      a.title = "Тема СИБИРЬ — Tema Sibéria";
-      a.style.borderColor = "rgba(100,140,180,0.4)";
-      a.style.color = "#4A6B8A";
-      a.style.background = "linear-gradient(135deg,rgba(200,220,240,0.2),rgba(180,210,240,0.1))";
-      a.style.boxShadow = "0 0 8px rgba(100,160,220,0.3)";
+      a.title = "СИБИРЬ — Nordic Frost";
+      a.style.borderColor = "rgba(160,195,230,0.3)";
+      a.style.color = "#5A7090";
+      a.style.background = "rgba(255,255,255,0.5)";
+      a.style.boxShadow = "0 2px 8px rgba(20,50,80,0.06)";
+      a.style.borderRadius = "10px";
+      a.style.backdropFilter = "blur(8px)";
     } else {
       a.textContent = "📡";
-      a.title = "РАДАР — Tema Radar Vermelho";
+      a.title = "РАДАР — Red Radar";
       a.style.borderColor = "rgba(255,26,26,0.3)";
       a.style.color = "inherit";
       a.style.background = "rgba(255,26,26,0.08)";
       a.style.boxShadow = "0 0 8px rgba(255,26,26,0.2)";
+      a.style.borderRadius = "4px";
+      a.style.backdropFilter = "none";
     }
   }
 }
