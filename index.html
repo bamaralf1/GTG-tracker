@@ -309,6 +309,55 @@
         </div>
       </div>
       <div class="foco-banner" id="focoBanner">🔥 MODO FOCO ATIVO — <span id="focoBannerEx">NENHUM EXERCÍCIO SELECIONADO</span></div>
+      <div class="card sb-card sb-card-warmup">
+        <div class="sb-warmup-header">
+          <span class="sb-warmup-shield">⚡</span>
+          <div class="sb-warmup-title">ATIVAÇÃO PRÉ-COMBATE</div>
+          <span class="sb-warmup-badge" id="warmupBadge">0/4</span>
+        </div>
+        <div class="sb-warmup-sub">AQUECIMENTO DINÂMICO · PAVEL TSATSOULINE</div>
+        <div class="sb-warmup-list" id="warmupList">
+          <div class="sb-warmup-item" data-idx="0" onclick="toggleWarmup(0)">
+            <div class="sb-warmup-circle"><span class="sb-warmup-num">1</span><span class="sb-warmup-check">✓</span></div>
+            <div class="sb-warmup-info">
+              <div class="sb-warmup-name">AGACHAMENTO DE MOBILIDADE</div>
+              <div class="sb-warmup-desc">Prying Goblet Squat — segure o fundo 5s, alongue ativamente</div>
+            </div>
+            <span class="sb-warmup-time">30s</span>
+          </div>
+          <div class="sb-warmup-item" data-idx="1" onclick="toggleWarmup(1)">
+            <div class="sb-warmup-circle"><span class="sb-warmup-num">2</span><span class="sb-warmup-check">✓</span></div>
+            <div class="sb-warmup-info">
+              <div class="sb-warmup-name">CÍRCULO DE OMBROS</div>
+              <div class="sb-warmup-desc">Halos — gire ao redor da cabeça, cotovelos para trás, ritmo controlado</div>
+            </div>
+            <span class="sb-warmup-time">30s</span>
+          </div>
+          <div class="sb-warmup-item" data-idx="2" onclick="toggleWarmup(2)">
+            <div class="sb-warmup-circle"><span class="sb-warmup-num">3</span><span class="sb-warmup-check">✓</span></div>
+            <div class="sb-warmup-info">
+              <div class="sb-warmup-name">PONTE DE GLÚTEOS</div>
+              <div class="sb-warmup-desc">Hip Bridge — aperte glúteos no topo, segure 2s, desça controlado</div>
+            </div>
+            <span class="sb-warmup-time">30s</span>
+          </div>
+          <div class="sb-warmup-item" data-idx="3" onclick="toggleWarmup(3)">
+            <div class="sb-warmup-circle"><span class="sb-warmup-num">4</span><span class="sb-warmup-check">✓</span></div>
+            <div class="sb-warmup-info">
+              <div class="sb-warmup-name">LEVANTAMENTO TERRA ATIVO</div>
+              <div class="sb-warmup-desc">Active Deadlift — barra leve, ative dorsais e glúteos em cada repetição</div>
+            </div>
+            <span class="sb-warmup-time">30s</span>
+          </div>
+        </div>
+        <div class="sb-warmup-progress-wrap">
+          <div class="sb-warmup-progress" id="warmupProgress"><div class="sb-warmup-progress-fill" id="warmupProgressFill"></div></div>
+        </div>
+        <div class="sb-warmup-footer">
+          <span class="sb-warmup-status" id="warmupStatus">❄ NÃO AQUECIDO</span>
+          <span class="sb-warmup-dica">★ Suas séries GTG já são o aquecimento — esta é a ATIVAÇÃO</span>
+        </div>
+      </div>
       <div class="section-divider">
         <div class="section-divider-line"></div>
         <div class="section-divider-text">★ EXERCÍCIOS ATIVOS ★</div>
@@ -332,25 +381,64 @@
       </div>
         </div>
         <div class="treino-sidebar" style="width:400px;flex-shrink:0;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;">
-          <div class="card sb-card" style="padding:16px 18px;margin:0;">
-            <div id="fraseMotivacional" class="sb-quote">
-              <div class="sb-quote-icon">☭</div>
-              <div style="flex:1;min-width:0">
-                <div class="sb-quote-text">"A força não tem um fim de semana."</div>
-                <div class="sb-quote-author">— Pavel</div>
-              </div>
-              <button class="btn btn-outline btn-sm" onclick="proximaFrase()" style="padding:4px 10px;font-size:12px;flex-shrink:0" title="Próxima frase">↻</button>
-            </div>
-            <div style="border-top:1px solid rgba(212,168,67,.1);margin-top:10px;padding-top:10px">
-              <div class="sb-remind-row">
-                <div style="flex:1;min-width:0">
-                  <span class="sb-remind-chip">⏰ LEMBRETES</span>
-                  <div id="lembreteDesc" style="font-size:10px;color:var(--gray);margin-top:3px;font-family:'Share Tech Mono',monospace;letter-spacing:.5px">DESLIGADOS</div>
+          <!-- FRASE DO DIA — Premium Quote Card -->
+          <div class="card sb-card sb-card-quote-premium" style="margin:0;overflow:hidden">
+            <div class="sq-accent-bar"></div>
+            <div class="sq-grid-pattern"></div>
+            <div class="sq-glow-orb sq-glow-orb-1"></div>
+            <div class="sq-glow-orb sq-glow-orb-2"></div>
+            <div class="sq-content">
+              <div class="sq-header">
+                <div class="sq-icon-wrap">
+                  <div class="sq-icon-ring"></div>
+                  <div class="sq-icon">☭</div>
                 </div>
-                <div style="display:flex;gap:6px">
-                  <button class="btn btn-sm" id="btnAtivarLembrete" style="background:rgba(204,0,0,.25);border:1px solid rgba(204,0,0,.5);color:var(--red-bright);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:13px;padding:5px 12px" onclick="solicitarPermissaoNotificacao()">⚡ ATIVAR</button>
-                  <button class="btn btn-sm" id="btnDesativarLembrete" style="display:none;background:rgba(45,122,45,.25);border:1px solid rgba(45,122,45,.5);color:var(--green-bright);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:13px;padding:5px 12px" onclick="desativarLembretes()">■ DESATIVAR</button>
-                  <button class="btn btn-sm" id="btnInstalarPWA" style="display:none;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.4);color:var(--gold);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:13px;padding:5px 12px" onclick="instalarPWA()">📲 INSTALAR</button>
+                <div class="sq-label-wrap">
+                  <span class="sq-label">FRASE DO DIA</span>
+                  <span class="sq-label-sub">MOTIVAÇÃO MILITAR</span>
+                </div>
+                <button class="sq-next-btn" onclick="proximaFrase()" title="Próxima frase">↻</button>
+              </div>
+              <div class="sq-divider"><div class="sq-divider-line"></div><div class="sq-divider-diamond">◆</div><div class="sq-divider-line"></div></div>
+              <div id="fraseMotivacional" class="sb-quote">
+                <div class="frase-texto">"A força não tem um fim de semana."</div>
+                <div class="frase-autor">— Pavel</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LEMBRETES — Premium Military Panel -->
+          <div class="card sb-card sb-card-remind-premium" style="margin:0;overflow:hidden">
+            <div class="rm-accent-bar"></div>
+            <div class="rm-scan-line"></div>
+            <div class="rm-content">
+              <div class="rm-header">
+                <div class="rm-icon-wrap">
+                  <div class="rm-icon-ring"></div>
+                  <div class="rm-icon">🔔</div>
+                </div>
+                <div class="rm-label-wrap">
+                  <span class="rm-label">CENTRO DE ALERTA</span>
+                  <div class="rm-status-row">
+                    <span class="rm-status-dot" id="rmStatusDot"></span>
+                    <span class="rm-status-text" id="lembreteDesc">DESLIGADOS</span>
+                  </div>
+                </div>
+              </div>
+              <div class="rm-btn-group">
+                <button class="rm-btn rm-btn-activate" id="btnAtivarLembrete" onclick="solicitarPermissaoNotificacao()">⚡ ATIVAR</button>
+                <button class="rm-btn rm-btn-deactivate" id="btnDesativarLembrete" style="display:none" onclick="desativarLembretes()">■ DESATIVAR</button>
+                <button class="rm-btn rm-btn-install" id="btnInstalarPWA" style="display:none" onclick="instalarPWA()">📲 INSTALAR</button>
+              </div>
+              <div class="rm-info-row">
+                <div class="rm-info-item">
+                  <span class="rm-info-icon">⏱</span>
+                  <span class="rm-info-text">INTERVALO: 20 MIN</span>
+                </div>
+                <div class="rm-info-divider"></div>
+                <div class="rm-info-item">
+                  <span class="rm-info-icon">📡</span>
+                  <span class="rm-info-text">BACKGROUND SYNC</span>
                 </div>
               </div>
             </div>

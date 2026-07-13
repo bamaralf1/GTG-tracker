@@ -843,7 +843,8 @@ let fraseAtualIndex = -1,
   dados = {
     exercicios: [],
     registros: [],
-    metas: {}
+    metas: {},
+    aquecimento: {}
   },
   undoState = {
     ultimoRegistro: null,
@@ -895,7 +896,7 @@ let fraseAtualIndex = -1,
 
 function inicializar() {
   carregarDados().then(async () => {
-    atualizarDataHeader(), renderExercicios(), renderBadges(), renderHistory(), renderGuiaExercicios(), atualizarXP(), atualizarUIStreak(), atualizarStats(), setTimeout(() => {
+    atualizarDataHeader(), renderExercicios(), renderBadges(), renderHistory(), renderGuiaExercicios(), atualizarXP(), atualizarUIStreak(), atualizarStats(), renderWarmup(), setTimeout(() => {
       renderGraficos(), renderProgresso(), renderEstatisticasMensais()
     }, 300), verificarStreak(), verificarBadges(), preencherSelects(), exibirFraseDoDia(), iniciarLembretes();
     await Promise.all([carregarReadiness(), carregarMetas(), carregarPlanejador(), carregarModoFoco()]);
@@ -963,6 +964,54 @@ function salvarDados() {
 function atualizarDataHeader() {
   const now = new Date;
   document.getElementById("headerDate").innerHTML = `${["DOM","SEG","TER","QUA","QUI","SEX","SAB"][now.getDay()]} ${String(now.getDate()).padStart(2,"0")} ${["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"][now.getMonth()]} ${now.getFullYear()}<br>\n     <span style="font-size:16px;">${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}</span>`, setTimeout(atualizarDataHeader, 3e4)
+}
+
+/* ===== AQUECIMENTO / ATIVAÇÃO PRÉ-COMBATE ===== */
+const WARMUP_DRILLS = [
+  "Agachamento de Mobilidade",
+  "Círculo de Ombros",
+  "Ponte de Glúteos",
+  "Levantamento Terra Ativo"
+];
+
+function initWarmupData() {
+  if (!dados.aquecimento) dados.aquecimento = {};
+  const hoje = (new Date).toISOString().slice(0, 10);
+  if (dados.aquecimento.data !== hoje) dados.aquecimento = { data: hoje, feitos: [] };
+}
+
+function renderWarmup() {
+  initWarmupData();
+  const feitos = dados.aquecimento.feitos || [];
+  const total = WARMUP_DRILLS.length;
+  const count = feitos.length;
+  const badge = document.getElementById("warmupBadge");
+  const progress = document.getElementById("warmupProgressFill");
+  const status = document.getElementById("warmupStatus");
+  const list = document.getElementById("warmupList");
+  if (badge) badge.textContent = count + "/" + total;
+  if (progress) progress.style.width = (count / total * 100) + "%";
+  if (status) {
+    if (count === 0) status.innerHTML = "❄ NÃO AQUECIDO";
+    else if (count < total) status.innerHTML = "🔥 AQUECENDO · " + count + "/" + total;
+    else status.innerHTML = "★ PRONTO PARA O COMBATE";
+  }
+  if (list) {
+    Array.from(list.querySelectorAll(".sb-warmup-item")).forEach(el => {
+      const idx = parseInt(el.dataset.idx);
+      el.classList.toggle("done", feitos.includes(idx));
+    });
+  }
+}
+
+function toggleWarmup(idx) {
+  initWarmupData();
+  if (!dados.aquecimento.feitos) dados.aquecimento.feitos = [];
+  const i = dados.aquecimento.feitos.indexOf(idx);
+  if (i >= 0) dados.aquecimento.feitos.splice(i, 1);
+  else dados.aquecimento.feitos.push(idx);
+  renderWarmup();
+  salvarDados();
 }
 
 function verificarStreak() {
