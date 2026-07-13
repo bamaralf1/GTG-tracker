@@ -474,77 +474,162 @@ const EXERCICIOS_DEFAULT = [{
     nome: "RECRUTA",
     icone: "🎖",
     min: 0,
-    proximo: 500
+    proximo: 1200,
+    estrelas: 0,
+    divisao: "Tropa",
+    descricao: "Seu serviço começa agora. Obedeça, treine, fortaleça-se."
   }, {
     nome: "ASPIRANTE",
     icone: "🪖",
-    min: 500,
-    proximo: 1500
+    min: 1200,
+    proximo: 3e3,
+    estrelas: 0,
+    divisao: "Tropa",
+    descricao: "O aspirante que prova seu valor a cada série executada."
   }, {
     nome: "SOLDADO",
     icone: "🔰",
-    min: 1500,
-    proximo: 3500
+    min: 3e3,
+    proximo: 6e3,
+    estrelas: 1,
+    divisao: "Tropa",
+    descricao: "A base do exército. Forja-se no aço da repetição."
   }, {
     nome: "CABO",
     icone: "⚡",
-    min: 3500,
-    proximo: 7e3
+    min: 6e3,
+    proximo: 11e3,
+    estrelas: 1,
+    divisao: "Tropa",
+    descricao: "Lidera pelo exemplo. Cada repetição é uma ordem cumprida."
   }, {
-    nome: "SARGENTO",
+    nome: "3º SARGENTO",
     icone: "⭐",
-    min: 7e3,
-    proximo: 12e3
+    min: 11e3,
+    proximo: 18e3,
+    estrelas: 2,
+    divisao: "Graduado",
+    descricao: "Graduado que impõe disciplina e precisão nos treinos."
   }, {
-    nome: "1 SARGENTO",
+    nome: "2º SARGENTO",
     icone: "🌟",
-    min: 12e3,
-    proximo: 2e4
+    min: 18e3,
+    proximo: 28e3,
+    estrelas: 2,
+    divisao: "Graduado",
+    descricao: "Veterano das séries. Sua consistência inspira a tropa."
+  }, {
+    nome: "1º SARGENTO",
+    icone: "🎗",
+    min: 28e3,
+    proximo: 42e3,
+    estrelas: 3,
+    divisao: "Graduado",
+    descricao: "O braço direito do oficial. A execução é impecável."
   }, {
     nome: "SUBTENENTE",
-    icone: "🎗",
-    min: 2e4,
-    proximo: 32e3
+    icone: "🏅",
+    min: 42e3,
+    proximo: 62e3,
+    estrelas: 3,
+    divisao: "Oficial",
+    descricao: "Ponte entre a tropa e o comando. Respeitado por todos."
   }, {
     nome: "TENENTE",
-    icone: "🏅",
-    min: 32e3,
-    proximo: 5e4
+    icone: "⚔",
+    min: 62e3,
+    proximo: 88e3,
+    estrelas: 3,
+    divisao: "Oficial",
+    descricao: "Comanda pelotões. Sua zona de combate é o corpo."
   }, {
-    nome: "CAPITAO",
-    icone: "⭐",
-    min: 5e4,
-    proximo: 75e3
+    nome: "CAPITÃO",
+    icone: "🎯",
+    min: 88e3,
+    proximo: 12e4,
+    estrelas: 4,
+    divisao: "Oficial",
+    descricao: "Lidera companhias. Estratégia e força andam juntas."
   }, {
     nome: "MAJOR",
-    icone: "⚔",
-    min: 75e3,
-    proximo: 11e4
+    icone: "🦁",
+    min: 12e4,
+    proximo: 165e3,
+    estrelas: 4,
+    divisao: "Oficial Superior",
+    descricao: "Estado-maior do corpo. Planeja a batalha diária."
   }, {
-    nome: "COMANDANTE",
-    icone: "🎯",
-    min: 11e4,
-    proximo: 16e4
+    nome: "TENENTE-CORONEL",
+    icone: "👑",
+    min: 165e3,
+    proximo: 225e3,
+    estrelas: 4,
+    divisao: "Oficial Superior",
+    descricao: "Vice-comandante. Sua resistência é lendária."
   }, {
     nome: "CORONEL",
-    icone: "🦁",
-    min: 16e4,
-    proximo: 23e4
+    icone: "🔱",
+    min: 225e3,
+    proximo: 310e3,
+    estrelas: 5,
+    divisao: "Oficial Superior",
+    descricao: "Comanda regimentos. A experiência forja o caráter."
   }, {
-    nome: "GENERAL",
-    icone: "👑",
-    min: 23e4,
-    proximo: 33e4
+    nome: "COMANDANTE",
+    icone: "★",
+    min: 310e3,
+    proximo: 42e4,
+    estrelas: 5,
+    divisao: "Alto Comando",
+    descricao: "Lidera divisões. Sua palavra é lei nos campos de treino."
+  }, {
+    nome: "GENERAL DE BRIGADA",
+    icone: "✪",
+    min: 42e4,
+    proximo: 56e4,
+    estrelas: 5,
+    divisao: "Alto Comando",
+    descricao: "Estrategista máximo. Cada movimento é calculado."
+  }, {
+    nome: "GENERAL DE DIVISÃO",
+    icone: "☭",
+    min: 56e4,
+    proximo: 75e4,
+    estrelas: 5,
+    divisao: "Alto Comando",
+    descricao: "Força motriz do exército. Lenda viva da resistência."
+  }, {
+    nome: "GENERAL DE EXÉRCITO",
+    icone: "⚡",
+    min: 75e4,
+    proximo: 1e6,
+    estrelas: 5,
+    divisao: "Alto Comando",
+    descricao: "Comando supremo das forças. Poucos alcançam este posto."
   }, {
     nome: "MARECHAL",
-    icone: "🔱",
-    min: 33e4,
-    proximo: 5e5
+    icone: "💀",
+    min: 1e6,
+    proximo: 14e5,
+    estrelas: 5,
+    divisao: "Lenda",
+    descricao: "A personificação da força soviética. Inabalável."
   }, {
-    nome: "LENDA SOVIETICA",
-    icone: "★",
-    min: 5e5,
-    proximo: 9999999
+    nome: "MARECHAL DA UNIÃO",
+    icone: "🗡",
+    min: 14e5,
+    proximo: 2e6,
+    estrelas: 5,
+    divisao: "Lenda",
+    descricao: "Guardião da chama. O corpo é uma fortaleza viva."
+  }, {
+    nome: "LENDA SOVIÉTICA",
+    icone: "☭",
+    min: 2e6,
+    proximo: 99999999,
+    estrelas: 5,
+    divisao: "Lenda",
+    descricao: "Você transcendeu o método. Você É o método."
   }],
   FRASES_PAVEL = [{
     frase: "A força não tem um fim de semana.",
@@ -916,6 +1001,19 @@ function calcularBonusStreak() {
   return streakData.atual >= 30 ? .25 : streakData.atual >= 14 ? .15 : streakData.atual >= 7 ? .1 : 0
 }
 
+function calcularRankMult() {
+  const level = getNivel(xpData.total);
+  const idx = NIVEIS.indexOf(level);
+  if (idx < 0) return 1;
+  if (idx <= 3) return 1.0;
+  if (idx <= 6) return 0.90;
+  if (idx <= 9) return 0.78;
+  if (idx <= 12) return 0.64;
+  if (idx <= 15) return 0.50;
+  if (idx <= 18) return 0.38;
+  return 0.28;
+}
+
 function calcularXPSerie(exercicio, valor, peso) {
   let base = 0;
   return "reps" === exercicio.tipo ? base = valor : "tempo" === exercicio.tipo ? base = 2 * valor : "peso" === exercicio.tipo && (base = (peso || 0) * valor), base *= 1 + calcularBonusStreak(), Math.round(base)
@@ -965,13 +1063,14 @@ function atualizarXP() {
   document.getElementById("levelIcon").textContent = level.icone;
   document.getElementById("levelName").textContent = level.nome;
   document.getElementById("levelSub").textContent = "NÍVEL " + (levelIdx + 1);
-  document.getElementById("levelRankLabel").textContent = "POSTO";
+  document.getElementById("levelRankLabel").textContent = level.divisao.toUpperCase();
   const starsEl = document.getElementById("levelStars");
-  if (starsEl) starsEl.textContent = "★".repeat(Math.min(levelIdx + 1, 5));
+  if (starsEl) starsEl.textContent = "★".repeat(Math.min(level.estrelas || 0, 7));
   const badge = document.getElementById("levelBadge");
   if (badge) {
-    const tier = levelIdx >= 10 ? 4 : levelIdx >= 7 ? 3 : levelIdx >= 4 ? 2 : 1;
-    badge.setAttribute("data-tier", tier);
+    const divMap = { Tropa:1, Graduado:2, Oficial:2, "Oficial Superior":3, "Alto Comando":4, Lenda:4 };
+    badge.setAttribute("data-tier", divMap[level.divisao] || 1);
+    badge.setAttribute("data-divisao", level.divisao);
   }
   document.getElementById("xpBarFill").style.width = pct + "%";
   document.getElementById("xpNumbers").innerHTML = '<span class="xp-current" id="xpCurrentNum">' + xpData.total.toLocaleString("pt-BR") + '</span> / <span class="xp-target" id="xpTargetNum">' + level.proximo.toLocaleString("pt-BR") + '</span> XP';
@@ -1017,6 +1116,7 @@ function atualizarXP() {
   document.getElementById("xpNextLabel").textContent = nextLevel ? "PRÓXIMO: " + nextLevel.nome : "NÍVEL MÁXIMO";
   document.getElementById("headerRank").textContent = level.nome;
   document.getElementById("headerXpBar").style.width = pct + "%";
+  document.getElementById("headerXP").setAttribute("data-estrelas", "★".repeat(Math.min(level.estrelas || 0, 7)));
   _initXPBarParticles();
   _initStreakParticles();
   _updateStreakBox();
@@ -1141,8 +1241,18 @@ function showLevelUpOverlay(level) {
   document.getElementById("levelUpIcon").textContent = level.icone;
   document.getElementById("levelUpName").textContent = level.nome;
   const starsEl = document.getElementById("levelUpStars");
+  if (starsEl) starsEl.textContent = "★".repeat(Math.min(level.estrelas || 1, 7));
+  const descEl = document.getElementById("levelUpDesc");
+  if (descEl) descEl.textContent = level.descricao || "Você ascendeu de posto!";
+  const divEl = document.getElementById("levelUpDivisao");
+  if (divEl) divEl.textContent = level.divisao.toUpperCase();
   const levelIdx = NIVEIS.indexOf(level);
-  if (starsEl) starsEl.textContent = "★".repeat(Math.min(levelIdx + 1, 5));
+  const ivEl = document.getElementById("levelUpNumber");
+  if (ivEl && levelIdx >= 0) ivEl.textContent = "NÍVEL " + (levelIdx + 1);
+  const prev = levelIdx > 0 ? NIVEIS[levelIdx - 1] : null;
+  const prevEl = document.getElementById("levelUpPrev");
+  if (prevEl && prev) prevEl.textContent = prev.icone + " " + prev.nome;
+  if (prevEl && !prev) prevEl.textContent = "";
   overlay.classList.add("active");
   _spawnLevelUpParticles();
   dispararConfetti();
@@ -1429,20 +1539,15 @@ function adicionarSerie(exId) {
     dataStr = now.toISOString().slice(0, 10),
     horaStr = now.toTimeString().slice(0, 5),
     timestamp = now.getTime();
-  const lastReg = dados.registros.filter(reg => reg.exercicioId === exId).sort((a, b) => b.timestamp - a.timestamp)[0];
-  if (lastReg) {
-    if ((timestamp - lastReg.timestamp) / 6e4 < 15) {
-      const warnEl = document.getElementById(`warn-${exId}`);
-      warnEl && (warnEl.style.display = "block", setTimeout(() => warnEl.style.display = "none", 5e3))
-    } else desbloquearBadge("descanso_digno")
-  }
 
   const groovRaw = grooveState[exId] || [0, 0, 0];
   const groovLvls = groovRaw.map(v => Math.min(100, Math.max(0, parseInt(v) || 0)));
   const groovTotal = groovLvls[0] + groovLvls[1] + groovLvls[2];
   const groovBonusMult = 1 + groovTotal / 1000;
   const xpBase = calcularXPSerie(ex, valor, peso);
-  const xpFinal = Math.round(xpBase * groovBonusMult);
+  const xpComGroove = Math.round(xpBase * groovBonusMult);
+  const rankMult = calcularRankMult();
+  const xpFinal = Math.max(1, Math.round(xpComGroove * rankMult));
   const rpeVal = rpeSelecionado[exId] || null;
   const registro = {
     id: Date.now() + Math.random().toString(36).slice(2),
@@ -1455,11 +1560,16 @@ function adicionarSerie(exId) {
     timestamp: timestamp,
     xp: xpFinal,
     xpBase: xpBase,
+    rankMult: rankMult,
     rpe: rpeVal,
     groove: groovLvls,
     perfeito: groovTotal >= 300
   };
-  dados.registros.push(registro), adicionarXP(xpFinal), verificarStreak(), verificarBadges(), salvarDados(), input.value = "", document.getElementById(`peso-${exId}`) && (document.getElementById(`peso-${exId}`).value = ""), delete rpeSelecionado[exId];
+  dados.registros.push(registro);
+  try { adicionarXP(xpFinal); } catch(_e) { console.error("adicionarXP:", _e); }
+  try { verificarStreak(); } catch(_e) { console.error("verificarStreak:", _e); }
+  try { verificarBadges(); } catch(_e) { console.error("verificarBadges:", _e); }
+  salvarDados(), input.value = "", document.getElementById(`peso-${exId}`) && (document.getElementById(`peso-${exId}`).value = ""), delete rpeSelecionado[exId];
   const rpeScaleEl = document.getElementById("rpe-scale-" + exId);
   rpeScaleEl && rpeScaleEl.querySelectorAll(".rpe-btn").forEach(el => el.classList.remove("selected"));
   const rpeWarnEl = document.getElementById("rpe-warn-" + exId);
@@ -1468,7 +1578,8 @@ function adicionarSerie(exId) {
   const bonusPct = Math.round(groovTotal / 10);
   const bonusMsg = groovTotal > 0 ? (` · ⚙ GROOVE +${bonusPct}% XP` + (groovTotal >= 300 ? " · ★ SÉRIE PERFEITA" : "")) : "";
   const toastVal = `+${valor} ${"tempo"===ex.tipo?"seg":"reps"}`;
-  const xpToast = groovTotal > 0 ? `+${xpBase} → +${xpFinal} XP — ${ex.nome}${bonusMsg}` : `+${xpFinal} XP — ${ex.nome}`;
+  const rankLabel = rankMult < 1 ? ` · ⚔ POSTO ×${(100*rankMult).toFixed(0)}%` : "";
+  const xpToast = groovTotal > 0 ? `+${xpBase} → +${xpFinal} XP — ${ex.nome}${bonusMsg}${rankLabel}` : `+${xpFinal} XP — ${ex.nome}${rankLabel}`;
   mostrarToast(toastVal, xpToast, "success"), mostrarUndoBar(registro);
 
   grooveState[exId] = [0, 0, 0];
@@ -2312,7 +2423,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260713a"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260713c"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");

@@ -591,8 +591,11 @@ body::after{
 @keyframes badgeScan{0%{background-position:0 -200%}100%{background-position:0 200%}}
 .level-badge[data-tier="4"]{border-color:rgba(255,59,48,0.4);background:linear-gradient(135deg,rgba(255,59,48,0.15),rgba(212,168,67,0.04))}
 .level-badge[data-tier="4"] .level-ring-fill{stroke:var(--red-bright)}
+.level-badge[data-tier="2"]{border-color:rgba(212,168,67,0.55);background:linear-gradient(135deg,rgba(212,168,67,0.15),rgba(30,30,30,0.95))}
+.level-badge[data-tier="2"] .level-ring-fill{stroke:var(--gold-light)}
 .level-badge[data-tier="3"]{border-color:rgba(0,229,255,0.4);background:linear-gradient(135deg,rgba(0,229,255,0.12),rgba(212,168,67,0.04))}
 .level-badge[data-tier="3"] .level-ring-fill{stroke:var(--accent-cyan)}
+.level-badge[data-tier="4"] .level-ring-fill{stroke:var(--red-bright)}
 .level-ring-wrap{
   position:relative;
   width:56px;height:56px;
@@ -655,6 +658,27 @@ body::after{
   opacity:.6;
   text-shadow:0 0 8px rgba(212,168,67,0.4);
 }
+.level-divisao{
+  font-family:'Share Tech Mono',monospace;font-size:6.5px;
+  color:var(--gray);letter-spacing:2px;text-transform:uppercase;
+  opacity:0;max-height:0;transition:all .4s ease;
+}
+.level-badge:hover .level-divisao{opacity:1;max-height:14px}
+
+/* divisao-based colors */
+.level-badge[data-divisao="Graduado"] .level-name{color:var(--accent-cyan);text-shadow:0 0 20px rgba(0,229,255,0.5)}
+.level-badge[data-divisao="Graduado"] .level-stars{color:var(--accent-cyan);text-shadow:0 0 8px rgba(0,229,255,0.4)}
+.level-badge[data-divisao="Oficial"] .level-name{color:var(--gold-light);text-shadow:0 0 20px rgba(255,215,0,0.5)}
+.level-badge[data-divisao="Oficial"] .level-stars{color:var(--gold-light);text-shadow:0 0 8px rgba(255,215,0,0.4)}
+.level-badge[data-divisao="Oficial Superior"] .level-name{color:#fff;text-shadow:0 0 20px rgba(255,255,255,0.5)}
+.level-badge[data-divisao="Oficial Superior"] .level-stars{color:#fff;text-shadow:0 0 8px rgba(255,255,255,0.4)}
+.level-badge[data-divisao="Alto Comando"]{border-color:rgba(204,0,0,0.5)}
+.level-badge[data-divisao="Alto Comando"] .level-name{color:var(--red-bright);text-shadow:0 0 20px rgba(204,0,0,0.6)}
+.level-badge[data-divisao="Alto Comando"] .level-stars{color:var(--red-bright);text-shadow:0 0 8px rgba(204,0,0,0.5)}
+.level-badge[data-divisao="Lenda"]{border-color:rgba(255,59,48,0.6)}
+.level-badge[data-divisao="Lenda"] .level-name{color:var(--red-bright);text-shadow:0 0 30px rgba(204,0,0,0.8),0 0 60px rgba(204,0,0,0.3)}
+.level-badge[data-divisao="Lenda"] .level-stars{color:var(--red-bright);text-shadow:0 0 12px rgba(204,0,0,0.6)}
+.level-badge[data-divisao="Lenda"] .level-rank-label{color:var(--red-bright);text-shadow:0 0 8px rgba(204,0,0,0.3)}
 
 /* === XP BAR — PREMIUM MULTI-LAYER === */
 .xp-main{position:relative}
@@ -1234,6 +1258,23 @@ body::after{
   opacity:.7;
   text-shadow:0 0 12px rgba(212,168,67,0.5);
 }
+.xp-levelup-number{
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  color:var(--gray);letter-spacing:2px;margin-top:4px;
+}
+.xp-levelup-divisao{
+  font-family:'Share Tech Mono',monospace;font-size:11px;
+  letter-spacing:4px;color:var(--gold-dim);
+  border:1px solid rgba(212,168,67,0.25);
+  display:inline-block;padding:2px 12px;margin-top:6px;
+  background:rgba(212,168,67,0.06);
+}
+.xp-levelup-prev{
+  font-family:'Share Tech Mono',monospace;font-size:9px;
+  color:#444;letter-spacing:1px;margin-top:4px;
+  opacity:0;transition:opacity .6s ease 1.2s;
+}
+.xp-levelup-overlay.active .xp-levelup-prev{opacity:1}
 .xp-levelup-desc{
   font-family:Rajdhani,sans-serif;font-size:15px;
   color:var(--gray-light);margin-top:10px;
@@ -1277,6 +1318,8 @@ body::after{
   backdrop-filter:blur(12px);
   transition:all .3s ease;
 }
+.header-xp::after{content:attr(data-estrelas);font-size:9px;letter-spacing:3px;margin-left:5px;color:transparent;background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold));-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 4px rgba(212,168,67,0.5));transition:filter .4s ease;white-space:nowrap}
+.header-xp[data-estrelas=""]::after{display:none}
 .xp-rank{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--gold);letter-spacing:2px;white-space:nowrap;text-shadow:0 0 12px rgba(212,168,67,0.4)}
 .xp-bar-mini{width:80px;height:6px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,0.5)}
 .xp-fill-mini{height:100%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--accent-cyan));background-size:200% 100%;animation:xpFlow 3s linear infinite;transition:width .8s var(--ease-expo);box-shadow:0 0 8px rgba(212,168,67,0.5);position:relative;overflow:hidden}
