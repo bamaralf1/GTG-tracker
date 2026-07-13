@@ -4122,10 +4122,31 @@ function toggleTheme() {
   aplicarTema(next);
 }
 
+function setTheme(theme) {
+  aplicarTema(theme);
+  updateThemeButtons(theme);
+}
+
+function updateThemeButtons(activeTheme) {
+  document.querySelectorAll('.theme-icon-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.dataset.theme === activeTheme) {
+      btn.classList.add('active');
+    }
+  });
+}
+
+// Update theme buttons on load
+document.addEventListener('DOMContentLoaded', () => {
+  const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+  updateThemeButtons(currentTheme);
+});
+
 function carregarTema() {
   const saved = localStorage.getItem("gtg_tema") || "dark";
   aplicarTema(saved);
-  getItem("gtg_tema").then(v => { if (v !== null) aplicarTema(v) }).catch(() => {})
+  updateThemeButtons(saved);
+  getItem("gtg_tema").then(v => { if (v !== null) { aplicarTema(v); updateThemeButtons(v); } }).catch(() => {})
 }
 carregarTema();
 let _notaData = (new Date).toISOString().slice(0, 10),

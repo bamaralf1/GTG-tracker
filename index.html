@@ -21,6 +21,72 @@
   <link rel="manifest" href="manifest.webmanifest">
   </head>
   <body>
+  <div class="radar-grid"></div>
+  <div class="radar-circle"></div>
+  <div class="radar-circle-outer"></div>
+  <div class="radar-circle-inner"></div>
+  <div class="radar-sweep"></div>
+  <div class="radar-blip"></div>
+  <div class="radar-blip"></div>
+  <div class="radar-blip"></div>
+  <div class="radar-blip"></div>
+  <div class="radar-blip"></div>
+  <div class="radar-blip"></div>
+  <div class="depth-line"></div>
+  <div class="depth-line"></div>
+  <div class="depth-line"></div>
+  <div class="depth-line"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="periscope-frame"></div>
+  <div class="sonar-wave"></div>
+  <div class="sonar-wave"></div>
+  <div class="sonar-wave"></div>
+  <div class="soviet-emblem"></div>
+  <div class="submarine-hud"></div>
+  <div class="nuclear-reactor"></div>
+  <div class="pressure-gauge"><div class="needle"></div></div>
+  <div class="compass-display"></div>
+  <div class="torpedo-status"></div>
+  <div class="crew-status"></div>
+  <div class="soviet-banner"></div>
+  <div class="frost-overlay"></div>
+  <div class="snowflake">❄</div>
+  <div class="snowflake">❅</div>
+  <div class="snowflake">❆</div>
+  <div class="snowflake">❄</div>
+  <div class="snowflake">❅</div>
+  <div class="snowflake">❆</div>
+  <div class="snowflake">❄</div>
+  <div class="snowflake">❅</div>
+  <div class="snowflake">❆</div>
+  <div class="snowflake">❄</div>
+  <div class="snowflake">❅</div>
+  <div class="snowflake">❆</div>
+  <div class="snowflake">❄</div>
+  <div class="snowflake">❅</div>
+  <div class="snowflake">❆</div>
+  <div class="snowflake">❄</div>
+  <div class="snowflake">❅</div>
+  <div class="snowflake">❆</div>
+  <div class="snowflake">❄</div>
+  <div class="snowflake">❅</div>
+  <div class="snowflake">❆</div>
+  <div class="snowflake">❄</div>
+  <div class="snowflake">❅</div>
+  <div class="snowflake">❆</div>
+  <div class="ice-crystal"></div>
+  <div class="ice-crystal"></div>
+  <div class="ice-crystal"></div>
+  <div class="ice-crystal"></div>
+  <div class="ice-crystal"></div>
+  <div class="ice-crystal"></div>
   <header class="header">
     <div class="header-top">
       <div class="header-logo"><span class="star-symbol">★</span>
@@ -49,7 +115,33 @@
             <option value="">SELECIONAR...
           </select>
         </div>
-        <button id="btnToggleAudio" onclick="toggleAudio()" title="Ativar/desativar som" style="background:0 0;border:1px solid rgba(255,255,255,.15);border-radius:4px;color:inherit;cursor:pointer;font-size:15px;padding:4px 10px;margin-left:8px;transition:all .2s">🔊</button><button id="themeSwitchBtn" onclick="toggleTheme()" title="Alternar tema claro/escuro" style="background:0 0;border:1px solid rgba(255,255,255,.15);border-radius:4px;color:inherit;cursor:pointer;font-size:15px;padding:4px 10px;margin-left:8px;transition:all .2s">&#127769;</button>
+        <button id="btnToggleAudio" onclick="toggleAudio()" title="Ativar/desativar som" style="background:0 0;border:1px solid rgba(255,255,255,.15);border-radius:4px;color:inherit;cursor:pointer;font-size:15px;padding:4px 10px;margin-left:8px;transition:all .2s">🔊</button>
+        <div class="theme-selector" style="display:flex;gap:6px;margin-left:12px;align-items:center;">
+          <button class="theme-icon-btn" data-theme="dark" onclick="setTheme('dark')" title="Modo Exército Vermelho">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+            </svg>
+          </button>
+          <button class="theme-icon-btn" data-theme="light" onclick="setTheme('light')" title="Sibéria">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;">
+              <path d="M12 2L13.5 7.5L19 9L13.5 10.5L12 16L10.5 10.5L5 9L10.5 7.5L12 2Z"/>
+              <path d="M6 12L6.75 14.25L9 15L6.75 15.75L6 18L5.25 15.75L3 15L5.25 14.25L6 12Z"/>
+              <path d="M18 12L18.75 14.25L21 15L18.75 15.75L18 18L17.25 15.75L15 15L17.25 14.25L18 12Z"/>
+            </svg>
+          </button>
+          <button class="theme-icon-btn" data-theme="submarine" onclick="setTheme('submarine')" title="Submarino">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;">
+              <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="2"/>
+              <line x1="12" y1="2" x2="12" y2="4" stroke="currentColor" stroke-width="2"/>
+              <line x1="12" y1="20" x2="12" y2="22" stroke="currentColor" stroke-width="2"/>
+              <line x1="2" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2"/>
+              <line x1="20" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+              <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+            </svg>
+          </button>
+        </div>
         <div class="header-date" id="headerDate"></div>
       </div>
     </div>
@@ -414,7 +506,7 @@
                 </div>
                 <div class="sq-label-wrap">
                   <span class="sq-label">FRASE DO DIA</span>
-                  <span class="sq-label-sub">MOTIVAÇÃO MILITAR</span>
+                  <span class="sq-label-sub">MOTIVAÇÃO</span>
                 </div>
                 <button class="sq-next-btn" onclick="proximaFrase()" title="Próxima frase">↻</button>
               </div>
