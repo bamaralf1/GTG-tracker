@@ -418,8 +418,16 @@ body::after{
 .sq-divider{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .sq-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(212,168,67,.2),transparent)}
 .sq-divider-diamond{font-size:6px;color:var(--gold-dim);opacity:.5}
-.sb-quote .frase-texto{font-family:'Rajdhani',sans-serif;font-size:17px;color:var(--paper);line-height:1.5;font-style:italic;text-shadow:0 1px 4px rgba(0,0,0,.3);width:100%;position:relative;padding:0 4px}
+.sb-quote .frase-texto{font-family:'Rajdhani',sans-serif;font-size:17px;color:var(--paper);line-height:1.5;font-style:italic;text-shadow:0 1px 4px rgba(0,0,0,.3);width:100%;position:relative;padding:0 4px;background:linear-gradient(90deg,var(--paper) 0%,var(--paper) 40%,var(--gold) 50%,var(--paper) 60%,var(--paper) 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:sqShimmer 6s ease-in-out infinite}
+@keyframes sqShimmer{0%,100%{background-position:200% 50%}50%{background-position:-200% 50%}}
 .sb-quote .frase-autor{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold-dim);letter-spacing:2px;text-transform:uppercase;text-shadow:0 0 8px rgba(212,168,67,.2);width:100%;text-align:right;padding-right:4px;margin-top:2px}
+.sq-noise{position:absolute;inset:0;opacity:.03;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:128px 128px}
+.sq-corner-glow{position:absolute;width:80px;height:80px;border-radius:50%;filter:blur(30px);pointer-events:none;animation:sqCornerPulse 5s ease-in-out infinite}
+.sq-corner-glow-tl{top:-20px;left:-20px;background:radial-gradient(circle,rgba(204,0,0,.15),transparent);animation-delay:0s}
+.sq-corner-glow-br{bottom:-20px;right:-20px;background:radial-gradient(circle,rgba(212,168,67,.1),transparent);animation-delay:2.5s}
+@keyframes sqCornerPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
+.sq-icon-radar{position:absolute;inset:-6px;border-radius:50%;border:1px solid transparent;border-top-color:rgba(212,168,67,.3);animation:radarSpin 3s linear infinite;pointer-events:none}
+@keyframes radarSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 /* ================================================================
    REMINDERS — PREMIUM MILITARY PANEL
@@ -460,6 +468,13 @@ body::after{
 .rm-info-icon{font-size:10px;opacity:.5}
 .rm-info-text{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--gray);letter-spacing:1px}
 .rm-info-divider{width:1px;height:14px;background:rgba(255,255,255,.06);flex-shrink:0}
+.rm-noise{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:128px 128px}
+.rm-corner-glow{position:absolute;width:70px;height:70px;border-radius:50%;filter:blur(25px);pointer-events:none;animation:rmCornerPulse 5s ease-in-out infinite}
+.rm-corner-glow-tl{top:-15px;left:-15px;background:radial-gradient(circle,rgba(212,168,67,.1),transparent);animation-delay:0s}
+.rm-corner-glow-br{bottom:-15px;right:-15px;background:radial-gradient(circle,rgba(204,0,0,.08),transparent);animation-delay:2.5s}
+@keyframes rmCornerPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.9;transform:scale(1.12)}}
+.rm-icon-radar{position:absolute;inset:-5px;border-radius:50%;border:1px solid transparent;border-top-color:rgba(212,168,67,.25);animation:rmRadarSpin 2.5s linear infinite;pointer-events:none}
+@keyframes rmRadarSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 /* === Radio Card === */
 .sb-radio-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
@@ -3501,6 +3516,13 @@ body::after{
 [data-theme=light] .sb-card-remind-premium{background:linear-gradient(135deg,rgba(0,0,0,.01),#fafafa 20%,#fafafa 80%,rgba(0,0,0,.01));border-color:rgba(0,0,0,.08)}
 [data-theme=light] .sb-card-remind-premium .rm-accent-bar{background:linear-gradient(180deg,var(--gold),rgba(212,168,67,.15))}
 [data-theme=light] .sb-card-remind-premium .rm-info-row{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.05)}
+[data-theme=light] .sq-noise{opacity:.015}
+[data-theme=light] .rm-noise{opacity:.015}
+[data-theme=light] .sq-corner-glow-tl{background:radial-gradient(circle,rgba(204,0,0,.08),transparent)}
+[data-theme=light] .sq-corner-glow-br{background:radial-gradient(circle,rgba(212,168,67,.06),transparent)}
+[data-theme=light] .rm-corner-glow-tl{background:radial-gradient(circle,rgba(212,168,67,.06),transparent)}
+[data-theme=light] .rm-corner-glow-br{background:radial-gradient(circle,rgba(204,0,0,.05),transparent)}
+[data-theme=light] .sb-quote .frase-texto{background:linear-gradient(90deg,#1a1a1a 0%,#1a1a1a 40%,var(--gold) 50%,#1a1a1a 60%,#1a1a1a 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:sqShimmer 6s ease-in-out infinite}
 [data-theme=light] .sb-eq-bar{background:var(--red)}
 [data-theme=light] .sb-card-radio.playing::before{background:linear-gradient(135deg,rgba(204,0,0,0.08),transparent 40%,transparent 60%,rgba(212,168,67,0.05))}
 [data-theme=light] .sb-army-track:hover{background:rgba(204,0,0,0.04)}
