@@ -454,7 +454,12 @@
             </div>
           </div>
 
-          <div class="card sb-card sb-card-radio" style="padding:0;margin:0;overflow:hidden">
+          <div class="card sb-card sb-card-radio sb-card-radio-premium" style="padding:0;margin:0;overflow:hidden">
+            <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
+            <div class="rd-accent-bar"></div>
+            <div class="rd-noise"></div>
+            <div class="rd-corner-glow rd-corner-glow-tl"></div>
+            <div class="rd-corner-glow rd-corner-glow-br"></div>
             <div class="sb-radio-header" style="padding:14px 18px 0">
               <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
                 <div class="sb-eq" id="sbEq">
@@ -537,11 +542,22 @@
             <audio id="armyPlayerAudio" preload="none" style="display:none"></audio>
           </div>
 
-          <div class="card sb-card" id="gtgSessionCard" style="border-color:rgba(212,160,23,.25);margin:0">
-            <div class="card-header" style="border-color:rgba(212,160,23,.15);padding:12px 16px">
-              <span class="card-title" style="color:var(--gold);font-size:17px">🔗 SESSÃO GTG</span>
+          <div class="card sb-card sb-card-session-premium" id="gtgSessionCard" style="margin:0;overflow:hidden">
+            <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
+            <div class="ss-accent-bar"></div>
+            <div class="ss-noise"></div>
+            <div class="ss-corner-glow ss-corner-glow-tl"></div>
+            <div class="ss-corner-glow ss-corner-glow-br"></div>
+            <div class="card-header" style="border-color:rgba(212,160,23,.15);padding:12px 16px;position:relative;z-index:1">
+              <div class="ss-header-row">
+                <div class="ss-icon-wrap">
+                  <div class="ss-icon-ring"></div>
+                  <div class="ss-icon">🔗</div>
+                </div>
+                <span class="card-title" style="color:var(--gold);font-size:17px">SESSÃO GTG</span>
+              </div>
             </div>
-            <div class="card-body" style="padding:14px 16px">
+            <div class="card-body" style="padding:14px 16px;position:relative;z-index:1">
               <div class="session-setup" id="sessionSetup">
                 <div class="sb-session-form">
                   <div class="sb-session-row">
@@ -589,9 +605,20 @@
             </div>
           </div>
 
-          <div class="card sb-card" id="plankTimerCard" style="margin:0">
-            <div class="card-header" style="padding:10px 16px">
-              <span class="card-title" style="font-size:17px">⏱ TIMER ISOMÉTRICO</span>
+          <div class="card sb-card sb-card-timer-premium" id="plankTimerCard" style="margin:0;overflow:hidden">
+            <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
+            <div class="tp-accent-bar"></div>
+            <div class="tp-noise"></div>
+            <div class="tp-corner-glow tp-corner-glow-tl"></div>
+            <div class="tp-corner-glow tp-corner-glow-br"></div>
+            <div class="card-header" style="padding:10px 16px;position:relative;z-index:1">
+              <div class="tp-header-row">
+                <div class="tp-icon-wrap">
+                  <div class="tp-icon-ring"></div>
+                  <div class="tp-icon">⏱</div>
+                </div>
+                <span class="card-title" style="font-size:17px">TIMER ISOMÉTRICO</span>
+              </div>
               <select class="form-select" id="timerExerciseSelect" style="font-size:13px;padding:5px 8px"></select>
             </div>
             <div class="card-body sb-timer-wrap">
