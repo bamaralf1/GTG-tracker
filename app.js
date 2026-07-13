@@ -992,9 +992,10 @@ function renderWarmup() {
   if (badge) badge.textContent = count + "/" + total;
   if (progress) progress.style.width = (count / total * 100) + "%";
   if (status) {
+    status.classList.remove("ready");
     if (count === 0) status.innerHTML = "❄ NÃO AQUECIDO";
     else if (count < total) status.innerHTML = "🔥 AQUECENDO · " + count + "/" + total;
-    else status.innerHTML = "★ PRONTO PARA O COMBATE";
+    else { status.innerHTML = "★ PRONTO PARA O COMBATE"; status.classList.add("ready"); }
   }
   if (list) {
     Array.from(list.querySelectorAll(".sb-warmup-item")).forEach(el => {
@@ -2472,7 +2473,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260713e"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260713f"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");

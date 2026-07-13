@@ -4173,6 +4173,609 @@ body::after{
 [data-theme=light] .sb-warmup-item.done{border-color:rgba(68,204,68,0.15);background:rgba(68,204,68,0.02)}
 [data-theme=light] .sb-warmup-item.done .sb-warmup-name{color:#666}
 
+/* ===========================================================================
+   XP CARD — ULTRA-PREMIUM SOVIET MILITARY COMMAND
+   =========================================================================== */
+
+/* --- Noise overlay --- */
+.xp-noise{
+  position:absolute;
+  inset:0;
+  opacity:.04;
+  pointer-events:none;
+  z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:128px 128px;
+  mix-blend-mode:overlay;
+}
+
+/* --- Accent bar --- */
+.xp-accent-bar{
+  position:absolute;
+  top:0;left:0;
+  width:4px;height:100%;
+  background:linear-gradient(180deg,var(--gold),var(--gold-dim),rgba(212,168,67,0.3));
+  box-shadow:0 0 14px rgba(212,168,67,0.5),0 0 28px rgba(212,168,67,0.2);
+  z-index:3;
+}
+
+/* --- Corner glow orbs --- */
+.xp-corner-glow{
+  position:absolute;
+  width:160px;height:160px;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:0;
+  opacity:.1;
+  transition:opacity .5s ease;
+}
+.xp-corner-glow-tl{top:-50px;left:-50px;background:radial-gradient(circle,rgba(212,168,67,0.5) 0%,transparent 70%)}
+.xp-corner-glow-br{bottom:-50px;right:-50px;background:radial-gradient(circle,rgba(0,229,255,0.3) 0%,transparent 70%)}
+.xp-card:hover .xp-corner-glow{opacity:.2}
+
+/* --- Border scanner on hover --- */
+@keyframes xpBorderScan{
+  0%{background-position:0% 0%}
+  100%{background-position:200% 0%}
+}
+.xp-card::after{
+  content:'';
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(212,168,67,0.5) 25%,rgba(212,168,67,0.8) 50%,rgba(212,168,67,0.5) 75%,transparent 100%);
+  background-size:200% 100%;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+  z-index:4;
+  opacity:0;
+  transition:opacity .4s ease;
+  animation:xpBorderScan 2.5s linear infinite;
+}
+.xp-card:hover::after{opacity:1}
+
+/* --- XP BAR — SUBMARINE FLUID ANIMATION --- */
+.xp-bar-outer{
+  position:relative;
+  background:rgba(0,0,0,0.7);
+  height:24px;
+  border-radius:6px;
+  overflow:visible;
+  margin:6px 0;
+  border:1px solid rgba(212,168,67,0.2);
+  box-shadow:inset 0 2px 10px rgba(0,0,0,0.9),0 0 16px rgba(0,0,0,0.6),0 1px 0 rgba(255,255,255,0.03);
+  transform-style:preserve-3d;
+}
+.xp-bar-fill{
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:0%;
+  background:linear-gradient(90deg,
+    var(--red-dark) 0%,
+    var(--red) 12%,
+    #cc3300 22%,
+    var(--gold-dim) 35%,
+    var(--gold) 50%,
+    #d4a843 60%,
+    var(--accent-cyan) 75%,
+    #81d4fa 88%,
+    #e1f5fe 100%);
+  background-size:200% 100%;
+  animation:xpFlow 4s ease-in-out infinite;
+  transition:width .4s cubic-bezier(.25,.8,.25,1);
+  overflow:hidden;
+  border-radius:5px 0 0 5px;
+  z-index:1;
+}
+
+/* --- Submarine liquid wave --- */
+.xp-bar-liquid{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg,transparent 20%,rgba(255,255,255,0.18) 45%,rgba(255,255,255,0.25) 50%,rgba(255,255,255,0.18) 55%,transparent 80%);
+  animation:xpSubmarineWave 3s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes xpSubmarineWave{
+  0%{transform:translateX(-12px) scaleY(0.7);opacity:.6}
+  25%{transform:translateX(-4px) scaleY(1.1);opacity:.9}
+  50%{transform:translateX(6px) scaleY(0.85);opacity:1}
+  75%{transform:translateX(10px) scaleY(1.15);opacity:.9}
+  100%{transform:translateX(-12px) scaleY(0.7);opacity:.6}
+}
+
+/* --- Submarine bubble particles --- */
+.xp-bar-fill::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 20% 30%,rgba(255,255,255,0.3) 0%,transparent 3%),
+    radial-gradient(circle at 45% 60%,rgba(255,255,255,0.2) 0%,transparent 2%),
+    radial-gradient(circle at 70% 25%,rgba(255,255,255,0.25) 0%,transparent 2.5%),
+    radial-gradient(circle at 85% 55%,rgba(255,255,255,0.15) 0%,transparent 2%),
+    radial-gradient(circle at 30% 70%,rgba(255,255,255,0.2) 0%,transparent 1.5%);
+  animation:xpBubbles 4s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes xpBubbles{
+  0%,100%{opacity:.4;transform:translateY(0)}
+  50%{opacity:.8;transform:translateY(-2px)}
+}
+
+/* --- Submarine depth shimmer --- */
+.xp-bar-fill::after{
+  content:'';
+  position:absolute;
+  top:0;left:-150%;
+  width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.35),rgba(200,230,255,0.2),transparent);
+  animation:xpDepthShimmer 3.5s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes xpDepthShimmer{
+  0%{left:-150%}
+  100%{left:250%}
+}
+
+/* --- Scanlines --- */
+.xp-bar-scanlines{
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(180deg,transparent 0px,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);
+  pointer-events:none;
+  z-index:3;
+  animation:scanlinesMove 10s linear infinite;
+  border-radius:5px;
+}
+@keyframes scanlinesMove{0%{background-position:0 0}100%{background-position:0 40px}}
+
+/* --- Shine overlay --- */
+.xp-bar-shine{
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0.04) 30%,transparent 50%,rgba(0,0,0,0.2) 100%);
+  pointer-events:none;
+  z-index:5;
+  border-radius:5px;
+}
+
+/* --- Energy flow above bar --- */
+.xp-bar-energy{
+  height:8px;
+  position:relative;
+  margin-bottom:-1px;
+  overflow:hidden;
+  pointer-events:none;
+}
+.xp-bar-energy::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(212,168,67,0.12) 20%,rgba(0,229,255,0.08) 50%,rgba(212,168,67,0.12) 80%,transparent 100%);
+  animation:energyFlow 4s ease-in-out infinite;
+}
+@keyframes energyFlow{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+/* --- XP flow keyframes --- */
+@keyframes xpFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+
+/* --- Endcap pulse --- */
+.xp-bar-endcap{
+  position:absolute;
+  top:50%;right:-2px;
+  width:0;height:0;
+  border-radius:50%;
+  background:var(--gold);
+  transform:translateY(-50%);
+  box-shadow:0 0 10px rgba(212,168,67,0.9),0 0 20px rgba(212,168,67,0.5),0 0 40px rgba(212,168,67,0.2);
+  z-index:7;
+  opacity:0;
+  transition:all .35s ease;
+}
+.xp-bar-endcap.visible{
+  width:10px;height:10px;
+  opacity:1;
+  animation:endcapPulse 1.5s ease-in-out infinite;
+}
+@keyframes endcapPulse{
+  0%,100%{box-shadow:0 0 8px rgba(212,168,67,0.9),0 0 16px rgba(212,168,67,0.5);transform:translateY(-50%) scale(1)}
+  50%{box-shadow:0 0 16px rgba(212,168,67,1),0 0 32px rgba(212,168,67,0.7),0 0 48px rgba(212,168,67,0.2);transform:translateY(-50%) scale(1.4)}
+}
+
+/* --- Anticipate glow --- */
+.xp-bar-outer.anticipate{
+  animation:xpAnticipate 1.2s ease-in-out infinite;
+  border-color:rgba(212,168,67,0.4);
+}
+@keyframes xpAnticipate{
+  0%,100%{box-shadow:inset 0 2px 10px rgba(0,0,0,0.9),0 0 16px rgba(212,168,67,0.1)}
+  50%{box-shadow:inset 0 2px 10px rgba(0,0,0,0.9),0 0 32px rgba(212,168,67,0.5),0 0 64px rgba(212,168,67,0.2)}
+}
+.xp-bar-outer.anticipate .xp-bar-fill{animation:xpFlow 2s linear infinite,xpFillPulse 1.2s ease-in-out infinite}
+@keyframes xpFillPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4)}}
+
+/* --- Float text --- */
+.xp-float-text{
+  position:absolute;
+  top:-10px;left:0;
+  pointer-events:none;
+  z-index:10;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:18px;
+  color:var(--gold);
+  text-shadow:0 0 16px rgba(212,168,67,0.9),0 0 32px rgba(212,168,67,0.5),0 2px 4px rgba(0,0,0,0.5);
+  opacity:0;
+  white-space:nowrap;
+}
+.xp-float-text.show{
+  animation:xpFloatUp 1.5s cubic-bezier(.25,.8,.25,1) forwards;
+}
+@keyframes xpFloatUp{
+  0%{opacity:1;transform:translateY(0) scale(0.8);filter:blur(0)}
+  15%{transform:translateY(-3px) scale(1.25);filter:blur(0)}
+  50%{opacity:1;transform:translateY(-20px) scale(1.1);filter:blur(0)}
+  100%{opacity:0;transform:translateY(-44px) scale(.8);filter:blur(2px)}
+}
+
+/* --- Percentage bar --- */
+.xp-pct-bar{
+  position:absolute;
+  top:50%;right:8px;
+  transform:translateY(-50%);
+  font-family:'Bebas Neue',sans-serif;
+  font-size:11px;
+  color:rgba(255,255,255,0.35);
+  text-shadow:0 1px 2px rgba(0,0,0,0.5);
+  z-index:6;
+  pointer-events:none;
+  letter-spacing:1px;
+  opacity:0;
+  transition:opacity .3s ease;
+}
+.xp-pct-bar.visible{opacity:1}
+
+/* --- Bottom row --- */
+.xp-bottom-row{
+  display:flex;justify-content:space-between;
+  font-family:'Share Tech Mono',monospace;font-size:9px;
+  color:var(--gray);letter-spacing:1px;
+  margin-top:4px;
+}
+.xp-daily-label{color:var(--green-bright);opacity:.8}
+
+/* --- Sparkline --- */
+.xp-sparkline-wrap{
+  margin-top:8px;
+  position:relative;
+  height:28px;
+  opacity:.55;
+  transition:opacity .3s ease;
+}
+.xp-sparkline-wrap:hover{opacity:1}
+.xp-sparkline{width:100%;height:100%}
+.xp-sparkline-label{
+  position:absolute;
+  top:0;right:0;
+  font-family:'Share Tech Mono',monospace;font-size:7px;
+  color:var(--gray);letter-spacing:1px;
+}
+
+/* --- Title enhanced --- */
+.xp-title{
+  font-family:'Share Tech Mono',monospace;font-size:11px;
+  color:var(--gray-light);letter-spacing:1.5px;text-transform:uppercase;
+  text-shadow:0 0 8px rgba(212,168,67,0.2);
+}
+.xp-subtitle{
+  font-family:'Share Tech Mono',monospace;font-size:8px;
+  color:var(--gray);letter-spacing:1px;
+}
+
+/* --- Streak box enhanced --- */
+.streak-box{
+  text-align:center;
+  padding:12px 20px;
+  min-width:120px;
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(68,204,68,0.15);
+  border-radius:4px;
+  transition:all .3s ease;
+  position:relative;
+  overflow:hidden;
+}
+.streak-box::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(68,204,68,0.05),transparent 50%);
+  pointer-events:none;
+}
+
+/* ===========================================================================
+   ATIVAÇÃO PRÉ-COMBATE — ULTRA-PREMIUM SOVIET TACTICAL
+   Pavel Tatsouline: "Activation, not warm-up. Prime the nervous system."
+   =========================================================================== */
+
+/* --- Noise overlay --- */
+.wu-noise{
+  position:absolute;
+  inset:0;
+  opacity:.04;
+  pointer-events:none;
+  z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:128px 128px;
+  mix-blend-mode:overlay;
+}
+
+/* --- Accent bar --- */
+.wu-accent-bar{
+  position:absolute;
+  top:0;left:0;
+  width:4px;height:100%;
+  background:linear-gradient(180deg,var(--accent-red-bright),var(--red),rgba(204,0,0,0.3));
+  box-shadow:0 0 14px rgba(204,0,0,0.5),0 0 28px rgba(204,0,0,0.2);
+  z-index:3;
+  transition:background .5s ease,box-shadow .5s ease;
+}
+.sb-card-warmup-premium:has(.sb-warmup-item.done) .wu-accent-bar{
+  background:linear-gradient(180deg,var(--green-bright),rgba(68,204,68,0.4));
+  box-shadow:0 0 14px rgba(68,204,68,0.5),0 0 28px rgba(68,204,68,0.2);
+}
+.sb-card-warmup-premium:has(.sb-warmup-item[data-idx="3"].done) .wu-accent-bar{
+  background:linear-gradient(180deg,var(--gold),var(--green-bright));
+  box-shadow:0 0 14px rgba(212,168,67,0.5),0 0 28px rgba(68,204,68,0.2);
+}
+
+/* --- Corner glow orbs --- */
+.wu-corner-glow{
+  position:absolute;
+  width:120px;height:120px;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:0;
+  opacity:.1;
+  transition:opacity .5s ease;
+}
+.wu-corner-glow-tl{top:-35px;left:-35px;background:radial-gradient(circle,rgba(204,0,0,0.5) 0%,transparent 70%)}
+.wu-corner-glow-br{bottom:-35px;right:-35px;background:radial-gradient(circle,rgba(212,168,67,0.4) 0%,transparent 70%)}
+.sb-card-warmup-premium:hover .wu-corner-glow{opacity:.2}
+.sb-card-warmup-premium:has(.sb-warmup-item.done) .wu-corner-glow-tl{background:radial-gradient(circle,rgba(68,204,68,0.5) 0%,transparent 70%)}
+.sb-card-warmup-premium:has(.sb-warmup-item.done) .wu-corner-glow-br{background:radial-gradient(circle,rgba(68,204,68,0.3) 0%,transparent 70%)}
+
+/* --- Border scanner on hover --- */
+@keyframes wuBorderScan{
+  0%{background-position:0% 0%}
+  100%{background-position:200% 0%}
+}
+.sb-card-warmup-premium::after{
+  content:'';
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(204,0,0,0.5) 25%,rgba(204,0,0,0.8) 50%,rgba(204,0,0,0.5) 75%,transparent 100%);
+  background-size:200% 100%;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+  z-index:4;
+  opacity:0;
+  transition:opacity .4s ease;
+  animation:wuBorderScan 2.5s linear infinite;
+}
+.sb-card-warmup-premium:hover::after{opacity:1}
+.sb-card-warmup-premium:has(.sb-warmup-item.done)::after{background:linear-gradient(90deg,transparent 0%,rgba(68,204,68,0.5) 25%,rgba(68,204,68,0.8) 50%,rgba(68,204,68,0.5) 75%,transparent 100%);background-size:200% 100%}
+
+/* --- Enhanced header --- */
+.sb-warmup-header{
+  position:relative;
+  z-index:1;
+}
+.sb-warmup-shield{
+  font-size:18px;
+  animation:warmupShieldPulse 2.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 6px rgba(204,0,0,0.3));
+}
+.sb-warmup-title{
+  font-family:'Bebas Neue',sans-serif;font-size:16px;
+  letter-spacing:2px;color:var(--gold);
+  text-shadow:0 0 12px rgba(212,168,67,0.3);
+  flex:1;white-space:nowrap;
+}
+.sb-warmup-badge{
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  color:var(--gold-dim);
+  background:rgba(212,168,67,0.08);
+  border:1px solid rgba(212,168,67,0.2);
+  padding:1px 8px;border-radius:10px;
+  transition:all .3s;letter-spacing:1px;
+}
+.sb-warmup-sub{
+  font-family:'Share Tech Mono',monospace;font-size:7px;
+  color:var(--gray);letter-spacing:2px;
+  margin-bottom:10px;padding-left:26px;
+  position:relative;z-index:1;
+}
+
+/* --- Enhanced list items — tactical command --- */
+.sb-warmup-list{
+  display:flex;flex-direction:column;gap:3px;
+  position:relative;z-index:1;
+}
+.sb-warmup-item{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:6px;
+  cursor:pointer;
+  transition:all .3s var(--ease-expo);
+  border:1px solid transparent;
+  position:relative;
+  overflow:hidden;
+  background:rgba(0,0,0,0.2);
+}
+.sb-warmup-item::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(204,0,0,0.04),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.sb-warmup-item:hover::before{opacity:1}
+.sb-warmup-item:hover{
+  border-color:rgba(204,0,0,0.15);
+  background:rgba(204,0,0,0.03);
+  box-shadow:0 0 12px rgba(204,0,0,0.1),inset 0 0 8px rgba(204,0,0,0.05);
+}
+.sb-warmup-item:active{transform:scale(0.98)}
+
+/* --- Done state — tactical green --- */
+.sb-warmup-item.done{
+  border-color:rgba(68,204,68,0.25);
+  background:rgba(68,204,68,0.04);
+  box-shadow:0 0 12px rgba(68,204,68,0.1),inset 0 0 8px rgba(68,204,68,0.05);
+}
+.sb-warmup-item.done::before{
+  background:linear-gradient(135deg,rgba(68,204,68,0.06),transparent);
+  opacity:1;
+}
+.sb-warmup-item.done .sb-warmup-name{color:var(--green-bright);opacity:.9}
+.sb-warmup-item.done .sb-warmup-desc{opacity:.6}
+.sb-warmup-item.done .sb-warmup-time{opacity:.5}
+
+/* --- Circle check --- */
+.sb-warmup-circle{
+  width:24px;height:24px;border-radius:50%;
+  border:2px solid rgba(204,0,0,0.3);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  transition:all .4s var(--ease-expo);
+  position:relative;
+}
+.sb-warmup-num{
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  color:var(--gold-dim);transition:all .3s;
+}
+.sb-warmup-check{
+  position:absolute;font-size:12px;
+  color:var(--green-bright);
+  opacity:0;transform:scale(0);
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);
+  text-shadow:0 0 8px rgba(68,204,68,0.6);
+}
+.sb-warmup-item.done .sb-warmup-circle{
+  border-color:var(--green-bright);
+  background:rgba(68,204,68,0.12);
+  box-shadow:0 0 14px rgba(68,204,68,0.25),0 0 28px rgba(68,204,68,0.1);
+}
+.sb-warmup-item.done .sb-warmup-num{opacity:0;transform:scale(0)}
+.sb-warmup-item.done .sb-warmup-check{opacity:1;transform:scale(1)}
+
+/* --- Info text --- */
+.sb-warmup-info{flex:1;min-width:0}
+.sb-warmup-name{
+  font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;
+  color:var(--paper);letter-spacing:.5px;
+  transition:color .3s;line-height:1.2;
+}
+.sb-warmup-desc{
+  font-family:'Share Tech Mono',monospace;font-size:8px;
+  color:var(--gray);letter-spacing:.5px;
+  transition:opacity .3s;margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.sb-warmup-time{
+  font-family:'Share Tech Mono',monospace;font-size:9px;
+  color:var(--gold-dim);flex-shrink:0;
+  transition:opacity .3s;letter-spacing:1px;
+}
+
+/* --- Progress bar enhanced --- */
+.sb-warmup-progress-wrap{padding:8px 0 4px;position:relative;z-index:1}
+.sb-warmup-progress{
+  height:4px;
+  background:rgba(255,255,255,0.04);
+  border-radius:3px;overflow:hidden;
+  position:relative;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,0.5);
+}
+.sb-warmup-progress-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright));
+  background-size:200% 100%;
+  border-radius:3px;
+  transition:width .6s var(--ease-expo);
+  animation:warmupFlow 3s linear infinite;
+  box-shadow:0 0 8px rgba(68,204,68,0.4);
+}
+@keyframes warmupFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+
+/* --- Footer enhanced --- */
+.sb-warmup-footer{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:6px;flex-wrap:wrap;gap:4px;
+  position:relative;z-index:1;
+}
+.sb-warmup-status{
+  font-family:'Bebas Neue',sans-serif;font-size:12px;
+  letter-spacing:2px;transition:all .4s;
+  text-shadow:0 0 8px transparent;
+}
+.sb-warmup-status.ready{
+  color:var(--green-bright);
+  text-shadow:0 0 12px rgba(68,204,68,0.6);
+  animation:readyPulse 2s ease-in-out infinite;
+}
+@keyframes readyPulse{
+  0%,100%{text-shadow:0 0 12px rgba(68,204,68,0.6)}
+  50%{text-shadow:0 0 24px rgba(68,204,68,0.9),0 0 48px rgba(68,204,68,0.3)}
+}
+.sb-warmup-dica{
+  font-family:'Share Tech Mono',monospace;font-size:7px;
+  color:var(--gray-dark);letter-spacing:1px;font-style:italic;
+}
+
+/* --- Grid pattern on card --- */
+.sb-card-warmup-premium{
+  background:
+    linear-gradient(rgba(204,0,0,0.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(204,0,0,0.02) 1px,transparent 1px),
+    linear-gradient(135deg,rgba(204,0,0,0.06),rgba(10,10,10,0.97));
+  background-size:24px 24px,24px 24px,100% 100%;
+}
+
+/* ===========================================================================
+   LIGHT THEME OVERRIDES — XP + WARMUP PREMIUM
+   =========================================================================== */
+[data-theme=light] .xp-noise{opacity:.025;mix-blend-mode:multiply}
+[data-theme=light] .xp-accent-bar{box-shadow:0 0 8px rgba(184,134,11,0.3),0 0 16px rgba(184,134,11,0.1)}
+[data-theme=light] .xp-corner-glow{opacity:.06}
+[data-theme=light] .xp-card:hover .xp-corner-glow{opacity:.12}
+[data-theme=light] .xp-card::after{opacity:0!important}
+[data-theme=light] .xp-card:hover::after{opacity:.5!important}
+[data-theme=light] .xp-bar-outer{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.1)}
+[data-theme=light] .xp-title{color:#555}
+[data-theme=light] .xp-numbers-inline{color:#555}
+[data-theme=light] .xp-bottom-row{color:#888}
+[data-theme=light] .xp-sparkline-label{color:#888}
+
+[data-theme=light] .wu-noise{opacity:.025;mix-blend-mode:multiply}
+[data-theme=light] .wu-accent-bar{box-shadow:0 0 8px rgba(139,0,0,0.3),0 0 16px rgba(139,0,0,0.1)}
+[data-theme=light] .wu-corner-glow{opacity:.06}
+[data-theme=light] .sb-card-warmup-premium:hover .wu-corner-glow{opacity:.12}
+[data-theme=light] .sb-card-warmup-premium::after{opacity:0!important}
+[data-theme=light] .sb-card-warmup-premium:hover::after{opacity:.5!important}
+[data-theme=light] .sb-warmup-item{background:rgba(0,0,0,0.02)}
+[data-theme=light] .sb-warmup-item:hover{background:rgba(139,0,0,0.03);border-color:rgba(139,0,0,0.1)}
+[data-theme=light] .sb-warmup-item.done{background:rgba(68,204,68,0.03);border-color:rgba(68,204,68,0.15)}
+[data-theme=light] .sb-warmup-name{color:#222}
+[data-theme=light] .sb-warmup-item.done .sb-warmup-name{color:#2D8B2D}
+[data-theme=light] .sb-warmup-progress{background:rgba(0,0,0,0.06)}
+
 /* === QUALITY BADGE NO CARD === */
 .quality-badge{
   display:inline-flex;
