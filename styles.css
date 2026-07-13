@@ -627,7 +627,7 @@ body::after{
 .tp-corner-glow-tl{top:-15px;left:-15px;background:radial-gradient(circle,rgba(204,0,0,.12),transparent);animation-delay:0s}
 .tp-corner-glow-br{bottom:-15px;right:-15px;background:radial-gradient(circle,rgba(212,168,67,.08),transparent);animation-delay:2.5s}
 @keyframes tpCornerPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.9;transform:scale(1.12)}}
-.tp-header-row{display:flex;align-items:center;gap:8px}
+.tp-header-row{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
 .tp-icon-wrap{position:relative;width:28px;height:28px;flex-shrink:0}
 .tp-icon-ring{position:absolute;inset:-2px;border-radius:50%;border:1.5px solid rgba(204,0,0,.2);animation:tpRingPulse 3s ease-in-out infinite}
 @keyframes tpRingPulse{0%,100%{border-color:rgba(204,0,0,.2)}50%{border-color:rgba(212,168,67,.35);box-shadow:0 0 10px rgba(212,168,67,.12)}}
@@ -1792,7 +1792,7 @@ body::after{
 
 /* === PLANK TIMER === */
 .plank-timer{text-align:center;padding:clamp(16px, 4vw, 30px);position:relative;z-index:1}
-.sb-card-timer-premium{overflow:hidden}
+#plankTimerCard{overflow:visible}
 .timer-display{
   font-family:'Bebas Neue',sans-serif;
   font-size:clamp(40px,12vw,96px);
