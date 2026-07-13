@@ -2473,7 +2473,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260713p"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260713q"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");
@@ -4076,7 +4076,7 @@ function aplicarTema(e) {
       a.style.backdropFilter = "blur(8px)";
     } else {
       a.textContent = "📡";
-      a.title = "РАДАР — Red Radar";
+      a.title = "Exército Vermelho — Red Army";
       a.style.borderColor = "rgba(255,26,26,0.3)";
       a.style.color = "inherit";
       a.style.background = "rgba(255,26,26,0.08)";
