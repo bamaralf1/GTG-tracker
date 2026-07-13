@@ -2331,15 +2331,35 @@ function somTimer() {
   [880, 1047, 1319, 1760].forEach((f, i) => tocarNota(f, { vol: .12, dur: .15, wave: "sine", atk: .003, rev: .2, delay: i * .12 }))
 }
 
-let shareCardTemaClaro = !1;
+let shareCardTema = "dark";
 
-function toggleTemaCard(light) {
-  shareCardTemaClaro = light;
+function toggleTemaCard(tema) {
+  shareCardTema = tema;
   const canvas = document.getElementById("shareCardCanvas");
-  canvas && canvas.classList.toggle("sc-light", light);
+  canvas && (canvas.classList.remove("sc-light", "sc-submarine"), "light" === tema && canvas.classList.add("sc-light"), "submarine" === tema && canvas.classList.add("sc-submarine"));
   const btnDark = document.getElementById("btnCardTemaEscuro"),
-    btnLight = document.getElementById("btnCardTemaClaro");
-  btnDark && btnLight && (light ? (btnLight.style.background = "rgba(0,0,0,0.5)", btnLight.style.color = "var(--white)", btnLight.style.borderColor = "var(--gold)", btnDark.style.background = "transparent", btnDark.style.color = "var(--gray-light)", btnDark.style.borderColor = "var(--gray)") : (btnDark.style.background = "rgba(0,0,0,0.5)", btnDark.style.color = "var(--white)", btnDark.style.borderColor = "var(--gold)", btnLight.style.background = "transparent", btnLight.style.color = "var(--gray-light)", btnLight.style.borderColor = "var(--gray)")), abrirShareCard(!0)
+    btnLight = document.getElementById("btnCardTemaClaro"),
+    btnSub = document.getElementById("btnCardTemaSub");
+  const activeStyle = { background: "rgba(0,0,0,0.5)", color: "var(--white)", borderColor: "var(--gold)" };
+  const inactiveStyle = { background: "transparent", color: "var(--gray-light)", borderColor: "var(--gray)" };
+  const subActiveStyle = { background: "rgba(0,20,60,0.6)", color: "#00FFFF", borderColor: "#00FFFF" };
+  const subInactiveStyle = { background: "rgba(0,20,60,0.3)", color: "#00AAAA", borderColor: "#006666" };
+  if (btnDark && btnLight && btnSub) {
+    if (tema === "light") {
+      Object.assign(btnLight.style, activeStyle);
+      Object.assign(btnDark.style, inactiveStyle);
+      Object.assign(btnSub.style, subInactiveStyle);
+    } else if (tema === "submarine") {
+      Object.assign(btnSub.style, subActiveStyle);
+      Object.assign(btnDark.style, inactiveStyle);
+      Object.assign(btnLight.style, inactiveStyle);
+    } else {
+      Object.assign(btnDark.style, activeStyle);
+      Object.assign(btnLight.style, inactiveStyle);
+      Object.assign(btnSub.style, subInactiveStyle);
+    }
+  }
+  abrirShareCard(!0);
 }
 let shareCardBlob = null;
 
@@ -2473,7 +2493,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260713r"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260713s"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");
@@ -4067,16 +4087,25 @@ function aplicarTema(e) {
   if (a) {
     if (e === "light") {
       a.textContent = "❄";
-      a.title = "СИБИРЬ — Nordic Frost";
+      a.title = "SIBÉRIA — Nordic Frost";
       a.style.borderColor = "rgba(160,195,230,0.3)";
       a.style.color = "#5A7090";
       a.style.background = "rgba(255,255,255,0.5)";
       a.style.boxShadow = "0 2px 8px rgba(20,50,80,0.06)";
       a.style.borderRadius = "10px";
       a.style.backdropFilter = "blur(8px)";
+    } else if (e === "submarine") {
+      a.textContent = "🌊";
+      a.title = "SUBMARINO NUCLEAR — Deep Ocean";
+      a.style.borderColor = "rgba(0,200,255,0.4)";
+      a.style.color = "#00C8FF";
+      a.style.background = "rgba(0,20,40,0.6)";
+      a.style.boxShadow = "0 0 16px rgba(0,200,255,0.3), inset 0 0 16px rgba(0,200,255,0.1)";
+      a.style.borderRadius = "10px";
+      a.style.backdropFilter = "blur(12px)";
     } else {
-      a.textContent = "📡";
-      a.title = "РАДАР — Red Radar";
+      a.textContent = "🔴";
+      a.title = "EXÉRCITO VERMELHO — Red Army";
       a.style.borderColor = "rgba(255,26,26,0.3)";
       a.style.color = "inherit";
       a.style.background = "rgba(255,26,26,0.08)";
@@ -4088,7 +4117,9 @@ function aplicarTema(e) {
 }
 
 function toggleTheme() {
-  aplicarTema("light" === (document.documentElement.getAttribute("data-theme") || "dark") ? "dark" : "light")
+  const current = document.documentElement.getAttribute("data-theme") || "dark";
+  const next = current === "dark" ? "light" : current === "light" ? "submarine" : "dark";
+  aplicarTema(next);
 }
 
 function carregarTema() {

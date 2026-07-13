@@ -7507,3 +7507,796 @@ html[data-theme=light]::after{
     padding:2px 9px;
   }
 }
+
+/* ── MODO EXÉRCITO VERMELHO — SELO DE IDENTIFICAÇÃO NO CABEÇALHO ── */
+[data-theme=dark] .header-title-block{position:relative !important}
+[data-theme=dark] .header-title-block::after{
+  content:'☭ MODO EXÉRCITO VERMELHO';
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-top:5px;
+  padding:3px 11px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:2.5px;
+  color:#fff;
+  background:linear-gradient(100deg,#D32F2F,#F44336 50%,#FFD700);
+  background-size:220% 100%;
+  border-radius:100px;
+  box-shadow:0 3px 10px rgba(211,47,47,.4),0 0 0 1px rgba(255,215,0,.3) inset;
+  animation:redArmyShift 5s ease-in-out infinite;
+  white-space:nowrap;
+}
+@media (max-width:640px){
+  [data-theme=dark] .header-title-block::after{
+    font-size:8px;
+    letter-spacing:1.8px;
+    padding:2px 9px;
+  }
+}
+@keyframes redArmyShift{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+
+/* ████████████████████████████████████████████████████████████████████████
+   ██  MODO SUBMARINO NUCLEAR — "PROFUNDIDADES DO ATLÂNTICO"           ██
+   ██  Deep ocean cyan/blue palette, sonar pulse, periscope view       ██
+   ████████████████████████████████████████████████████████████████████████ */
+
+/* ── ROOT VARIABLES — SUBMARINE PALETTE ── */
+[data-theme=submarine]{
+  --sub-bg:#030812;
+  --sub-bg-deep:#010409;
+  --sub-surface:#0A1628;
+  --sub-surface-light:#0E1F3A;
+  --sub-border:#006688;
+  --sub-border-bright:#00AAEE;
+  --sub-text:#B8E8F8;
+  --sub-text-dim:#6A9BB8;
+  --sub-cyan:#00D4FF;
+  --sub-cyan-dim:#0088AA;
+  --sub-teal:#00CCAA;
+  --sub-teal-dim:#008866;
+  --sub-amber:#FFB800;
+  --sub-red:#FF3344;
+  --sub-green:#00FF88;
+  --sub-glass:rgba(0,100,150,0.15);
+  --sub-glass-strong:rgba(0,150,200,0.25);
+  --sub-sonar:linear-gradient(180deg,transparent 40%,rgba(0,212,255,0.08) 50%,transparent 60%);
+  --sub-radius-sm:8px;
+  --sub-radius-md:14px;
+  --sub-radius-lg:20px;
+  --sub-radius-pill:100px;
+  --sub-shadow-sm:0 2px 8px rgba(0,0,0,0.5);
+  --sub-shadow-md:0 8px 24px rgba(0,0,0,0.6),0 0 0 1px rgba(0,200,255,0.1);
+  --sub-shadow-lg:0 16px 48px rgba(0,0,0,0.7),0 0 0 1px rgba(0,200,255,0.15);
+  --sub-font-display:'Bebas Neue',sans-serif;
+  --sub-font-body:'Oswald',sans-serif;
+  --sub-font-mono:'Share Tech Mono',monospace;
+  --sub-sonar-pulse:sonarPulse 2.5s ease-out infinite;
+}
+
+/* ── SONAR PULSE ANIMATION ── */
+@keyframes sonarPulse{
+  0%{box-shadow:0 0 0 0 rgba(0,212,255,0.4),0 0 20px rgba(0,212,255,0.2)}
+  100%{box-shadow:0 0 0 40px rgba(0,212,255,0),0 0 40px rgba(0,212,255,0.1)}
+}
+@keyframes sonarSweep{
+  0%{transform:rotate(-90deg);opacity:0.3}
+  50%{opacity:0.8}
+  100%{transform:rotate(270deg);opacity:0.3}
+}
+@keyframes subFloat{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-3px) rotate(1deg)}
+}
+@keyframes subGlow{
+  0%,100%{filter:drop-shadow(0 0 8px rgba(0,212,255,0.5))}
+  50%{filter:drop-shadow(0 0 20px rgba(0,212,255,0.9)) drop-shadow(0 0 40px rgba(0,200,170,0.4))}
+}
+
+/* ── SUBMARINE THEME BADGE ── */
+[data-theme=submarine] .header-title-block{position:relative !important}
+[data-theme=submarine] .header-title-block::after{
+  content:'🌊 MODO SUBMARINO NUCLEAR';
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-top:5px;
+  padding:3px 11px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:2.5px;
+  color:#001122;
+  background:linear-gradient(100deg,#00D4FF,#00FFAA 50%,#FFB800);
+  background-size:220% 100%;
+  border-radius:100px;
+  box-shadow:0 3px 10px rgba(0,212,255,.5),0 0 0 1px rgba(0,255,170,.5) inset;
+  animation:subBadgeShift 4s ease-in-out infinite;
+  white-space:nowrap;
+}
+@media (max-width:640px){
+  [data-theme=submarine] .header-title-block::after{
+    font-size:8px;
+    letter-spacing:1.8px;
+    padding:2px 9px;
+  }
+}
+@keyframes subBadgeShift{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+
+/* ── GLOBAL LAYOUT ── */
+[data-theme=submarine] body{
+  background:radial-gradient(ellipse at 50% 0%,#051020 0%,#030812 50%,#010409 100%) !important;
+  color:var(--sub-text) !important;
+}
+[data-theme=submarine] body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 20% 30%,rgba(0,212,255,0.03) 0%,transparent 50%),
+    radial-gradient(circle at 80% 70%,rgba(0,200,170,0.02) 0%,transparent 50%),
+    repeating-linear-gradient(180deg,transparent,transparent 40px,rgba(0,212,255,0.01) 41px,transparent 80px);
+  pointer-events:none;
+  z-index:0;
+  animation:sonarSweepBg 8s linear infinite;
+}
+@keyframes sonarSweepBg{
+  0%{background-position:0% 0%,100% 100%,0 0}
+  100%{background-position:100% 100%,0% 0%,0 160px}
+}
+
+/* ── HEADER ── */
+[data-theme=submarine] .header{
+  background:linear-gradient(180deg,rgba(0,20,40,0.9),rgba(0,10,20,0.95)) !important;
+  border-bottom:1px solid var(--sub-border) !important;
+  box-shadow:0 2px 16px rgba(0,0,0,0.6),0 0 0 1px rgba(0,212,255,0.1) inset !important;
+}
+[data-theme=submarine] .header::after{
+  content:'' !important;
+  display:block !important;
+  position:absolute !important;
+  left:0;right:0;bottom:-1px;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(0,212,255,0.6),rgba(0,255,170,0.6),transparent) !important;
+  opacity:.8 !important;
+}
+[data-theme=submarine] .header-title{
+  font-family:var(--sub-font-display) !important;
+  color:var(--sub-cyan) !important;
+  text-shadow:0 0 16px rgba(0,212,255,0.6) !important;
+}
+[data-theme=submarine] .header-subtitle{
+  color:var(--sub-text-dim) !important;
+}
+[data-theme=submarine] #themeSwitchBtn{
+  animation:subFloat 3s ease-in-out infinite,subGlow 2.5s ease-in-out infinite !important;
+}
+
+/* ── NAV TABS ── */
+[data-theme=submarine] .nav-tabs{
+  background:rgba(0,15,30,0.8) !important;
+  border-bottom:1px solid var(--sub-border) !important;
+  backdrop-filter:blur(20px) !important;
+}
+[data-theme=submarine] .nav-tab{
+  color:var(--sub-text-dim) !important;
+  font-family:var(--sub-font-mono) !important;
+  font-size:10px !important;
+  letter-spacing:1.5px !important;
+  border-radius:var(--sub-radius-pill) !important;
+}
+[data-theme=submarine] .nav-tab:hover{
+  background:rgba(0,212,255,0.08) !important;
+  color:var(--sub-cyan) !important;
+}
+[data-theme=submarine] .nav-tab.active{
+  color:var(--sub-cyan) !important;
+  background:linear-gradient(90deg,rgba(0,212,255,0.15),rgba(0,200,170,0.1)) !important;
+  box-shadow:0 0 12px rgba(0,212,255,0.2),inset 0 0 12px rgba(0,212,255,0.05) !important;
+  border:1px solid var(--sub-border-bright) !important;
+}
+[data-theme=submarine] .nav-tab.active::after{
+  content:'' !important;
+  position:absolute !important;
+  bottom:-1px;left:20%;right:20%;
+  height:2px !important;
+  background:linear-gradient(90deg,transparent,var(--sub-cyan),var(--sub-teal),transparent) !important;
+  animation:subBadgeShift 3s ease-in-out infinite !important;
+}
+
+/* ── CARDS — GENERAL ── */
+[data-theme=submarine] .card,
+[data-theme=submarine] .exercise-card,
+[data-theme=submarine] .readiness-card,
+[data-theme=submarine] .xp-card,
+[data-theme=submarine] .streak-card-large{
+  background:linear-gradient(145deg,var(--sub-surface),var(--sub-surface-light)) !important;
+  border:1px solid var(--sub-border) !important;
+  border-radius:var(--sub-radius-md) !important;
+  backdrop-filter:blur(16px) saturate(150%) !important;
+  box-shadow:var(--sub-shadow-md) !important;
+  position:relative !important;
+  overflow:hidden !important;
+}
+[data-theme=submarine] .card::before,
+[data-theme=submarine] .exercise-card::before,
+[data-theme=submarine] .readiness-card::before,
+[data-theme=submarine] .xp-card::before,
+[data-theme=submarine] .streak-card-large::before{
+  content:'' !important;
+  position:absolute !important;
+  top:0;left:0;right:0;
+  height:2px !important;
+  background:linear-gradient(90deg,var(--sub-cyan),var(--sub-teal),var(--sub-amber)) !important;
+  background-size:200% 100% !important;
+  animation:subBadgeShift 4s ease-in-out infinite !important;
+  z-index:1 !important;
+}
+[data-theme=submarine] .card:hover,
+[data-theme=submarine] .exercise-card:hover,
+[data-theme=submarine] .readiness-card:hover{
+  transform:translateY(-3px) !important;
+  box-shadow:var(--sub-shadow-lg) !important;
+  border-color:var(--sub-border-bright) !important;
+}
+
+/* ── EXERCISE CARD SPECIFIC ── */
+[data-theme=submarine] .exercise-card{
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px) !important;
+}
+[data-theme=submarine] .exercise-card .ex-noise,
+[data-theme=submarine] .exercise-card .ex-corner-glow,
+[data-theme=submarine] .exercise-card .ex-border-scanner{display:none !important}
+[data-theme=submarine] .exercise-name{
+  font-family:var(--sub-font-body) !important;
+  color:var(--sub-cyan) !important;
+  text-shadow:0 0 8px rgba(0,212,255,0.4) !important;
+}
+[data-theme=submarine] .ex-stat-val{
+  font-family:var(--sub-font-display) !important;
+  color:var(--sub-cyan) !important;
+}
+[data-theme=submarine] .ex-stat-lbl{
+  font-family:var(--sub-font-mono) !important;
+  color:var(--sub-text-dim) !important;
+}
+[data-theme=submarine] .groove-slider{
+  background:rgba(0,212,255,0.05) !important;
+  border:1px solid var(--sub-border) !important;
+  border-radius:var(--sub-radius-pill) !important;
+}
+[data-theme=submarine] .groove-range::-webkit-slider-thumb{
+  background:radial-gradient(circle at 30% 30%,#fff,var(--sub-cyan)) !important;
+  border:2px solid var(--sub-cyan) !important;
+  box-shadow:0 0 12px var(--sub-cyan) !important;
+}
+
+/* ── READINESS CARD — SONAR DISPLAY ── */
+[data-theme=submarine] .readiness-card{
+  background:linear-gradient(135deg,rgba(0,15,30,0.9),rgba(0,25,50,0.8)) !important;
+}
+[data-theme=submarine] .readiness-title{
+  font-family:var(--sub-font-display) !important;
+  color:var(--sub-cyan) !important;
+  letter-spacing:3px !important;
+  text-shadow:0 0 12px rgba(0,212,255,0.5) !important;
+}
+[data-theme=submarine] .readiness-scan-status{
+  color:var(--sub-green) !important;
+  font-family:var(--sub-font-mono) !important;
+}
+[data-theme=submarine] .readiness-scan-status .scan-dot{
+  background:var(--sub-green) !important;
+  box-shadow:0 0 8px var(--sub-green) !important;
+  animation:sonarPulse 1.5s ease-out infinite !important;
+}
+[data-theme=submarine] .readiness-profile-btn{
+  background:rgba(0,212,255,0.08) !important;
+  border:1px solid var(--sub-border) !important;
+  color:var(--sub-text-dim) !important;
+  font-family:var(--sub-font-mono) !important;
+  border-radius:var(--sub-radius-pill) !important;
+}
+[data-theme=submarine] .readiness-profile-btn:hover{
+  border-color:var(--sub-cyan) !important;
+  color:var(--sub-cyan) !important;
+  background:rgba(0,212,255,0.15) !important;
+}
+[data-theme=submarine] .readiness-slider-track{
+  background:rgba(0,212,255,0.04) !important;
+  border:1px solid var(--sub-border) !important;
+  border-radius:var(--sub-radius-pill) !important;
+}
+[data-theme=submarine] .readiness-slider-fill{
+  background:linear-gradient(90deg,var(--sub-cyan),var(--sub-teal)) !important;
+  box-shadow:0 0 10px var(--sub-cyan) !important;
+}
+[data-theme=submarine] .readiness-slider-input::-webkit-slider-thumb{
+  width:18px !important;
+  height:18px !important;
+  background:radial-gradient(circle at 30% 30%,#fff,var(--sub-cyan)) !important;
+  border:2px solid var(--sub-cyan) !important;
+  box-shadow:0 0 16px var(--sub-cyan),0 0 0 2px rgba(0,212,255,0.3) !important;
+}
+[data-theme=submarine] .readiness-circle{
+  background:rgba(0,10,20,0.8) !important;
+  border:2px solid var(--sub-border-bright) !important;
+  box-shadow:0 0 30px rgba(0,212,255,0.2),inset 0 0 20px rgba(0,212,255,0.05) !important;
+}
+[data-theme=submarine] .readiness-ring-bg{
+  stroke:rgba(0,212,255,0.1) !important;
+}
+[data-theme=submarine] .readiness-tick{
+  stroke:rgba(0,212,255,0.3) !important;
+}
+[data-theme=submarine] .readiness-circle-score{
+  font-family:var(--sub-font-display) !important;
+  color:var(--sub-cyan) !important;
+  text-shadow:0 0 16px rgba(0,212,255,0.6) !important;
+}
+[data-theme=submarine] .readiness-circle-label{
+  color:var(--sub-teal) !important;
+}
+[data-theme=submarine] .readiness-suggestion{
+  background:rgba(0,212,255,0.06) !important;
+  border:1px solid var(--sub-border) !important;
+  border-left:3px solid var(--sub-cyan) !important;
+  color:var(--sub-text) !important;
+  border-radius:var(--sub-radius-sm) !important;
+}
+[data-theme=submarine] .readiness-suggestion strong{
+  color:var(--sub-cyan) !important;
+  font-family:var(--sub-font-display) !important;
+}
+[data-theme=submarine] .readiness-rec{
+  background:rgba(0,200,170,0.06) !important;
+  border:1px solid rgba(0,200,170,0.2) !important;
+  color:var(--sub-text) !important;
+  border-radius:var(--sub-radius-sm) !important;
+}
+[data-theme=submarine] .readiness-rec strong{
+  color:var(--sub-teal) !important;
+  font-family:var(--sub-font-display) !important;
+}
+[data-theme=submarine] .readiness-insight{
+  background:rgba(255,184,0,0.06) !important;
+  border:1px solid rgba(255,184,0,0.2) !important;
+  border-left:3px solid var(--sub-amber) !important;
+  color:var(--sub-text) !important;
+  border-radius:var(--sub-radius-sm) !important;
+}
+[data-theme=submarine] .readiness-insight strong{
+  color:var(--sub-amber) !important;
+  font-family:var(--sub-font-display) !important;
+}
+[data-theme=submarine] .readiness-correlation{
+  background:rgba(0,212,255,0.05) !important;
+  border:1px solid var(--sub-border) !important;
+  color:var(--sub-text-dim) !important;
+  border-radius:var(--sub-radius-sm) !important;
+}
+[data-theme=submarine] .readiness-history{
+  background:rgba(0,212,255,0.04) !important;
+  border:1px solid var(--sub-border) !important;
+  border-radius:var(--sub-radius-sm) !important;
+}
+
+/* ── XP CARD — REACTOR CORE ── */
+[data-theme=submarine] .xp-card{
+  background:radial-gradient(ellipse at center,rgba(0,30,60,0.9) 0%,rgba(0,10,20,0.95) 70%,#010409 100%) !important;
+}
+[data-theme=submarine] .xp-accent-bar{
+  background:linear-gradient(90deg,var(--sub-cyan),var(--sub-teal),var(--sub-amber)) !important;
+}
+[data-theme=submarine] .xp-card-header{
+  border-bottom:1px solid var(--sub-border) !important;
+}
+[data-theme=submarine] .xp-rank{
+  font-family:var(--sub-font-display) !important;
+  color:var(--sub-cyan) !important;
+  text-shadow:0 0 12px rgba(0,212,255,0.5) !important;
+  letter-spacing:2px !important;
+}
+[data-theme=submarine] .xp-bar-bg{
+  background:rgba(0,212,255,0.08) !important;
+  border-radius:var(--sub-radius-pill) !important;
+}
+[data-theme=submarine] .xp-fill{
+  background:linear-gradient(90deg,var(--sub-cyan),var(--sub-teal)) !important;
+  box-shadow:0 0 16px var(--sub-cyan) !important;
+}
+[data-theme=submarine] .xp-sparkline{
+  stroke:var(--sub-cyan) !important;
+}
+[data-theme=submarine] .xp-next-label{
+  color:var(--sub-text-dim) !important;
+  font-family:var(--sub-font-mono) !important;
+}
+
+/* ── STREAK CARD — MISSION LOG ── */
+[data-theme=submarine] .streak-card-large{
+  background:linear-gradient(135deg,rgba(0,20,40,0.9),rgba(0,10,30,0.9)) !important;
+  border:1px solid var(--sub-border-bright) !important;
+}
+[data-theme=submarine] .streak-number{
+  font-family:var(--sub-font-display) !important;
+  color:var(--sub-cyan) !important;
+  text-shadow:0 0 24px rgba(0,212,255,0.6) !important;
+}
+[data-theme=submarine] .streak-flame{
+  filter:drop-shadow(0 0 16px var(--sub-cyan)) !important;
+  animation:subFloat 2s ease-in-out infinite !important;
+}
+[data-theme=submarine] .streak-fire-border{
+  border-image:linear-gradient(180deg,var(--sub-cyan),var(--sub-teal)) 1 !important;
+}
+[data-theme=submarine] .streak-box.active{
+  border-color:var(--sub-border-bright) !important;
+  box-shadow:0 0 32px rgba(0,212,255,0.15),inset 0 0 24px rgba(0,212,255,0.05) !important;
+}
+
+/* ── SIDEBAR CARDS — PERISCOPE VIEW ── */
+[data-theme=submarine] .sb-card-radio-premium,
+[data-theme=submarine] .sb-card-session-premium,
+[data-theme=submarine] .sb-card-timer-premium,
+[data-theme=submarine] .sb-card-quote-premium,
+[data-theme=submarine] .sb-card-remind-premium,
+[data-theme=submarine] .sb-card-warmup-premium{
+  background:linear-gradient(145deg,var(--sub-surface),var(--sub-surface-light)) !important;
+  border:1px solid var(--sub-border) !important;
+  border-radius:var(--sub-radius-md) !important;
+  backdrop-filter:blur(16px) !important;
+}
+[data-theme=submarine] .sb-card-radio-premium .rd-accent-bar{
+  background:linear-gradient(90deg,var(--sub-cyan),var(--sub-teal)) !important;
+}
+[data-theme=submarine] .sb-card-timer-premium .tp-accent-bar{
+  background:linear-gradient(90deg,var(--sub-teal),var(--sub-green)) !important;
+}
+[data-theme=submarine] .sb-card-warmup-premium .wu-accent-bar{
+  background:linear-gradient(90deg,var(--sub-amber),var(--sub-red)) !important;
+}
+[data-theme=submarine] .sb-radio-title,
+[data-theme=submarine] .sb-session-title,
+[data-theme=submarine] .sb-timer-title,
+[data-theme=submarine] .sb-quote-title,
+[data-theme=submarine] .sb-remind-title,
+[data-theme=submarine] .sb-warmup-title{
+  font-family:var(--sub-font-display) !important;
+  color:var(--sub-cyan) !important;
+  letter-spacing:2px !important;
+  text-shadow:0 0 8px rgba(0,212,255,0.4) !important;
+}
+
+/* ── TIMER — SONAR DISPLAY ── */
+[data-theme=submarine] .sb-timer-digits{
+  font-family:var(--sub-font-mono) !important;
+  color:var(--sub-cyan) !important;
+  text-shadow:0 0 16px rgba(0,212,255,0.6) !important;
+}
+[data-theme=submarine] .sb-timer-digits.running{
+  color:var(--sub-green) !important;
+  animation:sonarPulse 1s ease-out infinite !important;
+}
+
+/* ── WARMUP — REACTOR STARTUP ── */
+[data-theme=submarine] .sb-warmup-item{
+  background:rgba(0,212,255,0.04) !important;
+  border:1px solid var(--sub-border) !important;
+  border-radius:var(--sub-radius-sm) !important;
+}
+[data-theme=submarine] .sb-warmup-item.done{
+  background:rgba(0,200,170,0.1) !important;
+  border-color:var(--sub-teal) !important;
+}
+[data-theme=submarine] .sb-warmup-item.done .sb-warmup-name{
+  color:var(--sub-teal) !important;
+}
+[data-theme=submarine] .sb-warmup-progress{
+  background:rgba(0,212,255,0.1) !important;
+  border-radius:var(--sub-radius-pill) !important;
+}
+[data-theme=submarine] .sb-warmup-fill{
+  background:linear-gradient(90deg,var(--sub-cyan),var(--sub-teal)) !important;
+  box-shadow:0 0 8px var(--sub-cyan) !important;
+}
+
+/* ── QUOTE — ENCRYPTED MESSAGE ── */
+[data-theme=submarine] .sb-quote-text{
+  font-family:var(--sub-font-mono) !important;
+  color:var(--sub-text) !important;
+  letter-spacing:0.5px !important;
+}
+[data-theme=submarine] .sb-quote-author{
+  color:var(--sub-amber) !important;
+  font-family:var(--sub-font-display) !important;
+}
+
+/* ── REMINDERS — ALERT SYSTEM ── */
+[data-theme=submarine] .sb-remind-item{
+  background:rgba(0,212,255,0.04) !important;
+  border-left:3px solid var(--sub-cyan) !important;
+}
+[data-theme=submarine] .sb-remind-time{
+  color:var(--sub-cyan) !important;
+  font-family:var(--sub-font-mono) !important;
+}
+
+/* ── SESSION LOG — PATROL LOG ── */
+[data-theme=submarine] .sb-session-entry{
+  border-bottom:1px solid var(--sub-border) !important;
+}
+[data-theme=submarine] .sb-session-exercise{
+  color:var(--sub-cyan) !important;
+  font-family:var(--sub-font-body) !important;
+}
+[data-theme=submarine] .sb-session-reps{
+  color:var(--sub-teal) !important;
+  font-family:var(--sub-font-mono) !important;
+}
+
+/* ── BUTTONS ── */
+[data-theme=submarine] .btn-red{
+  background:linear-gradient(135deg,var(--sub-red),#CC0022) !important;
+  box-shadow:0 4px 16px rgba(255,51,68,0.4) !important;
+  filter:drop-shadow(0 4px 12px rgba(255,51,68,0.35)) !important;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px) !important;
+  border-radius:0 !important;
+  border:none !important;
+  font-family:var(--sub-font-body) !important;
+  letter-spacing:1px !important;
+}
+[data-theme=submarine] .btn-green{
+  background:linear-gradient(135deg,var(--sub-green),#00CC66) !important;
+  box-shadow:0 4px 16px rgba(0,255,136,0.4) !important;
+  filter:drop-shadow(0 4px 12px rgba(0,255,136,0.35)) !important;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px) !important;
+  border-radius:0 !important;
+  border:none !important;
+  font-family:var(--sub-font-body) !important;
+}
+[data-theme=submarine] .btn-gold{
+  background:linear-gradient(135deg,var(--sub-cyan),#0099CC) !important;
+  box-shadow:0 4px 16px rgba(0,212,255,0.4) !important;
+  filter:drop-shadow(0 4px 12px rgba(0,212,255,0.35)) !important;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px) !important;
+  border-radius:0 !important;
+  border:none !important;
+  font-family:var(--sub-font-body) !important;
+}
+[data-theme=submarine] .btn-purple{
+  background:linear-gradient(135deg,var(--sub-amber),#CC8800) !important;
+  box-shadow:0 4px 16px rgba(255,184,0,0.4) !important;
+  filter:drop-shadow(0 4px 12px rgba(255,184,0,0.35)) !important;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px) !important;
+  border-radius:0 !important;
+  border:none !important;
+  font-family:var(--sub-font-body) !important;
+}
+[data-theme=submarine] .btn-outline{
+  background:rgba(0,212,255,0.08) !important;
+  border:1px solid var(--sub-border) !important;
+  color:var(--sub-text) !important;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px) !important;
+  border-radius:0 !important;
+  font-family:var(--sub-font-body) !important;
+}
+[data-theme=submarine] .btn-outline:hover{
+  border-color:var(--sub-cyan) !important;
+  color:var(--sub-cyan) !important;
+  background:rgba(0,212,255,0.15) !important;
+}
+
+/* ── FORM INPUTS ── */
+[data-theme=submarine] .form-input,
+[data-theme=submarine] .form-select{
+  background:rgba(0,15,30,0.8) !important;
+  border:1px solid var(--sub-border) !important;
+  color:var(--sub-text) !important;
+  border-radius:var(--sub-radius-sm) !important;
+  font-family:var(--sub-font-mono) !important;
+}
+[data-theme=submarine] .form-input:focus,
+[data-theme=submarine] .form-select:focus{
+  border-color:var(--sub-cyan) !important;
+  box-shadow:0 0 16px rgba(0,212,255,0.2) !important;
+}
+[data-theme=submarine] .form-label{
+  color:var(--sub-text-dim) !important;
+  font-family:var(--sub-font-mono) !important;
+  font-size:9px !important;
+  letter-spacing:1.5px !important;
+}
+
+/* ── MODALS ── */
+[data-theme=submarine] .modal-content{
+  background:linear-gradient(145deg,var(--sub-surface),var(--sub-surface-light)) !important;
+  border:1px solid var(--sub-border-bright) !important;
+  border-radius:var(--sub-radius-lg) !important;
+  box-shadow:var(--sub-shadow-lg) !important;
+}
+[data-theme=submarine] .modal-header{
+  border-bottom:1px solid var(--sub-border) !important;
+}
+[data-theme=submarine] .modal-title{
+  font-family:var(--sub-font-display) !important;
+  color:var(--sub-cyan) !important;
+  letter-spacing:2px !important;
+}
+
+/* ── TOASTS ── */
+[data-theme=submarine] .toast{
+  background:linear-gradient(145deg,var(--sub-surface),var(--sub-surface-light)) !important;
+  border:1px solid var(--sub-border) !important;
+  border-left:4px solid var(--sub-cyan) !important;
+  border-radius:var(--sub-radius-sm) !important;
+}
+[data-theme=submarine] .toast.success{border-left-color:var(--sub-green) !important}
+[data-theme=submarine] .toast.error{border-left-color:var(--sub-red) !important}
+[data-theme=submarine] .toast.warning{border-left-color:var(--sub-amber) !important}
+[data-theme=submarine] .toast.info{border-left-color:var(--sub-amber) !important}
+
+/* ── UNDO BAR ── */
+[data-theme=submarine] .undo-bar{
+  background:linear-gradient(90deg,var(--sub-surface),var(--sub-surface-light)) !important;
+  border:1px solid var(--sub-border-bright) !important;
+  border-radius:var(--sub-radius-pill) !important;
+  box-shadow:var(--sub-shadow-md) !important;
+}
+
+/* ── SHARE CARD — SUBMARINE THEME ── */
+[data-theme=submarine] .share-card-modal,
+.sc-submarine{
+  background:linear-gradient(135deg,#010814 0%,#031020 50%,#010409 100%) !important;
+}
+.sc-submarine .share-header{
+  background:linear-gradient(90deg,rgba(0,212,255,0.15),rgba(0,200,170,0.1)) !important;
+  border-bottom:1px solid var(--sub-border) !important;
+}
+.sc-submarine .share-title{
+  color:var(--sub-cyan) !important;
+  font-family:var(--sub-font-display) !important;
+  text-shadow:0 0 12px rgba(0,212,255,0.5) !important;
+}
+.sc-submarine .share-stat{
+  color:var(--sub-text) !important;
+  font-family:var(--sub-font-mono) !important;
+}
+.sc-submarine .share-stat-val{
+  color:var(--sub-cyan) !important;
+  font-family:var(--sub-font-display) !important;
+}
+.sc-submarine .share-exercise{
+  background:rgba(0,212,255,0.05) !important;
+  border:1px solid var(--sub-border) !important;
+  border-radius:var(--sub-radius-sm) !important;
+}
+.sc-submarine .share-exercise-name{
+  color:var(--sub-cyan) !important;
+  font-family:var(--sub-font-body) !important;
+}
+.sc-submarine .share-exercise-val{
+  color:var(--sub-teal) !important;
+  font-family:var(--sub-font-display) !important;
+}
+.sc-submarine .share-footer{
+  border-top:1px solid var(--sub-border) !important;
+  color:var(--sub-text-dim) !important;
+}
+
+/* ── CHART COLORS ── */
+[data-theme=submarine] .chart-container{
+  --color-primary:var(--sub-cyan) !important;
+  --color-secondary:var(--sub-teal) !important;
+  --color-accent:var(--sub-amber) !important;
+  --color-danger:var(--sub-red) !important;
+  --color-success:var(--sub-green) !important;
+  --grid-color:rgba(0,212,255,0.1) !important;
+  --text-color:var(--sub-text-dim) !important;
+}
+
+/* ── SELECTION ── */
+[data-theme=submarine] ::selection{
+  background:rgba(0,212,255,0.3) !important;
+  color:#001122 !important;
+}
+
+/* ── FOCUS VISIBLE ── */
+[data-theme=submarine] *:focus-visible{
+  outline:2px solid var(--sub-cyan) !important;
+  outline-offset:2px !important;
+}
+
+/* ── SCROLLBAR ── */
+[data-theme=submarine] ::-webkit-scrollbar{
+  width:8px;height:8px
+}
+[data-theme=submarine] ::-webkit-scrollbar-track{
+  background:var(--sub-bg-deep)
+}
+[data-theme=submarine] ::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,var(--sub-cyan),var(--sub-teal));
+  border-radius:4px;
+  border:2px solid var(--sub-bg-deep)
+}
+[data-theme=submarine] ::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg,var(--sub-teal),var(--sub-cyan))
+}
+
+/* ── HEADER READINESS — SUBMARINE ── */
+[data-theme=submarine] .header-readiness{
+  background:rgba(0,212,255,0.1) !important;
+  border:1px solid var(--sub-border-bright) !important;
+  border-radius:var(--sub-radius-sm) !important;
+}
+[data-theme=submarine] .header-readiness:hover{
+  border-color:var(--sub-cyan) !important;
+  background:rgba(0,212,255,0.15) !important;
+  box-shadow:0 0 16px rgba(0,212,255,0.3) !important;
+}
+[data-theme=submarine] .header-readiness-icon{
+  color:var(--sub-cyan) !important;
+  filter:drop-shadow(0 0 8px rgba(0,212,255,0.6)) !important;
+}
+[data-theme=submarine] .header-readiness-score{
+  font-family:var(--sub-font-display) !important;
+  color:var(--sub-cyan) !important;
+  text-shadow:0 0 10px rgba(0,212,255,0.5) !important;
+}
+[data-theme=submarine] .header-readiness-label{
+  font-family:var(--sub-font-mono) !important;
+  color:var(--sub-text-dim) !important;
+}
+
+/* ── LEVEL BADGE — REACTOR CLASS ── */
+[data-theme=submarine] .level-badge{
+  background:linear-gradient(135deg,rgba(0,212,255,0.2),rgba(0,200,170,0.08)) !important;
+  border:1px solid var(--sub-border-bright) !important;
+  border-radius:var(--sub-radius-pill) !important;
+  clip-path:polygon(12px 0,100% 0,100% 100%,0 100%) !important;
+}
+[data-theme=submarine] .level-badge::before{
+  background:linear-gradient(100deg,var(--sub-cyan),var(--sub-teal),var(--sub-amber)) !important;
+}
+[data-theme=submarine] .level-rank{
+  font-family:var(--sub-font-display) !important;
+  color:var(--sub-cyan) !important;
+  text-shadow:0 0 8px rgba(0,212,255,0.5) !important;
+}
+
+/* ── SHIELD STAR — SONAR CONTACT ── */
+[data-theme=submarine] .shield-star{
+  filter:drop-shadow(0 0 12px var(--sub-cyan)) drop-shadow(0 0 24px var(--sub-teal)) !important;
+  animation:subFloat 2.5s ease-in-out infinite,subGlow 2s ease-in-out infinite !important;
+}
+[data-theme=submarine] .shield-star-count{
+  background:var(--sub-cyan) !important;
+  box-shadow:0 0 10px var(--sub-cyan) !important;
+}
+
+/* ── PROGRESS RINGS — SONAR ── */
+[data-theme=submarine] .progress-ring-bg{
+  stroke:rgba(0,212,255,0.1) !important;
+}
+[data-theme=submarine] .progress-ring-fill{
+  stroke:var(--sub-cyan) !important;
+  filter:drop-shadow(0 0 6px var(--sub-cyan)) !important;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width:768px){
+  [data-theme=submarine] .readiness-body{
+    grid-template-columns:1fr !important;
+  }
+  [data-theme=submarine] .readiness-display{
+    align-items:center !important;
+  }
+}
