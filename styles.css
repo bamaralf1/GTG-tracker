@@ -1636,38 +1636,6 @@ body::after{
 
 /* === EXERCISE GRID + CARDS === */
 .exercise-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:20px;min-width:0}
-.exercise-card{
-  background:linear-gradient(180deg,rgba(18,18,18,0.95),rgba(10,10,10,0.95));
-  border:1px solid rgba(212,168,67,0.2);
-  position:relative;
-  transition:all .35s var(--ease-expo);
-  clip-path:var(--clip-bevel);
-  backdrop-filter:blur(20px) saturate(180%);
-  box-shadow:0 8px 32px rgba(0,0,0,0.4),var(--inner-glow);
-  overflow:hidden;
-}
-.exercise-card::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:linear-gradient(135deg,rgba(212,168,67,0.05) 0%,transparent 50%,rgba(211,47,47,0.04) 100%);
-}
-.exercise-card:hover{
-  border-color:rgba(212,168,67,0.5);
-  transform:translateY(-4px) scale(1.01);
-  box-shadow:0 16px 48px rgba(0,0,0,0.5),0 0 0 1px rgba(212,168,67,0.3),0 0 32px rgba(212,168,67,0.15),var(--inner-glow);
-}
-.exercise-card-header{
-  background:linear-gradient(90deg,rgba(204,0,0,0.35),transparent);
-  padding:14px 16px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  row-gap:8px;
-  border-bottom:1px solid rgba(212,168,67,0.15);
-}
 .exercise-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.06em;color:var(--white);text-shadow:0 0 12px rgba(255,255,255,0.1)}
 .exercise-card-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:100%}
 .btn-icon{
@@ -2664,9 +2632,13 @@ body::after{
     linear-gradient(90deg,rgba(204,0,0,0.015) 1px,transparent 1px),
     linear-gradient(180deg,rgba(18,18,18,0.95),rgba(10,10,10,0.95));
   background-size:20px 20px,20px 20px,100% 100%;
+  border:1px solid rgba(212,168,67,0.2);
   position:relative;
   overflow:hidden;
   transition:all .4s var(--ease-expo);
+  clip-path:var(--clip-bevel);
+  backdrop-filter:blur(20px) saturate(180%);
+  box-shadow:0 8px 32px rgba(0,0,0,0.4),var(--inner-glow);
 }
 /* Accent bar */
 .exercise-card::before{
@@ -2682,6 +2654,15 @@ body::after{
 .exercise-card:hover::before{
   background:linear-gradient(180deg,var(--gold),var(--gold-dim));
   box-shadow:0 0 14px rgba(212,168,67,0.5),0 0 28px rgba(212,168,67,0.2);
+}
+/* Gradient overlay */
+.exercise-card::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(135deg,rgba(212,168,67,0.05) 0%,transparent 50%,rgba(211,47,47,0.04) 100%);
+  z-index:0;
 }
 /* Noise overlay */
 .exercise-card .ex-noise{
@@ -2707,7 +2688,7 @@ body::after{
 .exercise-card .ex-corner-glow-tl{top:-30px;left:-30px;background:radial-gradient(circle,rgba(204,0,0,0.5) 0%,transparent 70%)}
 .exercise-card .ex-corner-glow-br{bottom:-30px;right:-30px;background:radial-gradient(circle,rgba(212,168,67,0.3) 0%,transparent 70%)}
 .exercise-card:hover .ex-corner-glow{opacity:.18}
-/* Border scanner on hover */
+/* Hover lift + glow */
 .exercise-card:hover{
   border-color:rgba(212,168,67,0.5);
   transform:translateY(-4px) scale(1.01);
@@ -2717,6 +2698,12 @@ body::after{
 .exercise-card-header{
   position:relative;
   z-index:1;
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  row-gap:8px;
   background:linear-gradient(90deg,rgba(204,0,0,0.4),rgba(204,0,0,0.1) 40%,transparent);
   border-bottom:1px solid rgba(212,168,67,0.12);
 }
@@ -2816,6 +2803,9 @@ body::after{
 [data-theme=light] .exercise-card:hover::before{background:linear-gradient(180deg,var(--gold),rgba(184,134,11,0.3));box-shadow:0 0 8px rgba(184,134,11,0.4)}
 [data-theme=light] .exercise-card-header{background:linear-gradient(90deg,rgba(139,0,0,0.08),transparent);border-bottom-color:rgba(0,0,0,0.06)}
 [data-theme=light] .exercise-card .ex-noise{opacity:.02}
+[data-theme=light] .exercise-card:hover{box-shadow:0 16px 48px rgba(0,0,0,0.1),0 0 0 1px rgba(184,134,11,0.3),0 0 24px rgba(184,134,11,0.1)}
+[data-theme=light] .exercise-card .ex-corner-glow{opacity:.04}
+[data-theme=light] .exercise-card:hover .ex-corner-glow{opacity:.1}
 [data-theme=light] .level-badge::before{opacity:.2}
 [data-theme=light] .shield-icon.active .shield-shape{color:#C41E1E;text-shadow:0 0 8px rgba(196,30,30,0.5)}
 [data-theme=light] .shield-icon.active .shield-glow{background:radial-gradient(circle,rgba(196,30,30,0.2) 0%,transparent 70%)}
@@ -4076,9 +4066,6 @@ body::after{
 [data-theme=light] .nav-tab.active{color:var(--gold);text-shadow:none}
 [data-theme=light] .form-input,[data-theme=light] .form-select{background:#ede8df;border-color:rgba(0,0,0,0.15);color:#1a1208}
 [data-theme=light] .form-input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(139,0,0,0.12)}
-[data-theme=light] .exercise-card{background:#fff;border-color:rgba(0,0,0,0.08);box-shadow:0 4px 16px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.8)}
-[data-theme=light] .exercise-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.12),0 0 0 1px rgba(184,134,11,0.3),inset 0 1px 0 rgba(255,255,255,0.8)}
-[data-theme=light] .exercise-card-header{background:#f8f4ee;border-bottom-color:rgba(0,0,0,0.07)}
 [data-theme=light] .exercise-add-form{background:#f0ebe3;border-top-color:rgba(0,0,0,0.07)}
 [data-theme=light] .stat-card{background:#f8f4ee;border-color:rgba(0,0,0,0.1);box-shadow:0 2px 8px rgba(0,0,0,0.04)}
 [data-theme=light] .stat-card-value{text-shadow:none}
@@ -5299,11 +5286,6 @@ body::after{
   animation: cardIn 0.6s var(--ease-expo) both;
   animation-delay: calc(var(--i,0) * 0.07s);
   will-change: transform
-}
-.exercise-card:hover {
-  transform: perspective(1200px) rotateX(-4deg) rotateY(6deg) scale(1.03) translateY(-6px);
-  box-shadow: 0 24px 70px rgba(204,0,0,0.18), 0 10px 24px rgba(0,0,0,0.35), var(--inner-glow);
-  border-color: var(--gold)
 }
 
 /* --- 3. ENHANCED TAB TRANSITION --- */
