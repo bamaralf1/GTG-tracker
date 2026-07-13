@@ -2473,7 +2473,7 @@ function tocarSomLembrete() {
 }
 let swRegistration = null,
   deferredInstallPrompt = null,
-  CACHE_BUILD = "20260713i"; // altere quando fizer deploy de novas versoes
+  CACHE_BUILD = "20260713j"; // altere quando fizer deploy de novas versoes
 
 async function instalarPWA() {
   if (!deferredInstallPrompt) return void mostrarToast("Info", "Use o menu do navegador para instalar (Adicionar à tela inicial).", "warning");
@@ -4062,7 +4062,23 @@ function irParaTreinoHoje() {
 function aplicarTema(e) {
   document.documentElement.setAttribute("data-theme", e), setItem("gtg_tema", e).catch(() => {});
   const a = document.getElementById("themeSwitchBtn");
-  a && (a.textContent = "light" === e ? "☀" : "🌙", a.style.borderColor = "light" === e ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.15)", a.style.color = "light" === e ? "#1A1208" : "inherit")
+  if (a) {
+    if (e === "light") {
+      a.textContent = "❄";
+      a.title = "Тема СИБИРЬ — Tema Sibéria";
+      a.style.borderColor = "rgba(100,140,180,0.4)";
+      a.style.color = "#4A6B8A";
+      a.style.background = "linear-gradient(135deg,rgba(200,220,240,0.2),rgba(180,210,240,0.1))";
+      a.style.boxShadow = "0 0 8px rgba(100,160,220,0.3)";
+    } else {
+      a.textContent = "📡";
+      a.title = "РАДАР — Tema Radar Vermelho";
+      a.style.borderColor = "rgba(255,26,26,0.3)";
+      a.style.color = "inherit";
+      a.style.background = "rgba(255,26,26,0.08)";
+      a.style.boxShadow = "0 0 8px rgba(255,26,26,0.2)";
+    }
+  }
 }
 
 function toggleTheme() {
