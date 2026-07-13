@@ -6755,3 +6755,754 @@ html { transition: background-color 0.5s ease }
   text-transform:uppercase !important;
 }
 [data-theme=light] .card-body{padding:18px !important}
+
+/* ████████████████████████████████████████████████████████████████████████
+   ██                                                                    ██
+   ██   MODO SIBÉRIA v2 — "PROTOCOLO ÁRTICO"                            ██
+   ██   Reskin total do tema claro. Estética radicalmente distinta do   ██
+   ██   dark "Soviet Militaria": terminal polar holográfico, vidro      ██
+   ██   facetado, aurora boreal viva, tipografia HUD. Zero alterações   ██
+   ██   de estrutura/funcionalidade — apenas cosmética, sobrescrevendo  ██
+   ██   por especificidade de origem (último no arquivo vence).        ██
+   ██                                                                    ██
+   ████████████████████████████████████████████████████████████████████████*/
+
+/* ── 1. PALETA-BASE (custom properties, sem !important — cascata natural) ── */
+[data-theme=light]{
+  --sib-bg-a:#EAF5FF;
+  --sib-bg-b:#F3EEFF;
+  --sib-bg-c:#E8FFF7;
+  --sib-ink:#071726;
+  --sib-ink-soft:#3E5C78;
+  --sib-ink-faint:#7C93AC;
+  --sib-cyan:#00AEDB;
+  --sib-cyan-2:#22D3EE;
+  --sib-violet:#7B5FFF;
+  --sib-violet-2:#A78BFA;
+  --sib-mint:#00C896;
+  --sib-amber:#FFB020;
+  --sib-coral:#FF5470;
+  --sib-glass:rgba(255,255,255,.58);
+  --sib-glass-strong:rgba(255,255,255,.82);
+  --sib-glass-soft:rgba(255,255,255,.36);
+  --sib-line:rgba(15,70,120,.16);
+  --sib-line-soft:rgba(15,70,120,.09);
+  --sib-shadow-sm:0 2px 10px rgba(16,55,100,.08);
+  --sib-shadow-md:0 10px 30px rgba(16,55,100,.12),0 2px 8px rgba(16,55,100,.06);
+  --sib-shadow-lg:0 24px 70px rgba(16,55,100,.16),0 6px 20px rgba(16,55,100,.08);
+  --sib-aurora:linear-gradient(100deg,var(--sib-cyan) 0%,var(--sib-violet) 48%,var(--sib-mint) 100%);
+  --sib-aurora-soft:linear-gradient(100deg,rgba(0,174,219,.16),rgba(123,95,255,.16),rgba(0,200,150,.16));
+  --sib-clip:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);
+  --sib-clip-sm:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  --sib-font-display:'Bebas Neue',sans-serif;
+  --sib-font-body:'Oswald',sans-serif;
+  --sib-font-mono:'Share Tech Mono',monospace;
+}
+
+@keyframes sibAuroraShift{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+@keyframes sibDrift1{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(30px,-24px) scale(1.08)}
+}
+@keyframes sibDrift2{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(-26px,20px) scale(1.06)}
+}
+@keyframes sibPulseRing{
+  0%,100%{box-shadow:0 0 0 0 rgba(0,174,219,.35)}
+  50%{box-shadow:0 0 0 6px rgba(0,174,219,0)}
+}
+@keyframes sibShimmer{
+  0%{background-position:-200% 0}
+  100%{background-position:200% 0}
+}
+
+/* ── 2. CORPO — CÉU POLAR + AURORA VIVA + CONTORNOS TOPOGRÁFICOS ── */
+[data-theme=light] body{
+  background:
+    radial-gradient(ellipse 60% 45% at 12% 8%,rgba(0,174,219,.16) 0%,transparent 60%),
+    radial-gradient(ellipse 55% 40% at 88% 5%,rgba(123,95,255,.14) 0%,transparent 55%),
+    radial-gradient(ellipse 55% 45% at 90% 92%,rgba(0,200,150,.13) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 35% at 8% 95%,rgba(0,174,219,.10) 0%,transparent 55%),
+    linear-gradient(165deg,#F7FBFF 0%,#EEF6FF 30%,#F3EFFF 55%,#EEFBF6 80%,#F7FBFF 100%) !important;
+  color:var(--sib-ink) !important;
+}
+[data-theme=light] body::before{
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(15,70,120,.05) 39px,rgba(15,70,120,.05) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(15,70,120,.05) 39px,rgba(15,70,120,.05) 40px) !important;
+  background-size:40px 40px !important;
+  opacity:1 !important;
+  mix-blend-mode:normal !important;
+}
+[data-theme=light] body::after{
+  background:
+    radial-gradient(circle 320px at 15% 12%,rgba(0,174,219,.22),transparent 70%),
+    radial-gradient(circle 280px at 85% 18%,rgba(123,95,255,.18),transparent 70%),
+    radial-gradient(circle 300px at 80% 88%,rgba(0,200,150,.18),transparent 70%) !important;
+  opacity:.75 !important;
+  mix-blend-mode:normal !important;
+  animation:sibDrift1 22s ease-in-out infinite !important;
+}
+
+/* ── 3. CABEÇALHO — PAINEL DE COMANDO ÁRTICO ── */
+[data-theme=light] .header{
+  background:var(--sib-glass-strong) !important;
+  backdrop-filter:blur(28px) saturate(160%) !important;
+  -webkit-backdrop-filter:blur(28px) saturate(160%) !important;
+  border:none !important;
+  border-bottom:1px solid var(--sib-line) !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 10px 30px rgba(16,55,100,.06) !important;
+  padding:10px 28px 0 !important;
+}
+[data-theme=light] .header::before{
+  content:'' !important;
+  display:block !important;
+  position:absolute !important;
+  top:0;left:0;right:0;height:3px !important;
+  background:var(--sib-aurora) !important;
+  background-size:200% 100% !important;
+  animation:sibAuroraShift 6s ease-in-out infinite !important;
+}
+[data-theme=light] .header-top{
+  border-bottom:1px solid var(--sib-line-soft) !important;
+  padding:10px 0 !important;
+}
+[data-theme=light] .header-logo-text{
+  font-family:var(--sib-font-display) !important;
+  font-size:20px !important;
+  letter-spacing:4px !important;
+  color:var(--sib-ink) !important;
+  background:var(--sib-aurora) !important;
+  -webkit-background-clip:text !important;
+  background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+}
+[data-theme=light] .header-logo-sub{
+  font-family:var(--sib-font-mono) !important;
+  font-size:9px !important;
+  letter-spacing:3px !important;
+  color:var(--sib-ink-faint) !important;
+}
+[data-theme=light] .header-streak{
+  background:linear-gradient(135deg,rgba(0,200,150,.14),rgba(0,200,150,.04)) !important;
+  border:1px solid rgba(0,200,150,.3) !important;
+  border-radius:100px !important;
+  color:#0A8F6C !important;
+  font-family:var(--sib-font-mono) !important;
+}
+[data-theme=light] .header-date{
+  font-family:var(--sib-font-mono) !important;
+  color:var(--sib-ink-faint) !important;
+}
+[data-theme=light] .modo-foco-toggle{
+  background:var(--sib-glass) !important;
+  border:1px solid var(--sib-line) !important;
+  border-radius:100px !important;
+}
+[data-theme=light] .modo-foco-select{
+  background:rgba(255,255,255,.6) !important;
+  border:1px solid var(--sib-line) !important;
+  color:var(--sib-ink) !important;
+}
+[data-theme=light] .header-readiness{
+  background:linear-gradient(135deg,rgba(0,174,219,.14),rgba(123,95,255,.08)) !important;
+  border:1px solid rgba(0,174,219,.3) !important;
+  border-radius:100px !important;
+}
+[data-theme=light] .header-readiness-score{
+  color:var(--sib-violet) !important;
+  font-family:var(--sib-font-display) !important;
+  letter-spacing:1px !important;
+}
+[data-theme=light] .header-readiness-label{color:var(--sib-ink-faint) !important}
+
+/* ── 4. NAV — TRILHA DE GELO COM MARCADOR AURORA ── */
+[data-theme=light] .nav-tabs{
+  background:transparent !important;
+  border-bottom:1px solid var(--sib-line-soft) !important;
+}
+[data-theme=light] .nav-tab{
+  font-family:var(--sib-font-mono) !important;
+  color:var(--sib-ink-faint) !important;
+  font-size:10px !important;
+  letter-spacing:1.5px !important;
+}
+[data-theme=light] .nav-tab:hover{color:var(--sib-ink) !important;background:rgba(0,174,219,.06) !important}
+[data-theme=light] .nav-tab::after{
+  height:3px !important;
+  background:var(--sib-aurora) !important;
+  background-size:200% 100% !important;
+  border-radius:100px !important;
+}
+[data-theme=light] .nav-tab.active{
+  color:var(--sib-cyan) !important;
+  background:linear-gradient(180deg,rgba(0,174,219,.08),transparent) !important;
+  font-weight:700 !important;
+}
+[data-theme=light] .nav-tab.active::after{animation:sibAuroraShift 4s ease-in-out infinite !important}
+
+/* ── 5. CARTÕES — VIDRO FACETADO (ICE SHARD) ── */
+[data-theme=light] .card,
+[data-theme=light] .exercise-card,
+[data-theme=light] .sb-card-radio-premium,
+[data-theme=light] .sb-card-session-premium,
+[data-theme=light] .sb-card-timer-premium,
+[data-theme=light] .sb-card-quote-premium,
+[data-theme=light] .sb-card-remind-premium,
+[data-theme=light] .sb-card-warmup-premium,
+[data-theme=light] .readiness-card,
+[data-theme=light] .xp-card,
+[data-theme=light] .streak-card-large{
+  background:var(--sib-glass) !important;
+  backdrop-filter:blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter:blur(20px) saturate(160%) !important;
+  border:1px solid var(--sib-line) !important;
+  border-radius:6px !important;
+  clip-path:var(--sib-clip) !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 8px 20px rgba(16,55,100,.14)) !important;
+  animation:none !important;
+  transition:transform .35s cubic-bezier(.19,1,.22,1),filter .35s cubic-bezier(.19,1,.22,1),clip-path .35s cubic-bezier(.19,1,.22,1) !important;
+}
+[data-theme=light] .card::before,
+[data-theme=light] .exercise-card::before,
+[data-theme=light] .readiness-card::before,
+[data-theme=light] .xp-card::before,
+[data-theme=light] .rdy-accent-bar,
+[data-theme=light] .xp-accent-bar,
+[data-theme=light] .sb-card-radio-premium .rd-accent-bar,
+[data-theme=light] .sb-card-session-premium .ss-accent-bar,
+[data-theme=light] .sb-card-timer-premium .tp-accent-bar,
+[data-theme=light] .sb-card-warmup-premium .wu-accent-bar{
+  content:'' !important;
+  height:4px !important;
+  background:var(--sib-aurora) !important;
+  background-size:220% 100% !important;
+  animation:sibAuroraShift 5s ease-in-out infinite !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  z-index:3 !important;
+}
+[data-theme=light] .card::after,
+[data-theme=light] .exercise-card::after,
+[data-theme=light] .readiness-card::after,
+[data-theme=light] .xp-card::after,
+[data-theme=light] .sb-card-radio-premium::after,
+[data-theme=light] .sb-card-session-premium::after,
+[data-theme=light] .sb-card-timer-premium::after,
+[data-theme=light] .sb-card-quote-premium::after,
+[data-theme=light] .sb-card-remind-premium::after,
+[data-theme=light] .sb-card-warmup-premium::after{display:none !important}
+[data-theme=light] .card:hover,
+[data-theme=light] .exercise-card:hover,
+[data-theme=light] .sb-card-radio-premium:hover,
+[data-theme=light] .sb-card-session-premium:hover,
+[data-theme=light] .sb-card-timer-premium:hover,
+[data-theme=light] .sb-card-quote-premium:hover,
+[data-theme=light] .sb-card-remind-premium:hover,
+[data-theme=light] .sb-card-warmup-premium:hover,
+[data-theme=light] .readiness-card:hover,
+[data-theme=light] .xp-card:hover{
+  transform:translateY(-5px) !important;
+  clip-path:var(--sib-clip-sm) !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 16px 34px rgba(0,120,180,.22)) !important;
+  border-color:rgba(0,174,219,.4) !important;
+}
+[data-theme=light] .card-header{
+  background:linear-gradient(90deg,rgba(0,174,219,.06),transparent) !important;
+  border-bottom:1px solid var(--sib-line-soft) !important;
+}
+[data-theme=light] .card-title{
+  font-family:var(--sib-font-display) !important;
+  font-size:15px !important;
+  letter-spacing:2px !important;
+  color:var(--sib-ink) !important;
+  text-transform:uppercase !important;
+}
+[data-theme=light] .exercise-card-header .ex-name{
+  font-family:var(--sib-font-body) !important;
+  font-weight:600 !important;
+  color:var(--sib-ink) !important;
+}
+[data-theme=light] .exercise-card .ex-noise,
+[data-theme=light] .exercise-card .ex-corner-glow,
+[data-theme=light] .exercise-card .ex-border-scanner,
+[data-theme=light] .rdy-noise,[data-theme=light] .rdy-corner-glow,
+[data-theme=light] .xp-noise,[data-theme=light] .xp-corner-glow,
+[data-theme=light] .sb-card-radio-premium .rd-noise,
+[data-theme=light] .sb-card-session-premium .ss-noise,
+[data-theme=light] .sb-card-timer-premium .tp-noise,
+[data-theme=light] .sb-card-warmup-premium .wu-noise,
+[data-theme=light] .sb-card-radio-premium .rd-corner-glow-tl,
+[data-theme=light] .sb-card-radio-premium .rd-corner-glow-br,
+[data-theme=light] .sb-card-timer-premium .tp-corner-glow,
+[data-theme=light] .sb-card-warmup-premium .wu-corner-glow{display:none !important}
+
+/* ── 6. BOTÕES — CRISTAL DE GELO COM BRILHO ── */
+[data-theme=light] .btn-red{background:linear-gradient(135deg,var(--sib-coral),#D93A56) !important;box-shadow:none !important;filter:drop-shadow(0 4px 12px rgba(255,84,112,.35)) !important;clip-path:var(--sib-clip-sm) !important;border-radius:0 !important}
+[data-theme=light] .btn-green{background:linear-gradient(135deg,var(--sib-mint),#00A87D) !important;box-shadow:none !important;filter:drop-shadow(0 4px 12px rgba(0,200,150,.35)) !important;clip-path:var(--sib-clip-sm) !important;border-radius:0 !important}
+[data-theme=light] .btn-gold{background:linear-gradient(135deg,var(--sib-cyan),#0088AA) !important;box-shadow:none !important;filter:drop-shadow(0 4px 12px rgba(0,174,219,.35)) !important;clip-path:var(--sib-clip-sm) !important;border-radius:0 !important}
+[data-theme=light] .btn-purple{background:linear-gradient(135deg,var(--sib-violet),#5B3FDD) !important;box-shadow:none !important;filter:drop-shadow(0 4px 12px rgba(123,95,255,.35)) !important;clip-path:var(--sib-clip-sm) !important;border-radius:0 !important}
+[data-theme=light] .btn-red,[data-theme=light] .btn-green,[data-theme=light] .btn-gold,[data-theme=light] .btn-purple{
+  font-family:var(--sib-font-body) !important;
+  letter-spacing:1px !important;
+  text-transform:uppercase !important;
+  border:none !important;
+  transition:transform .25s cubic-bezier(.19,1,.22,1),box-shadow .25s ease !important;
+}
+[data-theme=light] .btn-red:hover,[data-theme=light] .btn-green:hover,[data-theme=light] .btn-gold:hover,[data-theme=light] .btn-purple:hover{
+  transform:translateY(-2px) !important;
+}
+[data-theme=light] .btn-outline{
+  background:var(--sib-glass) !important;
+  border:1px solid var(--sib-line) !important;
+  color:var(--sib-ink) !important;
+  clip-path:var(--sib-clip-sm) !important;
+  border-radius:0 !important;
+  font-family:var(--sib-font-body) !important;
+}
+[data-theme=light] .btn-outline:hover{
+  background:rgba(0,174,219,.08) !important;
+  border-color:var(--sib-cyan) !important;
+  color:var(--sib-cyan) !important;
+}
+[data-theme=light] .btn-icon:hover{color:var(--sib-cyan) !important;background:rgba(0,174,219,.08) !important}
+
+/* ── 7. FORMULÁRIOS ── */
+[data-theme=light] .form-input,[data-theme=light] .form-select{
+  background:rgba(255,255,255,.7) !important;
+  border:1px solid var(--sib-line) !important;
+  border-radius:4px !important;
+  color:var(--sib-ink) !important;
+  font-family:var(--sib-font-body) !important;
+}
+[data-theme=light] .form-input:focus{
+  border-color:var(--sib-cyan) !important;
+  box-shadow:0 0 0 3px rgba(0,174,219,.15) !important;
+}
+[data-theme=light] .form-label{
+  font-family:var(--sib-font-mono) !important;
+  color:var(--sib-ink-faint) !important;
+  letter-spacing:1px !important;
+  text-transform:uppercase !important;
+  font-size:10px !important;
+}
+[data-theme=light] .exercise-add-form{background:rgba(0,174,219,.04) !important;border-top:1px solid var(--sib-line-soft) !important}
+
+/* ── 8. STAT CARDS — NÚMEROS EM GRADIENTE AURORA ── */
+[data-theme=light] .stat-card{
+  background:var(--sib-glass) !important;
+  border:1px solid var(--sib-line) !important;
+  border-radius:4px !important;
+  clip-path:var(--sib-clip-sm) !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 4px 12px rgba(16,55,100,.10)) !important;
+}
+[data-theme=light] .stat-card::before{
+  background:var(--sib-aurora) !important;
+  height:3px !important;
+  left:0 !important;right:0 !important;
+}
+[data-theme=light] .stat-card:hover{transform:translateY(-3px) !important;filter:drop-shadow(0 10px 22px rgba(0,120,180,.18)) !important}
+[data-theme=light] .stat-card-value{
+  font-family:var(--sib-font-display) !important;
+  font-size:34px !important;
+  letter-spacing:1px !important;
+  background:var(--sib-aurora) !important;
+  -webkit-background-clip:text !important;
+  background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+}
+[data-theme=light] .stat-card-label{
+  font-family:var(--sib-font-mono) !important;
+  color:var(--sib-ink-faint) !important;
+  letter-spacing:2px !important;
+}
+[data-theme=light] .stat-card-sub{color:var(--sib-ink-soft) !important}
+[data-theme=light] .stat-card:nth-child(4){background:linear-gradient(135deg,rgba(0,200,150,.1),rgba(0,200,150,.02)) !important;border-color:rgba(0,200,150,.3) !important}
+[data-theme=light] .stat-card:nth-child(4)::before{background:linear-gradient(90deg,#00C896,#00AEDB) !important}
+[data-theme=light] .stat-card:nth-child(4) .stat-card-value{
+  background:linear-gradient(90deg,#00C896,#00AEDB) !important;
+  -webkit-background-clip:text !important;background-clip:text !important;-webkit-text-fill-color:transparent !important;
+}
+
+/* ── 9. BADGES — ANEL DE AURORA QUANDO DESBLOQUEADO ── */
+[data-theme=light] .badge-card{
+  background:var(--sib-glass) !important;
+  border:1px solid var(--sib-line) !important;
+  border-radius:10px !important;
+}
+[data-theme=light] .badge-card:hover{transform:translateY(-3px) scale(1.02) !important;box-shadow:var(--sib-shadow-md) !important}
+[data-theme=light] .badge-card.desbloqueado{
+  background:linear-gradient(135deg,rgba(0,174,219,.1),rgba(123,95,255,.06)) !important;
+  border-color:rgba(0,174,219,.35) !important;
+  box-shadow:0 0 0 1px rgba(0,174,219,.15),0 8px 24px rgba(0,174,219,.12) !important;
+}
+[data-theme=light] .badge-unlock-box{
+  background:var(--sib-glass-strong) !important;
+  border:1px solid rgba(0,174,219,.3) !important;
+  box-shadow:0 0 0 1px rgba(0,174,219,.15),var(--sib-shadow-lg) !important;
+}
+[data-theme=light] .badge-unlock-name{
+  background:var(--sib-aurora) !important;
+  -webkit-background-clip:text !important;background-clip:text !important;-webkit-text-fill-color:transparent !important;
+}
+[data-theme=light] .quality-badge{background:var(--sib-glass) !important;border:1px solid var(--sib-line) !important}
+[data-theme=light] .shield-star-icon{color:var(--sib-cyan) !important;filter:drop-shadow(0 0 6px rgba(0,174,219,.4)) !important}
+[data-theme=light] .shield-star-count{background:var(--sib-violet) !important;box-shadow:0 0 8px rgba(123,95,255,.4) !important}
+[data-theme=light] .level-badge::before{opacity:.4 !important}
+
+/* ── 10. MODAL / TOAST / UNDO ── */
+[data-theme=light] .modal{
+  background:var(--sib-glass-strong) !important;
+  border:1px solid rgba(0,174,219,.25) !important;
+  border-radius:10px !important;
+  box-shadow:0 0 0 1px rgba(0,174,219,.1),var(--sib-shadow-lg) !important;
+}
+[data-theme=light] .modal-overlay{background:rgba(10,30,52,.35) !important;backdrop-filter:blur(14px) !important}
+[data-theme=light] .modal-header{border-bottom:1px solid var(--sib-line-soft) !important}
+[data-theme=light] .modal-title{
+  font-family:var(--sib-font-display) !important;letter-spacing:2px !important;color:var(--sib-ink) !important;text-transform:uppercase !important;
+}
+[data-theme=light] .toast{
+  background:var(--sib-glass-strong) !important;
+  border:1px solid rgba(0,174,219,.3) !important;
+  color:var(--sib-ink) !important;
+  box-shadow:var(--sib-shadow-md) !important;
+}
+[data-theme=light] .undo-bar{
+  background:var(--sib-glass-strong) !important;
+  border:1px solid var(--sib-cyan) !important;
+  box-shadow:0 0 0 3px rgba(0,174,219,.1),var(--sib-shadow-md) !important;
+}
+[data-theme=light] .rest-timer-widget{
+  background:var(--sib-glass-strong) !important;
+  border:1px solid var(--sib-line) !important;
+  clip-path:var(--sib-clip) !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 10px 24px rgba(16,55,100,.16)) !important;
+}
+[data-theme=light] .rest-warning{background:rgba(255,84,112,.08) !important;border:1px solid rgba(255,84,112,.25) !important;color:var(--sib-coral) !important}
+[data-theme=light] .warning-box{background:rgba(255,84,112,.08) !important;border:1px solid rgba(255,84,112,.25) !important;color:var(--sib-coral) !important}
+
+/* ── 11. DIVISOR / LOG / CITAÇÕES ── */
+[data-theme=light] .section-divider-text{
+  background:transparent !important;
+  color:var(--sib-ink-faint) !important;
+  font-family:var(--sib-font-mono) !important;
+  border-top:1px solid var(--sib-line-soft) !important;
+  border-bottom:1px solid var(--sib-line-soft) !important;
+}
+[data-theme=light] .log-entry:hover{background:rgba(0,174,219,.05) !important}
+[data-theme=light] .gtg-principle{
+  background:linear-gradient(135deg,rgba(0,174,219,.06),rgba(123,95,255,.04)) !important;
+  border:1px solid rgba(0,174,219,.15) !important;
+}
+[data-theme=light] .quote-block,[data-theme=light] .pavel-quote-highlight,[data-theme=light] .lembrete-card,[data-theme=light] .frase-card{
+  background:var(--sib-glass) !important;
+  border:1px solid var(--sib-line) !important;
+  border-left:3px solid var(--sib-violet) !important;
+}
+[data-theme=light] code,[data-theme=light] kbd{
+  background:rgba(0,174,219,.08) !important;
+  border:1px solid rgba(0,174,219,.2) !important;
+  color:var(--sib-violet) !important;
+  font-family:var(--sib-font-mono) !important;
+}
+
+/* ── 12. SCROLLBAR AURORA ── */
+[data-theme=light] ::-webkit-scrollbar-thumb{background:var(--sib-aurora) !important}
+
+/* ── 13. CALENDÁRIO — CUBOS DE GELO / INTENSIDADE AURORA ── */
+[data-theme=light] .cal-day-nivel-0{background:rgba(15,70,120,.04) !important;color:var(--sib-ink-faint) !important}
+[data-theme=light] .cal-day-nivel-1{background:rgba(0,174,219,.14) !important}
+[data-theme=light] .cal-day-nivel-2{background:rgba(0,174,219,.30) !important}
+[data-theme=light] .cal-day-nivel-3{background:linear-gradient(135deg,rgba(0,174,219,.5),rgba(123,95,255,.35)) !important}
+[data-theme=light] .cal-day-nivel-4{background:linear-gradient(135deg,rgba(0,174,219,.68),rgba(123,95,255,.5)) !important;color:#fff !important}
+[data-theme=light] .cal-day-nivel-5{background:var(--sib-aurora) !important;color:#fff !important;box-shadow:0 0 12px rgba(0,174,219,.4) !important}
+[data-theme=light] .cal-day-today{box-shadow:0 0 0 2px var(--sib-cyan) !important;animation:sibPulseRing 2s ease-in-out infinite !important}
+[data-theme=light] .cal-nav-btn{background:var(--sib-glass) !important;border:1px solid var(--sib-line) !important;color:var(--sib-ink) !important}
+[data-theme=light] .cal-nav-btn:hover{background:rgba(0,174,219,.1) !important;border-color:var(--sib-cyan) !important}
+
+/* ── 14. READINESS — CÍRCULO AURORA ── */
+[data-theme=light] .readiness-circle{background:var(--sib-glass) !important;border:2px solid rgba(0,174,219,.25) !important}
+[data-theme=light] .readiness-profile-btn{background:var(--sib-glass) !important;border:1px solid var(--sib-line) !important}
+[data-theme=light] .readiness-profile-btn:hover{background:rgba(0,174,219,.08) !important;border-color:var(--sib-cyan) !important}
+[data-theme=light] .readiness-suggestion{background:rgba(0,174,219,.05) !important;border:1px solid rgba(0,174,219,.15) !important}
+[data-theme=light] .readiness-insight{background:rgba(123,95,255,.05) !important;border:1px solid rgba(123,95,255,.15) !important}
+[data-theme=light] .readiness-rec{background:rgba(0,200,150,.05) !important;border:1px solid rgba(0,200,150,.15) !important}
+
+/* ── 15. SIDEBAR — CADA CARTÃO COM ACENTO PRÓPRIO (variedade absurda) ── */
+[data-theme=light] .sb-card-radio-premium .rd-accent-bar{background:linear-gradient(90deg,var(--sib-violet),var(--sib-cyan)) !important}
+[data-theme=light] .sb-card-timer-premium .tp-accent-bar{background:linear-gradient(90deg,var(--sib-cyan),var(--sib-mint)) !important}
+[data-theme=light] .sb-card-warmup-premium .wu-accent-bar{background:linear-gradient(90deg,var(--sib-amber),var(--sib-coral)) !important}
+[data-theme=light] .sb-radio-title{
+  font-family:var(--sib-font-display) !important;color:var(--sib-ink) !important;letter-spacing:2px !important;text-shadow:none !important;
+}
+[data-theme=light] .sb-timer-digits{font-family:var(--sib-font-mono) !important;color:var(--sib-ink) !important}
+[data-theme=light] .sb-timer-digits.running{color:var(--sib-cyan) !important}
+[data-theme=light] .sb-warmup-item.done{background:rgba(0,200,150,.06) !important;border-color:rgba(0,200,150,.2) !important}
+[data-theme=light] .sb-warmup-item.done .sb-warmup-name{color:#0A8F6C !important}
+
+
+/* ████████████████████████████████████████████████████████████████████████
+   ██                                                                    ██
+   ██   MODO SIBÉRIA v3 — "PROTOCOLO ÁRTICO / EDIÇÃO PREMIUM"           ██
+   ██   Camada final: recolore TODAS as variáveis-raiz usadas pelo      ██
+   ██   app inteiro (inclusive pelos gráficos em <canvas>, que leem     ██
+   ██   essas mesmas variáveis via cssVar() no app.js) para a paleta    ██
+   ██   aurora — reduzindo qualquer resquício da paleta escura em       ██
+   ██   componentes não mapeados individualmente. Depois, uma série     ██
+   ██   de acabamentos premium: gelo ambiente, seleção de texto,        ██
+   ██   foco de acessibilidade, interruptores, sliders e ícone do       ██
+   ██   cabeçalho. 100% cosmético — nenhuma propriedade estrutural      ██
+   ██   (display/flex/grid/position funcional) é tocada.                ██
+   ████████████████████████████████████████████████████████████████████████*/
+
+/* ── 0. CASCATA TOTAL DE VARIÁVEIS-RAIZ (sem !important — a última declaração
+       do arquivo vence por especificidade igual; isso re-tinge automaticamente
+       centenas de pequenos detalhes — glows, ícones, gráficos canvas — que
+       não têm regra dedicada) ── */
+[data-theme=light]{
+  --red:#00AEDB;
+  --red-dark:#06769A;
+  --red-bright:#22D3EE;
+  --gold:#7B5FFF;
+  --gold-light:#A78BFA;
+  --gold-dim:#5B3FDD;
+  --accent-red:#FF5470;
+  --accent-red-bright:#FF7A90;
+  --accent-red-soft:#FF8FA3;
+  --accent-yellow:#FFB020;
+  --accent-yellow-alt:#FFC857;
+  --accent-orange:#FF9F1C;
+  --accent-orange-2:#FFB020;
+  --accent-orange-3:#FF8A3D;
+  --accent-ffaa:#FFB020;
+  --accent-blue:#22D3EE;
+  --accent-pink:#C77DFF;
+  --accent-purple:#9B7FFF;
+  --accent-cyan:#00C896;
+  --green:#00A87D;
+  --green-bright:#00C896;
+  --rpe-3:#4DD9A8;
+  --rpe-4:#7BEFC4;
+  --black:#F5FAFF;
+  --black-mid:#EDF5FF;
+  --black-card:#F7FBFF;
+  --black-light:#FFFFFF;
+  --bg-dark:#F4F9FF;
+  --bg-111:#EFF6FE;
+  --bg-161616:#EAF3FC;
+  --muted-dark:#C9DCEE;
+  --gray:#B7CBDF;
+  --gray-light:#3E5C78;
+  --white:#071726;
+  --white-dim:#3E5C78;
+  --tan:#B9CFE6;
+  --paper:#F0F6FF;
+  --shadow:0 10px 40px rgba(16,60,110,.14),0 3px 10px rgba(16,60,110,.08);
+  --border-gold:1px solid rgba(123,95,255,.28);
+  --border-red:1px solid rgba(0,174,219,.28);
+  --card-radius:6px;
+  --glass:rgba(255,255,255,.55);
+  --glass-strong:rgba(255,255,255,.82);
+  --muted:rgba(10,40,70,.05);
+  --accent-gradient:linear-gradient(90deg,#00AEDB,#7B5FFF,#00C896);
+  --inner-glow:inset 0 1px 0 rgba(255,255,255,.85);
+}
+
+/* ── 1. AMBIENTE — NEVE À DERIVA + FEIXE DE LUZ (camadas livres em <html>) ── */
+@keyframes sibSnowDrift{
+  0%{background-position:0 0,0 0,0 0}
+  100%{background-position:0 900px,60px 1400px,-40px 1800px}
+}
+@keyframes sibBeamSweep{
+  0%{transform:translateX(-30%) rotate(8deg)}
+  50%{transform:translateX(30%) rotate(8deg)}
+  100%{transform:translateX(-30%) rotate(8deg)}
+}
+html[data-theme=light]::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:9996;
+  opacity:.5;
+  background-image:
+    radial-gradient(1.6px 1.6px at 20px 30px,rgba(255,255,255,.9),transparent 60%),
+    radial-gradient(1.2px 1.2px at 140px 90px,rgba(255,255,255,.8),transparent 60%),
+    radial-gradient(1.8px 1.8px at 260px 180px,rgba(255,255,255,.85),transparent 60%),
+    radial-gradient(1.3px 1.3px at 70px 220px,rgba(255,255,255,.7),transparent 60%),
+    radial-gradient(1.5px 1.5px at 320px 40px,rgba(255,255,255,.8),transparent 60%);
+  background-repeat:repeat;
+  background-size:360px 900px,360px 900px,360px 900px,360px 900px,360px 900px;
+  animation:sibSnowDrift 34s linear infinite;
+  mix-blend-mode:normal;
+}
+html[data-theme=light]::after{
+  content:'';
+  position:fixed;
+  top:-20%;left:-10%;
+  width:70vw;height:160vh;
+  pointer-events:none;
+  z-index:9995;
+  opacity:.05;
+  background:linear-gradient(100deg,transparent 40%,#00AEDB 48%,#7B5FFF 50%,#00C896 52%,transparent 60%);
+  filter:blur(40px);
+  animation:sibBeamSweep 26s ease-in-out infinite;
+}
+
+/* ── 2. SELEÇÃO DE TEXTO + FOCO DE TECLADO ── */
+[data-theme=light] ::selection{background:rgba(123,95,255,.28);color:#071726}
+[data-theme=light] :focus-visible{
+  outline:2px solid var(--sib-cyan) !important;
+  outline-offset:2px !important;
+  box-shadow:0 0 0 5px rgba(0,174,219,.15) !important;
+}
+
+/* ── 3. LOGO — FLOCO DE NEVE NO LUGAR DA ESTRELA SOVIÉTICA ── */
+[data-theme=light] .header-logo{position:relative !important}
+[data-theme=light] .header-logo::before{
+  content:'❄';
+  font-size:26px;
+  line-height:1;
+  background:var(--sib-aurora);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 10px rgba(0,174,219,.35));
+  animation:sibAuroraShift 5s ease-in-out infinite,sibSnowSpin 12s linear infinite;
+  background-size:200% 100%;
+  margin-right:2px;
+}
+@keyframes sibSnowSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+
+/* ── 4. INTERRUPTORES (missile-switch) — VIDRO + MENTA ── */
+[data-theme=light] .missile-switch{
+  --ms-off:#C9DCEE;
+  --ms-on:var(--sib-mint);
+  background:var(--sib-glass) !important;
+  border:1px solid var(--sib-line) !important;
+  color:var(--sib-ink-faint) !important;
+  box-shadow:none !important;
+}
+[data-theme=light] .missile-switch:hover{border-color:rgba(0,174,219,.35) !important}
+[data-theme=light] .missile-switch__knob{
+  background:linear-gradient(135deg,#fff,#DCE9F7) !important;
+  box-shadow:0 1px 3px rgba(16,60,110,.25) !important;
+}
+[data-theme=light] .missile-switch.active{
+  color:#0A8F6C !important;
+  background:rgba(0,200,150,.1) !important;
+  box-shadow:0 0 12px rgba(0,200,150,.25) !important;
+}
+[data-theme=light] .missile-switch.active .missile-switch__track{box-shadow:0 0 8px rgba(0,200,150,.5) !important}
+[data-theme=light] .missile-switch.active .missile-switch__knob{
+  background:radial-gradient(circle at 30% 30%,#fff,#7BEFC4) !important;
+  box-shadow:0 0 6px rgba(0,200,150,.7) !important;
+}
+
+/* ── 5. SLIDERS (groove-range) — TRILHA DE GELO ── */
+[data-theme=light] .groove-slider{
+  background:var(--sib-glass) !important;
+  border:1px solid var(--sib-line) !important;
+  color:var(--sib-ink-faint) !important;
+}
+[data-theme=light] .groove-slider:hover{border-color:rgba(0,174,219,.3) !important}
+[data-theme=light] .groove-range{background:#D7E6F5 !important}
+[data-theme=light] .groove-range::-webkit-slider-thumb{
+  background:var(--sib-cyan) !important;
+  border:1px solid rgba(0,174,219,.5) !important;
+  box-shadow:0 0 6px rgba(0,174,219,.4) !important;
+}
+[data-theme=light] .groove-range::-moz-range-thumb{background:var(--sib-cyan) !important;border:1px solid rgba(0,174,219,.5) !important}
+[data-theme=light] .groove-lvl{color:var(--sib-violet) !important}
+[data-theme=light] .groove-slider[data-tier="1"]{border-color:rgba(0,200,150,.3) !important}
+[data-theme=light] .groove-slider[data-tier="2"]{border-color:rgba(0,200,150,.45) !important;box-shadow:0 0 8px rgba(0,200,150,.18) !important}
+[data-theme=light] .groove-slider[data-tier="3"]{border-color:rgba(0,200,150,.6) !important;background:rgba(0,200,150,.06) !important;box-shadow:0 0 12px rgba(0,200,150,.3) !important}
+[data-theme=light] .groove-slider[data-tier="4"]{border-color:var(--sib-mint) !important;background:rgba(0,200,150,.1) !important;box-shadow:0 0 10px rgba(0,200,150,.5) !important}
+[data-theme=light] .groove-slider[data-tier="1"] .groove-lvl,
+[data-theme=light] .groove-slider[data-tier="2"] .groove-lvl,
+[data-theme=light] .groove-slider[data-tier="3"] .groove-lvl,
+[data-theme=light] .groove-slider[data-tier="4"] .groove-lvl{color:#0A8F6C !important;text-shadow:none !important}
+[data-theme=light] .sb-card-timer-premium .groove-slider{background:var(--sib-glass) !important;border:1px solid var(--sib-line) !important}
+[data-theme=light] .sb-card-timer-premium .groove-range::-webkit-slider-runnable-track{background:#D7E6F5 !important}
+[data-theme=light] .sb-card-timer-premium .groove-range::-webkit-slider-thumb{border-color:rgba(0,174,219,.5) !important;box-shadow:0 0 4px rgba(0,174,219,.3) !important}
+
+/* ── 6. ANÉIS SVG (level-ring / readiness-ring) — realce de brilho frio ── */
+[data-theme=light] .level-ring-bg{stroke:rgba(0,174,219,.10) !important}
+[data-theme=light] .level-ring-track{stroke:rgba(123,95,255,.08) !important}
+[data-theme=light] .level-ring-fill{filter:drop-shadow(0 0 6px rgba(0,174,219,.5)) !important}
+[data-theme=light] .level-ring-glow{opacity:.22 !important}
+[data-theme=light] .level-badge:hover{
+  border-color:var(--sib-cyan) !important;
+  box-shadow:0 0 28px rgba(0,174,219,.28),0 4px 20px rgba(16,60,110,.15) !important;
+}
+[data-theme=light] .readiness-ring-bg{stroke:rgba(15,70,120,.08) !important}
+[data-theme=light] .readiness-green .readiness-ring-fill{stroke:#00C896 !important;filter:drop-shadow(0 0 6px rgba(0,200,150,.6)) !important}
+[data-theme=light] .readiness-yellow .readiness-ring-fill{stroke:#FFB020 !important;filter:drop-shadow(0 0 6px rgba(255,176,32,.6)) !important}
+[data-theme=light] .readiness-orange .readiness-ring-fill{stroke:#FF9F1C !important;filter:drop-shadow(0 0 6px rgba(255,159,28,.6)) !important}
+[data-theme=light] .readiness-red .readiness-ring-fill{stroke:#FF5470 !important;filter:drop-shadow(0 0 6px rgba(255,84,112,.6)) !important}
+
+/* ── 7. DETALHES FINAIS — LOG, PR, GRÁFICOS, TOOLTIP ── */
+[data-theme=light] .log-dot{box-shadow:0 0 6px currentColor !important}
+[data-theme=light] .pr-display{background:var(--sib-glass) !important;border:1px solid var(--sib-line) !important}
+[data-theme=light] .pr-display-val,[data-theme=light] .pr-value{
+  color:var(--sib-cyan) !important;
+  text-shadow:0 0 10px rgba(0,174,219,.35) !important;
+}
+[data-theme=light] .log-xp{color:var(--sib-violet) !important;text-shadow:0 0 6px rgba(123,95,255,.35) !important}
+[data-theme=light] .sugestao-gtg .gtg-tooltip{
+  background:var(--sib-glass-strong) !important;
+  border:1px solid rgba(0,174,219,.3) !important;
+  color:var(--sib-ink) !important;
+  box-shadow:var(--sib-shadow-md) !important;
+}
+[data-theme=light] .sugestao-gtg .gtg-tooltip::after{border-top-color:rgba(255,255,255,.9) !important}
+[data-theme=light] .chart-container{background:transparent !important}
+
+/* ── 8. TOQUE FINAL — LINHA DE PULSO AURORA NO TOPO DA PÁGINA ── */
+[data-theme=light] .header::after{
+  content:'' !important;
+  display:block !important;
+  position:absolute !important;
+  left:0;right:0;bottom:-1px;
+  height:1px !important;
+  background:linear-gradient(90deg,transparent,rgba(0,174,219,.5),rgba(123,95,255,.5),rgba(0,200,150,.5),transparent) !important;
+  opacity:.8 !important;
+}
+
+/* ── MODO SIBÉRIA — SELO DE IDENTIFICAÇÃO NO CABEÇALHO ── */
+[data-theme=light] .header-title-block{position:relative !important}
+[data-theme=light] .header-title-block::after{
+  content:'❄ MODO SIBÉRIA';
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-top:5px;
+  padding:3px 11px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:2.5px;
+  color:#fff;
+  background:linear-gradient(100deg,#00AEDB,#7B5FFF 50%,#00C896);
+  background-size:220% 100%;
+  border-radius:100px;
+  box-shadow:0 3px 10px rgba(0,174,219,.35),0 0 0 1px rgba(255,255,255,.4) inset;
+  animation:sibAuroraShift 5s ease-in-out infinite;
+  white-space:nowrap;
+}
+@media (max-width:640px){
+  [data-theme=light] .header-title-block::after{
+    font-size:8px;
+    letter-spacing:1.8px;
+    padding:2px 9px;
+  }
+}
