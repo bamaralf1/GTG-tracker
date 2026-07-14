@@ -22,7 +22,7 @@
   </head>
   <body>
   <!-- NORMAL THEME STRUCTURE -->
-  <div id="normal-theme-structure">
+  <div>
 
   <div class="frost-overlay"></div>
   <div class="snowflake">❄</div>
@@ -69,10 +69,11 @@
             <div class="header-readiness-label">PRONTIDÃO</div>
           </div>
         </a>
-        <div class="header-streak" id="headerStreak"><span class="streak-fire">⚡</span> <span class="streak-count" id="streakCountHeader">0</span>
+            <div class="header-streak">
+<span class="streak-fire">⚡</span> <span class="streak-count" id="streakCountHeader">0</span>
           <div class="streak-label">DIAS<br>STREAK</div>
         </div>
-        <div class="streak-shield-display" id="headerShields" title="Escudos da Streak"><div class="shield-star" id="shieldStar"><span class="shield-star-icon">★</span><span class="shield-star-count" id="shieldCount">0</span></div></div>
+        <div class="streak-shield-display" title="Escudos da Streak"><div class="shield-star" id="shieldStar"><span class="shield-star-icon">★</span><span class="shield-star-count" id="shieldCount">0</span></div></div>
         <div class="header-xp" id="headerXP"><span class="xp-rank" id="headerRank">RECRUTA</span>
           <div class="xp-bar-mini">
             <div class="xp-fill-mini" id="headerXpBar" style="width:0%"></div>
@@ -148,7 +149,7 @@
         <div class="rdy-corner-glow rdy-corner-glow-br"></div>
         <div class="readiness-header">
           <span class="readiness-title">🎯 ESTADO DE PRONTIDÃO</span>
-          <span class="readiness-scan-status" id="readinessScanStatus"><span class="scan-dot"></span>MONITORANDO</span>
+          <span class="readiness-scan-status"><span class="scan-dot"></span>MONITORANDO</span>
           <div class="readiness-header-actions">
             <button class="readiness-trend-btn" id="btnReadinessTrend" onclick="toggleReadinessTrend()" title="Ver tendência de 30 dias">📈 TENDÊNCIA</button>
             <button class="readiness-reset" onclick="resetReadiness()" title="Resetar avaliação">↻ RESETAR</button>
@@ -253,7 +254,7 @@
           </div>
         </div>
       </div>
-      <div class="card mb-16 xp-card" id="xpCard">
+      <div class="card mb-16 xp-card">
         <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
         <div class="xp-accent-bar"></div>
         <div class="xp-noise"></div>
@@ -277,13 +278,13 @@
                   <circle class="level-ring-glow" cx="30" cy="30" r="26"/>
                 </svg>
                 <span class="level-icon" id="levelIcon">🎖</span>
-                <div class="level-ring-dots" id="levelRingDots"></div>
+                <div class="level-ring-dots"></div>
               </div>
               <div class="level-info">
                 <span class="level-rank-label" id="levelRankLabel">TROPA</span>
                 <span class="level-name" id="levelName">RECRUTA</span>
                 <span class="level-stars" id="levelStars">★</span>
-                <span class="level-divisao" id="levelDivisao">—</span>
+                <span class="level-divisao">—</span>
               </div>
             </div>
             <div class="xp-main" style="flex:1;min-width:200px">
@@ -297,7 +298,7 @@
                   <span class="xp-pct" id="xpPct">0%</span>
                 </div>
               </div>
-              <div class="xp-bar-energy" id="xpBarEnergy"></div>
+              <div class="xp-bar-energy"></div>
               <div class="xp-bar-outer" id="xpBarOuter">
                 <div class="xp-bar-fill" id="xpBarFill" style="width:0%">
                   <div class="xp-bar-liquid"></div>
@@ -318,7 +319,7 @@
                 <span class="xp-daily-label" id="xpDailyLabel">HOJE: +0 XP</span>
                 <span class="xp-next-label" id="xpNextLabel">PRÓXIMO: SOLDADO</span>
               </div>
-              <div class="xp-sparkline-wrap" id="xpSparklineWrap">
+              <div class="xp-sparkline-wrap">
                 <svg class="xp-sparkline" id="xpSparkline" viewBox="0 0 200 30" preserveAspectRatio="none"></svg>
                 <span class="xp-sparkline-label">EVOLUÇÃO 7 DIAS</span>
               </div>
@@ -327,7 +328,7 @@
               <div class="streak-fire-border"></div>
               <div class="streak-fire-overlay"></div>
               <div class="streak-flame-wrap">
-                <span class="streak-flame" id="streakFlame">⚡</span>
+                <span class="streak-flame">⚡</span>
                 <div class="streak-particles" id="streakParticles"></div>
               </div>
               <div class="streak-days" id="streakDays">0</div>
@@ -336,11 +337,11 @@
                 <span class="streak-value" id="streakBonus">+0%</span>
                 <span class="streak-bonus-label">BÔNUS</span>
               </div>
-              <div class="streak-progress" id="streakProgress">
-                <div class="streak-progress-fill" id="streakProgressFill"></div>
+              <div class="streak-progress">
+                <div class="streak-progress-fill"></div>
               </div>
               <div class="streak-next" id="streakNext">Próximo: 7 dias → +10%</div>
-              <div class="streak-milestone-badges" id="streakMilestoneBadges">
+              <div class="streak-milestone-badges">
                 <span class="streak-mb" data-days="7">7d</span>
                 <span class="streak-mb" data-days="14">14d</span>
                 <span class="streak-mb" data-days="30">30d</span>
@@ -414,7 +415,7 @@
           </div>
         </div>
         <div class="sb-warmup-progress-wrap">
-          <div class="sb-warmup-progress" id="warmupProgress"><div class="sb-warmup-progress-fill" id="warmupProgressFill"></div></div>
+          <div class="sb-warmup-progress"><div class="sb-warmup-progress-fill" id="warmupProgressFill"></div></div>
         </div>
         <div class="sb-warmup-footer">
           <span class="sb-warmup-status" id="warmupStatus">❄ NÃO AQUECIDO</span>
@@ -493,7 +494,7 @@
                 <div class="rm-label-wrap">
                   <span class="rm-label">CENTRO DE ALERTA</span>
                   <div class="rm-status-row">
-                    <span class="rm-status-dot" id="rmStatusDot"></span>
+                    <span class="rm-status-dot"></span>
                     <span class="rm-status-text" id="lembreteDesc">DESLIGADOS</span>
                   </div>
                 </div>
@@ -605,7 +606,7 @@
             <audio id="armyPlayerAudio" preload="none" style="display:none"></audio>
           </div>
 
-          <div class="card sb-card sb-card-session-premium" id="gtgSessionCard" style="margin:0;overflow:hidden">
+          <div class="card sb-card sb-card-session-premium" style="margin:0;overflow:hidden">
             <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
             <div class="ss-accent-bar"></div>
             <div class="ss-noise"></div>
@@ -655,7 +656,7 @@
                 <div class="sb-sprog">
                   <div class="sb-sprog-title" id="sessionProgressTitle">SESSÃO EM ANDAMENTO</div>
                   <div id="sessionSeriesDots" class="sb-sprog-dots"></div>
-                  <div id="sessionStateBox">
+                  <div>
                     <div class="sb-sprog-state" id="sessionStateLabel">PRÓXIMA SÉRIE</div>
                     <div class="sb-sprog-timer" id="sessionTimerDisplay">PRONTO</div>
                   </div>
@@ -702,7 +703,7 @@
                 <button class="btn btn-outline" onclick="stopPlankTimer()">■ PARAR</button>
                 <button class="btn btn-outline" onclick="resetPlankTimer()">↺</button>
               </div>
-              <div class="groove-toggles" id="plank-groove" style="flex-basis:100%;margin-top:10px;padding:8px 12px 4px">
+              <div class="groove-toggles" style="flex-basis:100%;margin-top:10px;padding:8px 12px 4px">
                 <span class="groove-label">⚙ GROOVE</span>
                 <div class="groove-slider" id="plank-groove-amp" title="Amplitude completa">
                   <span class="missile-switch__icon">🏋️</span>
@@ -722,7 +723,7 @@
                   <span class="groove-lvl" id="plank-glvl-2">0</span>
                   <span>S/B</span>
                 </div>
-                <div class="groove-bonus-preview" id="plank-groove-bonus-wrap">
+                <div class="groove-bonus-preview">
                   BÔNUS: <span class="bonus-val" id="plank-groove-bonus">+0%</span>
                 </div>
               </div>
@@ -1039,7 +1040,7 @@
       <div class="grid-2 mb-16">
         <div class="card">
           <div class="card-header"><span class="card-title">📈 VOLUME SEMANAL</span>
-            <div class="chart-toggles"><button class="toggle-btn active" onclick='setChartMode("series",this)'>SÉRIES</button> <button class="toggle-btn" onclick='setChartMode("reps",this)'>REPS</button> <button class="toggle-btn" onclick='setChartMode("volume",this)'>VOLUME</button> <button class="toggle-btn groove-filter" id="grooveFilterBtn" onclick='toggleFiltroPerfeitas(this)' title="Mostrar apenas séries perfeitas (3/3)">★ SÓ PERFEITAS</button></div>
+            <div class="chart-toggles"><button class="toggle-btn active" onclick='setChartMode("series",this)'>SÉRIES</button> <button class="toggle-btn" onclick='setChartMode("reps",this)'>REPS</button> <button class="toggle-btn" onclick='setChartMode("volume",this)'>VOLUME</button> <button class="toggle-btn groove-filter" onclick='toggleFiltroPerfeitas(this)' title="Mostrar apenas séries perfeitas (3/3)">★ SÓ PERFEITAS</button></div>
           </div>
           <div class="card-body">
             <div class="chart-canvas-wrap"><canvas id="weeklyChart"></canvas></div>
@@ -1525,7 +1526,7 @@
       <div class="st-tooltip__cat text-mono" id="stTooltipCat">—</div>
 
 
-      <div class="st-tooltip__stats" id="stTooltipStats">
+      <div class="st-tooltip__stats">
         <div class="st-tooltip__stat">
           <span class="st-tooltip__stat-label text-mono">SEU PR (30D)</span>
           <span class="st-tooltip__stat-value" id="stTooltipPR">—</span>
@@ -1628,8 +1629,8 @@
   <div id="shareCardModal">
     <div class="share-modal-title">★ CARTÃO DO DIA ★</div>
     <div class="share-modal-subtitle">PRONTO PARA INSTAGRAM STORIES · WHATSAPP STATUS · DOWNLOAD</div><img id="shareCardPreview" src="" alt="Cartão do dia">
-    <div class="share-card-theme-toggle" id="shareCardThemeToggle" style="display:flex;align-items:center;gap:8px;justify-content:center;margin:10px 0;"><span class="text-mono" style="font-size:10px;color:var(--gray-light);letter-spacing:2px">VISUAL:</span><button class="btn btn-sm btn-outline" id="btnCardTemaEscuro" onclick="toggleTemaCard('dark')" style="background:rgba(0,0,0,0.5);color:var(--white);border:1px solid var(--gold);border-radius:10px">☭ EXÉRCITO VERMELHO</button><button class="btn btn-sm btn-outline" id="btnCardTemaClaro" onclick="toggleTemaCard('light')" style="background:rgba(255,255,255,0.5);color:var(--gray-light);border:1px solid var(--gray);border-radius:10px;backdrop-filter:blur(8px)">❄ SIBÉRIA</button></div>
-    <div class="share-actions"><button class="btn btn-red" onclick="baixarShareCard()"><i class="fas fa-download"></i> BAIXAR IMAGEM</button> <button class="btn btn-green" onclick="compartilharWhatsApp()"><i class="fab fa-whatsapp"></i> WHATSAPP</button> <button class="btn btn-purple" onclick="compartilharInstagram()"><i class="fab fa-instagram"></i> INSTAGRAM</button> <button class="btn btn-gold" onclick="copiarShareCard()" id="btnCopiarCard"><i class="fas fa-copy"></i> COPIAR</button> <button class="btn btn-outline" onclick='document.getElementById("shareCardModal").classList.remove("active")'>✕ FECHAR</button></div>
+    <div class="share-card-theme-toggle" style="display:flex;align-items:center;gap:8px;justify-content:center;margin:10px 0;"><span class="text-mono" style="font-size:10px;color:var(--gray-light);letter-spacing:2px">VISUAL:</span><button class="btn btn-sm btn-outline" id="btnCardTemaEscuro" onclick="toggleTemaCard('dark')" style="background:rgba(0,0,0,0.5);color:var(--white);border:1px solid var(--gold);border-radius:10px">☭ EXÉRCITO VERMELHO</button><button class="btn btn-sm btn-outline" id="btnCardTemaClaro" onclick="toggleTemaCard('light')" style="background:rgba(255,255,255,0.5);color:var(--gray-light);border:1px solid var(--gray);border-radius:10px;backdrop-filter:blur(8px)">❄ SIBÉRIA</button></div>
+    <div class="share-actions"><button class="btn btn-red" onclick="baixarShareCard()"><i class="fas fa-download"></i> BAIXAR IMAGEM</button> <button class="btn btn-green" onclick="compartilharWhatsApp()"><i class="fab fa-whatsapp"></i> WHATSAPP</button> <button class="btn btn-purple" onclick="compartilharInstagram()"><i class="fab fa-instagram"></i> INSTAGRAM</button> <button class="btn btn-gold" onclick="copiarShareCard()"><i class="fas fa-copy"></i> COPIAR</button> <button class="btn btn-outline" onclick='document.getElementById("shareCardModal").classList.remove("active")'>✕ FECHAR</button></div>
     <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#444;letter-spacing:2px;text-align:center">DICA: SALVE A IMAGEM E POSTE NOS STORIES / STATUS COMO FOTO</div>
   </div>
   <div id="shareCardCanvas">
