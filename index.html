@@ -21,45 +21,9 @@
   <link rel="manifest" href="manifest.webmanifest">
   </head>
   <body>
-  <div class="radar-grid"></div>
-  <div class="radar-circle"></div>
-  <div class="radar-circle-outer"></div>
-  <div class="radar-circle-inner"></div>
-  <div class="radar-sweep"></div>
-  <div class="radar-blip"></div>
-  <div class="radar-blip"></div>
-  <div class="radar-blip"></div>
-  <div class="radar-blip"></div>
-  <div class="radar-blip"></div>
-  <div class="radar-blip"></div>
-  <div class="depth-line"></div>
-  <div class="depth-line"></div>
-  <div class="depth-line"></div>
-  <div class="depth-line"></div>
-  <div class="bubble"></div>
-  <div class="bubble"></div>
-  <div class="bubble"></div>
-  <div class="bubble"></div>
-  <div class="bubble"></div>
-  <div class="bubble"></div>
-  <div class="bubble"></div>
-  <div class="bubble"></div>
-  <div class="periscope-frame"></div>
-  <div class="sonar-wave"></div>
-  <div class="sonar-wave"></div>
-  <div class="sonar-wave"></div>
-  <div class="soviet-emblem"></div>
-  <div class="submarine-hud"></div>
-  <div class="nuclear-reactor"></div>
-  <div class="pressure-gauge"><div class="needle"></div></div>
-  <div class="compass-display"></div>
-  <div class="torpedo-status"></div>
-  <div class="crew-status"></div>
-  <div class="soviet-banner"></div>
-  <div class="soviet-corner-tl"></div>
-  <div class="soviet-corner-tr"></div>
-  <div class="soviet-corner-bl"></div>
-  <div class="soviet-corner-br"></div>
+  <!-- NORMAL THEME STRUCTURE -->
+  <div id="normal-theme-structure">
+
   <div class="frost-overlay"></div>
   <div class="snowflake">❄</div>
   <div class="snowflake">❅</div>
@@ -133,18 +97,7 @@
               <path d="M18 12L18.75 14.25L21 15L18.75 15.75L18 18L17.25 15.75L15 15L17.25 14.25L18 12Z"/>
             </svg>
           </button>
-          <button class="theme-icon-btn" data-theme="submarine" onclick="setTheme('submarine')" title="Submarino">
-            <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;">
-              <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
-              <circle cx="12" cy="12" r="2"/>
-              <line x1="12" y1="2" x2="12" y2="4" stroke="currentColor" stroke-width="2"/>
-              <line x1="12" y1="20" x2="12" y2="22" stroke="currentColor" stroke-width="2"/>
-              <line x1="2" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2"/>
-              <line x1="20" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/>
-              <circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
-              <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
-            </svg>
-          </button>
+
         </div>
         <div class="header-date" id="headerDate"></div>
       </div>
@@ -1101,7 +1054,7 @@
                 <div class="streak-number" id="streakCurrentLarge">0</div>
                 <div class="streak-record" id="streakRecordLabel">RECORDE: 0 DIAS</div>
               </div>
-              <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(204,0,0,.2)">
+              <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(184, 41, 41, 0.2)">
                 <div class="text-mono" style="margin-bottom:4px">⭐ ESCUDOS DA STREAK</div>
                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span id="shieldCountDisplay" style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--gold)">0 / 3</span> <button class="btn-shield" id="btnBuyShield" onclick="comprarShield()">COMPRAR (500 XP)</button></div>
                 <div class="text-mono" style="margin-top:4px;font-size:9px;color:var(--gray)">Consome 1 escudo automaticamente se streak quebrar</div>
@@ -1122,7 +1075,7 @@
         </div>
       </div>
       <div class="card">
-        <div class="card-header"><span class="card-title">⚡ LINHA DE EVOLUÇÃO — ÚLTIMAS 8 SEMANAS</span>
+        <div class="card-header"><span class="card-title">⚡ LINHA DE EVOLUÇÃO NAS ÚLTIMAS 8 SEMANAS</span>
           <div class="chart-toggles"><button class="toggle-btn active" onclick='setProgressMode("volume",this)'>VOLUME</button> <button class="toggle-btn" onclick='setProgressMode("media",this)'>MÉDIA/DIA</button> <button class="toggle-btn" onclick='setProgressMode("exercicios",this)'>POR EXERCÍCIO</button></div>
         </div>
         <div class="card-body">
@@ -1171,7 +1124,7 @@
       <div class="card" style="margin-top:20px">
         <div class="card-header"><span class="card-title">📊 VOLUME SEMANAL</span> <select class="form-select" id="volumeMetrica" onchange="renderVolumeChart()" style="font-size:12px;padding:4px 8px">
             <option value="series">Nº de Séries
-            <option value="reps">Total de Reps/Seg
+            <option value="reps">Total de Repetições/Segundos
             <option value="xp">XP Ganho
           </select></div>
         <div class="card-body">
@@ -1335,11 +1288,11 @@
               <div class="gtg-principle-title">📄 EXPORTAR TXT COMPLETO</div>
               <div class="gtg-principle-text" style="margin-bottom:12px">Exporta todo o histórico de treinos em formato texto simples. Ideal para backup ou leitura rápida.</div><button class="btn btn-outline" onclick="exportTXT()">⬇ BAIXAR TXT</button>
             </div>
-            <div class="gtg-principle" style="border-color:rgba(83,74,183,.4);background:rgba(83,74,183,.05)">
-              <div class="gtg-principle-title" style="color:#afa9ec">📊 EXPORTAR CSV — EXCEL/SHEETS</div>
+            <div class="gtg-principle" style="border-color:rgba(170, 166, 216, 0.4);background:rgba(83,74,183,.05)">
+              <div class="gtg-principle-title" style="color:#0b148f73">📊 EXPORTAR CSV — EXCEL/SHEETS</div>
               <div class="gtg-principle-text" style="margin-bottom:12px">Exporta o histórico completo em CSV. Abre direto no Excel, Google Sheets ou qualquer planilha para análise avançada.</div><button class="btn btn-outline" style="border-color:#afa9ec;color:#afa9ec" onclick="exportCSV()">⬇ BAIXAR CSV</button>
             </div>
-            <div class="gtg-principle" style="border-color:rgba(204,0,0,.4);background:rgba(204,0,0,.05)">
+            <div class="gtg-principle" style="border-color:rgba(204, 0, 0, 0.836);background:rgba(204,0,0,.05)">
               <div class="gtg-principle-title" style="color:var(--red-bright)">📋 EXPORTAR PDF SOVIÉTICO</div>
               <div class="gtg-principle-text" style="margin-bottom:12px">Gera um relatório completo em PDF com design soviético militar: histórico completo, estatísticas, streaks, badges e gráficos de progresso.</div><button class="btn btn-red" onclick="exportPDF()">★ GERAR PDF COMPLETO</button>
             </div>
@@ -1388,8 +1341,8 @@
           <div class="st-page-header__title-group">
             <div class="st-page-header__star">★</div>
             <div>
-              <h2 class="st-page-header__title">ÁRVORE DE PROGRESSÃO SOVIÉTICA</h2>
-              <p class="st-page-header__sub">MÉTODO GREASE THE GROOVE — PAVEL TSATSOULINE</p>
+              <h2 class="st-page-header__title">ÁRVORE DE PROGRESSÃO</h2>
+              <p class="st-page-header__sub">MÉTODO GREASE THE GROOVE</p>
             </div>
           </div>
 
@@ -1609,7 +1562,7 @@
 
 
       <button class="st-tooltip__cta btn btn-red" id="stTooltipCTA" onclick="irParaExercicioSkilltree()" style="display:none">
-        ▶ TREINAR AGORA
+        ▶ VAMBORA PORRA, QUE O TEMPO RUGE E A SAPUCAÍ É GRANDE
       </button>
     </div>
 
@@ -1675,7 +1628,7 @@
   <div id="shareCardModal">
     <div class="share-modal-title">★ CARTÃO DO DIA ★</div>
     <div class="share-modal-subtitle">PRONTO PARA INSTAGRAM STORIES · WHATSAPP STATUS · DOWNLOAD</div><img id="shareCardPreview" src="" alt="Cartão do dia">
-    <div class="share-card-theme-toggle" id="shareCardThemeToggle" style="display:flex;align-items:center;gap:8px;justify-content:center;margin:10px 0;"><span class="text-mono" style="font-size:10px;color:var(--gray-light);letter-spacing:2px">VISUAL:</span><button class="btn btn-sm btn-outline" id="btnCardTemaEscuro" onclick="toggleTemaCard('dark')" style="background:rgba(0,0,0,0.5);color:var(--white);border:1px solid var(--gold);border-radius:10px">☭ EXÉRCITO VERMELHO</button><button class="btn btn-sm btn-outline" id="btnCardTemaClaro" onclick="toggleTemaCard('light')" style="background:rgba(255,255,255,0.5);color:var(--gray-light);border:1px solid var(--gray);border-radius:10px;backdrop-filter:blur(8px)">❄ SIBÉRIA</button><button class="btn btn-sm btn-outline" id="btnCardTemaSub" onclick="toggleTemaCard('submarine')" style="background:rgba(0,20,60,0.6);color:#00FFFF;border:1px solid #00FFFF;border-radius:10px;backdrop-filter:blur(8px)">🌊 SUBMARINO NUCLEAR</button></div>
+    <div class="share-card-theme-toggle" id="shareCardThemeToggle" style="display:flex;align-items:center;gap:8px;justify-content:center;margin:10px 0;"><span class="text-mono" style="font-size:10px;color:var(--gray-light);letter-spacing:2px">VISUAL:</span><button class="btn btn-sm btn-outline" id="btnCardTemaEscuro" onclick="toggleTemaCard('dark')" style="background:rgba(0,0,0,0.5);color:var(--white);border:1px solid var(--gold);border-radius:10px">☭ EXÉRCITO VERMELHO</button><button class="btn btn-sm btn-outline" id="btnCardTemaClaro" onclick="toggleTemaCard('light')" style="background:rgba(255,255,255,0.5);color:var(--gray-light);border:1px solid var(--gray);border-radius:10px;backdrop-filter:blur(8px)">❄ SIBÉRIA</button></div>
     <div class="share-actions"><button class="btn btn-red" onclick="baixarShareCard()"><i class="fas fa-download"></i> BAIXAR IMAGEM</button> <button class="btn btn-green" onclick="compartilharWhatsApp()"><i class="fab fa-whatsapp"></i> WHATSAPP</button> <button class="btn btn-purple" onclick="compartilharInstagram()"><i class="fab fa-instagram"></i> INSTAGRAM</button> <button class="btn btn-gold" onclick="copiarShareCard()" id="btnCopiarCard"><i class="fas fa-copy"></i> COPIAR</button> <button class="btn btn-outline" onclick='document.getElementById("shareCardModal").classList.remove("active")'>✕ FECHAR</button></div>
     <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#444;letter-spacing:2px;text-align:center">DICA: SALVE A IMAGEM E POSTE NOS STORIES / STATUS COMO FOTO</div>
   </div>
@@ -1697,7 +1650,7 @@
         </div>
         <div class="sc-stat-box">
           <div class="sc-stat-val" id="sc-reps">0</div>
-          <div class="sc-stat-lbl">REPS HOJE</div>
+          <div class="sc-stat-lbl">REPETIÇÕES HOJE</div>
         </div>
         <div class="sc-stat-box">
           <div class="sc-stat-val" id="sc-xp">0</div>
@@ -1720,7 +1673,7 @@
       <div class="sc-exercises-label">★ EXERCÍCIOS —</div>
       <div id="sc-exercises-list" style="width:100%"></div>
       <div class="sc-footer">
-        <div class="sc-footer-tag">GREASE THE GROOVE · PAVEL TSATSOULINE</div>
+        <div class="sc-footer-tag">GREASE THE GROOVE</div>
         <div class="sc-footer-url">GTG TRACKER</div>
       </div>
     </div>
@@ -1753,6 +1706,11 @@
       <div class="modal-body" id="relSemanalBody"></div>
     </div>
   </div>
+  </div>
+  <!-- END NORMAL THEME STRUCTURE -->
+
+
+
   <script src="skilltree.js"></script>
   <script src="skilltree-render.js"></script>
   <script src="storage.js"></script>

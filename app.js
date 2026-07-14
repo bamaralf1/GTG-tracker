@@ -666,7 +666,7 @@ const EXERCICIOS_DEFAULT = [{
     autor: "Pavel Tsatsouline"
   }, {
     frase: "A disciplina é liberdade. Quando você não precisa decidir se vai treinar, você já venceu a batalha.",
-    autor: "Filosofia StrongFirst"
+    autor: "StrongFirst"
   }, {
     frase: "Mais volume, menos intensidade. Mais frequência, menos exaustão. Mais qualidade, menos ego.",
     autor: "Princípio GTG — Pavel Tsatsouline"
@@ -690,7 +690,7 @@ const EXERCICIOS_DEFAULT = [{
     autor: "Pavel Tsatsouline — StrongFirst"
   }, {
     frase: "O descanso não é fraqueza. É quando o sistema nervoso consolida os padrões que você treinou. Respeite o descanso.",
-    autor: "Ciência StrongFirst"
+    autor: "StrongFirst"
   }, {
     frase: "Qualidade de movimento é velocidade de evolução. Repetições ruins não treinam — elas programam erros.",
     autor: "Pavel Tsatsouline"
@@ -702,7 +702,7 @@ const EXERCICIOS_DEFAULT = [{
     autor: "Pavel Tsatsouline"
   }, {
     frase: "Você não está em uma competição contra ninguém. Você está construindo uma habilidade. Seja paciente com o processo.",
-    autor: "Filosofia GTG"
+    autor: "Espírito GTG"
   }, {
     frase: "Faça menos, mas faça todos os dias. Essa é a fórmula soviética que o Ocidente sempre ignorou.",
     autor: "Pavel Tsatsouline"
@@ -714,7 +714,7 @@ const EXERCICIOS_DEFAULT = [{
     autor: "Pavel Tsatsouline — Power to the People"
   }, {
     frase: "Seis semanas de GTG valem mais do que seis meses de treino até a falha. O sistema nervoso tem memória e paciência.",
-    autor: "Experimento GTG — StrongFirst"
+    autor: "Experimento GTG"
   }, {
     frase: "O objetivo não é se destruir hoje. É ser mais forte daqui a um ano do que você é hoje.",
     autor: "Pavel Tsatsouline"
@@ -794,7 +794,7 @@ const EXERCICIOS_DEFAULT = [{
     frase: "Não importa quão devagar você vá, desde que não pare.",
     autor: "Confúcio"
   }, {
-    frase: "Os soviéticos descobriram que a força é uma habilidade neurológica. Você não a constrói destruindo músculos — você a instala com prática perfeita.",
+    frase: "Os soviéticos descobriram que a força é uma habilidade neurológica. Você não a constrói destruindo músculos, você a instala com prática perfeita.",
     autor: "Mel Siff — Supertraining"
   }, {
     frase: "Um treino que você faz sempre supera o treino perfeito que você evita.",
@@ -827,14 +827,14 @@ const EXERCICIOS_DEFAULT = [{
     frase: "A fadiga esconde a força real. Treine fresco para descobrir o que você realmente é capaz.",
     autor: "Pavel Tsatsouline — Easy Strength"
   }, {
-    frase: "Você não cresce durante o treino — você cresce durante a recuperação. O treino é apenas o pedido. O sono é a entrega.",
+    frase: "Você não cresce durante o treino, você cresce durante a recuperação. O treino é apenas o pedido. O sono é a entrega.",
     autor: "Matthew Walker — Why We Sleep (adaptado)"
   }, {
     frase: "Kaizen: melhora contínua, dia após dia, por menores que sejam os ganhos. É assim que campeões são forjados.",
-    autor: "Filosofia Japonesa — Kaizen"
+    autor: "Filosofia Japonesa do Kaizen"
   }, {
     frase: "A barra não se importa com suas desculpas. O colchonete não aceita postergação. A única negociação possível é você aparecer.",
-    autor: "Ditado GTG"
+    autor: "Espírito GTG"
   }],
   LEMBRETES_GTG = ["⏰ Hora de uma série! Lembre: 50-60% do seu máximo. Qualidade acima de tudo.", "🔔 Pavel diz: 'Uma série perfeita agora vale mais do que dez séries ruins depois.'", "⚡ 15 minutos de descanso respeitados. Hora de trabalhar!", "🎯 Micro-dose de força. Uma série. Agora. Sem desculpa.", "💪 O sistema nervoso está pronto. Mais uma série constrói o padrão.", "🔥 Streak em andamento. Não quebre a corrente — uma série mantém tudo!", "⭐ Frequência > Intensidade. Uma série agora > Zero séries depois.", "🪖 O soldado não espera a hora perfeita. Ele treina quando pode.", "🧠 Cada repetição de qualidade mieliniza a via nervosa. Faça agora.", "⚔ GTG é sobre acúmulo. Cada série conta — mesmo a mais simples."];
 let fraseAtualIndex = -1,
@@ -2336,27 +2336,18 @@ let shareCardTema = "dark";
 function toggleTemaCard(tema) {
   shareCardTema = tema;
   const canvas = document.getElementById("shareCardCanvas");
-  canvas && (canvas.classList.remove("sc-light", "sc-submarine"), "light" === tema && canvas.classList.add("sc-light"), "submarine" === tema && canvas.classList.add("sc-submarine"));
+  canvas && (canvas.classList.remove("sc-light"), "light" === tema && canvas.classList.add("sc-light"));
   const btnDark = document.getElementById("btnCardTemaEscuro"),
-    btnLight = document.getElementById("btnCardTemaClaro"),
-    btnSub = document.getElementById("btnCardTemaSub");
+    btnLight = document.getElementById("btnCardTemaClaro");
   const activeStyle = { background: "rgba(0,0,0,0.5)", color: "var(--white)", borderColor: "var(--gold)" };
   const inactiveStyle = { background: "transparent", color: "var(--gray-light)", borderColor: "var(--gray)" };
-  const subActiveStyle = { background: "rgba(0,20,60,0.6)", color: "#00FFFF", borderColor: "#00FFFF" };
-  const subInactiveStyle = { background: "rgba(0,20,60,0.3)", color: "#00AAAA", borderColor: "#006666" };
-  if (btnDark && btnLight && btnSub) {
+  if (btnDark && btnLight) {
     if (tema === "light") {
       Object.assign(btnLight.style, activeStyle);
       Object.assign(btnDark.style, inactiveStyle);
-      Object.assign(btnSub.style, subInactiveStyle);
-    } else if (tema === "submarine") {
-      Object.assign(btnSub.style, subActiveStyle);
-      Object.assign(btnDark.style, inactiveStyle);
-      Object.assign(btnLight.style, inactiveStyle);
     } else {
       Object.assign(btnDark.style, activeStyle);
       Object.assign(btnLight.style, inactiveStyle);
-      Object.assign(btnSub.style, subInactiveStyle);
     }
   }
   abrirShareCard(!0);
@@ -4094,15 +4085,6 @@ function aplicarTema(e) {
       a.style.boxShadow = "0 2px 8px rgba(20,50,80,0.06)";
       a.style.borderRadius = "10px";
       a.style.backdropFilter = "blur(8px)";
-    } else if (e === "submarine") {
-      a.textContent = "🌊";
-      a.title = "SUBMARINO NUCLEAR — Deep Ocean";
-      a.style.borderColor = "rgba(0,200,255,0.4)";
-      a.style.color = "#00C8FF";
-      a.style.background = "rgba(0,20,40,0.6)";
-      a.style.boxShadow = "0 0 16px rgba(0,200,255,0.3), inset 0 0 16px rgba(0,200,255,0.1)";
-      a.style.borderRadius = "10px";
-      a.style.backdropFilter = "blur(12px)";
     } else {
       a.textContent = "🔴";
       a.title = "EXÉRCITO VERMELHO — Red Army";
@@ -4118,8 +4100,8 @@ function aplicarTema(e) {
 
 function toggleTheme() {
   const current = document.documentElement.getAttribute("data-theme") || "dark";
-  const next = current === "dark" ? "light" : current === "light" ? "submarine" : "dark";
-  aplicarTema(next);
+  const next = current === "dark" ? "light" : "dark";
+  setTheme(next);
 }
 
 function setTheme(theme) {
@@ -4754,7 +4736,7 @@ function resetarPainelSessao() {
 
 /* === CALENDÁRIO HEATMAP === */
 const CAL_MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-const CAL_DIAS = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const CAL_DIAS = ["Domingo","Segunda","Terça","Quarta","Quita","Sexta","Sábdo"];
 
 let calState = { mes: new Date().getMonth(), ano: new Date().getFullYear() };
 
