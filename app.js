@@ -1312,7 +1312,7 @@ function showLevelUpOverlay(level) {
 
 function _spawnLevelUpParticles() {
   const wrap = document.getElementById("levelUpParticles");
-  if (!wrap) { wrap.innerHTML = ""; return; }
+  if (!wrap) return;
   wrap.innerHTML = "";
   for (let i = 0; i < 30; i++) {
     const p = document.createElement("div");
