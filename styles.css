@@ -238,7 +238,6 @@ body::after{
   45%{opacity:0;transform:translate(calc(-50% - 3px),-14px) scale(0.3)}
   100%{opacity:0;transform:translate(-50%,-18px) scale(0.1)}
 }
-}
 .streak-count{
   font-family:'Bebas Neue',sans-serif;
   font-size:20px;
