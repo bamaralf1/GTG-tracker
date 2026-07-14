@@ -7569,3 +7569,97 @@ html[data-theme=light]::after{
   border-color:rgba(0,174,219,0.5) !important;
   box-shadow:0 0 15px rgba(0,174,219,0.4) !important;
 }
+
+
+/* ============================================
+   PERFORMANCE OVERRIDES — não altera funções
+   Acelera scroll, troca de abas e reduz repaint
+   ============================================ */
+
+/* 1) Acessibilidade + bateria: pausa animações infinitas quando o
+      usuário tem motion-reduce ativo no SO. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 2) HEADER STICKY — o maior vilão de scroll. O backdrop-filter
+      em elemento sticky forçava o navegador a recomputar o blur do
+      conteúdo atrás A CADA FRAME. Solução: header vai pra sua própria
+      layer de GPU (will-change: transform) e o blur é substituído por
+      um fundo sólido — visual fica idêntico (escuro, gradient) sem
+      o custo do blur. */
+.header {
+  will-change: transform;
+  contain: layout style;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: linear-gradient(180deg, rgba(10,5,5,0.94), rgba(15,15,15,0.97)) !important;
+}
+
+/* 3) TABS — content-visibility: auto faz o navegador pular
+      render/paint das abas escondidas. As outras 8 abas continuam
+      no DOM (não quebra o switchTab), mas o navegador não gasta
+      tempo pintando elas até ficarem ativas. ENORME ganho de swap. */
+.tab-content {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 900px;
+}
+.tab-content.active {
+  content-visibility: visible;
+}
+
+/* 4) CONTAINMENT nos cards principais — isola repaint e layout
+      de cada card. Mudança num card não força repaint do body. */
+.card,
+.stat-card,
+.readiness-card,
+.exercise-card,
+.sb-card,
+.modal,
+.nav-tabs {
+  contain: layout style;
+}
+
+/* 5) SNOWFLAKES — 24 elementos animados em loop no tema light é
+      MUITO pesado. Mantém o efeito, mas só nos primeiros 8 (e só
+      com opacity/transform, que é mais barato). O resto fica
+      estático em cima (não some — só não anima). */
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme=light] .snowflake:nth-child(n+9) {
+    animation: none !important;
+    top: 8% !important;
+  }
+}
+
+/* 6) Animações do header que mudam text-shadow/filter em loop
+      são as mais caras (forçam repaint a 60fps do header, que
+      é sticky). Pausamos quando o user não está com o mouse em
+      cima — o pulso continua, mas só no hover. */
+.star-symbol,
+.streak-fire,
+.exercise-streak-fire,
+.level-icon,
+.sb-radio-star,
+.shield-star-icon {
+  animation-play-state: paused !important;
+}
+.header:hover .star-symbol,
+.readiness-card:hover .star-symbol,
+.sb-card:hover .streak-fire,
+.sb-card:hover .level-icon,
+.sb-card:hover .sb-radio-star,
+.sb-card:hover .shield-star-icon {
+  animation-play-state: running !important;
+}
+
+/* 7) Tab ativa — força sua própria layer GPU. */
+.tab-content.active {
+  will-change: transform;
+}

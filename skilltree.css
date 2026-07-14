@@ -1360,3 +1360,45 @@ body.light-theme .st-legend {
 body.light-theme .st-legend__text strong { color: #1A1A1A; }
 body.light-theme .st-legend__text span   { color: #5C5C5C; }
 body.light-theme .st-legend__note        { color: #9A9A9A; }
+
+
+/* ============================================
+   SKILLTREE PERFORMANCE OVERRIDES
+   Acelera render da árvore e reduz repaint
+   ============================================ */
+
+/* Acessibilidade + bateria: pausa animações infinitas. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Container da árvore — isola repaint do resto da página. */
+.st-container,
+.st-svg-wrap,
+.st-canvas {
+  contain: layout style;
+  will-change: transform;
+}
+
+/* Animações de pulso na árvore só rodam em hover.
+   Visualmente idêntico quando o user não está interagindo,
+   mas zera o custo de repaint constante dos nós. */
+.st-node,
+.st-node-master,
+.st-node-available,
+.st-node-locked,
+.st-edge {
+  animation-play-state: paused !important;
+}
+.st-container:hover .st-node,
+.st-container:hover .st-node-master,
+.st-container:hover .st-node-available,
+.st-container:hover .st-node-locked {
+  animation-play-state: running !important;
+}

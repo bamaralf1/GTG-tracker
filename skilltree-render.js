@@ -1151,7 +1151,7 @@
       }, { passive: false });
     }
 
-    console.log('[GTG Skill Tree] Inicializado com sucesso.');
+
   }
 
   // ============================================================
@@ -1188,7 +1188,7 @@
       });
     });
 
-    console.log('[GTG Skill Tree] Dados de teste injetados.');
+
   }
 
   // ============================================================

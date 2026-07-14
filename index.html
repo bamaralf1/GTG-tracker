@@ -1727,13 +1727,11 @@
         e.preventDefault();
         e.stopPropagation()
       }
-      console.log("Switching to tab:", tabName);
-      document.querySelectorAll(".nav-tab").forEach(function(n) {
-        n.classList.remove("active")
-      });
-      document.querySelectorAll(".tab-content").forEach(function(c) {
-        c.classList.remove("active")
-      });
+      // Cache dos nav-tabs e tab-content (muda raramente, evita querySelectorAll a cada troca)
+      if (!switchTab._navTabs) switchTab._navTabs = document.querySelectorAll(".nav-tab");
+      if (!switchTab._tabContents) switchTab._tabContents = document.querySelectorAll(".tab-content");
+      switchTab._navTabs.forEach(function(n) { n.classList.remove("active") });
+      switchTab._tabContents.forEach(function(c) { c.classList.remove("active") });
       var tab = document.querySelector('.nav-tab[data-tab="' + tabName + '"]');
       var content = document.getElementById("tab-" + tabName);
       if (tab) tab.classList.add("active");
