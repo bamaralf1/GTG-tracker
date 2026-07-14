@@ -1692,17 +1692,9 @@ function removerExercicio(exId) {
 }
 
 function calcularPR(ex) {
-  const tresMesesAtras = Date.now() - 2592e6,
-    registrosRecentes = dados.registros.filter(r => r.exercicioId === ex.id && r.timestamp > tresMesesAtras).sort((a, b) => a.timestamp - b.timestamp);
-  if (0 === registrosRecentes.length) return 0;
-  const maxValor = Math.max(...dados.registros.filter(r => r.exercicioId === ex.id).map(r => r.valor || 0)),
-    semanaMap = {};
-  registrosRecentes.forEach(r => {
-    const inicioSemana = getInicioSemana(r.data);
-    semanaMap[inicioSemana] = (semanaMap[inicioSemana] || 0) + (r.valor || 0)
-  });
-  const avgSemanal = Object.values(semanaMap).length > 0 ? Object.values(semanaMap).reduce((acc, v) => acc + v, 0) / Object.values(semanaMap).length : 0;
-  return Math.round(maxValor + avgSemanal / 100)
+  const tresMesesAtras = Date.now() - 2592e6;
+  const registros = dados.registros.filter(r => r.exercicioId === ex.id && !r.isTest && r.timestamp > tresMesesAtras);
+  return registros.length === 0 ? 0 : Math.max(...registros.map(r => Number(r.valor) || 0));
 }
 
 function atualizarStats() {
@@ -2812,9 +2804,7 @@ function calcularRPEMedio(e, a) {
 }
 
 function calcularPR2(e) {
-  const a = Date.now() - 2592e6,
-    t = dados.registros.filter(t => t.exercicioId === e.id && t.timestamp > a).sort((e, a) => e.timestamp - a.timestamp);
-  return 0 === t.length ? 0 : Math.max(...t.map(e => e.valor || 0))
+  return calcularPR(e);
 }
 
 function calcularSugestaoGTG(e, a) {

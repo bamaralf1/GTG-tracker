@@ -439,24 +439,14 @@ const SKILL_TREE = {
 };
 
 // ============================================================
-// HELPER: Calcula o PR de um exercício nos últimos 30 dias
-// Replica a lógica calcularPR2() do app.js
+// HELPER: Calcula o PR de um exercício — delega ao app.js
 // ============================================================
 
 function _calcularPRExercicio(exercicioId) {
   if (typeof dados === "undefined" || !Array.isArray(dados.registros)) return 0;
-
-  const trintaDiasAtras = Date.now() - 30 * 24 * 60 * 60 * 1000;
-
-  const registrosRecentes = dados.registros.filter(
-    r => r.exercicioId === exercicioId &&
-         !r.isTest &&
-         r.timestamp >= trintaDiasAtras
-  );
-
-  if (registrosRecentes.length === 0) return 0;
-
-  return Math.max(...registrosRecentes.map(r => Number(r.valor) || 0));
+  const ex = dados.exercicios.find(e => e.id === exercicioId);
+  if (!ex) return 0;
+  return typeof calcularPR === "function" ? calcularPR(ex) : 0;
 }
 
 // ============================================================
