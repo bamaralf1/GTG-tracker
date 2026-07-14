@@ -2310,18 +2310,6 @@ function somBadge() {
   tocarRuido(.35, .08, 0, 200, 8000), [523, 659, 784, 1047, 1319].forEach((f, i) => tocarNota(f, { vol: .14, dur: .28, atk: .008, dec: .12, rev: .45, det: i % 2 ? -3 : 3, delay: i * .14 }))
 }
 
-function somErro() {
-  const ctx = getAudioCtx();
-  if (audioMuted) return;
-  const osc = ctx.createOscillator(), g = ctx.createGain(), lfo = ctx.createOscillator(), lfoG = ctx.createGain();
-  osc.type = "sawtooth", osc.frequency.setValueAtTime(110, ctx.currentTime);
-  lfo.frequency.value = 4, lfoG.gain.value = 25, lfo.connect(lfoG), lfoG.connect(osc.frequency);
-  osc.connect(g), g.connect(ctx.destination);
-  const t = ctx.currentTime;
-  g.gain.setValueAtTime(.12, t), g.gain.exponentialRampToValueAtTime(.001, t + .35), tocarRuido(.25, .06, 0, 50, 250);
-  osc.start(t), osc.stop(t + .4), lfo.start(t), lfo.stop(t + .35)
-}
-
 function vibrar(pattern = [200, 100, 200]) {
   navigator.vibrate && navigator.vibrate(pattern)
 }
@@ -2816,10 +2804,6 @@ function selectRPE(e, a) {
 
 function getRPEColorClass(e) {
   return e ? e <= 4 ? "rpe-low" : e <= 6 ? "rpe-mid" : e <= 8 ? "rpe-high" : "rpe-max" : ""
-}
-
-function getRPELabel(e) {
-  return e ? e <= 2 ? "Muito fácil" : e <= 4 ? "Fácil" : e <= 6 ? "Moderado" : e <= 8 ? "Difícil" : "Máximo esforço" : ""
 }
 
 function calcularRPEMedio(e, a) {
@@ -4098,12 +4082,6 @@ function aplicarTema(e) {
   }
 }
 
-function toggleTheme() {
-  const current = document.documentElement.getAttribute("data-theme") || "dark";
-  const next = current === "dark" ? "light" : "dark";
-  setTheme(next);
-}
-
 function setTheme(theme) {
   aplicarTema(theme);
   updateThemeButtons(theme);
@@ -4596,7 +4574,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const d = document.querySelector('meta[name="theme-color"]');
   d && d.setAttribute("content", e), "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
     e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (BACKGROUND)", document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block"))
-  }), setupNavTabs(), inicializar();
+  }), inicializar();
   const audioBtn = document.getElementById("btnToggleAudio");
   audioBtn && (audioBtn.textContent = audioMuted ? "🔇" : "🔊");
   document.addEventListener("animationend", e => {
