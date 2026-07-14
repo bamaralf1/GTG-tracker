@@ -1737,11 +1737,15 @@
       if (tab) tab.classList.add("active");
       if (content) content.classList.add("active");
       if (tabName === "stats") {
+        // Quebrado em 2 frames: o navegador pinta entre eles, melhorando INP
+        // (Chart.js é pesado — 5+ charts recriados no mesmo frame travavam a main thread)
         setTimeout(function() {
           if (typeof renderGraficos === 'function') renderGraficos();
+        }, 50);
+        setTimeout(function() {
           if (typeof renderProgresso === 'function') renderProgresso();
-          if (typeof renderEstatisticasMensais === 'function') renderEstatisticasMensais()
-        }, 100)
+          if (typeof renderEstatisticasMensais === 'function') renderEstatisticasMensais();
+        }, 250);
       }
       if (tabName === "planejador") {
         setTimeout(function() {
