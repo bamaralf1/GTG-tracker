@@ -1836,6 +1836,7 @@ function removerExercicio(exId) {
   const ex = dados.exercicios.find(e => e.id === exId),
     exName = ex ? ex.nome : exId;
   confirmarAcao(`REMOVER ${exName}?`, "Os registros históricos serão mantidos. O exercício sairá da lista de treino.", () => {
+    pararTimerGTG(exId);
     dados.exercicios = dados.exercicios.filter(e => e.id !== exId), salvarDados(), renderExercicios(), renderGuiaExercicios(), mostrarToast("Removido", `${exName} removido da lista.`, "success")
   })
 }
