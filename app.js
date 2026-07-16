@@ -1,10 +1,15 @@
 function cssVar(name) {
+  if (!window._cssVarCache) window._cssVarCache = {};
+  if (window._cssVarCache[name] !== undefined) return window._cssVarCache[name];
   try {
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || name
+    const val = getComputedStyle(document.documentElement).getPropertyValue(name).trim() || name;
+    window._cssVarCache[name] = val;
+    return val;
   } catch (_) {
-    return name
+    return name;
   }
 }
+function _limparCacheCssVar() { window._cssVarCache = {}; }
 const EXERCICIOS_DEFAULT = [{
     id: "flexao",
     nome: "FLEXÃO",
@@ -4196,6 +4201,7 @@ function irParaTreinoHoje() {
 }
 
 function aplicarTema(e) {
+  _limparCacheCssVar();
   document.documentElement.setAttribute("data-theme", e), setItem("gtg_tema", e).catch(() => {});
   const a = document.getElementById("themeSwitchBtn");
   if (a) {
