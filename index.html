@@ -1727,7 +1727,6 @@
         e.preventDefault();
         e.stopPropagation()
       }
-      // Cache dos nav-tabs e tab-content (muda raramente, evita querySelectorAll a cada troca)
       if (!switchTab._navTabs) switchTab._navTabs = document.querySelectorAll(".nav-tab");
       if (!switchTab._tabContents) switchTab._tabContents = document.querySelectorAll(".tab-content");
       switchTab._navTabs.forEach(function(n) { n.classList.remove("active") });
@@ -1736,30 +1735,35 @@
       var content = document.getElementById("tab-" + tabName);
       if (tab) tab.classList.add("active");
       if (content) content.classList.add("active");
+
+      function _depoisPaint(fn) {
+        requestAnimationFrame(function() { requestAnimationFrame(fn) });
+      }
+
       if (tabName === "stats") {
-        // Quebrado em 2 frames: o navegador pinta entre eles, melhorando INP
-        // (Chart.js é pesado — 5+ charts recriados no mesmo frame travavam a main thread)
-        setTimeout(function() {
+        _depoisPaint(function() {
           if (typeof renderGraficos === 'function') renderGraficos();
-        }, 50);
+        });
         setTimeout(function() {
-          if (typeof renderProgresso === 'function') renderProgresso();
-          if (typeof renderEstatisticasMensais === 'function') renderEstatisticasMensais();
-        }, 250);
+          _depoisPaint(function() {
+            if (typeof renderProgresso === 'function') renderProgresso();
+            if (typeof renderEstatisticasMensais === 'function') renderEstatisticasMensais();
+          });
+        }, 200);
       }
       if (tabName === "planejador") {
-        setTimeout(function() {
+        _depoisPaint(function() {
           if (typeof renderPlanejador === 'function') renderPlanejador()
-        }, 50)
+        })
       }
       if (tabName === "historico") {
         _notaData = (new Date).toISOString().slice(0, 10);
-        setTimeout(function() {
+        _depoisPaint(function() {
           if (typeof renderNotaDia === 'function') renderNotaDia()
-        }, 50)
+        })
       }
       if (tabName === "skilltree" && typeof renderSkillTree === 'function') {
-        renderSkillTree()
+        _depoisPaint(function() { renderSkillTree() })
       }
     }
 
