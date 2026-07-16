@@ -2706,7 +2706,8 @@ function mostrarInfoExercicio(exId) {
 
 function dispararConfetti() {
   const colors = [cssVar("--accent-red"), cssVar("--gold"), cssVar("--gold-light"), cssVar("--red-bright"), cssVar("--green-bright")];
-  for (let i = 0; i < 50; i++) {
+  document.querySelectorAll(".confetti-piece").forEach(function(el) { el.remove() });
+  for (let i = 0; i < 15; i++) {
     const piece = document.createElement("div");
     piece.className = "confetti-piece", piece.style.left = 100 * Math.random() + "vw", piece.style.background = colors[Math.floor(Math.random() * colors.length)], piece.style.animationDelay = .5 * Math.random() + "s", document.body.appendChild(piece), setTimeout(() => piece.remove(), 3500)
   }
