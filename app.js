@@ -961,6 +961,18 @@ function salvarDados() {
   ]).catch(() => {})
 }
 
+// Versão com debounce de 400 ms para micro-ações frequentes (registrar série,
+// badge unlock, undo). Ações estruturais (add/remove exercício, importar) usam
+// salvarDados() direto para garantir flush imediato.
+let _salvarDadosTimer = null;
+function salvarDadosDebounced() {
+  if (_salvarDadosTimer) clearTimeout(_salvarDadosTimer);
+  _salvarDadosTimer = setTimeout(() => {
+    _salvarDadosTimer = null;
+    salvarDados();
+  }, 400);
+}
+
 function atualizarDataHeader() {
   const now = new Date;
   document.getElementById("headerDate").innerHTML = `${["DOM","SEG","TER","QUA","QUI","SEX","SAB"][now.getDay()]} ${String(now.getDate()).padStart(2,"0")} ${["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"][now.getMonth()]} ${now.getFullYear()}<br>\n     <span style="font-size:16px;">${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}</span>`, setTimeout(atualizarDataHeader, 3e4)
@@ -1365,7 +1377,7 @@ function verificarBadges() {
 
 function desbloquearBadge(badgeId) {
   if (!badgesData.desbloqueadas.includes(badgeId)) {
-    badgesData.desbloqueadas.push(badgeId), salvarDados(), vibrar([150, 80, 150, 80, 200]);
+    badgesData.desbloqueadas.push(badgeId), salvarDadosDebounced(), vibrar([150, 80, 150, 80, 200]);
     const badge = TODAS_BADGES.find(b => b.id === badgeId);
     badge && (somBadge(), setTimeout(() => mostrarUnlockBadge(badge), 500))
   }
@@ -1578,6 +1590,138 @@ function renderExercicios() {
   }
 }
 
+// Atualiza somente os elementos dinâmicos de um card já existente no DOM,
+// sem reconstruir o grid inteiro. Usado em adicionarSerie/desfazerRegistro
+// para preservar scroll, foco e os event listeners de drag-and-drop.
+function atualizarCardExercicio(exId) {
+  try {
+    const ex = dados.exercicios.find(e => e.id === exId);
+    if (!ex) return;
+    const card = document.getElementById('excard-' + exId);
+    if (!card) return renderExercicios(); // card sumiu — rebuild completo
+
+    const hoje = (new Date).toISOString().slice(0, 10);
+    const regsHoje = dados.registros.filter(r => {
+      const d = r.data || (r.timestamp ? new Date(r.timestamp).toISOString().slice(0, 10) : null);
+      return r.exercicioId === exId && d === hoje;
+    });
+    const totalSeries = dados.registros.filter(r => r.exercicioId === exId).length;
+    const totalAcum   = dados.registros.filter(r => r.exercicioId === exId).reduce((s, r) => s + (r.valor || 0), 0);
+    const streak = calcularStreakExercicio(exId);
+    const unit = 'tempo' === ex.tipo ? 'seg' : ex.unidade || 'reps';
+
+    // Stat: séries hoje
+    const statEls = card.querySelectorAll('.ex-stat-val');
+    if (statEls[0]) statEls[0].textContent = regsHoje.length;
+    if (statEls[1]) statEls[1].textContent = regsHoje.reduce((s, r) => s + (r.valor || 0), 0);
+    if (statEls[2]) statEls[2].textContent = totalSeries;
+    if (statEls[3]) {
+      statEls[3].innerHTML = `${streak}<span class="exercise-streak-fire${streak > 0 ? '' : ' no-streak'}">${streak > 0 ? '⚡' : '🎯'}</span>`;
+    }
+
+    // PR estimado
+    const pr = calcularPR(ex);
+    const prEl = card.querySelector('.pr-value');
+    if (prEl) prEl.textContent = `${pr} ${unit}`;
+    const prDisplayEl = document.getElementById('pr-display-' + exId);
+    if (prDisplayEl) prDisplayEl.textContent = `${pr} ${unit}`;
+
+    // Total acumulado
+    const totalAcumEl = card.querySelector('.exercise-pr > span:last-child');
+    if (totalAcumEl) totalAcumEl.textContent = `${totalAcum} total acum.`;
+
+    // RPE médio hoje
+    const rpeVal = calcularRPEMedio(exId, hoje);
+    const rpeValEl = document.getElementById('rpe-avg-val-' + exId);
+    if (rpeValEl) {
+      if (rpeVal) {
+        rpeValEl.textContent = rpeVal;
+        const v = parseFloat(rpeVal);
+        rpeValEl.style.color = v >= 7 ? 'var(--red-bright)' : v >= 5 ? 'var(--accent-ffaa)' : 'var(--green-bright)';
+      } else {
+        rpeValEl.textContent = '—';
+        rpeValEl.style.color = 'var(--gold)';
+      }
+    }
+
+    // Quality badge
+    const wrap = document.getElementById('qbadge-wrap-' + exId);
+    if (wrap) {
+      const regs = dados.registros.filter(r => r.exercicioId === exId && Array.isArray(r.groove));
+      if (regs.length === 0) {
+        wrap.innerHTML = '';
+      } else {
+        const pct = calcularQualityMedia(exId);
+        const perfeitos = regs.filter(r => Array.isArray(r.groove) && r.groove.filter(Boolean).length === 3).length;
+        let tier = 'baixa';
+        if (pct >= 80) tier = 'alta';
+        else if (pct >= 50) tier = 'media';
+        const star = pct >= 80 ? '⭐' : pct >= 50 ? '✓' : '·';
+        let html = `<span class="quality-badge" data-tier="${tier}" title="${regs.length} séries avaliadas · ${perfeitos} perfeitas"><span class="q-star">${star}</span><span>Q:</span><span class="q-val">${pct}%</span></span>`;
+        if (perfeitos > 0) html += `<span class="perfeito-stamp" title="${perfeitos} séries perfeitas (3/3)">★ ×${perfeitos}</span>`;
+        wrap.innerHTML = html;
+      }
+    }
+
+    // GTG suggestion & PR display
+    const pr2 = calcularPR2(ex);
+    const sug = calcularSugestaoGTG(pr2, ex.tipo);
+    const gtgValEl = document.getElementById('gtg-val-' + exId);
+    if (gtgValEl) {
+      if (sug) { gtgValEl.textContent = 'GTG: ' + sug; gtgValEl.parentElement.style.display = 'inline-flex'; }
+      else { gtgValEl.textContent = 'GTG: --'; }
+    }
+    const tooltipPrEl = document.getElementById('tooltip-pr-' + exId);
+    if (tooltipPrEl) tooltipPrEl.textContent = pr2;
+    const valorInput = document.getElementById('valor-' + exId);
+    if (valorInput && sug && !valorInput.value && !valorInput.placeholder.startsWith('GTG')) {
+      valorInput.placeholder = 'GTG: ' + sug;
+    }
+
+    // Meta bar
+    if (dados.metas) {
+      const metaWrap = document.getElementById('meta-wrap-' + exId);
+      if (metaWrap) {
+        const prog = calcularProgressoMeta(exId);
+        if (!prog) {
+          metaWrap.style.display = 'none';
+        } else {
+          metaWrap.style.display = 'block';
+          const n = { dia: 'HOJE', semana: 'SEMANA', mes: 'MÊS' }[prog.periodo];
+          const ti = 'series' === prog.tipo ? 'séries' : 'tempo' === ex.tipo ? 'seg' : 'reps';
+          const lbl = document.getElementById('meta-label-' + exId);
+          const fill = document.getElementById('meta-fill-' + exId);
+          const pct  = document.getElementById('meta-pct-' + exId);
+          if (lbl) lbl.textContent = `${prog.atual}/${prog.meta} ${ti} (${n})`;
+          if (pct)  pct.textContent  = prog.pct + '%';
+          if (fill) {
+            fill.style.width = prog.pct + '%';
+            fill.style.background = prog.pct >= 100
+              ? 'linear-gradient(90deg,#2D7A2D,#44CC44)'
+              : prog.pct >= 60
+              ? 'linear-gradient(90deg,var(--gold-dim),var(--gold))'
+              : 'linear-gradient(90deg,var(--red-dark),var(--red))';
+          }
+        }
+      }
+    }
+
+    // Groove sliders — resetar para 0 (já foram usados na série)
+    const grooveArr = grooveState[exId] || [0, 0, 0];
+    const lvlEls = ['groove-lvl-' + exId + '-0', 'groove-lvl-' + exId + '-1', 'groove-lvl-' + exId + '-2'];
+    lvlEls.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = grooveArr[i] || 0;
+    });
+    const bonusEl = card.querySelector('.bonus-val');
+    if (bonusEl) bonusEl.textContent = '+0%';
+
+  } catch (e) {
+    console.error('atualizarCardExercicio:', e);
+    renderExercicios(); // fallback seguro
+  }
+}
+
 function adicionarSerie(exId) {
   const ex = dados.exercicios.find(e => e.id === exId);
   if (!ex) return;
@@ -1619,7 +1763,7 @@ function adicionarSerie(exId) {
   try { adicionarXP(xpFinal); } catch(_e) { console.error("adicionarXP:", _e); }
   try { verificarStreak(); } catch(_e) { console.error("verificarStreak:", _e); }
   try { verificarBadges(); } catch(_e) { console.error("verificarBadges:", _e); }
-  salvarDados(), input.value = "", document.getElementById(`peso-${exId}`) && (document.getElementById(`peso-${exId}`).value = ""), delete rpeSelecionado[exId];
+  salvarDadosDebounced(), input.value = "", document.getElementById(`peso-${exId}`) && (document.getElementById(`peso-${exId}`).value = ""), delete rpeSelecionado[exId];
   const rpeScaleEl = document.getElementById("rpe-scale-" + exId);
   rpeScaleEl && rpeScaleEl.querySelectorAll(".rpe-btn").forEach(el => el.classList.remove("selected"));
   const rpeWarnEl = document.getElementById("rpe-warn-" + exId);
@@ -1634,7 +1778,7 @@ function adicionarSerie(exId) {
 
   grooveState[exId] = [0, 0, 0];
 
-  renderExercicios(), atualizarStats(), renderHistory(), setTimeout(() => {
+  atualizarCardExercicio(exId), atualizarStats(), renderHistory(), setTimeout(() => {
     renderGraficos(), renderProgresso(), renderEstatisticasMensais()
   }, 100), somRegistrar(), iniciarTimerGTG(exId)
 }
@@ -2131,8 +2275,10 @@ function startPlankTimer() {
   const prepOverlay = document.getElementById("prepCountdown"),
     prepNum = document.getElementById("prepNumber");
   prepOverlay.style.display = "block", prepNum.style.display = "block", prepNum.textContent = countdown, tocarSomPreparo(countdown);
-  const prepInterval = setInterval(() => {
-    countdown--, countdown <= 0 ? (clearInterval(prepInterval), prepOverlay.style.display = "none", prepNum.style.display = "none", document.getElementById("timerDisplay").style.opacity = "1", document.getElementById("btnStartTimer").textContent = "▶ RODANDO...", document.getElementById("btnStartTimer").disabled = !1, plankTimer.preparando = !1, tocarSomInicioExercicio(), plankTimer.rodando = !0, document.getElementById("timerDisplay").classList.add("running"), document.getElementById("timerRingFill").classList.add('running'), plankTimer.intervalo = setInterval(() => {
+  // Guardar referência para que resetPlankTimer/pausePlankTimer possam limpar
+  // o interval mesmo que seja chamado durante a contagem regressiva.
+  plankTimer.prepIntervalo = setInterval(() => {
+    countdown--, countdown <= 0 ? (clearInterval(plankTimer.prepIntervalo), plankTimer.prepIntervalo = null, prepOverlay.style.display = "none", prepNum.style.display = "none", document.getElementById("timerDisplay").style.opacity = "1", document.getElementById("btnStartTimer").textContent = "▶ RODANDO...", document.getElementById("btnStartTimer").disabled = !1, plankTimer.preparando = !1, tocarSomInicioExercicio(), plankTimer.rodando = !0, document.getElementById("timerDisplay").classList.add("running"), document.getElementById("timerRingFill").classList.add('running'), plankTimer.intervalo = setInterval(() => {
       plankTimer.segundos++;
       const mins = String(Math.floor(plankTimer.segundos / 60)).padStart(2, "0"),
         secs = String(plankTimer.segundos % 60).padStart(2, "0");
@@ -2156,8 +2302,10 @@ function stopPlankTimer() {
 }
 
 function resetPlankTimer() {
+  clearInterval(plankTimer.prepIntervalo); // cleanup do countdown se ainda estiver rodando
   clearInterval(plankTimer.intervalo), plankTimer = {
     intervalo: null,
+    prepIntervalo: null,
     segundos: 0,
     rodando: !1,
     preparando: !1,
@@ -2168,6 +2316,7 @@ function resetPlankTimer() {
 
 function pausePlankTimer() {
   if (!plankTimer.rodando) return;
+  clearInterval(plankTimer.prepIntervalo); // segurança: se pause chegar antes do countdown acabar
   clearInterval(plankTimer.intervalo), plankTimer.rodando = !1, plankTimer.pausado = !0, document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("btnStartTimer").textContent = "▶ RETOMAR";
   const fill = document.getElementById('timerRingFill'); if (fill) fill.classList.remove('running');
 }
@@ -2778,7 +2927,7 @@ function desfazerRegistro() {
   const e = undoState.ultimoRegistro;
   dados.registros = dados.registros.filter(a => a.id !== e.id), xpData.total -= e.xp, xpData.total < 0 && (xpData.total = 0);
   const a = (new Date).toISOString().slice(0, 10);
-  dados.registros.some(e => e.data === a) || streakData.ultimaData !== a || (streakData.ultimaData = null, streakData.atual = Math.max(0, streakData.atual - 1)), salvarDados(), renderExercicios(), atualizarStats(), renderHistory(), atualizarXP(), atualizarUIStreak(), esconderUndoBar(), mostrarToast("↩ Desfeito", e.exercicioNome + " removido. XP revertido.", "success")
+  dados.registros.some(e => e.data === a) || streakData.ultimaData !== a || (streakData.ultimaData = null, streakData.atual = Math.max(0, streakData.atual - 1)), salvarDadosDebounced(), atualizarCardExercicio(e.exercicioId), atualizarStats(), renderHistory(), atualizarXP(), atualizarUIStreak(), esconderUndoBar(), mostrarToast("↩ Desfeito", e.exercicioNome + " removido. XP revertido.", "success")
 }
 let rpeSelecionado = {};
 
@@ -4518,7 +4667,6 @@ function verificarRelatorioSemanal() {
   getItem("gtg_semana_visto").then(visto => {
     if (visto === hoje) return;
     const segInicio = getInicioSemana(hoje);
-    if (segInicio === visto) return;
     const regs = dados.registros.filter(r => r.data >= segInicio && r.data <= hoje && !r.isTest);
     if (regs.length < 1) return;
     setItem("gtg_semana_visto", hoje).catch(() => {});
@@ -4670,7 +4818,7 @@ function executarSerieSessao() {
         xp: calcularXPSerie(e, sessaoGTGState.valorPorSerie, 0),
         rpe: null
       };
-    dados.registros.push(t), adicionarXP(t.xp), verificarStreak(), verificarBadges(), salvarDados(), renderExercicios(), atualizarStats(), renderHistory(), somRegistrar()
+    dados.registros.push(t), adicionarXP(t.xp), verificarStreak(), verificarBadges(), salvarDadosDebounced(), atualizarCardExercicio(t.exercicioId), atualizarStats(), renderHistory(), somRegistrar()
   })(), sessaoGTGState.seriesFeitas++, renderSessaoDots(), mostrarToast(`✓ Série ${sessaoGTGState.seriesFeitas}/${sessaoGTGState.totalSeries}`, `${sessaoGTGState.valorPorSerie} ${sessaoGTGState.unidade} registrados`, "success"), sessaoGTGState.seriesFeitas >= sessaoGTGState.totalSeries ? concluirSessaoGTG() : iniciarDescansoSessao()
 }
 

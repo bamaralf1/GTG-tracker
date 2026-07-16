@@ -7663,3 +7663,19 @@ html[data-theme=light]::after{
 .tab-content.active {
   will-change: transform;
 }
+
+/* === OTIMIZAÇÕES DE PERFORMANCE === */
+.card,
+.exercise-card,
+.badge-item,
+.log-entry,
+.stat-card,
+.gtg-principle,
+.timeline-week,
+.toast{
+  contain: layout style;
+}
+.main::before,
+.main::after{
+  will-change: transform;
+}
