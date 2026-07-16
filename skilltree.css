@@ -855,8 +855,6 @@
     0 24px 64px rgba(0,0,0,0.7),
     0 0 30px rgba(212,168,67,0.1),
     var(--inner-glow);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
   pointer-events: none;
   display: none;
   animation: tooltipIn 0.25s var(--ease-expo) both;
