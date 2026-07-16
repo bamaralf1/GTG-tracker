@@ -1402,3 +1402,5 @@ body.light-theme .st-legend__note        { color: #9A9A9A; }
 .st-container:hover .st-node-locked {
   animation-play-state: running !important;
 }
+.skill-tree-node{contain: layout style}
+.st-wrapper{contain: layout style}
