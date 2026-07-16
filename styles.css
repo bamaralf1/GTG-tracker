@@ -153,8 +153,8 @@ body::after{
 }
 .streak-fire{font-size:18px;animation:lightningPulse 1.2s ease-in-out infinite;filter:drop-shadow(0 0 10px rgba(0,200,255,0.8))}
 @keyframes lightningPulse{
-  0%,100%{opacity:1;transform:scale(1) rotate(0deg);filter:drop-shadow(0 0 8px rgba(0,200,255,0.6)) hue-rotate(0deg)}
-  50%{opacity:0.9;transform:scale(1.15) rotate(2deg);filter:drop-shadow(0 0 16px rgba(120,95,255,0.9)) hue-rotate(-8deg)}
+  0%,100%{opacity:1;transform:scale(1) rotate(0deg)}
+  50%{opacity:0.9;transform:scale(1.15) rotate(2deg)}
 }
 
 /* === EXERCISE STREAK LIGHTNING (per-card) — animated bolt === */
