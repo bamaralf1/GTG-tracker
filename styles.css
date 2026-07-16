@@ -7631,6 +7631,10 @@ html[data-theme=light]::after{
 }
 
 /* === OTIMIZAÇÕES DE PERFORMANCE === */
+.log-entry {
+  content-visibility: auto;
+  contain-intrinsic-size: 48px;
+}
 .card,
 .exercise-card,
 .badge-item,
