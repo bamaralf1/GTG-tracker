@@ -4311,9 +4311,6 @@ body::after{
 [data-theme=light] .sb-card-radio.playing::before{background:linear-gradient(135deg,rgba(204,0,0,0.08),transparent 40%,transparent 60%,rgba(212,168,67,0.05))}
 [data-theme=light] .sb-army-track:hover{background:rgba(204,0,0,0.04)}
 
-
-  pointer-events:none;
-}
 .groove-bonus-preview{
   margin-left:auto;
   font-family:'Share Tech Mono',monospace;

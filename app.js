@@ -10,6 +10,10 @@ function cssVar(name) {
   }
 }
 function _limparCacheCssVar() { window._cssVarCache = {}; }
+function escapeHtml(str) {
+  const map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+  return String(str).replace(/[&<>"']/g, c => map[c]);
+}
 const EXERCICIOS_DEFAULT = [{
     id: "flexao",
     nome: "FLEXÃO",
@@ -911,13 +915,19 @@ function inicializar() {
     }
     setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), inicializarSkillTree(), renderCalendario(), verificarRelatorioSemanal();
     const pesoDataEl = document.getElementById("pesoData");
-    if (pesoDataEl && !pesoDataEl.value) pesoDataEl.value = new Date().toISOString().slice(0, 10)
+    if (pesoDataEl && !pesoDataEl.value) pesoDataEl.value = new Date().toISOString().slice(0, 10);
+    const audioBtn = document.getElementById("btnToggleAudio");
+    audioBtn && (audioBtn.textContent = audioMuted ? "🔇" : "🔊");
   })
 }
 
 async function carregarDados() {
   try {
     await window.storageReady;
+    try {
+      const audioRaw = await getItem("gtg_audio_muted") || localStorage.getItem("gtg_audio_muted");
+      if (audioRaw !== null) audioMuted = JSON.parse(audioRaw) === true;
+    } catch (e) {}
     const raw = await getItem("gtg_data") || localStorage.getItem("gtg_data");
     raw ? (dados = JSON.parse(raw), dados && dados.exercicios && Array.isArray(dados.exercicios) || (console.warn("Dados corrompidos, resetando para defaults"), await removeItem("gtg_data").catch(() => {}), localStorage.removeItem("gtg_data"), dados = {
       exercicios: EXERCICIOS_DEFAULT.map(ex => ({ ...ex })),
@@ -1546,7 +1556,7 @@ function renderExercicios() {
         i = o.length,
         d = o.reduce((e, a) => e + (a.valor || 0), 0),
         se = calcularStreakExercicio(a.id);
-      e.innerHTML += `\n      <div class="exercise-card" id="excard-${a.id}" style="--i:${idx}">\n        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>\n        <div class="ex-noise"></div>\n        <div class="ex-corner-glow ex-corner-glow-tl"></div>\n        <div class="ex-corner-glow ex-corner-glow-br"></div>\n        <div class="exercise-card-header">\n          <div class="exercise-name">${a.nome}</div>\n          <div class="sugestao-gtg" id="sugestao-${a.id}" onclick="aplicarSugestaoGTG('${a.id}', event)">\n            <span class="bulb">💡</span>\n            <span class="gtg-val" id="gtg-val-${a.id}">GTG: --</span>\n            <span class="gtg-label">reps</span>\n            <div class="gtg-tooltip">\n              <strong style="color:var(--gold)">SÉRIE SUGERIDA — MÉTODO GTG</strong><br>\n              PR (30 dias): <span id="tooltip-pr-${a.id}">0</span> ${"tempo"===a.tipo?"seg":a.unidade||"reps"}<br>\n              Sugestão: 50% do máximo<br>\n              <em style="color:var(--gold-dim)">"Nunca vá ao fracasso" — Pavel</em>\n            </div>\n          </div>\n          <div class="exercise-card-actions">\n            <button class="btn-icon btn-meta" onclick="abrirModalMeta('${a.id}')">🎯</button>\n            <button class="btn-icon" onclick="mostrarInfoExercicio('${a.id}')" title="Informações">ℹ</button>\n            <button class="btn-icon" onclick="editarExercicio('${a.id}')" title="Editar">✏️</button><button class="btn-icon danger" onclick="removerExercicio('${a.id}')" title="Remover">✕</button>\n            <div class="quality-badge-wrap" id="qbadge-wrap-${a.id}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;"></div>\n          </div>\n        </div>\n        <div class="exercise-stats">\n          <div class="ex-stat">\n            <div class="ex-stat-val">${i}</div>\n            <div class="ex-stat-lbl">SÉRIES HOJE</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${d}</div>\n            <div class="ex-stat-lbl">${"tempo"===a.tipo?"SEG HOJE":"REPS HOJE"}</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${r}</div>\n            <div class="ex-stat-lbl">TOTAL SÉRIES</div>\n          </div>\n          <div class="ex-stat" title="Dias consecutivos treinando este exercício">\n            <div class="ex-stat-val" style="color:var(--gold);">${se}<span class="exercise-streak-fire${se>0?'':' no-streak'}">${se>0?'⚡':'🎯'}</span></div>\n            <div class="ex-stat-lbl">STREAK DIAS</div>\n          </div>\n        </div>\n        <div class="pr-display">\n          <div>\n            <div class="pr-display-label">PR (30 DIAS)</div>\n            <div class="pr-display-val" id="pr-display-${a.id}">0 ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</div>\n          </div>\n          <button class="test-max-btn" onclick="abrirTesteMaximo('${a.id}')">🎯 TESTAR MÁXIMO</button>\n        </div>\n        <div class="exercise-pr">\n          <span class="pr-label">PR ESTIMADO:</span>\n          <span class="pr-value">${n} ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</span>\n          <span style="margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gray);">${s} total acum.</span>\n        </div>\n        <div class="rpe-avg-display" id="rpe-avg-${a.id}">\n          RPE MÉDIO HOJE: <span class="rpe-avg-val" id="rpe-avg-val-${a.id}">—</span>\n        </div>\n        <div class="exercise-add-form">\n          ${"peso"===a.tipo?`\n            <div class="form-group">\n              <label class="form-label">Peso (kg)</label>\n              <input type="number" class="form-input" id="peso-${a.id}" placeholder="0" min="0" step="0.5">\n            </div>`:""}\n          <div class="form-group">\n            <label class="form-label">${"tempo"===a.tipo?"Segundos":"Reps"}</label>\n            <input type="number" class="form-input" id="valor-${a.id}" placeholder="${"tempo"===a.tipo?"60":"10"}" min="1">\n          </div>\n          <button class="btn btn-red" onclick="adicionarSerie('${a.id}')">+ REGISTRAR</button>\n          <button class="btn btn-outline btn-sm" onclick="abrirTimerDescanso('${a.id}')">⏱ DESCANSO</button>\n          <div class="groove-toggles" id="groove-toggles-${a.id}" style="flex-basis:100%;">
+      e.innerHTML += `\n      <div class="exercise-card" id="excard-${a.id}" style="--i:${idx}">\n        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>\n        <div class="ex-noise"></div>\n        <div class="ex-corner-glow ex-corner-glow-tl"></div>\n        <div class="ex-corner-glow ex-corner-glow-br"></div>\n        <div class="exercise-card-header">\n          <div class="exercise-name">${escapeHtml(a.nome)}</div>\n          <div class="sugestao-gtg" id="sugestao-${a.id}" onclick="aplicarSugestaoGTG('${a.id}', event)">\n            <span class="bulb">💡</span>\n            <span class="gtg-val" id="gtg-val-${a.id}">GTG: --</span>\n            <span class="gtg-label">reps</span>\n            <div class="gtg-tooltip">\n              <strong style="color:var(--gold)">SÉRIE SUGERIDA — MÉTODO GTG</strong><br>\n              PR (30 dias): <span id="tooltip-pr-${a.id}">0</span> ${"tempo"===a.tipo?"seg":a.unidade||"reps"}<br>\n              Sugestão: 50% do máximo<br>\n              <em style="color:var(--gold-dim)">"Nunca vá ao fracasso" — Pavel</em>\n            </div>\n          </div>\n          <div class="exercise-card-actions">\n            <button class="btn-icon btn-meta" onclick="abrirModalMeta('${a.id}')">🎯</button>\n            <button class="btn-icon" onclick="mostrarInfoExercicio('${a.id}')" title="Informações">ℹ</button>\n            <button class="btn-icon" onclick="editarExercicio('${a.id}')" title="Editar">✏️</button><button class="btn-icon danger" onclick="removerExercicio('${a.id}')" title="Remover">✕</button>\n            <div class="quality-badge-wrap" id="qbadge-wrap-${a.id}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;"></div>\n          </div>\n        </div>\n        <div class="exercise-stats">\n          <div class="ex-stat">\n            <div class="ex-stat-val">${i}</div>\n            <div class="ex-stat-lbl">SÉRIES HOJE</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${d}</div>\n            <div class="ex-stat-lbl">${"tempo"===a.tipo?"SEG HOJE":"REPS HOJE"}</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${r}</div>\n            <div class="ex-stat-lbl">TOTAL SÉRIES</div>\n          </div>\n          <div class="ex-stat" title="Dias consecutivos treinando este exercício">\n            <div class="ex-stat-val" style="color:var(--gold);">${se}<span class="exercise-streak-fire${se>0?'':' no-streak'}">${se>0?'⚡':'🎯'}</span></div>\n            <div class="ex-stat-lbl">STREAK DIAS</div>\n          </div>\n        </div>\n        <div class="pr-display">\n          <div>\n            <div class="pr-display-label">PR (30 DIAS)</div>\n            <div class="pr-display-val" id="pr-display-${a.id}">0 ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</div>\n          </div>\n          <button class="test-max-btn" onclick="abrirTesteMaximo('${a.id}')">🎯 TESTAR MÁXIMO</button>\n        </div>\n        <div class="exercise-pr">\n          <span class="pr-label">PR ESTIMADO:</span>\n          <span class="pr-value">${n} ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</span>\n          <span style="margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gray);">${s} total acum.</span>\n        </div>\n        <div class="rpe-avg-display" id="rpe-avg-${a.id}">\n          RPE MÉDIO HOJE: <span class="rpe-avg-val" id="rpe-avg-val-${a.id}">—</span>\n        </div>\n        <div class="exercise-add-form">\n          ${"peso"===a.tipo?`\n            <div class="form-group">\n              <label class="form-label">Peso (kg)</label>\n              <input type="number" class="form-input" id="peso-${a.id}" placeholder="0" min="0" step="0.5">\n            </div>`:""}\n          <div class="form-group">\n            <label class="form-label">${"tempo"===a.tipo?"Segundos":"Reps"}</label>\n            <input type="number" class="form-input" id="valor-${a.id}" placeholder="${"tempo"===a.tipo?"60":"10"}" min="1">\n          </div>\n          <button class="btn btn-red" onclick="adicionarSerie('${a.id}')">+ REGISTRAR</button>\n          <button class="btn btn-outline btn-sm" onclick="abrirTimerDescanso('${a.id}')">⏱ DESCANSO</button>\n          <div class="groove-toggles" id="groove-toggles-${a.id}" style="flex-basis:100%;">
             <span class="groove-label">⚙ GROOVE</span>
             <div class="groove-slider" id="groove-amp-${a.id}" title="Amplitude completa: do topo ao fundo, sem truncar.">
               <span class="missile-switch__icon">🏋️</span>
@@ -2218,7 +2228,7 @@ function renderHistory() {
       unit = "tempo" === ex?.tipo ? "seg" : ex?.unidade || "reps",
       rpeCls = getRPEColorClass(reg.rpe),
       rpeHtml = reg.rpe ? `<span class="log-rpe ${rpeCls}">RPE ${reg.rpe}</span>` : "";
-    return `\n      <div class="log-entry" style="--i:${idx}">\n        <div class="log-dot"></div>\n        <div class="log-time">${reg.data?.slice(5)} ${reg.hora}</div>\n        ${rpeHtml}\n        <div class="log-quality ${renderQualityClass(reg.groove)}">${renderQualityIcons(reg.groove)}</div>\n        <div class="log-exercise">${reg.exercicioNome||reg.exercicioId}</div>\n        <div class="log-detail">${reg.valor} ${unit}${reg.peso?` @ ${reg.peso}kg`:""}</div>\n        <div class="log-xp">+${reg.xp||0} XP</div>\n        <button class="btn-icon danger" onclick="removerRegistroComConfirm('${reg.id}')" style="flex-shrink:0;">✕</button>\n      </div>`
+    return `\n      <div class="log-entry" style="--i:${idx}">\n        <div class="log-dot"></div>\n        <div class="log-time">${reg.data?.slice(5)} ${reg.hora}</div>\n        ${rpeHtml}\n        <div class="log-quality ${renderQualityClass(reg.groove)}">${renderQualityIcons(reg.groove)}</div>\n        <div class="log-exercise">${escapeHtml(reg.exercicioNome||reg.exercicioId)}</div>\n        <div class="log-detail">${escapeHtml(String(reg.valor))} ${unit}${reg.peso?` @ ${escapeHtml(String(reg.peso))}kg`:""}</div>\n        <div class="log-xp">+${reg.xp||0} XP</div>\n        <button class="btn-icon danger" onclick="removerRegistroComConfirm('${reg.id}')" style="flex-shrink:0;">✕</button>\n      </div>`
   }).join("") : container.innerHTML = '<div class="text-mono" style="text-align:center;padding:30px;">Nenhum registro encontrado. Comece a treinar!</div>'
 }
 
@@ -2375,7 +2385,6 @@ function resetRestTimer() {
 }
 
 let audioMuted = !1;
-try { audioMuted = JSON.parse(localStorage.getItem("gtg_audio_muted")) || !1 } catch (e) {}
 
 function toggleAudio() {
   audioMuted = !audioMuted;
@@ -2539,7 +2548,7 @@ function preencherShareCard() {
   0 === entries.length ? listEl.innerHTML = '<div style="width:100%; padding:30px; background:var(--bg-111); border-left:5px solid var(--accent-red); font-family:\'Share Tech Mono\',monospace; font-size:20px; color:var(--gray); letter-spacing:3px; text-align:center;">SEM REGISTROS HOJE</div>' : entries.slice(0, 7).forEach(g => {
     const ex = dados.exercicios.find(e => e.id === Object.keys(grupos).find(k => grupos[k].nome === g.nome)),
       unit = ex ? "tempo" === ex.tipo ? "seg" : ex.unidade || "reps" : "reps";
-    listEl.innerHTML += `\n        <div class="sc-exercise-row">\n          <div class="sc-ex-name">${g.nome}</div>\n          <div class="sc-ex-chips">\n            <div class="sc-ex-chip">\n              <div class="sc-ex-chip-val">${g.series}</div>\n              <div class="sc-ex-chip-lbl">SÉRIES</div>\n            </div>\n            <div class="sc-ex-chip">\n              <div class="sc-ex-chip-val">${g.reps}</div>\n              <div class="sc-ex-chip-lbl">${unit.toUpperCase()}</div>\n            </div>\n          </div>\n        </div>`
+    listEl.innerHTML += `\n        <div class="sc-exercise-row">\n          <div class="sc-ex-name">${escapeHtml(g.nome)}</div>\n          <div class="sc-ex-chips">\n            <div class="sc-ex-chip">\n              <div class="sc-ex-chip-val">${g.series}</div>\n              <div class="sc-ex-chip-lbl">SÉRIES</div>\n            </div>\n            <div class="sc-ex-chip">\n              <div class="sc-ex-chip-val">${g.reps}</div>\n              <div class="sc-ex-chip-lbl">${unit.toUpperCase()}</div>\n            </div>\n          </div>\n        </div>`
   })
 }
 
@@ -2558,6 +2567,61 @@ async function copiarShareCard() {
   } else mostrarToast("Erro", "Gere o cartão primeiro", "error")
 }
 
+function montarResumoHoje() {
+  const hoje = (new Date).toISOString().slice(0, 10);
+  const regsHoje = dados.registros.filter(r => r.data === hoje);
+  const totalSeries = regsHoje.length;
+  const totalReps = regsHoje.reduce((acc, r) => acc + (r.valor || 0), 0);
+  const grupos = {};
+  regsHoje.forEach(r => {
+    grupos[r.exercicioId] || (grupos[r.exercicioId] = { nome: r.exercicioNome, series: 0, reps: 0 });
+    grupos[r.exercicioId].series++;
+    grupos[r.exercicioId].reps += r.valor || 0;
+  });
+  const linhas = Object.values(grupos).map(g => `  ${g.nome}: ${g.series} séries, ${g.reps} reps`).join("\n");
+  const streak = streakData?.atual || 0;
+  const xp = xpData?.total || 0;
+  let texto = `🔥 *GTG TRACKER — RESUMO DO DIA*\n`;
+  texto += `📅 ${new Date().toLocaleDateString("pt-BR")}\n\n`;
+  texto += totalSeries > 0 ? `💪 ${totalSeries} séries · ${totalReps} reps\n${linhas}\n` : `💤 Dia de descanso\n`;
+  texto += `\n📈 Streak: ${streak} dias · XP: ${xp}\n`;
+  texto += `🏋️ #GTG #GreaseTheGroove`;
+  return texto;
+}
+
+async function compartilharWhatsApp() {
+  if (!shareCardBlob) return void mostrarToast("Erro", "Gere o cartão primeiro", "error");
+  const texto = montarResumoHoje();
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [new File([shareCardBlob], "gtg_cartao.png", { type: "image/png" })] })) {
+      await navigator.share({ files: [new File([shareCardBlob], "gtg_cartao.png", { type: "image/png" })], text: texto });
+    } else {
+      await navigator.share({ text: texto });
+    }
+  } catch (err) {
+    if (err.name === "AbortError") return;
+    const url = "https://wa.me/?text=" + encodeURIComponent(texto);
+    window.open(url, "_blank");
+  }
+}
+
+async function compartilharInstagram() {
+  if (!shareCardBlob) return void mostrarToast("Erro", "Gere o cartão primeiro", "error");
+  try {
+    const file = new File([shareCardBlob], "gtg_cartao.png", { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file] });
+    } else {
+      mostrarToast("ℹ️ Salve a imagem", "Instagram não aceita compartilhamento direto. Baixe a imagem e poste manualmente nos Stories / Status.", "warning");
+      baixarShareCard();
+    }
+  } catch (err) {
+    if (err.name === "AbortError") return;
+    mostrarToast("ℹ️ Salve a imagem", "Instagram não aceita compartilhamento direto. Baixe a imagem e poste manualmente nos Stories / Status.", "warning");
+    baixarShareCard();
+  }
+}
+
 function exibirFraseDoDia() {
   const el = document.getElementById("fraseMotivacional");
   if (!el) return;
@@ -2571,7 +2635,7 @@ function proximaFrase() {
   if (modoFocoState.ativo && modoFocoState.exercicioId) {
     const ex = dados.exercicios.find(e => e.id === modoFocoState.exercicioId);
     if (ex) {
-      const focoFrases = [`🎯 FOCO: ${ex.nome}. Uma série perfeita agora vale mais que dez ruins depois.`, `🔥 Modo Foco ativo. ${ex.nome} — qualidade máxima, volume controlado.`, `⚡ ${ex.nome}: frequência > intensidade. Uma série agora > zero depois.`, `🪖 Soldado, hora de ${ex.nome}. Tensão irradiante, controle total.`, `⭐ ${ex.nome}: cada rep de qualidade mieliniza a via nervosa.`],
+      const focoFrases = [`🎯 FOCO: ${escapeHtml(ex.nome)}. Uma série perfeita agora vale mais que dez ruins depois.`, `🔥 Modo Foco ativo. ${escapeHtml(ex.nome)} — qualidade máxima, volume controlado.`, `⚡ ${escapeHtml(ex.nome)}: frequência > intensidade. Uma série agora > zero depois.`, `🪖 Soldado, hora de ${escapeHtml(ex.nome)}. Tensão irradiante, controle total.`, `⭐ ${escapeHtml(ex.nome)}: cada rep de qualidade mieliniza a via nervosa.`],
         el = document.getElementById("fraseMotivacional");
       if (el) {
         const f = focoFrases[Math.floor(Math.random() * focoFrases.length)];
@@ -2688,7 +2752,7 @@ function mostrarToast(title, msg, type = "success") {
   const container = document.getElementById("toastContainer"),
     el = document.createElement("div"),
     timeout = "success" === type ? 3e3 : "warning" === type || "info" === type ? 5e3 : 8e3;
-  el.className = `toast ${type}`, el.innerHTML = `<div class="toast-title">${title}</div><div class="toast-msg">${msg}</div>`, container.appendChild(el), setTimeout(() => {
+  el.className = `toast ${type}`, el.innerHTML = `<div class="toast-title">${escapeHtml(title)}</div><div class="toast-msg">${escapeHtml(msg)}</div>`, container.appendChild(el), setTimeout(() => {
     el.style.animation = "toastOut 0.4s ease forwards", setTimeout(() => el.remove(), 400)
   }, timeout)
 }
@@ -2701,7 +2765,7 @@ function mostrarInfoExercicio(exId) {
   const ex = dados.exercicios.find(e => e.id === exId);
   if (!ex) return;
   const det = ex.detalhes || {};
-  document.getElementById("infoModalTitle").textContent = ex.nome, document.getElementById("infoModalBody").innerHTML = `\n    <div class="exercise-info-section">\n      <h3>DESCRIÇÃO</h3>\n      <p>${det.descricao||"Sem descrição."}</p>\n    </div>\n    ${det.pavelQuote?`\n    <div class="pavel-quote-highlight">\n      ${det.pavelQuote}\n      <cite>PAVEL TSATSOULINE</cite>\n    </div>`:""}\n    <div class="exercise-info-section">\n      <h3>EXECUÇÃO PASSO A PASSO</h3>\n      <ul>${(det.execucao||["Execute com controle"]).map((step,i)=>`<li><strong style="color:var(--gold)">${i+1}.</strong> ${step}</li>`).join("")}</ul>\n    </div>\n    <div class="exercise-info-section">\n      <h3>⚡ DICA GTG DE PAVEL</h3>\n      <p>${det.gtgDica||"Mantenha séries a 50-60% do seu máximo."}</p>\n    </div>\n    ${det.variacoes&&det.variacoes.length>0?`\n    <div class="exercise-info-section">\n      <h3>PROGRESSÕES E VARIAÇÕES</h3>\n      <ul>${det.variacoes.map(v=>`<li>${v}</li>`).join("")}</ul>\n    </div>`:""}\n    <div class="warning-box">\n      TIPO: ${ex.tipo.toUpperCase()} | UNIDADE: ${ex.unidade||"reps"} | GTG: 40-60% DO MÁXIMO\n    </div>\n  `, document.getElementById("infoModal").classList.add("active")
+  document.getElementById("infoModalTitle").textContent = ex.nome, document.getElementById("infoModalBody").innerHTML = `\n    <div class="exercise-info-section">\n      <h3>DESCRIÇÃO</h3>\n      <p>${escapeHtml(det.descricao||"Sem descrição.")}</p>\n    </div>\n    ${det.pavelQuote?`\n    <div class="pavel-quote-highlight">\n      ${escapeHtml(det.pavelQuote)}\n      <cite>PAVEL TSATSOULINE</cite>\n    </div>`:""}\n    <div class="exercise-info-section">\n      <h3>EXECUÇÃO PASSO A PASSO</h3>\n      <ul>${(det.execucao||["Execute com controle"]).map((step,i)=>`<li><strong style="color:var(--gold)">${i+1}.</strong> ${escapeHtml(step)}</li>`).join("")}</ul>\n    </div>\n    <div class="exercise-info-section">\n      <h3>⚡ DICA GTG DE PAVEL</h3>\n      <p>${escapeHtml(det.gtgDica||"Mantenha séries a 50-60% do seu máximo.")}</p>\n    </div>\n    ${det.variacoes&&det.variacoes.length>0?`\n    <div class="exercise-info-section">\n      <h3>PROGRESSÕES E VARIAÇÕES</h3>\n      <ul>${det.variacoes.map(v=>`<li>${escapeHtml(v)}</li>`).join("")}</ul>\n    </div>`:""}\n    <div class="warning-box">\n      TIPO: ${escapeHtml(ex.tipo.toUpperCase())} | UNIDADE: ${escapeHtml(ex.unidade||"reps")} | GTG: 40-60% DO MÁXIMO\n    </div>\n  `, document.getElementById("infoModal").classList.add("active")
 }
 
 function dispararConfetti() {
@@ -2829,7 +2893,7 @@ function renderGuiaExercicios() {
     section.innerHTML = '<div class="text-mono" style="text-align:center;padding:24px;color:var(--gray-light)">Nenhum exercício cadastrado. Adicione exercícios para ver o guia.</div>';
     return
   }
-  section.innerHTML = dados.exercicios.map(ex => `\n    <div class="gtg-principle" style="cursor:pointer;" onclick="mostrarInfoExercicio('${ex.id}')">\n      <div class="gtg-principle-title">${ex.nome}</div>\n      <div class="gtg-principle-text" style="font-size:12px;">${ex.tipo.toUpperCase()} — ${ex.unidade||"reps"}</div>\n    </div>\n  `).join("")
+  section.innerHTML = dados.exercicios.map(ex => `\n    <div class="gtg-principle" style="cursor:pointer;" onclick="mostrarInfoExercicio('${ex.id}')">\n      <div class="gtg-principle-title">${escapeHtml(ex.nome)}</div>\n      <div class="gtg-principle-text" style="font-size:12px;">${escapeHtml(ex.tipo.toUpperCase())} — ${escapeHtml(ex.unidade||"reps")}</div>\n    </div>\n  `).join("")
 }
 window.addEventListener("beforeinstallprompt", ev => {
   ev.preventDefault(), deferredInstallPrompt = ev, document.getElementById("btnInstalarPWA").style.display = "inline-block"
@@ -2915,7 +2979,7 @@ function mostrarUndoBar(e) {
   const a = document.getElementById("undoBar");
   a && a.remove(), undoState.timeoutId && clearTimeout(undoState.timeoutId), undoState.countdownInterval && clearInterval(undoState.countdownInterval), undoState.ultimoRegistro = e, undoState.segundosRestantes = 5;
   const t = document.createElement("div");
-  t.className = "undo-bar", t.id = "undoBar", t.innerHTML = `\n    <div class="undo-text">✓ <span>${e.exercicioNome}</span> +${e.valor} ${e.peso?"@ "+e.peso+"kg":""}</div>\n    <div class="undo-timer" id="undoTimer">5s</div>\n    <button class="btn-undo" onclick="desfazerRegistro()">↩ DESFAZER</button>\n  `, document.body.appendChild(t), undoState.countdownInterval = setInterval(() => {
+  t.className = "undo-bar", t.id = "undoBar", t.innerHTML = `\n    <div class="undo-text">✓ <span>${escapeHtml(e.exercicioNome)}</span> +${escapeHtml(String(e.valor))} ${e.peso?"@ "+escapeHtml(String(e.peso))+"kg":""}</div>\n    <div class="undo-timer" id="undoTimer">5s</div>\n    <button class="btn-undo" onclick="desfazerRegistro()">↩ DESFAZER</button>\n  `, document.body.appendChild(t), undoState.countdownInterval = setInterval(() => {
     undoState.segundosRestantes--;
     const e = document.getElementById("undoTimer");
     e && (e.textContent = undoState.segundosRestantes + "s"), undoState.segundosRestantes <= 0 && (clearInterval(undoState.countdownInterval), esconderUndoBar())
@@ -3044,9 +3108,9 @@ const PRIORITY_LEVELS = [
 ];
 let readinessWeights = { sono: 1, stress: 1, dor: 1, energia: 1, hidratacao: 1, alimentacao: 1, motivacao: 1 };
 
-function carregarPesosReadiness() {
+async function carregarPesosReadiness() {
   try {
-    const salvo = localStorage.getItem(READINESS_WEIGHTS_KEY);
+    const salvo = await getItem(READINESS_WEIGHTS_KEY) || localStorage.getItem(READINESS_WEIGHTS_KEY);
     if (salvo) Object.assign(readinessWeights, JSON.parse(salvo));
   } catch (e) {
     console.error("Erro ao carregar pesos de prontidão:", e);
@@ -3054,9 +3118,9 @@ function carregarPesosReadiness() {
   READINESS_FACTOR_KEYS.forEach(atualizarChipPrioridade);
 }
 
-function salvarPesosReadiness() {
+async function salvarPesosReadiness() {
   try {
-    localStorage.setItem(READINESS_WEIGHTS_KEY, JSON.stringify(readinessWeights));
+    await setItem(READINESS_WEIGHTS_KEY, JSON.stringify(readinessWeights));
   } catch (e) {
     console.error("Erro ao salvar pesos de prontidão:", e);
   }
@@ -3073,22 +3137,22 @@ function atualizarChipPrioridade(fator) {
   chip.title = "Prioridade: " + info.nivel.toUpperCase() + " — clique para alternar (afeta o cálculo da nota final)";
 }
 
-function cyclePriority(fator) {
+async function cyclePriority(fator) {
   const atual = readinessWeights[fator] ?? 1;
   const idxAtual = PRIORITY_LEVELS.findIndex(p => p.valor === atual);
   const prox = PRIORITY_LEVELS[(idxAtual + 1) % PRIORITY_LEVELS.length];
   readinessWeights[fator] = prox.valor;
   atualizarChipPrioridade(fator);
-  salvarPesosReadiness();
+  await salvarPesosReadiness();
   readinessData.score = calcularReadiness(readinessData.sono, readinessData.stress, readinessData.dor, readinessData.energia, readinessData.hidratacao, readinessData.alimentacao, readinessData.motivacao);
   salvarReadiness();
-  updateReadinessUI();
+  await updateReadinessUI();
   const chip = document.getElementById({ sono: "prioSono", stress: "prioStress", dor: "prioDor", energia: "prioEnergia", hidratacao: "prioHidratacao", alimentacao: "prioAlimentacao", motivacao: "prioMotivacao" }[fator]);
   if (chip) { chip.style.transform = "scale(1.25)"; setTimeout(() => { chip.style.transform = ""; }, 200); }
 }
 
 async function carregarReadiness() {
-  carregarPesosReadiness();
+  await carregarPesosReadiness();
   try {
     const e = await getItem(READINESS_KEY) || localStorage.getItem(READINESS_KEY);
     if (e) {
@@ -3109,7 +3173,7 @@ async function carregarReadiness() {
     console.error("Erro ao carregar readiness:", e)
   }
   _prevReadinessScore = readinessData.score;
-  updateReadinessUI()
+  await updateReadinessUI()
 }
 
 function salvarReadiness() {
@@ -3129,8 +3193,8 @@ function resetReadinessData() {
   salvarReadiness()
 }
 
-function resetReadiness() {
-  resetReadinessData(), updateReadinessUI(), mostrarToast("🔄 Resetado", "Estado de Prontidão resetado para padrão.", "success")
+async function resetReadiness() {
+  resetReadinessData(), await updateReadinessUI(), mostrarToast("🔄 Resetado", "Estado de Prontidão resetado para padrão.", "success")
 }
 
 function calcularReadiness(sono, stress, dor, energia, hidratacao, alimentacao, motivacao) {
@@ -3177,7 +3241,7 @@ function getReadinessConfig(e) {
   }
 }
 
-function updateReadiness() {
+async function updateReadiness() {
   const sono = Math.round(parseFloat(document.getElementById("sliderSono").value));
   const stress = Math.round(parseFloat(document.getElementById("sliderStress").value));
   const dor = Math.round(parseFloat(document.getElementById("sliderDor").value));
@@ -3195,13 +3259,13 @@ function updateReadiness() {
   readinessData.score = calcularReadiness(sono, stress, dor, energia, hidratacao, alimentacao, motivacao);
   if (_isDragging) {
     salvarReadiness();
-    updateReadinessUI();
+    await updateReadinessUI();
   } else if (!_readinessRafPending) {
     _readinessRafPending = true;
     requestAnimationFrame(() => {
       _readinessRafPending = false;
       salvarReadiness();
-      updateReadinessUI();
+      (async () => { await updateReadinessUI(); })().catch(() => {});
     });
   }
 }
@@ -3228,7 +3292,7 @@ function _cacheReadinessDOM() {
   _rdCache._ready = true;
 }
 
-function updateReadinessUI() {
+async function updateReadinessUI() {
   _cacheReadinessDOM();
   const c = _rdCache;
   const sono = readinessData.sono;
@@ -3309,16 +3373,18 @@ function updateReadinessUI() {
       c.score.classList.remove("pop");
       void c.score.offsetWidth;
       c.score.classList.add("pop");
-      _renderReadinessPrev();
-      _renderReadinessHistory();
+      (async () => {
+        await _renderReadinessPrev();
+        await _renderReadinessHistory();
+        await _renderReadinessTrendChart();
+      })().catch(() => {});
       _renderReadinessRec();
       _renderReadinessInsight();
       _renderReadinessCorrelation();
-      _renderReadinessTrendChart();
     });
     setTimeout(() => { c.circle.classList.remove("flash-green", "flash-red"); }, 700);
   }
-  _saveReadinessHistory();
+  _saveReadinessHistory().catch(() => {});
 }
 
 function _animateScore(el, from, to, duration) {
@@ -3352,7 +3418,7 @@ function _spawnParticles(circle, color) {
   setTimeout(() => { container.innerHTML = ""; }, 900);
 }
 
-function applyProfile(profile) {
+async function applyProfile(profile) {
   const profiles = {
     morning:     { sono: 7, stress: 3, dor: 2, energia: 6, hidratacao: 5, alimentacao: 5, motivacao: 7 },
     postworkout: { sono: 5, stress: 4, dor: 7, energia: 3, hidratacao: 4, alimentacao: 6, motivacao: 5 },
@@ -3371,14 +3437,14 @@ function applyProfile(profile) {
   document.getElementById("sliderAlimentacao").value = p.alimentacao;
   document.getElementById("sliderMotivacao").value = p.motivacao;
   salvarReadiness();
-  updateReadinessUI();
+  await updateReadinessUI();
 }
 
-function _renderReadinessPrev() {
+async function _renderReadinessPrev() {
   const el = document.getElementById("readinessPrev");
   if (!el) return;
   const today = (new Date).toISOString().slice(0, 10);
-  const history = JSON.parse(localStorage.getItem("gtg_readiness_history") || "{}");
+  const history = JSON.parse(await getItem("gtg_readiness_history") || localStorage.getItem("gtg_readiness_history") || "{}");
   let prevDate = null;
   for (let i = 1; i <= 7; i++) {
     const d = new Date(); d.setDate(d.getDate() - i);
@@ -3394,10 +3460,10 @@ function _renderReadinessPrev() {
   else { el.textContent = "Ontem: " + prevScore + " — igual"; el.className = "readiness-prev same"; }
 }
 
-function _renderReadinessHistory() {
+async function _renderReadinessHistory() {
   const el = document.getElementById("readinessHistory");
   if (!el) return;
-  const history = JSON.parse(localStorage.getItem("gtg_readiness_history") || "{}");
+  const history = JSON.parse(await getItem("gtg_readiness_history") || localStorage.getItem("gtg_readiness_history") || "{}");
   const days = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
@@ -3422,14 +3488,14 @@ function _renderReadinessHistory() {
   el.innerHTML = html;
 }
 
-function _saveReadinessHistory() {
-  const history = JSON.parse(localStorage.getItem("gtg_readiness_history") || "{}");
+async function _saveReadinessHistory() {
+  const history = JSON.parse(await getItem("gtg_readiness_history") || localStorage.getItem("gtg_readiness_history") || "{}");
   const today = (new Date).toISOString().slice(0, 10);
   history[today] = { score: readinessData.score, data: readinessData };
   const keys = Object.keys(history).sort().slice(-14);
   const trimmed = {};
   keys.forEach(k => trimmed[k] = history[k]);
-  localStorage.setItem("gtg_readiness_history", JSON.stringify(trimmed));
+  await setItem("gtg_readiness_history", JSON.stringify(trimmed));
 }
 
 function _renderReadinessRec() {
@@ -3519,7 +3585,7 @@ function toggleReadinessTrend() {
   const abrindo = !panel.classList.contains("open");
   panel.classList.toggle("open", abrindo);
   btn && btn.classList.toggle("active", abrindo);
-  if (abrindo) requestAnimationFrame(() => _renderReadinessTrendChart());
+  if (abrindo) requestAnimationFrame(() => { _renderReadinessTrendChart().catch(() => {}); });
 }
 
 function _mediaMovelComGaps(valores, janela) {
@@ -3531,12 +3597,12 @@ function _mediaMovelComGaps(valores, janela) {
   });
 }
 
-function _renderReadinessTrendChart() {
+async function _renderReadinessTrendChart() {
   const canvas = document.getElementById("readinessTrendChart");
   if (!canvas || typeof Chart === "undefined") return;
   const panel = document.getElementById("readinessTrendPanel");
   if (!panel || !panel.classList.contains("open")) return;
-  const history = JSON.parse(localStorage.getItem("gtg_readiness_history") || "{}");
+  const history = JSON.parse(await getItem("gtg_readiness_history") || localStorage.getItem("gtg_readiness_history") || "{}");
   const dias = [];
   for (let i = 29; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
@@ -3709,7 +3775,7 @@ function renderAnalise() {
       cor: "rgba(204,0,0,0.15)",
       borda: "rgba(204,0,0,0.4)",
       titulo: "NUNCA TREINADO",
-      texto: `<strong>${e.nome}</strong> ainda não tem nenhum registro. Comece hoje.`
+      texto: `<strong>${escapeHtml(e.nome)}</strong> ainda não tem nenhum registro. Comece hoje.`
     });
     else {
       const r = o[0].data,
@@ -3719,7 +3785,7 @@ function renderAnalise() {
         cor: "rgba(255,170,0,0.1)",
         borda: "rgba(255,170,0,0.4)",
         titulo: "EXERCÍCIO PARADO",
-        texto: `<strong>${e.nome}</strong> não é treinado há <strong>${s} dias</strong>. Pavel diria que você está perdendo o groove.`
+        texto: `<strong>${escapeHtml(e.nome)}</strong> não é treinado há <strong>${s} dias</strong>. Pavel diria que você está perdendo o groove.`
       })
     }
   });
@@ -3756,7 +3822,7 @@ function renderAnalise() {
     cor: "rgba(212,160,23,0.1)",
     borda: "rgba(212,160,23,0.4)",
     titulo: "EXERCÍCIO DOMINANTE",
-    texto: `<strong>${m[0].ex.nome}</strong> é seu exercício mais praticado com <strong>${m[0].total} séries</strong> no histórico total.`
+    texto: `<strong>${escapeHtml(m[0].ex.nome)}</strong> é seu exercício mais praticado com <strong>${m[0].total} séries</strong> no histórico total.`
   });
   const u = [0, 0, 0, 0, 0, 0, 0],
     p = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
@@ -3961,7 +4027,7 @@ function injetarCardPR() {
 
 function preencherSelectPR() {
   const e = document.getElementById("prChartSelect");
-  e && (e.innerHTML = dados.exercicios.map(e => `<option value="${e.id}">${e.nome}</option>`).join(""), dados.exercicios.length && renderGraficoPR(dados.exercicios[0].id))
+  e && (e.innerHTML = dados.exercicios.map(e => `<option value="${e.id}">${escapeHtml(e.nome)}</option>`).join(""), dados.exercicios.length && renderGraficoPR(dados.exercicios[0].id))
 }
 
 async function carregarMetas() {
@@ -4027,7 +4093,7 @@ function abrirModalMeta(e) {
     },
     o = "tempo" === a.tipo ? `<option value="series" ${"series"===t.tipo?"selected":""}>Séries</option><option value="reps" ${"reps"===t.tipo?"selected":""}>Segundos</option>` : `<option value="series" ${"series"===t.tipo?"selected":""}>Séries</option><option value="reps" ${"reps"===t.tipo?"selected":""}>Reps</option>`;
   let r = document.getElementById("metaModal");
-  r || (r = document.createElement("div"), r.id = "metaModal", r.className = "modal-overlay", r.innerHTML = '\n      <div class="modal" style="max-width:340px;">\n        <div class="modal-header">\n          <span class="modal-title" id="metaModalTitle">🎯 DEFINIR META</span>\n          <button class="modal-close" onclick="document.getElementById(\'metaModal\').classList.remove(\'active\')">✕</button>\n        </div>\n        <div class="modal-body" id="metaModalBody"></div>\n      </div>', document.body.appendChild(r)), document.getElementById("metaModalTitle").textContent = "🎯 META — " + a.nome, document.getElementById("metaModalBody").innerHTML = `\n    <div class="form-group" style="margin-bottom:12px;">\n      <label class="form-label">Tipo de meta</label>\n      <select class="form-select" id="metaTipo" style="width:100%;">${o}</select>\n    </div>\n    <div class="form-group" style="margin-bottom:12px;">\n      <label class="form-label">Quantidade</label>\n      <input type="number" class="form-input" id="metaValor" style="width:100%;" value="${t.valor}" placeholder="Ex: 10" min="1">\n    </div>\n    <div class="form-group" style="margin-bottom:16px;">\n      <label class="form-label">Período</label>\n      <select class="form-select" id="metaPeriodo" style="width:100%;">\n        <option value="dia" ${"dia"===t.periodo?"selected":""}>Por dia</option>\n        <option value="semana" ${"semana"===t.periodo?"selected":""}>Por semana</option>\n        <option value="mes" ${"mes"===t.periodo?"selected":""}>Por mês</option>\n      </select>\n    </div>\n    <div style="display:flex;gap:8px;">\n      <button class="btn btn-red" style="flex:1;" onclick="salvarMeta('${e}')">✓ SALVAR META</button>\n      <button class="btn btn-outline" onclick="removerMeta('${e}')">✕ REMOVER</button>\n    </div>\n  `, r.classList.add("active")
+  r || (r = document.createElement("div"), r.id = "metaModal", r.className = "modal-overlay", r.innerHTML = '\n      <div class="modal" style="max-width:340px;">\n        <div class="modal-header">\n          <span class="modal-title" id="metaModalTitle">🎯 DEFINIR META</span>\n          <button class="modal-close" onclick="document.getElementById(\'metaModal\').classList.remove(\'active\')">✕</button>\n        </div>\n        <div class="modal-body" id="metaModalBody"></div>\n      </div>', document.body.appendChild(r)), document.getElementById("metaModalTitle").textContent = "🎯 META — " + a.nome, document.getElementById("metaModalBody").innerHTML = `\n    <div class="form-group" style="margin-bottom:12px;">\n      <label class="form-label">Tipo de meta</label>\n      <select class="form-select" id="metaTipo" style="width:100%;">${o}</select>\n    </div>\n    <div class="form-group" style="margin-bottom:12px;">\n      <label class="form-label">Quantidade</label>\n      <input type="number" class="form-input" id="metaValor" style="width:100%;" value="${escapeHtml(String(t.valor))}" placeholder="Ex: 10" min="1">\n    </div>\n    <div class="form-group" style="margin-bottom:16px;">\n      <label class="form-label">Período</label>\n      <select class="form-select" id="metaPeriodo" style="width:100%;">\n        <option value="dia" ${"dia"===t.periodo?"selected":""}>Por dia</option>\n        <option value="semana" ${"semana"===t.periodo?"selected":""}>Por semana</option>\n        <option value="mes" ${"mes"===t.periodo?"selected":""}>Por mês</option>\n      </select>\n    </div>\n    <div style="display:flex;gap:8px;">\n      <button class="btn btn-red" style="flex:1;" onclick="salvarMeta('${e}')">✓ SALVAR META</button>\n      <button class="btn btn-outline" onclick="removerMeta('${e}')">✕ REMOVER</button>\n    </div>\n  `, r.classList.add("active")
 }
 
 function salvarMeta(e) {
@@ -4132,7 +4198,7 @@ function renderPlanejador() {
       s = r ? "border:1.5px solid var(--gold); background:rgba(212,160,23,0.06);" : "border:1px solid rgba(255,255,255,0.08);",
       n = o.map(e => {
         const a = dados.exercicios.find(a => a.id === e);
-        return a ? `<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">\n        <span style="font-family:Rajdhani,sans-serif;font-size:13px;color:var(--white-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:105px;">${a.nome}</span>\n        <button onclick="removerDoPlanejador(${t},'${e}')" style="background:none;border:none;color:var(--gray);cursor:pointer;font-size:10px;padding:0 2px;flex-shrink:0;">x</button>\n      </div>` : ""
+        return a ? `<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">\n        <span style="font-family:Rajdhani,sans-serif;font-size:13px;color:var(--white-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:105px;">${escapeHtml(a.nome)}</span>\n        <button onclick="removerDoPlanejador(${t},'${e}')" style="background:none;border:none;color:var(--gray);cursor:pointer;font-size:10px;padding:0 2px;flex-shrink:0;">x</button>\n      </div>` : ""
       }).join(""),
       i = 0 === o.length ? '<div style="color:var(--gray);font-family:Share Tech Mono,monospace;font-size:10px;text-align:center;padding:8px 0;">DESCANSO</div>' : "";
     return `<div style="${s}border-radius:4px;padding:12px;position:relative;">\n      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">\n        <span style="font-family:Bebas Neue,sans-serif;font-size:15px;letter-spacing:2px;color:${r?"var(--gold)":"var(--white)"};">${e}${r?" ★":""}</span>\n        <button onclick="abrirSeletorExercicio(${t})" style="background:rgba(255,255,255,0.08);border:none;color:var(--white);border-radius:2px;width:20px;height:20px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;padding:0;">+</button>\n      </div>\n      <div id="plano-dia-${t}">${n}${i}</div>\n    </div>`
@@ -4155,7 +4221,7 @@ function renderPlanoHoje() {
     const t = dados.registros.filter(a => a.exercicioId === e && a.data === s).length,
       o = (dados.metas || {})[e],
       r = o ? " · Meta: " + o.valor + " " + ("series" === o.tipo ? "series" : "reps") : "";
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:${t>0?"rgba(45,122,45,0.15)":"rgba(255,255,255,0.03)"};border:1px solid ${t>0?"rgba(68,204,68,0.3)":"rgba(255,255,255,0.08)"};border-radius:4px;margin-bottom:8px;">\n      <div>\n        <div style="font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:1px;">${a.nome}</div>\n        <div class="text-mono" style="font-size:10px;color:var(--gray-light);">${t} serie(s) hoje${r}</div>\n      </div>\n      <div style="display:flex;gap:8px;align-items:center;">\n        ${t>0?'<span style="color:var(--green-bright);font-size:18px;">✓</span>':""}\n        <button class="btn btn-outline btn-sm" onclick="document.querySelector('.nav-tab[data-tab=treino]').click();setTimeout(()=>document.getElementById('excard-${e}')?.scrollIntoView({behavior:'smooth',block:'center'}),300);">IR →</button>\n      </div>\n    </div>`
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:${t>0?"rgba(45,122,45,0.15)":"rgba(255,255,255,0.03)"};border:1px solid ${t>0?"rgba(68,204,68,0.3)":"rgba(255,255,255,0.08)"};border-radius:4px;margin-bottom:8px;">\n      <div>\n        <div style="font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:1px;">${escapeHtml(a.nome)}</div>\n        <div class="text-mono" style="font-size:10px;color:var(--gray-light);">${t} serie(s) hoje${r}</div>\n      </div>\n      <div style="display:flex;gap:8px;align-items:center;">\n        ${t>0?'<span style="color:var(--green-bright);font-size:18px;">✓</span>':""}\n        <button class="btn btn-outline btn-sm" onclick="document.querySelector('.nav-tab[data-tab=treino]').click();setTimeout(()=>document.getElementById('excard-${e}')?.scrollIntoView({behavior:'smooth',block:'center'}),300);">IR →</button>\n      </div>\n    </div>`
   }).join("")
 }
 
@@ -4165,7 +4231,7 @@ function abrirSeletorExercicio(e) {
   const t = planejador[e] || [];
   document.getElementById("seletorExBody").innerHTML = dados.exercicios.map(a => {
     const o = t.includes(a.id);
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);${o?"opacity:0.4;":""}">\n      <span style="font-family:Rajdhani,sans-serif;font-size:15px;">${a.nome}</span>\n      <button class="btn btn-sm ${o?"btn-outline":"btn-red"}" ${o?"disabled":'onclick="adicionarAoPlanejador('+e+",'"+a.id+"')\""}>\n        ${o?"✓ JA ADD":"+ ADD"}\n      </button>\n    </div>`
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);${o?"opacity:0.4;":""}">\n      <span style="font-family:Rajdhani,sans-serif;font-size:15px;">${escapeHtml(a.nome)}</span>\n      <button class="btn btn-sm ${o?"btn-outline":"btn-red"}" ${o?"disabled":'onclick="adicionarAoPlanejador('+e+",'"+a.id+"')\""}>\n        ${o?"✓ JA ADD":"+ ADD"}\n      </button>\n    </div>`
   }).join(""), a.classList.add("active")
 }
 
@@ -4236,11 +4302,17 @@ document.addEventListener('DOMContentLoaded', () => {
   updateThemeButtons(currentTheme);
 });
 
-function carregarTema() {
-  const saved = localStorage.getItem("gtg_tema") || "dark";
-  aplicarTema(saved);
-  updateThemeButtons(saved);
-  getItem("gtg_tema").then(v => { if (v !== null) { aplicarTema(v); updateThemeButtons(v); } }).catch(() => {})
+async function carregarTema() {
+  await window.storageReady;
+  try {
+    const saved = await getItem("gtg_tema") || localStorage.getItem("gtg_tema") || "dark";
+    if (saved !== "dark") {
+      aplicarTema(saved);
+      updateThemeButtons(saved);
+    }
+  } catch (e) {
+    console.warn("Erro ao carregar tema:", e);
+  }
 }
 carregarTema();
 let _notaData = (new Date).toISOString().slice(0, 10),
@@ -4265,8 +4337,8 @@ async function salvarNotaDia() {
   }, 2e3))
 }
 
-function renderNotaDia() {
-  const e = carregarNotas(),
+async function renderNotaDia() {
+  const e = await carregarNotas(),
     a = document.getElementById("notaDiaria"),
     t = document.getElementById("notaDataLabel"),
     o = document.getElementById("notaProxBtn"),
@@ -4279,12 +4351,12 @@ function renderNotaDia() {
   o && (o.disabled = _notaData >= r)
 }
 
-function navegarNota(e) {
+async function navegarNota(e) {
   const a = new Date(_notaData + "T12:00:00");
   a.setDate(a.getDate() + e);
   const t = (new Date).toISOString().slice(0, 10),
     o = a.toISOString().slice(0, 10);
-  o > t || (_notaData = o, renderNotaDia())
+  o > t || (_notaData = o, await renderNotaDia())
 }
 
 function renderRanking() {
@@ -4318,7 +4390,7 @@ function renderRanking() {
     };
   e.innerHTML = t.slice(0, 8).map((e, t) => {
     const n = Math.round(e.score / o * 100);
-    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">\n      <div style="width:28px;text-align:center;font-size:16px;flex-shrink:0;">${r[t]||`<span style="font-family:Bebas Neue,sans-serif;font-size:13px;color:var(--gray-light);">#${t+1}</span>`}</div>\n      <div style="flex:1;min-width:0;">\n        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">\n          <span style="font-family:Rajdhani,sans-serif;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.ex.nome}</span>\n          <span class="text-mono" style="font-size:11px;color:var(--gold);flex-shrink:0;margin-left:8px;">${e.score} ${s[a]}</span>\n        </div>\n        <div style="height:5px;background:rgba(255,255,255,0.07);border-radius:1px;overflow:hidden;">\n          <div style="height:100%;width:${n}%;background:${0===t?"linear-gradient(90deg,var(--gold-dim),var(--gold))":1===t?"linear-gradient(90deg,var(--gray),var(--gray-light))":"linear-gradient(90deg,var(--red-dark),var(--red))"};border-radius:1px;transition:width 0.6s ease;"></div>\n        </div>\n      </div>\n    </div>`
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">\n      <div style="width:28px;text-align:center;font-size:16px;flex-shrink:0;">${r[t]||`<span style="font-family:Bebas Neue,sans-serif;font-size:13px;color:var(--gray-light);">#${t+1}</span>`}</div>\n      <div style="flex:1;min-width:0;">\n        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">\n          <span style="font-family:Rajdhani,sans-serif;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(e.ex.nome)}</span>\n          <span class="text-mono" style="font-size:11px;color:var(--gold);flex-shrink:0;margin-left:8px;">${e.score} ${s[a]}</span>\n        </div>\n        <div style="height:5px;background:rgba(255,255,255,0.07);border-radius:1px;overflow:hidden;">\n          <div style="height:100%;width:${n}%;background:${0===t?"linear-gradient(90deg,var(--gold-dim),var(--gold))":1===t?"linear-gradient(90deg,var(--gray),var(--gray-light))":"linear-gradient(90deg,var(--red-dark),var(--red))"};border-radius:1px;transition:width 0.6s ease;"></div>\n        </div>\n      </div>\n    </div>`
   }).join("")
 }
 let _volumeChart = null;
@@ -4529,7 +4601,7 @@ function renderCompararSemanas() {
         l = i - d,
         m = l > 0 ? "var(--green-bright)" : l < 0 ? "var(--red-bright)" : "var(--gray-light)",
         u = e => e > 0 ? "▲" : e < 0 ? "▼" : "—";
-      return `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">\n      <td style="padding:8px 12px;font-family:Rajdhani,sans-serif;font-size:13px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t}</td>\n      <td style="padding:8px 12px;text-align:center;" class="text-mono">${n}</td>\n      <td style="padding:8px 12px;text-align:center;" class="text-mono">${s}</td>\n      <td style="padding:8px 12px;text-align:center;color:${c>0?"var(--green-bright)":c<0?"var(--red-bright)":"var(--gray-light)"};" class="text-mono">${u(c)}${Math.abs(c)||"—"}</td>\n      <td style="padding:8px 12px;text-align:center;" class="text-mono">${d}</td>\n      <td style="padding:8px 12px;text-align:center;" class="text-mono">${i}</td>\n      <td style="padding:8px 12px;text-align:center;color:${m};" class="text-mono">${u(l)}${Math.abs(l)||"—"}</td>\n    </tr>`
+      return `<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">\n      <td style="padding:8px 12px;font-family:Rajdhani,sans-serif;font-size:13px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(t)}</td>\n      <td style="padding:8px 12px;text-align:center;" class="text-mono">${n}</td>\n      <td style="padding:8px 12px;text-align:center;" class="text-mono">${s}</td>\n      <td style="padding:8px 12px;text-align:center;color:${c>0?"var(--green-bright)":c<0?"var(--red-bright)":"var(--gray-light)"};" class="text-mono">${u(c)}${Math.abs(c)||"—"}</td>\n      <td style="padding:8px 12px;text-align:center;" class="text-mono">${d}</td>\n      <td style="padding:8px 12px;text-align:center;" class="text-mono">${i}</td>\n      <td style="padding:8px 12px;text-align:center;color:${m};" class="text-mono">${u(l)}${Math.abs(l)||"—"}</td>\n    </tr>`
     }).join(""),
     i = "padding:6px 12px;text-align:center;font-family:Bebas Neue,sans-serif;font-size:11px;letter-spacing:2px;color:var(--gold-dim);background:rgba(212,160,23,0.06);";
   e.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:12px;">\n    <thead>\n      <tr>\n        <th style="${i}text-align:left;">EXERCÍCIO</th>\n        <th style="${i}" colspan="2">SÉRIES</th>\n        <th style="${i}">±</th>\n        <th style="${i}" colspan="2">VOLUME</th>\n        <th style="${i}">±</th>\n      </tr>\n      <tr style="background:rgba(255,255,255,0.02);">\n        <td style="padding:4px 12px;"></td>\n        <td style="padding:4px 12px;text-align:center;font-size:10px;color:var(--gray-light);" class="text-mono">ANT.</td>\n        <td style="padding:4px 12px;text-align:center;font-size:10px;color:var(--gold);" class="text-mono">ESTA</td>\n        <td></td>\n        <td style="padding:4px 12px;text-align:center;font-size:10px;color:var(--gray-light);" class="text-mono">ANT.</td>\n        <td style="padding:4px 12px;text-align:center;font-size:10px;color:var(--gold);" class="text-mono">ESTA</td>\n        <td></td>\n      </tr>\n    </thead>\n    <tbody>${n}</tbody>\n  </table>`
@@ -4561,8 +4633,8 @@ function mostrarResumoOntem() {
         l = document.getElementById("resumoOntemBody");
       if (!d || !l) return;
       c.textContent = `📊 RESUMO — ${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][i.getDay()].toUpperCase()}, ${i.toLocaleDateString("pt-BR")}`;
-      const m = Object.values(s).map(e => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">\n      <span style="font-family:Rajdhani,sans-serif;font-size:14px;">${e.nome}</span>\n      <span class="text-mono" style="font-size:12px;color:var(--gold);">${e.series} séries · ${e.reps} vol</span>\n    </div>`).join("");
-      l.innerHTML = `\n    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;">\n      <div style="text-align:center;background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--gold);">${t.length}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">SÉRIES</div>\n      </div>\n      <div style="text-align:center;background:rgba(204,0,0,0.08);border:1px solid rgba(204,0,0,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--red-bright);">${r}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">VOLUME</div>\n      </div>\n      <div style="text-align:center;background:rgba(45,122,45,0.08);border:1px solid rgba(45,122,45,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--green-bright);">+${o}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">XP</div>\n      </div>\n    </div>\n    <div style="margin-bottom:12px;">${m}</div>\n    ${n?`<div style="background:rgba(212,160,23,0.06);border:1px solid rgba(212,160,23,0.2);border-radius:4px;padding:10px;margin-bottom:12px;">\n      <div class="text-mono" style="font-size:10px;color:var(--gold-dim);margin-bottom:4px;">📝 SUA NOTA</div>\n      <div style="font-family:Rajdhani,sans-serif;font-size:14px;color:var(--white-dim);">${n}</div>\n    </div>`:""}\n    <button class="btn btn-red" style="width:100%;" onclick="document.getElementById('resumoOntemModal').classList.remove('active')">▶ TREINAR HOJE</button>\n  `, setTimeout(() => d.classList.add("active"), 1200)
+      const m = Object.values(s).map(e => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">\n      <span style="font-family:Rajdhani,sans-serif;font-size:14px;">${escapeHtml(e.nome)}</span>\n      <span class="text-mono" style="font-size:12px;color:var(--gold);">${e.series} séries · ${e.reps} vol</span>\n    </div>`).join("");
+      l.innerHTML = `\n    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;">\n      <div style="text-align:center;background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--gold);">${t.length}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">SÉRIES</div>\n      </div>\n      <div style="text-align:center;background:rgba(204,0,0,0.08);border:1px solid rgba(204,0,0,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--red-bright);">${r}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">VOLUME</div>\n      </div>\n      <div style="text-align:center;background:rgba(45,122,45,0.08);border:1px solid rgba(45,122,45,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--green-bright);">+${o}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">XP</div>\n      </div>\n    </div>\n    <div style="margin-bottom:12px;">${m}</div>\n    ${n?`<div style="background:rgba(212,160,23,0.06);border:1px solid rgba(212,160,23,0.2);border-radius:4px;padding:10px;margin-bottom:12px;">\n      <div class="text-mono" style="font-size:10px;color:var(--gold-dim);margin-bottom:4px;">📝 SUA NOTA</div>\n      <div style="font-family:Rajdhani,sans-serif;font-size:14px;color:var(--white-dim);">${escapeHtml(n)}</div>\n    </div>`:""}\n    <button class="btn btn-red" style="width:100%;" onclick="document.getElementById('resumoOntemModal').classList.remove('active')">▶ TREINAR HOJE</button>\n  `, setTimeout(() => d.classList.add("active"), 1200)
     }).catch(() => {})
   }).catch(() => {})
 }
@@ -4589,7 +4661,7 @@ function gerarRelatorioSemanal() {
   });
   const items = Object.entries(agrupado).sort((a, b) => b[1].series - a[1].series).slice(0, 8).map(([nome, st]) =>
     `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px;">
-      <span style="font-family:Rajdhani,sans-serif;">${nome}</span>
+      <span style="font-family:Rajdhani,sans-serif;">${escapeHtml(nome)}</span>
       <span class="text-mono" style="font-size:11px;color:var(--gold);">${st.series}s · ${st.reps} reps</span>
     </div>`
   ).join("");
@@ -4708,8 +4780,6 @@ document.addEventListener("DOMContentLoaded", () => {
   d && d.setAttribute("content", e), "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
     e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (BACKGROUND)", document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block"))
   }), inicializar();
-  const audioBtn = document.getElementById("btnToggleAudio");
-  audioBtn && (audioBtn.textContent = audioMuted ? "🔇" : "🔊");
   document.addEventListener("animationend", e => {
     if (e.target.classList?.contains("zone-flash")) e.target.classList.remove("zone-flash");
   }, true);
@@ -4902,7 +4972,7 @@ function mostrarDetalheDia(ano, mes, dia) {
   });
   const items = Object.entries(agrupado).map(([nome, st]) =>
     `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-      <span style="font-family:Rajdhani,sans-serif;font-size:14px;">${nome}</span>
+      <span style="font-family:Rajdhani,sans-serif;font-size:14px;">${escapeHtml(nome)}</span>
       <span class="text-mono" style="font-size:12px;color:var(--gold);">${st.series}s &middot; ${st.reps} reps</span>
     </div>`
   ).join("");

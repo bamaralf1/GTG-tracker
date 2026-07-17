@@ -112,16 +112,20 @@ self.addEventListener("message", (e) => {
     e.waitUntil((async () => {
       const newCacheName = `gtg-cache-${data.version}`;
       if (newCacheName === CACHE_NAME) return;
-      CACHE_NAME = newCacheName;
-      const cache = await caches.open(CACHE_NAME);
-      await cache.addAll(PRECACHE_URLS);
-      const names = await caches.keys();
-      await Promise.all(
-        names.filter((n) => n.startsWith("gtg-cache-") && n !== CACHE_NAME)
-          .map((n) => caches.delete(n))
-      );
-      const clients = await self.clients.matchAll();
-      clients.forEach((c) => c.postMessage({ type: "CACHE_ATUALIZADO", version: data.version }))
+      try {
+        const cache = await caches.open(newCacheName);
+        await cache.addAll(PRECACHE_URLS);
+        CACHE_NAME = newCacheName;
+        const names = await caches.keys();
+        await Promise.all(
+          names.filter((n) => n.startsWith("gtg-cache-") && n !== CACHE_NAME)
+            .map((n) => caches.delete(n))
+        );
+        const clients = await self.clients.matchAll();
+        clients.forEach((c) => c.postMessage({ type: "CACHE_ATUALIZADO", version: data.version }))
+      } catch (err) {
+        console.warn("[SW] Falha ao atualizar cache para versão", data.version, err);
+      }
     })());
   }
 });
