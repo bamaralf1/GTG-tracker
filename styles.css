@@ -1376,7 +1376,7 @@ body::after{
   pointer-events:none;
 }
 .streak-box.active .streak-fire-border{opacity:1;animation:lightningBorderPulse 1.5s ease-in-out infinite}
-@keyframes lightningBorderPulse{0%,100%{opacity:.5;filter:hue-rotate(0deg)}50%{opacity:1;filter:hue-rotate(10deg)}}
+@keyframes lightningBorderPulse{0%,100%{opacity:.5}50%{opacity:1}}
 .streak-fire-overlay{
   position:absolute;
   bottom:0;left:0;right:0;
@@ -1387,7 +1387,7 @@ body::after{
   transition:opacity .4s ease;
 }
 .streak-box.active .streak-fire-overlay{opacity:1;animation:lightningGlowOverlay 2s ease-in-out infinite}
-@keyframes lightningGlowOverlay{0%,100%{opacity:.3;filter:hue-rotate(0deg)}50%{opacity:.7;filter:hue-rotate(15deg)}}
+@keyframes lightningGlowOverlay{0%,100%{opacity:.3}50%{opacity:.7}}
 .streak-box.active{
   border-color:rgba(0,200,255,0.35);
   box-shadow:0 0 24px rgba(0,200,255,0.12),0 0 48px rgba(120,95,255,0.05),inset 0 0 24px rgba(0,200,255,0.04);
@@ -1400,7 +1400,7 @@ body::after{
   transition:transform .3s ease;
 }
 .streak-box.active .streak-flame{animation:lightningFlameDance 1.2s ease-in-out infinite}
-@keyframes lightningFlameDance{0%,100%{transform:scale(1) rotate(-2deg);filter:drop-shadow(0 0 10px rgba(0,200,255,0.7))}20%{transform:scale(1.18) rotate(3deg);filter:drop-shadow(0 0 18px rgba(120,95,255,0.9))}60%{transform:scale(1.12) rotate(-3deg);filter:drop-shadow(0 0 22px rgba(100,80,255,0.85))}80%{transform:scale(1.16) rotate(2deg);filter:drop-shadow(0 0 16px rgba(0,200,255,0.8))}}
+@keyframes lightningFlameDance{0%,100%{transform:scale(1) rotate(-2deg)}20%{transform:scale(1.18) rotate(3deg)}60%{transform:scale(1.12) rotate(-3deg)}80%{transform:scale(1.16) rotate(2deg)}}
 .streak-particles{
   position:absolute;
   inset:-14px;
