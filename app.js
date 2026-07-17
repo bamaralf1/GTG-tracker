@@ -929,7 +929,7 @@ async function carregarDados() {
       if (audioRaw !== null) audioMuted = JSON.parse(audioRaw) === true;
     } catch (e) {}
     const raw = await getItem("gtg_data") || localStorage.getItem("gtg_data");
-    raw ? (dados = JSON.parse(raw), dados && dados.exercicios && Array.isArray(dados.exercicios) || (console.warn("Dados corrompidos, resetando para defaults"), await removeItem("gtg_data").catch(() => {}), localStorage.removeItem("gtg_data"), dados = {
+    raw ? (dados = JSON.parse(raw), dados && dados.exercicios && Array.isArray(dados.exercicios) || (console.warn("Dados corrompidos, resetando para defaults"), await removeItem("gtg_data").catch(e => console.warn("[storage]", e)), localStorage.removeItem("gtg_data"), dados = {
       exercicios: EXERCICIOS_DEFAULT.map(ex => ({ ...ex })),
       registros: []
     })) : (dados.exercicios = EXERCICIOS_DEFAULT.map(ex => ({ ...ex })), dados.registros = []), dados.exercicios && 0 !== dados.exercicios.length || (dados.exercicios = EXERCICIOS_DEFAULT.map(ex => ({ ...ex }))), dados.exercicios.forEach(ex => {
@@ -968,12 +968,13 @@ async function carregarDados() {
 }
 
 function salvarDados() {
+  if (_salvarDadosTimer) { clearTimeout(_salvarDadosTimer); _salvarDadosTimer = null; }
   Promise.all([
     setItem("gtg_data", JSON.stringify(dados)),
     setItem("gtg_streaks", JSON.stringify(streakData)),
     setItem("gtg_xp", JSON.stringify(xpData)),
     setItem("gtg_badges", JSON.stringify(badgesData))
-  ]).catch(() => {})
+  ]).catch(e => console.warn("[storage]", e))
 }
 
 // Versão com debounce de 400 ms para micro-ações frequentes (registrar série,
@@ -1061,7 +1062,7 @@ function verificarStreak() {
 }
 
 function getInicioSemana(data) {
-  const parsed = new Date(data + "T00:00:00"),
+  const parsed = new Date(data + "T12:00:00"),
     diaSemana = parsed.getDay(),
     diff = parsed.getDate() - diaSemana + (0 === diaSemana ? -6 : 1);
   return new Date(parsed.setDate(diff)).toISOString().slice(0, 10)
@@ -2388,7 +2389,7 @@ let audioMuted = !1;
 
 function toggleAudio() {
   audioMuted = !audioMuted;
-  setItem("gtg_audio_muted", JSON.stringify(audioMuted)).catch(() => {});
+  setItem("gtg_audio_muted", JSON.stringify(audioMuted)).catch(e => console.warn("[storage]", e));
   const btn = document.getElementById("btnToggleAudio");
   btn && (btn.textContent = audioMuted ? "🔇" : "🔊")
 }
@@ -2874,9 +2875,15 @@ function handleImport(ev) {
   }, reader.readAsText(file)
 }
 
-function clearAllData() {
+async function clearAllData() {
   if (!window.confirm("APAGAR TODOS OS DADOS? Isso não pode ser desfeito!")) return;
-  clearAll().catch(() => {}), localStorage.clear(), location.reload()
+  try {
+    await clearAll();
+  } catch (e) {
+    console.warn("[storage] Erro ao limpar IndexedDB:", e);
+  }
+  localStorage.clear();
+  location.reload()
 }
 
 function downloadFile(content, fileName, mimeType) {
@@ -2912,7 +2919,7 @@ async function carregarModoFoco() {
 }
 
 function salvarModoFoco() {
-  setItem("gtg_modo_foco", JSON.stringify(modoFocoState)).catch(() => {})
+  setItem("gtg_modo_foco", JSON.stringify(modoFocoState)).catch(e => console.warn("[storage]", e))
 }
 
 function toggleModoFoco() {
@@ -3178,7 +3185,7 @@ async function carregarReadiness() {
 
 function salvarReadiness() {
   try {
-    readinessData.data = (new Date).toISOString().slice(0, 10), setItem(READINESS_KEY, JSON.stringify(readinessData)).catch(() => {})
+    readinessData.data = (new Date).toISOString().slice(0, 10), setItem(READINESS_KEY, JSON.stringify(readinessData)).catch(e => console.warn("[storage]", e))
   } catch (e) {
     console.error("Erro ao salvar readiness:", e)
   }
@@ -3265,7 +3272,7 @@ async function updateReadiness() {
     requestAnimationFrame(() => {
       _readinessRafPending = false;
       salvarReadiness();
-      (async () => { await updateReadinessUI(); })().catch(() => {});
+      (async () => { await updateReadinessUI(); })().catch(e => console.warn("[storage]", e));
     });
   }
 }
@@ -3377,14 +3384,14 @@ async function updateReadinessUI() {
         await _renderReadinessPrev();
         await _renderReadinessHistory();
         await _renderReadinessTrendChart();
-      })().catch(() => {});
+      })().catch(e => console.warn("[storage]", e));
       _renderReadinessRec();
       _renderReadinessInsight();
       _renderReadinessCorrelation();
     });
     setTimeout(() => { c.circle.classList.remove("flash-green", "flash-red"); }, 700);
   }
-  _saveReadinessHistory().catch(() => {});
+  _saveReadinessHistory().catch(e => console.warn("[storage]", e));
 }
 
 function _animateScore(el, from, to, duration) {
@@ -3585,7 +3592,7 @@ function toggleReadinessTrend() {
   const abrindo = !panel.classList.contains("open");
   panel.classList.toggle("open", abrindo);
   btn && btn.classList.toggle("active", abrindo);
-  if (abrindo) requestAnimationFrame(() => { _renderReadinessTrendChart().catch(() => {}); });
+  if (abrindo) requestAnimationFrame(() => { _renderReadinessTrendChart().catch(e => console.warn("[storage]", e)); });
 }
 
 function _mediaMovelComGaps(valores, janela) {
@@ -3725,7 +3732,7 @@ function renderHeatmap() {
   a && (a.textContent = `${d} dias treinados no último ano`);
   const c = [];
   let l = [];
-  const m = new Date(n[0] + "T00:00:00");
+  const m = new Date(n[0] + "T12:00:00");
   for (let e = 0; e < m.getDay(); e++) l.push(null);
   n.forEach(e => {
     l.push(e), 7 === l.length && (c.push(l), l = [])
@@ -3742,7 +3749,7 @@ function renderHeatmap() {
   c.forEach((e, a) => {
     const t = e.find(e => null !== e);
     if (t) {
-      const e = new Date(t + "T00:00:00").getMonth();
+      const e = new Date(t + "T12:00:00").getMonth();
       e !== v ? (g += `<span style="font-family:Share Tech Mono,monospace; font-size:9px; color:var(--gray-light); width:13px; min-width:13px;">${u[e]}</span>`, v = e) : g += '<span style="width:13px; min-width:13px;"></span>'
     } else g += '<span style="width:13px; min-width:13px;"></span>'
   }), g += "</div>";
@@ -3827,7 +3834,7 @@ function renderAnalise() {
   const u = [0, 0, 0, 0, 0, 0, 0],
     p = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
   dados.registros.forEach(e => {
-    const a = new Date(e.data + "T00:00:00").getDay();
+    const a = new Date(e.data + "T12:00:00").getDay();
     u[a]++
   });
   const g = u.indexOf(Math.max(...u));
@@ -3935,7 +3942,7 @@ function renderGraficoPR(e) {
   const s = Object.keys(r).sort(),
     n = s.map(e => r[e]),
     i = s.map(e => {
-      const a = new Date(e + "T00:00:00");
+      const a = new Date(e + "T12:00:00");
       return `${String(a.getDate()).padStart(2,"0")}/${String(a.getMonth()+1).padStart(2,"0")}`
     }),
     d = [];
@@ -4040,7 +4047,7 @@ async function carregarMetas() {
 }
 
 function salvarMetas() {
-  setItem("gtg_metas", JSON.stringify(dados.metas || {})).catch(() => {})
+  setItem("gtg_metas", JSON.stringify(dados.metas || {})).catch(e => console.warn("[storage]", e))
 }
 
 function calcularProgressoMeta(e) {
@@ -4184,7 +4191,7 @@ async function carregarPlanejador() {
 }
 
 function salvarPlanejador() {
-  setItem("gtg_planejador", JSON.stringify(planejador)).catch(() => {})
+  setItem("gtg_planejador", JSON.stringify(planejador)).catch(e => console.warn("[storage]", e))
 }
 
 function renderPlanejador() {
@@ -4257,7 +4264,7 @@ function irParaTreinoHoje() {
 
 function aplicarTema(e) {
   _limparCacheCssVar();
-  document.documentElement.setAttribute("data-theme", e), setItem("gtg_tema", e).catch(() => {});
+  document.documentElement.setAttribute("data-theme", e), setItem("gtg_tema", e).catch(e => console.warn("[storage]", e));
   const a = document.getElementById("themeSwitchBtn");
   if (a) {
     if (e === "light") {
@@ -4330,7 +4337,7 @@ async function carregarNotas() {
 async function salvarNotaDia() {
   const e = await carregarNotas(),
     a = document.getElementById("notaDiaria")?.value || "";
-  a.trim() ? e[_notaData] = a : delete e[_notaData], setItem("gtg_notas", JSON.stringify(e)).catch(() => {});
+  a.trim() ? e[_notaData] = a : delete e[_notaData], setItem("gtg_notas", JSON.stringify(e)).catch(e => console.warn("[storage]", e));
   const t = document.getElementById("notaSalvoLabel");
   t && (t.textContent = "Salvo automaticamente", setTimeout(() => {
     t.textContent = ""
@@ -4494,7 +4501,7 @@ async function salvarPeso() {
   if (!valor || valor < 20 || valor > 300) return void mostrarToast("Erro", "Insira um peso válido (20-300 kg)", "error");
   const pesos = await getPesoData();
   pesos[data] = valor;
-  setItem(PESO_KEY, JSON.stringify(pesos)).catch(() => {});
+  setItem(PESO_KEY, JSON.stringify(pesos)).catch(e => console.warn("[storage]", e));
   valEl.value = "";
   await renderPesoChart();
   mostrarToast("Peso registrado", `${data}: ${valor} kg`, "success")
@@ -4614,7 +4621,7 @@ function mostrarResumoOntem() {
     const a = new Date(Date.now() - 864e5).toISOString().slice(0, 10),
       t = dados.registros.filter(e => e.data === a && !e.isTest);
     if (0 === t.length) return;
-    setItem("gtg_resumo_visto", e).catch(() => {});
+    setItem("gtg_resumo_visto", e).catch(e => console.warn("[storage]", e));
     const o = t.reduce((e, a) => e + (a.xp || 0), 0),
       r = t.reduce((e, a) => e + (a.valor || 0), 0),
       s = {};
@@ -4635,8 +4642,8 @@ function mostrarResumoOntem() {
       c.textContent = `📊 RESUMO — ${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][i.getDay()].toUpperCase()}, ${i.toLocaleDateString("pt-BR")}`;
       const m = Object.values(s).map(e => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">\n      <span style="font-family:Rajdhani,sans-serif;font-size:14px;">${escapeHtml(e.nome)}</span>\n      <span class="text-mono" style="font-size:12px;color:var(--gold);">${e.series} séries · ${e.reps} vol</span>\n    </div>`).join("");
       l.innerHTML = `\n    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;">\n      <div style="text-align:center;background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--gold);">${t.length}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">SÉRIES</div>\n      </div>\n      <div style="text-align:center;background:rgba(204,0,0,0.08);border:1px solid rgba(204,0,0,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--red-bright);">${r}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">VOLUME</div>\n      </div>\n      <div style="text-align:center;background:rgba(45,122,45,0.08);border:1px solid rgba(45,122,45,0.2);border-radius:4px;padding:10px;">\n        <div style="font-family:Bebas Neue,sans-serif;font-size:24px;color:var(--green-bright);">+${o}</div>\n        <div class="text-mono" style="font-size:9px;color:var(--gray-light);">XP</div>\n      </div>\n    </div>\n    <div style="margin-bottom:12px;">${m}</div>\n    ${n?`<div style="background:rgba(212,160,23,0.06);border:1px solid rgba(212,160,23,0.2);border-radius:4px;padding:10px;margin-bottom:12px;">\n      <div class="text-mono" style="font-size:10px;color:var(--gold-dim);margin-bottom:4px;">📝 SUA NOTA</div>\n      <div style="font-family:Rajdhani,sans-serif;font-size:14px;color:var(--white-dim);">${escapeHtml(n)}</div>\n    </div>`:""}\n    <button class="btn btn-red" style="width:100%;" onclick="document.getElementById('resumoOntemModal').classList.remove('active')">▶ TREINAR HOJE</button>\n  `, setTimeout(() => d.classList.add("active"), 1200)
-    }).catch(() => {})
-  }).catch(() => {})
+    }).catch(e => console.warn("[storage]", e))
+  }).catch(e => console.warn("[storage]", e))
 }
 
 function getFimSemana(dataStr) {
@@ -4736,9 +4743,9 @@ function verificarRelatorioSemanal() {
     const segInicio = getInicioSemana(hoje);
     const regs = dados.registros.filter(r => r.data >= segInicio && r.data <= hoje && !r.isTest);
     if (regs.length < 1) return;
-    setItem("gtg_semana_visto", hoje).catch(() => {});
+    setItem("gtg_semana_visto", hoje).catch(e => console.warn("[storage]", e));
     setTimeout(mostrarRelatorioSemanal, 2000)
-  }).catch(() => {})
+  }).catch(e => console.warn("[storage]", e))
 }
 
 let _gtgTimers = {};
