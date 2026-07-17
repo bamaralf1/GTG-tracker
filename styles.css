@@ -4527,7 +4527,7 @@ body::after{
 .sb-timer-btns .btn:hover::after{opacity:1}
 
 /* === CARD HOVER LIFT ENHANCED === */
-.sb-card{transition:transform .35s var(--ease-expo),box-shadow .35s var(--ease-expo),border-color .35s var(--ease-expo)}
+.sb-card{will-change:transform;transition:transform .35s var(--ease-expo),box-shadow .35s var(--ease-expo),border-color .35s var(--ease-expo)}
 .sb-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 20px rgba(212,168,67,0.08)}
 
 /* === GROOVE BONUS PULSE === */
@@ -7637,12 +7637,14 @@ html[data-theme=light]::after{
 }
 .card,
 .exercise-card,
+.xp-card,
+.readiness-card,
 .badge-item,
-.log-entry,
 .stat-card,
 .gtg-principle,
 .timeline-week,
 .toast{
+  will-change: transform;
   contain: layout style;
 }
 .main::before,
