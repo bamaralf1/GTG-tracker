@@ -18,7 +18,8 @@ const PRECACHE_URLS = [
   "./manifest.webmanifest"
 ];
 
-let CACHE_NAME = "gtg-cache-v3";
+const CACHE_PREFIX = "gtg-cache-";
+let CACHE_NAME = "gtg-cache-v4";
 
 const LEMBRETES = [
   "Hora de uma serie! Lembre: 50-60% do seu maximo. Qualidade acima de tudo.",
@@ -72,18 +73,40 @@ self.addEventListener("fetch", (event) => {
 async function staleWhileRevalidate(request) {
   const cache = await caches.open(CACHE_NAME);
   const cached = await cache.match(request);
+  if (cached && request.mode !== "navigate") return cached;
+
   const networkFetch = fetch(request).then((response) => {
     if (response && response.ok) cache.put(request, response.clone());
     return response;
   }).catch(() => null);
+
+  if (request.mode === "navigate") {
+    const fallback = await getFallbackNavigationResponse(cache);
+    if (cached) return cached;
+    const network = await networkFetch;
+    if (network) return network;
+    if (fallback) return fallback;
+    return new Response("Offline e recurso nao disponivel em cache.", { status: 503, statusText: "Offline" });
+  }
+
   if (cached) return cached;
   const network = await networkFetch;
   if (network) return network;
-  if (request.mode === "navigate") {
-    const fallback = await cache.match("./index.html");
-    if (fallback) return fallback;
-  }
   return new Response("Offline e recurso nao disponivel em cache.", { status: 503, statusText: "Offline" });
+}
+
+async function getFallbackNavigationResponse(cache) {
+  const candidates = [
+    cache.match("./index.html"),
+    cache.match("./"),
+    cache.match("/index.html"),
+    cache.match("/")
+  ];
+  for (const candidate of candidates) {
+    const response = await candidate;
+    if (response) return response;
+  }
+  return null;
 }
 
 async function cacheFirst(request) {
@@ -97,7 +120,7 @@ async function cacheFirst(request) {
     }
     return response;
   } catch (err) {
-    return new Response("Offline e recurso externo nao disponivel em cache.", { status: 503, statusText: "Offline" });
+    return new Response(null, { status: 504, statusText: "Offline" });
   }
 }
 
@@ -108,9 +131,16 @@ self.addEventListener("message", (e) => {
     clearTimeout(self._lembreteTimeout);
     self._lembreteTimeout = null;
   }
+  if (data === "LIMPAR_CACHES_PWA") {
+    e.waitUntil((async () => {
+      const names = await caches.keys();
+      await Promise.all(names.filter((name) => name.startsWith(CACHE_PREFIX)).map((name) => caches.delete(name)));
+      if (CACHE_NAME.startsWith(CACHE_PREFIX)) CACHE_NAME = `${CACHE_PREFIX}v3`;
+    })());
+  }
   if (data && data.type === "ATUALIZAR_CACHE") {
     e.waitUntil((async () => {
-      const newCacheName = `gtg-cache-${data.version}`;
+      const newCacheName = `${CACHE_PREFIX}${data.version}`;
       if (newCacheName === CACHE_NAME) return;
       try {
         const cache = await caches.open(newCacheName);
@@ -118,7 +148,7 @@ self.addEventListener("message", (e) => {
         CACHE_NAME = newCacheName;
         const names = await caches.keys();
         await Promise.all(
-          names.filter((n) => n.startsWith("gtg-cache-") && n !== CACHE_NAME)
+          names.filter((n) => n.startsWith(CACHE_PREFIX) && n !== CACHE_NAME)
             .map((n) => caches.delete(n))
         );
         const clients = await self.clients.matchAll();

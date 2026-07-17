@@ -2883,12 +2883,27 @@ function handleImport(ev) {
   }, reader.readAsText(file)
 }
 
+async function limparCachesPWA() {
+  if (!("caches" in window)) return;
+  try {
+    const names = await caches.keys();
+    await Promise.all(names.filter((name) => name.startsWith("gtg-cache-")).map((name) => caches.delete(name)));
+  } catch (e) {
+    console.warn("[pwa] Falha ao limpar caches da PWA:", e);
+  }
+}
+
 async function clearAllData() {
   if (!window.confirm("APAGAR TODOS OS DADOS? Isso não pode ser desfeito!")) return;
   try {
     await clearAll();
   } catch (e) {
     console.warn("[storage] Erro ao limpar IndexedDB:", e);
+  }
+  try {
+    await limparCachesPWA();
+  } catch (e) {
+    console.warn("[pwa] Erro ao limpar caches da PWA:", e);
   }
   localStorage.clear();
   location.reload()
