@@ -45,8 +45,8 @@
 }
 
 @keyframes ringPulse {
-  0%,100% { filter: drop-shadow(0 0 4px rgba(212,168,67,0.4)); }
-  50%      { filter: drop-shadow(0 0 10px rgba(212,168,67,0.75)); }
+  0%,100% { opacity: .6; }
+  50%      { opacity: 1; }
 }
 
 @keyframes unlockFlash {

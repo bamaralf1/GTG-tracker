@@ -557,7 +557,7 @@ body::after{
 .sb-card-radio-premium.playing .sb-eq-bar:nth-child(7){animation-delay:.06s}
 @keyframes eqBounce{0%{height:3px}100%{height:14px}}
 .sb-card-radio-premium .sb-radio-star{animation:rdStarPulse 4s ease-in-out infinite}
-@keyframes rdStarPulse{0%,100%{filter:drop-shadow(0 0 8px rgba(204,0,0,.4))}50%{filter:drop-shadow(0 0 16px rgba(204,0,0,.7)) drop-shadow(0 0 4px rgba(212,168,67,.3))}}
+@keyframes rdStarPulse{0%,100%{opacity:.6}50%{opacity:1}}
 .sb-card-radio-premium .sb-status-dot{transition:all .4s}
 .sb-card-radio-premium .sb-status-dot.on{animation:rdStatusPulse 1.5s ease-in-out infinite}
 @keyframes rdStatusPulse{0%,100%{box-shadow:0 0 8px rgba(68,204,68,.8)}50%{box-shadow:0 0 14px rgba(68,204,68,.9),0 0 4px rgba(68,204,68,1)}}
@@ -673,7 +673,7 @@ body::after{
 @keyframes tpRingBgPulse{0%,100%{stroke:rgba(255,255,255,.04)}50%{stroke:rgba(255,255,255,.07)}}
 .sb-card-timer-premium .sb-timer-ring-fill{filter:drop-shadow(0 0 6px rgba(212,168,67,.3));transition:filter .4s}
 .sb-card-timer-premium .sb-timer-ring-fill.running{filter:drop-shadow(0 0 16px rgba(255,59,48,.7));animation:tpRingRunningGlow 1.5s ease-in-out infinite}
-@keyframes tpRingRunningGlow{0%,100%{filter:drop-shadow(0 0 16px rgba(255,59,48,.7))}50%{filter:drop-shadow(0 0 28px rgba(255,59,48,.9)) drop-shadow(0 0 8px rgba(255,59,48,.4))}}
+@keyframes tpRingRunningGlow{0%,100%{opacity:.6}50%{opacity:1}}
 .sb-card-timer-premium .sb-timer-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .sb-card-timer-premium .sb-timer-label{font-size:10px;color:var(--gray);letter-spacing:4px;text-transform:uppercase;margin-bottom:4px}
 .sb-card-timer-premium .sb-timer-digits{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,168,67,.4);letter-spacing:6px;font-variant-numeric:tabular-nums;position:relative}
@@ -871,7 +871,7 @@ body::after{
   pointer-events:none;
   animation:badgeGlow 3s ease-in-out infinite,badgeBreathe 4s ease-in-out infinite;
 }
-@keyframes badgeBreathe{0%,100%{transform:scale(1);filter:blur(0px)}50%{transform:scale(1.02);filter:blur(1px)}}
+@keyframes badgeBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
 .level-badge-holo{
   position:absolute;
   inset:0;
@@ -1558,7 +1558,7 @@ body::after{
   margin:10px 0;
   animation:levelIconPulse 1.5s ease-in-out infinite;
 }
-@keyframes levelIconPulse{0%,100%{filter:drop-shadow(0 0 24px rgba(212,168,67,0.7))}50%{filter:drop-shadow(0 0 40px rgba(212,168,67,1))}}
+@keyframes levelIconPulse{0%,100%{opacity:.6}50%{opacity:1}}
 .xp-levelup-name{
   font-family:'Bebas Neue',sans-serif;font-size:48px;
   color:var(--gold);letter-spacing:0.15em;
@@ -4594,7 +4594,7 @@ body::after{
 .sb-card-warmup::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),var(--gold),var(--red),transparent);opacity:.6}
 .sb-warmup-header{display:flex;align-items:center;gap:8px;margin-bottom:2px}
 .sb-warmup-shield{font-size:18px;animation:warmupShieldPulse 2.5s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(204,0,0,0.3))}
-@keyframes warmupShieldPulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 6px rgba(204,0,0,0.3))}50%{transform:scale(1.1);filter:drop-shadow(0 0 12px rgba(204,0,0,0.6))}}
+@keyframes warmupShieldPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 .sb-warmup-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold);text-shadow:0 0 12px rgba(212,168,67,0.3);flex:1;white-space:nowrap}
 .sb-warmup-badge{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold-dim);background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.2);padding:1px 8px;border-radius:10px;transition:all .3s;letter-spacing:1px}
 .sb-warmup-sub{font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--gray);letter-spacing:2px;margin-bottom:10px;padding-left:26px}
