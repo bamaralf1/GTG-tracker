@@ -2938,18 +2938,6 @@ function desfazerRegistro() {
 }
 let rpeSelecionado = {};
 
-function selectRPE(e, a) {
-  rpeSelecionado[e] === a ? delete rpeSelecionado[e] : rpeSelecionado[e] = a;
-  const t = document.getElementById("rpe-scale-" + e);
-  if (t) {
-    t.querySelectorAll(".rpe-btn").forEach((a, t) => {
-      a.classList.toggle("selected", t + 1 === rpeSelecionado[e])
-    })
-  }
-  const o = document.getElementById("rpe-warn-" + e);
-  o && o.classList.toggle("show", (rpeSelecionado[e] || 0) >= 7)
-}
-
 function getRPEColorClass(e) {
   return e ? e <= 4 ? "rpe-low" : e <= 6 ? "rpe-mid" : e <= 8 ? "rpe-high" : "rpe-max" : ""
 }
@@ -3039,7 +3027,6 @@ let readinessData = {
 let _prevReadinessScore = 50;
 let _prevZones = {};
 let _readinessAnimFrame = null;
-let _readinessUIFrame = null;
 let _readinessRafPending = false;
 let _isDragging = false;
 const READINESS_KEY = "gtg_readiness";
