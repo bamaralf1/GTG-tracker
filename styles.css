@@ -3914,17 +3914,6 @@ body::after{
    =========================================================================== */
 
 /* ── KEYFRAMES ────────────────────────────────────────────────────────── */
-@keyframes sib-aurora{
-  0%{background-position:0% 50%,100% 50%,50% 0%}
-  25%{background-position:50% 25%,50% 75%,25% 50%}
-  50%{background-position:100% 50%,0% 50%,50% 100%}
-  75%{background-position:50% 75%,50% 25%,75% 50%}
-  100%{background-position:0% 50%,100% 50%,50% 0%}
-}
-@keyframes sib-frost-shimmer{
-  0%{background-position:-200% center}
-  100%{background-position:200% center}
-}
 @keyframes sib-snowfall{
   0%{transform:translateY(-10vh) translateX(0) rotate(0deg);opacity:0}
   10%{opacity:1}
@@ -3937,31 +3926,9 @@ body::after{
   90%{opacity:.7}
   100%{transform:translateY(110vh) translateX(-60px) rotate(-270deg);opacity:0}
 }
-@keyframes sib-ice-crystal-rotate{
-  0%{transform:rotate(0deg) scale(1)}
-  50%{transform:rotate(180deg) scale(1.05)}
-  100%{transform:rotate(360deg) scale(1)}
-}
-@keyframes sib-frost-border-pulse{
-  0%,100%{opacity:.3;border-color:rgba(120,180,240,0.2)}
-  50%{opacity:.6;border-color:rgba(120,180,240,0.4)}
-}
 @keyframes sib-northern-glow{
   0%,100%{box-shadow:0 0 20px rgba(80,160,240,0.1),0 0 40px rgba(80,160,240,0.05)}
   50%{box-shadow:0 0 30px rgba(80,160,240,0.2),0 0 60px rgba(80,160,240,0.08)}
-}
-@keyframes sib-breath{
-  0%,100%{opacity:.04;transform:scale(1)}
-  50%{opacity:.08;transform:scale(1.02)}
-}
-@keyframes sib-ice-scan{
-  0%{transform:rotate(0deg)}
-  100%{transform:rotate(360deg)}
-}
-@keyframes sib-frost-mist{
-  0%{transform:translateX(-100%) scaleY(0.5);opacity:0}
-  50%{opacity:.15}
-  100%{transform:translateX(100%) scaleY(0.5);opacity:0}
 }
 
 /* ── SNOW PARTICLES (pure CSS) ──────────────────────────────────────── */
@@ -6516,17 +6483,9 @@ html { transition: background-color 0.5s ease }
   0%,100%{transform:translate(0,0) scale(1)}
   50%{transform:translate(30px,-24px) scale(1.08)}
 }
-@keyframes sibDrift2{
-  0%,100%{transform:translate(0,0) scale(1)}
-  50%{transform:translate(-26px,20px) scale(1.06)}
-}
 @keyframes sibPulseRing{
   0%,100%{box-shadow:0 0 0 0 rgba(0,174,219,.35)}
   50%{box-shadow:0 0 0 6px rgba(0,174,219,0)}
-}
-@keyframes sibShimmer{
-  0%{background-position:-200% 0}
-  100%{background-position:200% 0}
 }
 
 /* ── 2. CORPO — CÉU POLAR + AURORA VIVA + CONTORNOS TOPOGRÁFICOS ── */
