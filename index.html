@@ -70,7 +70,7 @@
           </div>
         </a>
             <div class="header-streak">
-<span class="streak-fire">⚡</span> <span class="streak-count" id="streakCountHeader">0</span>
+<span class="streak-fire">🔥</span> <span class="streak-count" id="streakCountHeader">0</span>
           <div class="streak-label">DIAS<br>STREAK</div>
         </div>
         <div class="streak-shield-display" title="Escudos da Streak"><div class="shield-star" id="shieldStar"><span class="shield-star-icon">★</span><span class="shield-star-count" id="shieldCount">0</span></div></div>
@@ -142,25 +142,24 @@
             </div>
           </div>
       <div class="readiness-card" id="readinessCard">
-        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
-        <div class="rdy-accent-bar"></div>
-        <div class="rdy-noise"></div>
-        <div class="rdy-corner-glow rdy-corner-glow-tl"></div>
-        <div class="rdy-corner-glow rdy-corner-glow-br"></div>
         <div class="readiness-header">
           <span class="readiness-title">🎯 ESTADO DE PRONTIDÃO</span>
-          <span class="readiness-scan-status"><span class="scan-dot"></span>MONITORANDO</span>
           <div class="readiness-header-actions">
             <button class="readiness-trend-btn" id="btnReadinessTrend" onclick="toggleReadinessTrend()" title="Ver tendência de 30 dias">📈 TENDÊNCIA</button>
             <button class="readiness-reset" onclick="resetReadiness()" title="Resetar avaliação">↻ RESETAR</button>
           </div>
         </div>
-        <div class="readiness-profiles">
-          <button class="readiness-profile-btn" onclick="applyProfile('morning')" title="Avaliação matinal padrão">🌅 Manhã</button>
-          <button class="readiness-profile-btn" onclick="applyProfile('postworkout')" title="Após treino pesado">💪 Pós-Treino</button>
-          <button class="readiness-profile-btn" onclick="applyProfile('stressed')" title="Dia de muito estresse">😰 Estressado</button>
-          <button class="readiness-profile-btn" onclick="applyProfile('peak')" title="Dia de pico, tudo perfeito">⚡ Pico</button>
+        <div class="readiness-summary">
+          <div class="readiness-summary-main">
+            <div class="readiness-summary-pill" id="readinessModePill">TREINO NORMAL</div>
+            <div class="readiness-summary-copy" id="readinessSummaryText">Volume controlado. Mantenha técnica e recuperação.</div>
+          </div>
+          <div class="readiness-summary-metrics">
+            <div class="readiness-summary-chip" id="readinessSeriesChip">META: 8-12 séries</div>
+            <div class="readiness-summary-chip" id="readinessFocusChip">FOCO: técnica + volume</div>
+          </div>
         </div>
+        <div class="readiness-factor-strip" id="readinessFactorStrip"></div>
         <div class="readiness-body">
           <div class="readiness-sliders">
             <div class="readiness-slider-group">
@@ -168,49 +167,42 @@
               <div class="readiness-slider-track" id="trackSono">
                 <div class="readiness-slider-fill" id="fillSono" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderSono" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
-              <div class="readiness-slider-ends"><span>Péssimo</span> <span>Perfeito</span></div>
             </div>
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Estresse acumulado do trabalho, vida, treinos">😰 Nível de Stress</span> <button class="readiness-prio-chip" id="prioStress" onclick="cyclePriority('stress')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valStress">5</span></div>
               <div class="readiness-slider-track" id="trackStress">
                 <div class="readiness-slider-fill" id="fillStress" style="width:50%;background:linear-gradient(90deg,var(--green-bright),var(--gold),var(--red),var(--red-dark))"></div><input type="range" class="readiness-slider-input" id="sliderStress" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
-              <div class="readiness-slider-ends"><span>Nenhum</span> <span>Extremo</span></div>
             </div>
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Dor ou rigidez muscular residual do treino anterior">💥 Dor Muscular</span> <button class="readiness-prio-chip" id="prioDor" onclick="cyclePriority('dor')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valDor">5</span></div>
               <div class="readiness-slider-track" id="trackDor">
                 <div class="readiness-slider-fill" id="fillDor" style="width:50%;background:linear-gradient(90deg,var(--green-bright),var(--gold),var(--red),var(--red-dark))"></div><input type="range" class="readiness-slider-input" id="sliderDor" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
-              <div class="readiness-slider-ends"><span>Nenhuma</span> <span>Incapacitante</span></div>
             </div>
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Disposição do sistema nervoso para produzir força">⚡ Nível de Energia</span> <button class="readiness-prio-chip" id="prioEnergia" onclick="cyclePriority('energia')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valEnergia">5</span></div>
               <div class="readiness-slider-track" id="trackEnergia">
                 <div class="readiness-slider-fill" id="fillEnergia" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderEnergia" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
-              <div class="readiness-slider-ends"><span>Esgotado</span> <span>Electrizado</span></div>
             </div>
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Nível de hidratação atual — desidratação reduz força 5-10%">💧 Hidratação</span> <button class="readiness-prio-chip" id="prioHidratacao" onclick="cyclePriority('hidratacao')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valHidratacao">5</span></div>
               <div class="readiness-slider-track" id="trackHidratacao">
                 <div class="readiness-slider-fill" id="fillHidratacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderHidratacao" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
-              <div class="readiness-slider-ends"><span>Desidratado</span> <span>Perfeito</span></div>
             </div>
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Qualidade e timing da última refeição">🍽️ Alimentação</span> <button class="readiness-prio-chip" id="prioAlimentacao" onclick="cyclePriority('alimentacao')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valAlimentacao">5</span></div>
               <div class="readiness-slider-track" id="trackAlimentacao">
                 <div class="readiness-slider-fill" id="fillAlimentacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderAlimentacao" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
-              <div class="readiness-slider-ends"><span>Má</span> <span>Excelente</span></div>
             </div>
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Vontade de treinar — GTG exige disciplina diária">🧠 Motivação</span> <button class="readiness-prio-chip" id="prioMotivacao" onclick="cyclePriority('motivacao')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valMotivacao">5</span></div>
               <div class="readiness-slider-track" id="trackMotivacao">
                 <div class="readiness-slider-fill" id="fillMotivacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderMotivacao" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
-              <div class="readiness-slider-ends"><span>Zero</span> <span>Máxima</span></div>
             </div>
           </div>
           <div class="readiness-display">
@@ -218,14 +210,6 @@
               <svg class="readiness-ring" viewBox="0 0 100 100">
                 <circle class="readiness-ring-bg" cx="50" cy="50" r="42"/>
                 <circle class="readiness-ring-fill" id="readinessRingFill" cx="50" cy="50" r="42"/>
-                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="8" transform="rotate(0,50,50)"/>
-                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="8" transform="rotate(90,50,50)"/>
-                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="8" transform="rotate(180,50,50)"/>
-                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="8" transform="rotate(270,50,50)"/>
-                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="7" transform="rotate(45,50,50)"/>
-                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="7" transform="rotate(135,50,50)"/>
-                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="7" transform="rotate(225,50,50)"/>
-                <line class="readiness-tick" x1="50" y1="4" x2="50" y2="7" transform="rotate(315,50,50)"/>
               </svg>
               <div class="readiness-score-wrap">
                 <div class="readiness-direction" id="readinessDirection"></div>
@@ -233,19 +217,16 @@
               </div>
               <div class="readiness-circle-label" id="readinessLabel">MODERADO</div>
               <div class="readiness-circle-sub" id="readinessSub">/ 100</div>
-              <div class="readiness-particles" id="readinessParticles"></div>
             </div>
             <div class="readiness-prev" id="readinessPrev"></div>
-            <div class="readiness-info-grid">
-              <div class="readiness-suggestion" id="readinessSuggestion"><strong>Volume normal.</strong> Foque na técnica.</div>
-              <div class="readiness-rec" id="readinessRec"></div>
-            </div>
+            <div class="readiness-suggestion" id="readinessSuggestion"><strong>Volume normal.</strong> Foque na técnica.</div>
             <div class="readiness-history" id="readinessHistory"></div>
-            <div class="readiness-info-grid">
-              <div class="readiness-insight" id="readinessInsight"></div>
-              <div class="readiness-correlation" id="readinessCorrelation"></div>
-            </div>
           </div>
+        </div>
+        <div class="readiness-rec" id="readinessRec"></div>
+        <div class="readiness-info-grid">
+          <div class="readiness-insight" id="readinessInsight"></div>
+          <div class="readiness-correlation" id="readinessCorrelation"></div>
         </div>
         <div class="readiness-trend-panel" id="readinessTrendPanel">
           <div class="readiness-trend-inner">
@@ -255,96 +236,78 @@
         </div>
       </div>
       <div class="card mb-16 xp-card">
-        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
-        <div class="xp-accent-bar"></div>
-        <div class="xp-noise"></div>
-        <div class="xp-corner-glow xp-corner-glow-tl"></div>
-        <div class="xp-corner-glow xp-corner-glow-br"></div>
-        <div class="xp-card-animated-border"></div>
-        <div class="xp-card-energy"></div>
-        <div class="xp-card-grid"></div>
-        <div class="card-body" style="padding:16px 24px;position:relative;z-index:1">
-          <div class="flex" style="align-items:center;gap:20px;flex-wrap:wrap">
-            <div class="level-badge" id="levelBadge" data-tier="1">
-              <div class="level-badge-glow"></div>
-              <div class="level-badge-holo"></div>
-              <div class="level-badge-rays"></div>
-              <div class="level-badge-scan"></div>
+        <div class="card-body xp-card-body">
+          <div class="xp-rank-section">
+            <div class="level-badge" id="levelBadge">
               <div class="level-ring-wrap">
                 <svg class="level-ring" viewBox="0 0 60 60">
                   <circle class="level-ring-bg" cx="30" cy="30" r="26"/>
-                  <circle class="level-ring-track" cx="30" cy="30" r="26"/>
                   <circle class="level-ring-fill" id="levelRingFill" cx="30" cy="30" r="26"/>
-                  <circle class="level-ring-glow" cx="30" cy="30" r="26"/>
                 </svg>
                 <span class="level-icon" id="levelIcon">🎖</span>
-                <div class="level-ring-dots"></div>
               </div>
               <div class="level-info">
                 <span class="level-rank-label" id="levelRankLabel">TROPA</span>
                 <span class="level-name" id="levelName">RECRUTA</span>
-                <span class="level-stars" id="levelStars">★</span>
-                <span class="level-divisao">—</span>
+                <span class="level-sub" id="levelSub">NÍVEL 1</span>
               </div>
             </div>
-            <div class="xp-main" style="flex:1;min-width:200px">
-              <div class="xp-header-row">
-                <div class="xp-title-wrap">
-                  <span class="xp-title">FORÇA E RESISTÊNCIA — XP</span>
-                  <span class="xp-subtitle" id="levelSub">NÍVEL 1</span>
-                </div>
-                <div class="xp-numbers-wrap">
-                  <span class="xp-numbers-inline" id="xpNumbers"><span class="xp-current" id="xpCurrentNum">0</span> / <span class="xp-target" id="xpTargetNum">1.000</span> XP</span>
-                  <span class="xp-pct" id="xpPct">0%</span>
-                </div>
-              </div>
-              <div class="xp-bar-energy"></div>
-              <div class="xp-bar-outer" id="xpBarOuter">
-                <div class="xp-bar-fill" id="xpBarFill" style="width:0%">
-                  <div class="xp-bar-liquid"></div>
-                  <div class="xp-bar-particles" id="xpBarParticles"></div>
-                </div>
-                <div class="xp-bar-scanlines"></div>
-                <div class="xp-bar-endcap" id="xpBarEndcap"></div>
-                <div class="xp-milestone" style="left:25%"><span class="xp-milestone-mark"></span><span class="xp-milestone-label">25</span></div>
-                <div class="xp-milestone" style="left:50%"><span class="xp-milestone-mark"></span><span class="xp-milestone-label">50</span></div>
-                <div class="xp-milestone" style="left:75%"><span class="xp-milestone-mark"></span><span class="xp-milestone-label">75</span></div>
-                <div class="xp-glow-trail" id="xpGlowTrail"></div>
-                <div class="xp-float-text" id="xpFloatText"></div>
-                <div class="xp-bar-shine"></div>
-                <div class="xp-pct-bar" id="xpPctBar">0%</div>
-              </div>
-              <div class="xp-bottom-row">
-                <span class="xp-total-label" id="xpTotalLabel">XP TOTAL: 0</span>
-                <span class="xp-daily-label" id="xpDailyLabel">HOJE: +0 XP</span>
-                <span class="xp-next-label" id="xpNextLabel">PRÓXIMO: SOLDADO</span>
-              </div>
-              <div class="xp-sparkline-wrap">
-                <svg class="xp-sparkline" id="xpSparkline" viewBox="0 0 200 30" preserveAspectRatio="none"></svg>
-                <span class="xp-sparkline-label">EVOLUÇÃO 7 DIAS</span>
+            <div class="xp-quote" id="xpQuote">"Nunca vá ao fracasso"</div>
+            <div class="xp-next-rank" id="xpNextRank">Próximo posto: SOLDADO</div>
+          </div>
+          <div class="xp-progress-section">
+            <div class="xp-bar-header">
+              <span class="xp-bar-title">FORÇA E RESISTÊNCIA — XP</span>
+              <span class="xp-bar-pct" id="xpPct">0%</span>
+            </div>
+            <div class="xp-bar-outer" id="xpBarOuter">
+              <div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div>
+              <div class="xp-bar-track-labels">
+                <span class="xp-bar-milestone" style="left:25%">25%</span>
+                <span class="xp-bar-milestone" style="left:50%">50%</span>
+                <span class="xp-bar-milestone" style="left:75%">75%</span>
               </div>
             </div>
-            <div class="streak-box" id="streakBox">
-              <div class="streak-flame-wrap">
-                <span class="streak-flame">⚡</span>
-                <div class="streak-particles" id="streakParticles"></div>
+            <div class="xp-numbers-row">
+              <span class="xp-numbers-inline" id="xpNumbers"><span class="xp-current" id="xpCurrentNum">0</span> / <span class="xp-target" id="xpTargetNum">1.200</span> XP</span>
+            </div>
+          </div>
+          <div class="xp-metrics-section">
+            <div class="xp-metric-group">
+              <div class="xp-metric-item">
+                <span class="xp-metric-val" id="xpTotalLabel">0</span>
+                <span class="xp-metric-lbl">TOTAL XP</span>
               </div>
-              <div class="streak-days" id="streakDays">0</div>
-              <div class="text-mono streak-label">DIAS STREAK</div>
-              <div class="streak-bonus-wrap">
-                <span class="streak-value" id="streakBonus">+0%</span>
-                <span class="streak-bonus-label">BÔNUS</span>
+              <div class="xp-metric-item">
+                <span class="xp-metric-val" id="xpDailyLabel">+0</span>
+                <span class="xp-metric-lbl">HOJE</span>
               </div>
-              <div class="streak-progress">
-                <div class="streak-progress-fill"></div>
+              <div class="xp-metric-item">
+                <span class="xp-metric-val" id="xpBonusLabel">+0%</span>
+                <span class="xp-metric-lbl">BÔNUS</span>
               </div>
-              <div class="streak-next" id="streakNext">Próximo: 7 dias → +10%</div>
-              <div class="streak-milestone-badges">
-                <span class="streak-mb" data-days="7">7d</span>
-                <span class="streak-mb" data-days="14">14d</span>
-                <span class="streak-mb" data-days="30">30d</span>
+              <div class="xp-metric-item">
+                <span class="xp-metric-val" id="xpStreakDays">0</span>
+                <span class="xp-metric-lbl">STREAK</span>
               </div>
             </div>
+            <div class="xp-streak-bar">
+              <div class="xp-streak-bar-track">
+                <div class="xp-streak-bar-fill" id="xpStreakBarFill" style="width:0%"></div>
+              </div>
+              <div class="xp-streak-bar-labels">
+                <span class="xp-streak-bar-next" id="xpStreakNext">7d → +10%</span>
+                <span class="xp-streak-bar-mbs" id="xpStreakMbs">
+                  <span class="streak-mb" data-days="7">7d</span>
+                  <span class="streak-mb" data-days="14">14d</span>
+                  <span class="streak-mb" data-days="30">30d</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="xp-chart-section">
+            <svg class="xp-sparkline" id="xpSparkline" viewBox="0 0 200 30" preserveAspectRatio="none"></svg>
+            <span class="xp-chart-label">EVOLUÇÃO 7 DIAS</span>
           </div>
         </div>
       </div>
@@ -378,6 +341,7 @@
           <span class="sb-warmup-badge" id="warmupBadge">0/4</span>
         </div>
         <div class="sb-warmup-sub">AQUECIMENTO DINÂMICO · PAVEL TSATSOULINE</div>
+        <div class="sb-warmup-summary" id="warmupSummary">Sua preparação começa com 4 passos simples: mobilidade, ombros, glúteos e ativação de cadeia posterior.</div>
         <div class="sb-warmup-list" id="warmupList">
           <div class="sb-warmup-item" data-idx="0" onclick="toggleWarmup(0)">
             <div class="sb-warmup-circle"><span class="sb-warmup-num">1</span><span class="sb-warmup-check">✓</span></div>
@@ -417,8 +381,12 @@
         </div>
         <div class="sb-warmup-footer">
           <span class="sb-warmup-status" id="warmupStatus">❄ NÃO AQUECIDO</span>
-          <span class="sb-warmup-dica">★ Suas séries GTG já são o aquecimento — esta é a ATIVAÇÃO</span>
+          <div class="sb-warmup-actions">
+            <button class="sb-warmup-action-btn" onclick="completarWarmup()">✓ COMPLETAR</button>
+            <button class="sb-warmup-action-btn sb-warmup-action-btn-secondary" onclick="resetWarmup()">↺ RESET</button>
+          </div>
         </div>
+        <div class="sb-warmup-hint" id="warmupHint">Toque nos passos para marcar a ativação e preparar o corpo para a série.</div>
       </div>
       <div class="section-divider">
         <div class="section-divider-line"></div>
@@ -667,62 +635,58 @@
             </div>
           </div>
 
-          <div class="card sb-card sb-card-timer-premium" id="plankTimerCard" style="margin:0">
-            <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
-            <div class="tp-accent-bar"></div>
-            <div class="tp-noise"></div>
-            <div class="tp-corner-glow tp-corner-glow-tl"></div>
-            <div class="tp-corner-glow tp-corner-glow-br"></div>
-            <div class="card-header" style="padding:10px 16px;position:relative;z-index:1">
-              <div class="tp-header-row">
-                <div class="tp-icon-wrap">
-                  <div class="tp-icon-ring"></div>
-                  <div class="tp-icon">⏱</div>
-                </div>
-                <span class="card-title" style="font-size:17px">TIMER ISOMÉTRICO</span>
+          <div class="card sb-card sb-card-timer" id="plankTimerCard">
+            <div class="card-header">
+              <div class="timer-header-row">
+                <span class="timer-header-icon">⏱</span>
+                <span class="card-title">TIMER ISOMÉTRICO</span>
               </div>
-              <select class="form-select" id="timerExerciseSelect" style="font-size:13px;padding:5px 8px"></select>
+              <select class="form-select timer-ex-select" id="timerExerciseSelect"></select>
             </div>
-            <div class="card-body sb-timer-wrap" style="position:relative;z-index:1">
-              <div id="prepCountdown" style="display:none;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--gold);animation:starPulse .8s ease-in-out infinite">PREPARE-SE</div>
-              <div id="prepNumber" style="display:none;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:90px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,160,23,.7)"></div>
-              <div class="sb-timer-ring-wrap">
-                <svg class="sb-timer-ring" viewBox="0 0 180 180">
-                  <circle class="sb-timer-ring-bg" cx="90" cy="90" r="80"/>
-                  <circle class="sb-timer-ring-fill" id="timerRingFill" cx="90" cy="90" r="80"/>
+            <div class="card-body timer-body">
+              <div id="prepCountdown" class="timer-prep">PREPARE-SE</div>
+              <div id="prepNumber" class="timer-prep-num"></div>
+              <div class="timer-ring-wrap">
+                <svg class="timer-ring" viewBox="0 0 180 180">
+                  <circle class="timer-ring-bg" cx="90" cy="90" r="80"/>
+                  <circle class="timer-ring-fill" id="timerRingFill" cx="90" cy="90" r="80"/>
                 </svg>
-                <div class="sb-timer-center">
-                  <div class="sb-timer-label">ISOMÉTRICO</div>
-                  <div class="timer-display sb-timer-digits" id="timerDisplay" style="font-size:48px">00:00</div>
+                <div class="timer-center">
+                  <div class="timer-label">ISOMÉTRICO</div>
+                  <div class="timer-digits" id="timerDisplay">00:00</div>
+                  <div class="timer-sec" id="timerSeconds">0s</div>
                 </div>
               </div>
-              <div class="sb-timer-btns">
-                <button class="btn btn-red" id="btnStartTimer" onclick="startPlankTimer()">▶ INICIAR</button>
-                <button class="btn btn-outline" onclick="stopPlankTimer()">■ PARAR</button>
-                <button class="btn btn-outline" onclick="resetPlankTimer()">↺</button>
+              <div class="timer-btns">
+                <button class="timer-btn timer-btn-primary" id="btnStartTimer" onclick="startPlankTimer()">▶ INICIAR</button>
+                <button class="timer-btn timer-btn-stop" onclick="stopPlankTimer()">■ PARAR</button>
+                <button class="timer-btn timer-btn-reset" onclick="resetPlankTimer()">↺</button>
               </div>
-              <div class="groove-toggles" style="flex-basis:100%;margin-top:10px;padding:8px 12px 4px">
-                <span class="groove-label">⚙ GROOVE</span>
-                <div class="groove-slider" id="plank-groove-amp" title="Amplitude completa">
-                  <span class="missile-switch__icon">🏋️</span>
-                  <input type="range" min="0" max="100" value="0" class="groove-range" oninput="setPlankGrooveLevel(0, this.value)">
-                  <span class="groove-lvl" id="plank-glvl-0">0</span>
-                  <span>AMP</span>
+              <div class="timer-groove">
+                <span class="timer-groove-label">⚙ GROOVE</span>
+                <div class="timer-groove-sliders">
+                  <div class="groove-item" id="plank-groove-amp" title="Amplitude completa">
+                    <span class="groove-icon">🏋️</span>
+                    <span class="groove-name">AMP</span>
+                    <input type="range" min="0" max="100" value="0" class="groove-range" oninput="setPlankGrooveLevel(0, this.value)">
+                    <span class="groove-lvl" id="plank-glvl-0">0</span>
+                  </div>
+                  <div class="groove-item" id="plank-groove-ten" title="Tensão irradiante">
+                    <span class="groove-icon">⚡</span>
+                    <span class="groove-name">TEN</span>
+                    <input type="range" min="0" max="100" value="0" class="groove-range" oninput="setPlankGrooveLevel(1, this.value)">
+                    <span class="groove-lvl" id="plank-glvl-1">0</span>
+                  </div>
+                  <div class="groove-item" id="plank-groove-bal" title="Sem balanço/momentum">
+                    <span class="groove-icon">✓</span>
+                    <span class="groove-name">S/B</span>
+                    <input type="range" min="0" max="100" value="0" class="groove-range" oninput="setPlankGrooveLevel(2, this.value)">
+                    <span class="groove-lvl" id="plank-glvl-2">0</span>
+                  </div>
                 </div>
-                <div class="groove-slider" id="plank-groove-ten" title="Tensão irradiante">
-                  <span class="missile-switch__icon">⚡</span>
-                  <input type="range" min="0" max="100" value="0" class="groove-range" oninput="setPlankGrooveLevel(1, this.value)">
-                  <span class="groove-lvl" id="plank-glvl-1">0</span>
-                  <span>TEN</span>
-                </div>
-                <div class="groove-slider" id="plank-groove-bal" title="Sem balanço/momentum">
-                  <span class="missile-switch__icon">✓</span>
-                  <input type="range" min="0" max="100" value="0" class="groove-range" oninput="setPlankGrooveLevel(2, this.value)">
-                  <span class="groove-lvl" id="plank-glvl-2">0</span>
-                  <span>S/B</span>
-                </div>
-                <div class="groove-bonus-preview">
-                  BÔNUS: <span class="bonus-val" id="plank-groove-bonus">+0%</span>
+                <div class="timer-groove-bonus">
+                  <span class="groove-bonus-label">BÔNUS</span>
+                  <span class="groove-bonus-val" id="plank-groove-bonus">+0%</span>
                 </div>
               </div>
             </div>

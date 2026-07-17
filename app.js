@@ -861,6 +861,10 @@ let fraseAtualIndex = -1,
     countdownInterval: null,
     segundosRestantes: 5
   },
+  _deletedExercicioState = {
+    ultimoExercicio: null,
+    timeoutId: null
+  },
   streakData = {
     atual: 0,
     recorde: 0,
@@ -1017,6 +1021,8 @@ function renderWarmup() {
   const progress = document.getElementById("warmupProgressFill");
   const status = document.getElementById("warmupStatus");
   const list = document.getElementById("warmupList");
+  const summary = document.getElementById("warmupSummary");
+  const hint = document.getElementById("warmupHint");
   if (badge) badge.textContent = count + "/" + total;
   if (progress) progress.style.width = (count / total * 100) + "%";
   if (status) {
@@ -1024,6 +1030,16 @@ function renderWarmup() {
     if (count === 0) status.innerHTML = "❄ NÃO AQUECIDO";
     else if (count < total) status.innerHTML = "🔥 AQUECENDO · " + count + "/" + total;
     else { status.innerHTML = "★ PRONTO PARA O COMBATE"; status.classList.add("ready"); }
+  }
+  if (summary) {
+    if (count === 0) summary.textContent = "Sua preparação começa com 4 passos simples: mobilidade, ombros, glúteos e ativação de cadeia posterior.";
+    else if (count < total) summary.textContent = `Faltam ${total - count} passos para fechar a ativação e entrar em modo de trabalho.`;
+    else summary.textContent = "Ativação concluída. O corpo já está pronto para a sessão e a mente pode focar no esforço.";
+  }
+  if (hint) {
+    if (count === 0) hint.textContent = "Toque nos passos para marcar a ativação e preparar o corpo para a série.";
+    else if (count < total) hint.textContent = "Continue marcando os blocos até chegar no estado ideal de prontidão.";
+    else hint.textContent = "Ativação completa. Agora você está pronto para encarar a sessão com mais presença.";
   }
   if (list) {
     Array.from(list.querySelectorAll(".sb-warmup-item")).forEach(el => {
@@ -1041,6 +1057,22 @@ function toggleWarmup(idx) {
   else dados.aquecimento.feitos.push(idx);
   renderWarmup();
   salvarDados();
+}
+
+function completarWarmup() {
+  initWarmupData();
+  dados.aquecimento.feitos = Array.from({ length: WARMUP_DRILLS.length }, (_, idx) => idx);
+  renderWarmup();
+  salvarDados();
+  mostrarToast("Ativação concluída", "Seu corpo já está preparado para a sessão.", "success");
+}
+
+function resetWarmup() {
+  initWarmupData();
+  dados.aquecimento.feitos = [];
+  renderWarmup();
+  salvarDados();
+  mostrarToast("Ativação reiniciada", "Você pode refazer os passos quando quiser.", "info");
 }
 
 function verificarStreak() {
@@ -1121,7 +1153,6 @@ function adicionarXP(amount) {
     }
   }
   _animateXPCounter(prevTotal, xpData.total);
-  _showXPFloat("+" + amount + " XP");
   _renderXPSparkline();
   atualizarXP(), salvarDados()
 }
@@ -1142,10 +1173,6 @@ function atualizarXP() {
   document.getElementById("levelName").textContent = level.nome;
   document.getElementById("levelSub").textContent = "NÍVEL " + (levelIdx + 1);
   document.getElementById("levelRankLabel").textContent = level.divisao.toUpperCase();
-  const starsEl = document.getElementById("levelStars");
-  if (starsEl) starsEl.textContent = "★".repeat(Math.min(level.estrelas || 0, 7));
-  const divisaoEl = document.querySelector(".level-divisao");
-  if (divisaoEl) divisaoEl.textContent = level.divisao.toUpperCase();
   const badge = document.getElementById("levelBadge");
   if (badge) {
     const divMap = { Tropa:1, Graduado:2, Oficial:2, "Oficial Superior":3, "Alto Comando":4, Lenda:4 };
@@ -1154,51 +1181,25 @@ function atualizarXP() {
   }
   document.getElementById("xpBarFill").style.width = pct + "%";
   document.getElementById("xpNumbers").innerHTML = '<span class="xp-current" id="xpCurrentNum">' + xpData.total.toLocaleString("pt-BR") + '</span> / <span class="xp-target" id="xpTargetNum">' + level.proximo.toLocaleString("pt-BR") + '</span> XP';
-  document.getElementById("xpTotalLabel").textContent = "XP TOTAL: " + xpData.total.toLocaleString("pt-BR");
+  document.getElementById("xpTotalLabel").textContent = xpData.total.toLocaleString("pt-BR");
   const pctEl = document.getElementById("xpPct");
   if (pctEl) pctEl.textContent = pct + "%";
-  const pctBar = document.getElementById("xpPctBar");
-  if (pctBar) {
-    pctBar.textContent = pct + "%";
-    pctBar.classList.toggle("visible", pct > 5);
-  }
   const today = (new Date).toISOString().slice(0, 10);
   if (xpData.dailyDate === today) {
-    document.getElementById("xpDailyLabel").textContent = "HOJE: +" + xpData.dailyXP + " XP";
+    document.getElementById("xpDailyLabel").textContent = "+" + xpData.dailyXP;
   } else {
-    document.getElementById("xpDailyLabel").textContent = "HOJE: +0 XP";
+    document.getElementById("xpDailyLabel").textContent = "+0";
   }
   const ringFill = document.getElementById("levelRingFill");
-  const ringGlow = document.querySelector(".level-ring-glow");
   if (ringFill) ringFill.style.strokeDashoffset = circumference * (1 - pct / 100);
-  if (ringGlow) ringGlow.style.strokeDashoffset = circumference * (1 - pct / 100);
-  const endcap = document.getElementById("xpBarEndcap");
-  if (endcap) {
-    if (pct > 2) { endcap.classList.add("visible"); endcap.style.left = "calc(" + pct + "% - 5px)"; }
-    else { endcap.classList.remove("visible"); }
-  }
-  const bar = document.getElementById("xpBarOuter");
-  if (bar) {
-    if (pct >= 80) bar.classList.add("anticipate");
-    else bar.classList.remove("anticipate");
-  }
-  const trail = document.getElementById("xpGlowTrail");
-  if (trail) {
-    if (pct > 2) { trail.classList.add("active"); trail.style.left = "calc(" + pct + "% - 28px)"; }
-    else trail.classList.remove("active");
-  }
-  document.querySelectorAll(".xp-milestone").forEach(m => {
-    const pos = parseFloat(m.style.left);
-    if (pct >= pos) m.classList.add("reached");
-    else m.classList.remove("reached");
-  });
   const nextLevel = NIVEIS[levelIdx + 1];
-  document.getElementById("xpNextLabel").textContent = nextLevel ? "PRÓXIMO: " + nextLevel.nome : "NÍVEL MÁXIMO";
+  const nextRankEl = document.getElementById("xpNextRank");
+  if (nextRankEl) nextRankEl.textContent = nextLevel ? "Próximo posto: " + nextLevel.nome : "NÍVEL MÁXIMO";
+  const quoteEl = document.getElementById("xpQuote");
+  if (quoteEl) quoteEl.textContent = _getPavelQuote(levelIdx, pct);
   document.getElementById("headerRank").textContent = level.nome;
   document.getElementById("headerXpBar").style.width = pct + "%";
   document.getElementById("headerXP").setAttribute("data-estrelas", "★".repeat(Math.min(level.estrelas || 0, 7)));
-  _initXPBarParticles();
-  _initStreakParticles();
   _updateStreakBox();
   _renderXPSparkline();
   _updateStreakMilestones()
@@ -1219,67 +1220,42 @@ function _animateXPCounter(from, to) {
   _xpAnimFrame = requestAnimationFrame(tick);
 }
 
-function _showXPFloat(text) {
-  const el = document.getElementById("xpFloatText");
-  if (!el) return;
-  el.textContent = text;
-  el.classList.remove("show");
-  void el.offsetWidth;
-  el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 1400);
+function _getPavelQuote(levelIdx, pct) {
+  const quotes = [
+    '"Pequenos passos todos os dias."',
+    '"O peso é seu, o aço é seu, a vitória é sua."',
+    '"A repetição é o caminho da maestria."',
+    '"Força não se compra, se conquista."',
+    '"Nunca vá ao fracasso — mas vá ao limite."',
+    '"Respira, foca, executa."',
+    '"O descanso também é treino."',
+    '"O corpo obedece quem a mente domina."',
+    '"Constância vence talento."',
+    '"O groove é seu — o ritmo é seu."'
+  ];
+  const idx = (levelIdx * 3 + Math.round(pct / 10)) % quotes.length;
+  return quotes[idx];
 }
-
-function _initXPBarParticles() {
-  const wrap = document.getElementById("xpBarParticles");
-  if (!wrap || wrap.children.length > 0) return;
-  for (let i = 0; i < 6; i++) {
-    const p = document.createElement("div");
-    p.className = "xp-particle";
-    p.style.setProperty("--dur", (1.5 + Math.random() * 2) + "s");
-    p.style.setProperty("--delay", (Math.random() * 3) + "s");
-    p.style.setProperty("--top", (20 + Math.random() * 60) + "%");
-    p.style.setProperty("--peak-opacity", (0.5 + Math.random() * 0.4).toFixed(2));
-    wrap.appendChild(p);
-  }
-}
-
-function _initStreakParticles() {
-  const wrap = document.getElementById("streakParticles");
-  if (!wrap || wrap.children.length > 0) return;
-  for (let i = 0; i < 3; i++) {
-    const p = document.createElement("div");
-    p.className = "streak-particle";
-    const angle = (i / 3) * Math.PI * 2;
-    const dist = 8 + Math.random() * 12;
-    p.style.setProperty("--tx", Math.cos(angle) * dist + "px");
-    p.style.setProperty("--ty", (Math.sin(angle) * dist - 10) + "px");
-    p.style.setProperty("--dur", (1.5 + Math.random()) + "s");
-    p.style.setProperty("--delay", (Math.random() * 2) + "s");
-    wrap.appendChild(p);
-  }
-}
-
 function _updateStreakBox() {
-  const box = document.getElementById("streakBox");
-  if (!box) return;
   const days = streakData.atual || 0;
-  const daysEl = document.getElementById("streakDays");
+  const daysEl = document.getElementById("xpStreakDays");
   if (daysEl) daysEl.textContent = days;
-  if (days > 0) box.classList.add("active");
-  else box.classList.remove("active");
-  const nextEl = document.getElementById("streakNext");
+  const fill = document.querySelector(".xp-streak-bar-fill");
+  const nextEl = document.getElementById("xpStreakNext");
+  const bonusEl = document.getElementById("xpBonusLabel");
+  let target = 7, bonus = 10;
+  if (days >= 30) { target = 30; bonus = 25; }
+  else if (days >= 14) { target = 14; bonus = 15; }
+  else if (days >= 7) { target = 7; bonus = 10; }
   if (nextEl) {
-    if (days < 7) { nextEl.textContent = "Próximo: 7 dias → +10%"; _setStreakProgress(days, 7); }
-    else if (days < 14) { nextEl.textContent = "Próximo: 14 dias → +15%"; _setStreakProgress(days, 14); }
-    else if (days < 30) { nextEl.textContent = "Próximo: 30 dias → +25%"; _setStreakProgress(days, 30); }
-    else { nextEl.textContent = "BÔNUS MÁXIMO: +25%"; _setStreakProgress(30, 30); }
+    if (days >= 30) nextEl.textContent = "Máx: +25%";
+    else nextEl.textContent = target + "d → +" + bonus + "%";
   }
-}
-function _setStreakProgress(current, target) {
-  const fill = document.querySelector(".streak-progress-fill");
-  if (!fill) return;
-  const pct = Math.min(100, Math.round((current / target) * 100));
-  fill.style.width = pct + "%";
+  if (bonusEl) bonusEl.textContent = "+" + bonus + "%";
+  if (fill) {
+    const pct = Math.min(100, Math.round((days / target) * 100));
+    fill.style.width = pct + "%";
+  }
 }
 
 function _renderXPSparkline() {
@@ -1314,7 +1290,7 @@ function _renderXPSparkline() {
 
 function _updateStreakMilestones() {
   const days = streakData.atual || 0;
-  document.querySelectorAll(".streak-mb").forEach(el => {
+  document.querySelectorAll("#xpStreakMbs .streak-mb").forEach(el => {
     const req = parseInt(el.dataset.days);
     if (days >= req) el.classList.add("reached");
     else el.classList.remove("reached");
@@ -1565,7 +1541,7 @@ function renderExercicios() {
         i = o.length,
         d = o.reduce((e, a) => e + (a.valor || 0), 0),
         se = calcularStreakExercicio(a.id);
-      e.innerHTML += `\n      <div class="exercise-card" id="excard-${a.id}" style="--i:${idx}">\n        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>\n        <div class="ex-noise"></div>\n        <div class="ex-corner-glow ex-corner-glow-tl"></div>\n        <div class="ex-corner-glow ex-corner-glow-br"></div>\n        <div class="exercise-card-header">\n          <div class="exercise-name">${escapeHtml(a.nome)}</div>\n          <div class="sugestao-gtg" id="sugestao-${a.id}" onclick="aplicarSugestaoGTG('${a.id}', event)">\n            <span class="bulb">💡</span>\n            <span class="gtg-val" id="gtg-val-${a.id}">GTG: --</span>\n            <span class="gtg-label">reps</span>\n            <div class="gtg-tooltip">\n              <strong style="color:var(--gold)">SÉRIE SUGERIDA — MÉTODO GTG</strong><br>\n              PR (30 dias): <span id="tooltip-pr-${a.id}">0</span> ${"tempo"===a.tipo?"seg":a.unidade||"reps"}<br>\n              Sugestão: 50% do máximo<br>\n              <em style="color:var(--gold-dim)">"Nunca vá ao fracasso" — Pavel</em>\n            </div>\n          </div>\n          <div class="exercise-card-actions">\n            <button class="btn-icon btn-meta" onclick="abrirModalMeta('${a.id}')">🎯</button>\n            <button class="btn-icon" onclick="mostrarInfoExercicio('${a.id}')" title="Informações">ℹ</button>\n            <button class="btn-icon" onclick="editarExercicio('${a.id}')" title="Editar">✏️</button><button class="btn-icon danger" onclick="removerExercicio('${a.id}')" title="Remover">✕</button>\n            <div class="quality-badge-wrap" id="qbadge-wrap-${a.id}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;"></div>\n          </div>\n        </div>\n        <div class="exercise-stats">\n          <div class="ex-stat">\n            <div class="ex-stat-val">${i}</div>\n            <div class="ex-stat-lbl">SÉRIES HOJE</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${d}</div>\n            <div class="ex-stat-lbl">${"tempo"===a.tipo?"SEG HOJE":"REPS HOJE"}</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${r}</div>\n            <div class="ex-stat-lbl">TOTAL SÉRIES</div>\n          </div>\n          <div class="ex-stat" title="Dias consecutivos treinando este exercício">\n            <div class="ex-stat-val" style="color:var(--gold);">${se}<span class="exercise-streak-fire${se>0?'':' no-streak'}">${se>0?'⚡':'🎯'}</span></div>\n            <div class="ex-stat-lbl">STREAK DIAS</div>\n          </div>\n        </div>\n        <div class="pr-display">\n          <div>\n            <div class="pr-display-label">PR (30 DIAS)</div>\n            <div class="pr-display-val" id="pr-display-${a.id}">0 ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</div>\n          </div>\n          <button class="test-max-btn" onclick="abrirTesteMaximo('${a.id}')">🎯 TESTAR MÁXIMO</button>\n        </div>\n        <div class="exercise-pr">\n          <span class="pr-label">PR ESTIMADO:</span>\n          <span class="pr-value">${n} ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</span>\n          <span style="margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gray);">${s} total acum.</span>\n        </div>\n        <div class="rpe-avg-display" id="rpe-avg-${a.id}">\n          RPE MÉDIO HOJE: <span class="rpe-avg-val" id="rpe-avg-val-${a.id}">—</span>\n        </div>\n        <div class="exercise-add-form">\n          ${"peso"===a.tipo?`\n            <div class="form-group">\n              <label class="form-label">Peso (kg)</label>\n              <input type="number" class="form-input" id="peso-${a.id}" placeholder="0" min="0" step="0.5">\n            </div>`:""}\n          <div class="form-group">\n            <label class="form-label">${"tempo"===a.tipo?"Segundos":"Reps"}</label>\n            <input type="number" class="form-input" id="valor-${a.id}" placeholder="${"tempo"===a.tipo?"60":"10"}" min="1">\n          </div>\n          <button class="btn btn-red" onclick="adicionarSerie('${a.id}')">+ REGISTRAR</button>\n          <button class="btn btn-outline btn-sm" onclick="abrirTimerDescanso('${a.id}')">⏱ DESCANSO</button>\n          <div class="groove-toggles" id="groove-toggles-${a.id}" style="flex-basis:100%;">
+      e.innerHTML += `\n      <div class="exercise-card" id="excard-${a.id}" style="--i:${idx}">\n        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>\n        <div class="ex-noise"></div>\n        <div class="ex-corner-glow ex-corner-glow-tl"></div>\n        <div class="ex-corner-glow ex-corner-glow-br"></div>\n        <div class="exercise-card-header">\n          <div class="exercise-name">${escapeHtml(a.nome)}</div>\n          <div class="sugestao-gtg" id="sugestao-${a.id}" onclick="aplicarSugestaoGTG('${a.id}', event)">\n            <span class="bulb">💡</span>\n            <span class="gtg-val" id="gtg-val-${a.id}">GTG: --</span>\n            <span class="gtg-label">reps</span>\n            <div class="gtg-tooltip">\n              <strong style="color:var(--gold)">SÉRIE SUGERIDA — MÉTODO GTG</strong><br>\n              PR (30 dias): <span id="tooltip-pr-${a.id}">0</span> ${"tempo"===a.tipo?"seg":a.unidade||"reps"}<br>\n              Sugestão: 50% do máximo<br>\n              <em style="color:var(--gold-dim)">"Nunca vá ao fracasso" — Pavel</em>\n            </div>\n          </div>\n          <div class="exercise-card-actions">\n            <button class="btn-icon btn-meta" onclick="abrirModalMeta('${a.id}')">🎯</button>\n            <button class="btn-icon" onclick="mostrarInfoExercicio('${a.id}')" title="Informações">ℹ</button>\n            <button class="btn-icon danger" onclick="removerExercicio('${a.id}')" title="Remover">✕</button>\n            <div class="quality-badge-wrap" id="qbadge-wrap-${a.id}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;"></div>\n          </div>\n        </div>\n        <div class="exercise-stats">\n          <div class="ex-stat">\n            <div class="ex-stat-val">${i}</div>\n            <div class="ex-stat-lbl">SÉRIES HOJE</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${d}</div>\n            <div class="ex-stat-lbl">${"tempo"===a.tipo?"SEG HOJE":"REPS HOJE"}</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${r}</div>\n            <div class="ex-stat-lbl">TOTAL SÉRIES</div>\n          </div>\n          <div class="ex-stat" title="Dias consecutivos treinando este exercício">\n            <div class="ex-stat-val" style="color:var(--gold);">${se}<span class="exercise-streak-fire${se>0?'':' no-streak'}">${se>0?'⚡':'🎯'}</span></div>\n            <div class="ex-stat-lbl">STREAK DIAS</div>\n          </div>\n        </div>\n        <div class="pr-display">\n          <div>\n            <div class="pr-display-label">PR (30 DIAS)</div>\n            <div class="pr-display-val" id="pr-display-${a.id}">0 ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</div>\n          </div>\n          <button class="test-max-btn" onclick="abrirTesteMaximo('${a.id}')">🎯 TESTAR MÁXIMO</button>\n        </div>\n        <div class="exercise-pr">\n          <span class="pr-label">PR ESTIMADO:</span>\n          <span class="pr-value">${n} ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</span>\n          <span style="margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gray);">${s} total acum.</span>\n        </div>\n        <div class="rpe-avg-display" id="rpe-avg-${a.id}">\n          RPE MÉDIO HOJE: <span class="rpe-avg-val" id="rpe-avg-val-${a.id}">—</span>\n        </div>\n        <div class="exercise-add-form">\n          ${"peso"===a.tipo?`\n            <div class="form-group">\n              <label class="form-label">Peso (kg)</label>\n              <input type="number" class="form-input" id="peso-${a.id}" placeholder="0" min="0" step="0.5">\n            </div>`:""}\n          <div class="form-group">\n            <label class="form-label">${"tempo"===a.tipo?"Segundos":"Reps"}</label>\n            <input type="number" class="form-input" id="valor-${a.id}" placeholder="${"tempo"===a.tipo?"60":"10"}" min="1">\n          </div>\n          <button class="btn btn-red" onclick="adicionarSerie('${a.id}')">+ REGISTRAR</button>\n          <button class="btn btn-outline btn-sm" onclick="abrirTimerDescanso('${a.id}')">⏱ DESCANSO</button>\n          <div class="groove-toggles" id="groove-toggles-${a.id}" style="flex-basis:100%;">
             <span class="groove-label">⚙ GROOVE</span>
             <div class="groove-slider" id="groove-amp-${a.id}" title="Amplitude completa: do topo ao fundo, sem truncar.">
               <span class="missile-switch__icon">🏋️</span>
@@ -1640,7 +1616,7 @@ function atualizarCardExercicio(exId) {
     if (statEls[1]) statEls[1].textContent = regsHoje.reduce((s, r) => s + (r.valor || 0), 0);
     if (statEls[2]) statEls[2].textContent = totalSeries;
     if (statEls[3]) {
-      statEls[3].innerHTML = `${streak}<span class="exercise-streak-fire${streak > 0 ? '' : ' no-streak'}">${streak > 0 ? '⚡' : '🎯'}</span>`;
+      statEls[3].innerHTML = `${streak}<span class="exercise-streak-fire${streak > 0 ? '' : ' no-streak'}">${streak > 0 ? '🔥' : '🎯'}</span>`;
     }
 
     // PR estimado
@@ -1852,12 +1828,44 @@ function addExercise() {
 }
 
 function removerExercicio(exId) {
-  const ex = dados.exercicios.find(e => e.id === exId),
-    exName = ex ? ex.nome : exId;
-  confirmarAcao(`REMOVER ${exName}?`, "Os registros históricos serão mantidos. O exercício sairá da lista de treino.", () => {
-    pararTimerGTG(exId);
-    dados.exercicios = dados.exercicios.filter(e => e.id !== exId), salvarDados(), renderExercicios(), renderGuiaExercicios(), mostrarToast("Removido", `${exName} removido da lista.`, "success")
-  })
+  _deletedExercicioState.timeoutId && clearTimeout(_deletedExercicioState.timeoutId);
+  const ex = dados.exercicios.find(e => e.id === exId);
+  if (!ex) return;
+  const exName = ex.nome, backup = JSON.parse(JSON.stringify(ex));
+  _deletedExercicioState.ultimoExercicio = backup;
+  pararTimerGTG(exId);
+  dados.exercicios = dados.exercicios.filter(e => e.id !== exId);
+  salvarDados();
+  renderExercicios();
+  renderGuiaExercicios();
+  _mostrarUndoRemoverExercicio(exName);
+  _deletedExercicioState.timeoutId = setTimeout(() => {
+    _deletedExercicioState.ultimoExercicio = null;
+    mostrarToast("✔ Excluído", `${exName} removido permanentemente.`, "success");
+    const bar = document.getElementById("undoExBar");
+    bar && bar.remove()
+  }, 8e3)
+}
+
+function _mostrarUndoRemoverExercicio(exName) {
+  const existing = document.getElementById("undoExBar");
+  existing && existing.remove();
+  const bar = document.createElement("div");
+  bar.className = "undo-bar", bar.id = "undoExBar", bar.innerHTML = `\n    <div class="undo-text">✕ <span>${escapeHtml(exName)}</span> removido</div>\n    <button class="btn-undo" onclick="desfazerRemocaoExercicio()">↩ DESFAZER</button>\n  `, document.body.appendChild(bar)
+}
+
+function desfazerRemocaoExercicio() {
+  const backup = _deletedExercicioState.ultimoExercicio;
+  if (!backup) return;
+  _deletedExercicioState.timeoutId && clearTimeout(_deletedExercicioState.timeoutId);
+  _deletedExercicioState.ultimoExercicio = null;
+  dados.exercicios.push(backup);
+  salvarDados();
+  renderExercicios();
+  renderGuiaExercicios();
+  mostrarToast("↩ Restaurado", `${backup.nome} restaurado à lista.`, "success");
+  const bar = document.getElementById("undoExBar");
+  bar && bar.remove()
 }
 
 function calcularPR(ex) {
@@ -2274,48 +2282,74 @@ function tocarSomInicioExercicio() {
   [523, 659, 784, 1047].forEach((f, i) => tocarNota(f, { vol: .16 - i * .02, dur: .2 + i * .05, rev: .2 + i * .05, delay: i * .12 }))
 }
 
-function updateTimerRing() {
+function _timerTick() {
+  plankTimer.segundos++;
+  const mins = String(Math.floor(plankTimer.segundos / 60)).padStart(2, "0"),
+    secs = String(plankTimer.segundos % 60).padStart(2, "0");
+  document.getElementById("timerDisplay").textContent = `${mins}:${secs}`;
+  document.getElementById("timerSeconds").textContent = plankTimer.segundos + "s";
   const fill = document.getElementById('timerRingFill');
-  if (!fill) return;
-  const circumference = 502;
-  const pct = (plankTimer.segundos % 60) / 60;
-  fill.style.strokeDashoffset = circumference - (circumference * pct);
+  if (fill) fill.style.strokeDashoffset = 471 - (plankTimer.segundos % 60) / 60 * 471;
+  if (plankTimer.segundos % 30 === 0) tocarBeepCronometro();
+}
+
+function _timerRun() {
+  plankTimer.rodando = !0;
+  document.getElementById("timerDisplay").classList.add("running");
+  document.getElementById("timerSeconds").style.display = "block";
+  const fill = document.getElementById('timerRingFill');
+  if (fill) fill.classList.add('running');
+  plankTimer.intervalo = setInterval(_timerTick, 1000);
 }
 
 function startPlankTimer() {
   if (plankTimer.rodando || plankTimer.preparando) return;
   if (plankTimer.pausado) {
-    plankTimer.pausado = !1, plankTimer.rodando = !0, document.getElementById("timerDisplay").classList.add("running"), document.getElementById("btnStartTimer").textContent = "▶ RODANDO...";
-    const fill = document.getElementById('timerRingFill'); if (fill) fill.classList.add('running');
-    plankTimer.intervalo = setInterval(() => {
-      plankTimer.segundos++;
-      const mins = String(Math.floor(plankTimer.segundos / 60)).padStart(2, "0"),
-        secs = String(plankTimer.segundos % 60).padStart(2, "0");
-      document.getElementById("timerDisplay").textContent = `${mins}:${secs}`, updateTimerRing(), plankTimer.segundos % 30 == 0 && tocarBeepCronometro()
-    }, 1e3);
-    return
+    plankTimer.pausado = !1;
+    _timerRun();
+    return;
   }
-  let countdown = 7;
-  plankTimer.preparando = !0, document.getElementById("btnStartTimer").textContent = "⏳ PREPARANDO...", document.getElementById("btnStartTimer").disabled = !0, document.getElementById("timerDisplay").style.opacity = "0.3";
+  plankTimer.preparando = !0;
+  document.getElementById("btnStartTimer").textContent = "⏳ PREPARANDO...";
+  document.getElementById("btnStartTimer").disabled = !0;
+  document.getElementById("timerDisplay").style.opacity = "0.3";
   const prepOverlay = document.getElementById("prepCountdown"),
     prepNum = document.getElementById("prepNumber");
-  prepOverlay.style.display = "block", prepNum.style.display = "block", prepNum.textContent = countdown, tocarSomPreparo(countdown);
-  // Guardar referência para que resetPlankTimer/pausePlankTimer possam limpar
-  // o interval mesmo que seja chamado durante a contagem regressiva.
+  let c = 7;
+  prepOverlay.style.display = "block";
+  prepNum.style.display = "block";
+  prepNum.textContent = c;
+  tocarSomPreparo(c);
   plankTimer.prepIntervalo = setInterval(() => {
-    countdown--, countdown <= 0 ? (clearInterval(plankTimer.prepIntervalo), plankTimer.prepIntervalo = null, prepOverlay.style.display = "none", prepNum.style.display = "none", document.getElementById("timerDisplay").style.opacity = "1", document.getElementById("btnStartTimer").textContent = "▶ RODANDO...", document.getElementById("btnStartTimer").disabled = !1, plankTimer.preparando = !1, tocarSomInicioExercicio(), plankTimer.rodando = !0, document.getElementById("timerDisplay").classList.add("running"), document.getElementById("timerRingFill").classList.add('running'), plankTimer.intervalo = setInterval(() => {
-      plankTimer.segundos++;
-      const mins = String(Math.floor(plankTimer.segundos / 60)).padStart(2, "0"),
-        secs = String(plankTimer.segundos % 60).padStart(2, "0");
-      document.getElementById("timerDisplay").textContent = `${mins}:${secs}`, updateTimerRing(), plankTimer.segundos % 30 == 0 && tocarBeepCronometro()
-    }, 1e3)) : (prepNum.textContent = countdown, tocarSomPreparo(countdown))
-  }, 1e3)
+    c--;
+    if (c <= 0) {
+      clearInterval(plankTimer.prepIntervalo);
+      plankTimer.prepIntervalo = null;
+      prepOverlay.style.display = "none";
+      prepNum.style.display = "none";
+      document.getElementById("timerDisplay").style.opacity = "1";
+      document.getElementById("btnStartTimer").textContent = "▶ RODANDO...";
+      document.getElementById("btnStartTimer").disabled = !1;
+      plankTimer.preparando = !1;
+      tocarSomInicioExercicio();
+      _timerRun();
+    } else {
+      prepNum.textContent = c;
+      tocarSomPreparo(c);
+    }
+  }, 1000);
 }
 
 function stopPlankTimer() {
   if (!plankTimer.rodando) return;
-  clearInterval(plankTimer.intervalo), plankTimer.rodando = !1, plankTimer.pausado = !1, document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("btnStartTimer").textContent = "▶ INICIAR", somTimer();
-  const fill = document.getElementById('timerRingFill'); if (fill) { fill.classList.remove('running'); fill.style.strokeDashoffset = 502; }
+  clearInterval(plankTimer.intervalo);
+  plankTimer.rodando = !1;
+  plankTimer.pausado = !1;
+  document.getElementById("timerDisplay").classList.remove("running");
+  document.getElementById("btnStartTimer").textContent = "▶ INICIAR";
+  somTimer();
+  const fill = document.getElementById('timerRingFill');
+  if (fill) { fill.classList.remove('running'); fill.style.strokeDashoffset = 471; }
   const selectedExId = document.getElementById("timerExerciseSelect").value;
   if (selectedExId && plankTimer.segundos > 0) {
     grooveState[selectedExId] = window.plankGroove ? [...window.plankGroove] : [0, 0, 0];
@@ -2327,23 +2361,35 @@ function stopPlankTimer() {
 }
 
 function resetPlankTimer() {
-  clearInterval(plankTimer.prepIntervalo); // cleanup do countdown se ainda estiver rodando
-  clearInterval(plankTimer.intervalo), plankTimer = {
-    intervalo: null,
-    prepIntervalo: null,
-    segundos: 0,
-    rodando: !1,
-    preparando: !1,
-    pausado: !1
-  }, document.getElementById("timerDisplay").textContent = "00:00", document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("timerDisplay").style.opacity = "1", document.getElementById("btnStartTimer").textContent = "▶ INICIAR", document.getElementById("btnStartTimer").disabled = !1, document.getElementById("prepCountdown").style.display = "none", document.getElementById("prepNumber").style.display = "none";
-  const fill = document.getElementById('timerRingFill'); if (fill) { fill.classList.remove('running'); fill.style.strokeDashoffset = 502; }
+  clearInterval(plankTimer.prepIntervalo);
+  clearInterval(plankTimer.intervalo);
+  plankTimer = {
+    intervalo: null, prepIntervalo: null, segundos: 0,
+    rodando: !1, preparando: !1, pausado: !1
+  };
+  document.getElementById("timerDisplay").textContent = "00:00";
+  document.getElementById("timerDisplay").classList.remove("running");
+  document.getElementById("timerDisplay").style.opacity = "1";
+  document.getElementById("timerSeconds").textContent = "0s";
+  document.getElementById("timerSeconds").style.display = "none";
+  document.getElementById("btnStartTimer").textContent = "▶ INICIAR";
+  document.getElementById("btnStartTimer").disabled = !1;
+  document.getElementById("prepCountdown").style.display = "none";
+  document.getElementById("prepNumber").style.display = "none";
+  const fill = document.getElementById('timerRingFill');
+  if (fill) { fill.classList.remove('running'); fill.style.strokeDashoffset = 471; }
 }
 
 function pausePlankTimer() {
   if (!plankTimer.rodando) return;
-  clearInterval(plankTimer.prepIntervalo); // segurança: se pause chegar antes do countdown acabar
-  clearInterval(plankTimer.intervalo), plankTimer.rodando = !1, plankTimer.pausado = !0, document.getElementById("timerDisplay").classList.remove("running"), document.getElementById("btnStartTimer").textContent = "▶ RETOMAR";
-  const fill = document.getElementById('timerRingFill'); if (fill) fill.classList.remove('running');
+  clearInterval(plankTimer.prepIntervalo);
+  clearInterval(plankTimer.intervalo);
+  plankTimer.rodando = !1;
+  plankTimer.pausado = !0;
+  document.getElementById("timerDisplay").classList.remove("running");
+  document.getElementById("btnStartTimer").textContent = "▶ RETOMAR";
+  const fill = document.getElementById('timerRingFill');
+  if (fill) fill.classList.remove('running');
 }
 let restTimerExIdPendente = null;
 
@@ -2516,7 +2562,7 @@ function abrirShareCard(skipToast) {
       scale: 1,
       useCORS: !0,
       allowTaint: !0,
-      backgroundColor: shareCardTemaClaro ? "#FAF8F4" : cssVar("--bg-dark"),
+      backgroundColor: shareCardTema === "light" ? "#F0F4F8" : cssVar("--bg-dark"),
       logging: !1,
       onclone: function(doc) {
         const cloned = doc.getElementById("shareCardCanvas");
@@ -3119,7 +3165,6 @@ let readinessData = {
   data: null
 };
 let _prevReadinessScore = 50;
-let _prevZones = {};
 let _readinessAnimFrame = null;
 let _readinessRafPending = false;
 let _isDragging = false;
@@ -3217,7 +3262,6 @@ function salvarReadiness() {
 function resetReadinessData() {
   readinessData = { sono: 5, stress: 5, dor: 5, energia: 5, hidratacao: 5, alimentacao: 5, motivacao: 5, score: 50, data: null };
   _prevReadinessScore = 50;
-  _prevZones = {};
   Object.keys(_rdCache).forEach(k => delete _rdCache[k]);
   ["sliderSono","sliderStress","sliderDor","sliderEnergia","sliderHidratacao","sliderAlimentacao","sliderMotivacao"].forEach(id => { document.getElementById(id).value = 5; });
   salvarReadiness()
@@ -3248,24 +3292,40 @@ function getReadinessConfig(e) {
     classe: "readiness-green",
     classeHeader: "",
     label: "PRONTO",
+    mode: "PICO DE PRONTIDÃO",
+    summary: "Treino denso, foco em força e execução limpa.",
+    series: "15-20 séries",
+    focus: "força + densidade",
     sugestao: "<strong>Dia de guerra.</strong> Aproveite o pico.",
     corScore: "var(--green-bright)"
   } : e >= 60 ? {
     classe: "readiness-yellow",
     classeHeader: "readiness-yellow-h",
     label: "MODERADO",
+    mode: "TREINO NORMAL",
+    summary: "Volume controlado. Mantenha técnica e recuperação.",
+    series: "8-12 séries",
+    focus: "técnica + volume",
     sugestao: "<strong>Volume normal.</strong> Foque na técnica.",
     corScore: "var(--accent-yellow)"
   } : e >= 40 ? {
     classe: "readiness-orange",
     classeHeader: "readiness-orange-h",
     label: "CUIDADO",
+    mode: "AJUSTE DE INTENSIDADE",
+    summary: "Reduza o volume e priorize qualidade em vez de impulso.",
+    series: "4-7 séries",
+    focus: "qualidade + descanso",
     sugestao: "<strong>Reduza séries em 25%.</strong> Mantenha qualidade.",
     corScore: "var(--accent-orange)"
   } : {
     classe: "readiness-red",
     classeHeader: "readiness-red-h",
     label: "DESCANSAR",
+    mode: "DESCANSO ATIVO",
+    summary: "Hoje não é para empurrar. Recuperação e mobilidade primeiro.",
+    series: "0-3 séries",
+    focus: "mobilidade + recuperação",
     sugestao: "<strong>Pavel diz:</strong> hoje é dia de descanso ativo.",
     corScore: "var(--accent-red-bright)"
   }
@@ -3345,14 +3405,7 @@ async function updateReadinessUI() {
     if (el.textContent !== newVal) el.textContent = newVal;
     const track = c.tracks[j];
     const newZone = getZonaSlider(vals[j], j === 1 || j === 2);
-    const prevZone = _prevZones[track.id];
     track.setAttribute("data-zone", newZone);
-    if (prevZone && prevZone !== newZone && !dragging) {
-      track.classList.remove("zone-flash");
-      void track.offsetWidth;
-      track.classList.add("zone-flash");
-    }
-    _prevZones[track.id] = newZone;
   }
 
   const r = getReadinessConfig(o);
@@ -3366,6 +3419,7 @@ async function updateReadinessUI() {
   c.sub.style.color = r.corScore;
   c.suggestion.innerHTML = r.sugestao;
   c.suggestion.style.borderLeftColor = r.corScore;
+  _renderReadinessDecision(r);
 
   if (c.header && c.headerScore) {
     c.header.classList.remove("readiness-yellow-h", "readiness-orange-h", "readiness-red-h");
@@ -3381,6 +3435,8 @@ async function updateReadinessUI() {
   if (dragging) {
     c.score.textContent = o;
     _prevReadinessScore = o;
+    _renderReadinessInsight();
+    _renderReadinessCorrelation();
   } else {
     // Release: effects
     const prevScore = _prevReadinessScore;
@@ -3418,6 +3474,35 @@ async function updateReadinessUI() {
   _saveReadinessHistory().catch(e => console.warn("[storage]", e));
 }
 
+function _renderReadinessDecision(config) {
+  const pill = document.getElementById("readinessModePill");
+  const summary = document.getElementById("readinessSummaryText");
+  const series = document.getElementById("readinessSeriesChip");
+  const focus = document.getElementById("readinessFocusChip");
+  const strip = document.getElementById("readinessFactorStrip");
+  if (pill) {
+    pill.textContent = config.mode || "TREINO NORMAL";
+    pill.className = "readiness-summary-pill " + (config.classe || "readiness-yellow");
+  }
+  if (summary) summary.textContent = config.summary || "";
+  if (series) series.textContent = "META: " + (config.series || "8-12 séries");
+  if (focus) focus.textContent = "FOCO: " + (config.focus || "técnica + volume");
+  if (strip) {
+    const topFactors = READINESS_FACTOR_KEYS.map(key => {
+      const value = readinessData[key] ?? 5;
+      const normalized = key === "stress" || key === "dor" ? 10 - value : value;
+      const tone = normalized >= 7 ? "good" : normalized >= 4 ? "watch" : "critical";
+      const labelMap = { sono: "Sono", stress: "Stress", dor: "Dor", energia: "Energia", hidratacao: "Hidratação", alimentacao: "Alimentação", motivacao: "Motivação" };
+      return { key, label: labelMap[key] || key, value, normalized, tone };
+    }).sort((a, b) => a.normalized - b.normalized).slice(0, 3);
+    strip.innerHTML = topFactors.map(f => `
+      <div class="readiness-factor-chip ${f.tone}">
+        <span class="readiness-factor-chip-name">${f.label}</span>
+        <span class="readiness-factor-chip-value">${f.value}/10</span>
+      </div>`).join("");
+  }
+}
+
 function _animateScore(el, from, to, duration) {
   if (_readinessAnimFrame) cancelAnimationFrame(_readinessAnimFrame);
   const start = performance.now();
@@ -3447,28 +3532,6 @@ function _spawnParticles(circle, color) {
     container.appendChild(p);
   }
   setTimeout(() => { container.innerHTML = ""; }, 900);
-}
-
-async function applyProfile(profile) {
-  const profiles = {
-    morning:     { sono: 7, stress: 3, dor: 2, energia: 6, hidratacao: 5, alimentacao: 5, motivacao: 7 },
-    postworkout: { sono: 5, stress: 4, dor: 7, energia: 3, hidratacao: 4, alimentacao: 6, motivacao: 5 },
-    stressed:    { sono: 3, stress: 9, dor: 3, energia: 2, hidratacao: 4, alimentacao: 3, motivacao: 2 },
-    peak:        { sono: 9, stress: 1, dor: 1, energia: 9, hidratacao: 9, alimentacao: 9, motivacao: 9 }
-  };
-  const p = profiles[profile];
-  if (!p) return;
-  Object.assign(readinessData, p);
-  readinessData.score = calcularReadiness(p.sono, p.stress, p.dor, p.energia, p.hidratacao, p.alimentacao, p.motivacao);
-  document.getElementById("sliderSono").value = p.sono;
-  document.getElementById("sliderStress").value = p.stress;
-  document.getElementById("sliderDor").value = p.dor;
-  document.getElementById("sliderEnergia").value = p.energia;
-  document.getElementById("sliderHidratacao").value = p.hidratacao;
-  document.getElementById("sliderAlimentacao").value = p.alimentacao;
-  document.getElementById("sliderMotivacao").value = p.motivacao;
-  salvarReadiness();
-  await updateReadinessUI();
 }
 
 async function _renderReadinessPrev() {
@@ -3570,12 +3633,18 @@ function _renderReadinessInsight() {
     el.innerHTML = '<span class="readiness-insight-icon">✅</span><span><strong>Equilíbrio total.</strong> Nenhum fator específico está te atrapalhando hoje.</span>';
     el.style.borderLeftColor = "var(--green-bright)";
     el.classList.remove("warn");
-  } else {
-    const info = READINESS_FACTOR_INFO[pior.key];
-    el.innerHTML = '<span class="readiness-insight-icon">' + info.icon + '</span><span><strong>' + info.label + ' (' + pior.norm.toFixed(0) + '/10)</strong> está puxando sua nota para baixo — ' + info.tip + '</span>';
-    el.style.borderLeftColor = pior.drag > 12 ? "var(--accent-red-bright)" : "var(--accent-orange)";
-    el.classList.add("warn");
+    return;
   }
+  const info = READINESS_FACTOR_INFO[pior.key];
+  const val = pior.norm;
+  let extra;
+  if (val <= 2) extra = 'crítico — ' + info.tip.split('.')[0] + ' agora.';
+  else if (val <= 4) extra = info.tip;
+  else if (val <= 6) extra = 'já está na metade do caminho — ' + info.tip.split(' — ').pop() || 'um pouco mais de atenção hoje já resolve.';
+  else extra = 'quase ok — só não deixe cair mais. ' + info.tip.split(' — ').pop() || 'mantenha o que está fazendo.';
+  el.innerHTML = '<span class="readiness-insight-icon">' + info.icon + '</span><span><strong>' + info.label + ' (' + val.toFixed(0) + '/10)</strong> está puxando sua nota para baixo — ' + extra + '</span>';
+  el.style.borderLeftColor = val <= 3 ? "var(--accent-red-bright)" : pior.drag > 12 ? "var(--accent-orange)" : "var(--gold)";
+  el.classList.add("warn");
 }
 
 /* === Correlação — compara a nota de prontidão com o volume realmente treinado hoje === */
@@ -3592,16 +3661,32 @@ function _renderReadinessCorrelation() {
   const hoje = (new Date).toISOString().slice(0, 10);
   const feitas = (typeof dados !== "undefined" && dados.registros) ? dados.registros.filter(r => r.data === hoje).length : 0;
   const [min, max] = getReadinessRange(readinessData.score);
-  el.classList.remove("match", "under", "over", "pending");
+  const meio = Math.round((min + max) / 2);
+  el.classList.remove("match", "under", "over", "pending", "low-match", "high-match");
   if (feitas === 0) {
-    el.innerHTML = '<span class="readiness-corr-icon">◌</span>Nenhuma série hoje ainda — meta: <strong>' + min + '-' + max + '</strong> séries.';
+    el.innerHTML = '<span class="readiness-corr-icon">◌</span>Nenhuma série hoje ainda — meta: <strong>' + min + '-' + max + '</strong> séries. Comece com 1 só para quebrar a inércia.';
     el.classList.add("pending");
     return;
   }
   let statusTxt, cls;
-  if (feitas < min) { statusTxt = "▼ ABAIXO do recomendado"; cls = "under"; }
-  else if (feitas > max) { statusTxt = "▲ ACIMA do recomendado"; cls = "over"; }
-  else { statusTxt = "✓ CONDIZENTE com a prontidão"; cls = "match"; }
+  if (feitas < min) {
+    const diff = min - feitas;
+    statusTxt = diff === 1 ? "▼ FALTAPOUCO — Mais " + diff + " série e você entra na zona" : "▼ ABAIXO — Faltam " + diff + " séries para a zona ideal";
+    cls = "under";
+  } else if (feitas > max) {
+    const diff = feitas - max;
+    statusTxt = diff <= 2 ? "▲ LEVEMENTE acima — " + diff + " série" + (diff > 1 ? "s" : "") + " a mais que o recomendado" : "▲ ACIMA — " + diff + " séries além da meta. Cuidado com fadiga acumulada";
+    cls = "over";
+  } else if (feitas <= meio - 1) {
+    statusTxt = "▸ LIMITE INFERIOR — no piso da zona, pode aumentar se sentir bem";
+    cls = "low-match";
+  } else if (feitas >= meio + 1) {
+    statusTxt = "▸ LIMITE SUPERIOR — quase no teto da zona, excelente disciplina";
+    cls = "high-match";
+  } else {
+    statusTxt = "✓ CONDIÇÃO CENTRAL — no meio exato da zona ideal. Perfeito.";
+    cls = "match";
+  }
   el.innerHTML = '<span class="readiness-corr-icon">📊</span><strong>' + feitas + '</strong> séries hoje (' + min + '-' + max + ' esperado) — ' + statusTxt;
   el.classList.add(cls);
 }
@@ -4811,9 +4896,7 @@ document.addEventListener("DOMContentLoaded", () => {
   d && d.setAttribute("content", e), "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
     e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (BACKGROUND)", document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block"))
   }), inicializar();
-  document.addEventListener("animationend", e => {
-    if (e.target.classList?.contains("zone-flash")) e.target.classList.remove("zone-flash");
-  }, true);
+
   // Drag tracking — only on slider inputs
   const sliderIds = ["sliderSono","sliderStress","sliderDor","sliderEnergia","sliderHidratacao","sliderAlimentacao","sliderMotivacao"];
   const rc = document.getElementById("readinessCard");
