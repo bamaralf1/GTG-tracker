@@ -2872,8 +2872,9 @@ body::after{
 @media (max-width:768px){.readiness-body{grid-template-columns:1fr}.readiness-info-grid{grid-template-columns:1fr}}
 .readiness-sliders{display:flex;flex-direction:column;gap:4px}
 .readiness-slider-group{display:flex;flex-direction:column;gap:1px}
-.readiness-slider-label{display:flex;justify-content:space-between;align-items:center}
-.readiness-slider-name{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--white-dim);letter-spacing:0.5px;text-transform:uppercase;line-height:1}
+.readiness-slider-label{display:flex;align-items:center;gap:8px}
+.readiness-slider-name{flex:1;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--white-dim);letter-spacing:0.5px;text-transform:uppercase;line-height:1}
+.readiness-prio-chip{margin-left:auto}
 .readiness-slider-value{font-family:'Bebas Neue',sans-serif;font-size:11px;color:var(--gold);min-width:20px;text-align:right;text-shadow:0 0 8px rgba(212,168,67,0.4)}
 .readiness-slider-track{
   position:relative;
@@ -3456,6 +3457,9 @@ body::after{
   padding:1px 6px;
   cursor:pointer;
   line-height:1;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   transition:all .2s var(--ease-expo);
   min-width:24px;
   text-align:center;
