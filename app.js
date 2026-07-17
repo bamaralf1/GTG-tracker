@@ -4890,7 +4890,7 @@ function executarSerieSessao() {
         xp: calcularXPSerie(e, sessaoGTGState.valorPorSerie, 0),
         rpe: null
       };
-    dados.registros.push(t), adicionarXP(t.xp), verificarStreak(), verificarBadges(), salvarDadosDebounced(), atualizarCardExercicio(t.exercicioId), atualizarStats(), renderHistory(), somRegistrar()
+    dados.registros.push(t), adicionarXP(t.xp), _gtgSpark(), verificarStreak(), verificarBadges(), salvarDadosDebounced(), atualizarCardExercicio(t.exercicioId), atualizarStats(), renderHistory(), somRegistrar()
   })(), sessaoGTGState.seriesFeitas++, renderSessaoDots(), mostrarToast(`✓ Série ${sessaoGTGState.seriesFeitas}/${sessaoGTGState.totalSeries}`, `${sessaoGTGState.valorPorSerie} ${sessaoGTGState.unidade} registrados`, "success"), sessaoGTGState.seriesFeitas >= sessaoGTGState.totalSeries ? concluirSessaoGTG() : iniciarDescansoSessao()
 }
 
@@ -4909,7 +4909,50 @@ function concluirSessaoGTG() {
   sessaoGTGState.intervalo && clearInterval(sessaoGTGState.intervalo);
   const e = sessaoGTGState.exercicioNome,
     a = sessaoGTGState.totalSeries;
-  mostrarToast("🏆 SESSÃO CONCLUÍDA", `${a} séries de ${e} completadas. Excelente trabalho!`, "success"), dispararConfetti(), sessaoGTGState = null, resetarPainelSessao()
+  mostrarToast("🏆 SESSÃO CONCLUÍDA", `${a} séries de ${e} completadas. Excelente trabalho!`, "success"), _mostrarGTGNeural(), sessaoGTGState = null, resetarPainelSessao()
+}
+
+function _gtgSpark() {
+  const p = document.createElement("div");
+  p.className = "gtg-neural-particle";
+  p.style.left = "50vw";
+  p.style.top = "50vh";
+  p.style.width = p.style.height = "3px";
+  p.style.animation = "gtgSignalPulse 0.6s ease-out forwards";
+  p.style.background = "var(--gold-light)";
+  p.style.boxShadow = "0 0 8px var(--gold-light)";
+  document.body.appendChild(p);
+  setTimeout(() => { if (p.parentNode) p.remove(); }, 700);
+}
+
+function _mostrarGTGNeural() {
+  const existing = document.querySelector(".gtg-neural-container");
+  if (existing) existing.remove();
+  const container = document.createElement("div");
+  container.className = "gtg-neural-container";
+  document.body.appendChild(container);
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement("div");
+    p.className = "gtg-neural-particle";
+    const x = 10 + Math.random() * 80, y = 10 + Math.random() * 80;
+    p.style.left = x + "vw";
+    p.style.top = y + "vh";
+    p.style.animationDelay = (i * 0.07) + "s";
+    p.style.width = p.style.height = (3 + Math.random() * 4) + "px";
+    container.appendChild(p);
+  }
+  for (let i = 0; i < 6; i++) {
+    const l = document.createElement("div");
+    l.className = "gtg-nerve-line";
+    const x = 5 + Math.random() * 90, y = 10 + Math.random() * 80;
+    l.style.left = x + "vw";
+    l.style.top = y + "vh";
+    l.style.width = (30 + Math.random() * 80) + "px";
+    l.style.animationDelay = (i * 0.15 + 0.5) + "s";
+    l.style.transform = "rotate(" + (Math.random() * 60 - 30) + "deg)";
+    container.appendChild(l);
+  }
+  setTimeout(() => { if (container.parentNode) container.remove(); }, 3000);
 }
 
 function pararSessaoGTG() {
