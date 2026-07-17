@@ -1202,7 +1202,7 @@ body::after{
 .xp-glow-trail.active{opacity:1;animation:glowPulse 2s ease-in-out infinite}
 @keyframes glowPulse{0%,100%{opacity:.5}50%{opacity:1}}
 
-/* === XP CARD — premium bg + animated effects === */
+/* === XP CARD — premium bg + animated effects (optimized) === */
 .xp-card{
   background:linear-gradient(135deg,rgba(18,18,18,0.97),rgba(10,10,10,0.97));
   border:1px solid rgba(212,168,67,0.15);
@@ -1214,45 +1214,46 @@ body::after{
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at 15% 40%,rgba(212,168,67,0.06) 0%,transparent 45%),
-    radial-gradient(circle at 85% 60%,rgba(0,229,255,0.03) 0%,transparent 45%);
+    radial-gradient(circle at 15% 40%,rgba(212,168,67,0.04) 0%,transparent 45%),
+    radial-gradient(circle at 85% 60%,rgba(0,229,255,0.02) 0%,transparent 45%);
   pointer-events:none;
 }
+/* Animated border (slower, lighter) */
 .xp-card-animated-border{
   position:absolute;
-  inset:-2px;
+  inset:-1px;
   z-index:0;
   border-radius:inherit;
-  background:conic-gradient(from var(--card-border-angle,0deg),transparent 0%,var(--gold) 10%,transparent 20%);
+  background:conic-gradient(from var(--card-border-angle,0deg),transparent 0%,var(--gold) 8%,transparent 16%);
   opacity:0;
-  transition:opacity .5s ease;
+  transition:opacity .4s ease;
   pointer-events:none;
-  animation:cardBorderSpin 6s linear infinite;
+  animation:cardBorderSpin 10s linear infinite;
 }
 @property --card-border-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
 @keyframes cardBorderSpin{0%{--card-border-angle:0deg}100%{--card-border-angle:360deg}}
-.xp-card:hover .xp-card-animated-border{opacity:.25}
+.xp-card:hover .xp-card-animated-border{opacity:.15}
+/* Grid sweep (slower, lighter) */
 .xp-card-grid{
   position:absolute;
   top:0;left:-100%;
-  width:80px;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(212,168,67,0.05),transparent);
-  animation:xpEnergySweep 8s linear infinite;
+  width:60px;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(212,168,67,0.03),transparent);
+  animation:xpEnergySweep 12s linear infinite;
   pointer-events:none;
 }
-@keyframes xpEnergySweep{0%{left:-80px}100%{left:calc(100% + 80px)}}
-.xp-card-grid{
+@keyframes xpEnergySweep{0%{left:-60px}100%{left:calc(100% + 60px)}}
+/* Grid pattern (removed on hover for perf, kept subtle static) */
+.xp-card-grid-pattern{
   position:absolute;
   inset:0;
   background-image:
-    linear-gradient(rgba(212,168,67,0.02) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(212,168,67,0.02) 1px,transparent 1px);
-  background-size:40px 40px;
-  opacity:0;
-  transition:opacity .5s ease;
+    linear-gradient(rgba(212,168,67,0.015) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(212,168,67,0.015) 1px,transparent 1px);
+  background-size:60px 60px;
   pointer-events:none;
+  opacity:.3;
 }
-.xp-card:hover .xp-card-grid{opacity:1}
 
 /* === STREAK BOX — PREMIUM FIRE === */
 .streak-box{
@@ -2425,63 +2426,44 @@ body::after{
   top:0;left:0;
   width:4px;height:100%;
   background:linear-gradient(180deg,var(--red),var(--gold-dim),rgba(204,0,0,0.3));
-  box-shadow:0 0 10px rgba(204,0,0,0.4);
+  box-shadow:0 0 8px rgba(204,0,0,0.3);
   z-index:3;
-  transition:background .4s ease,box-shadow .4s ease;
+  transition:background .3s ease,box-shadow .3s ease;
 }
 .exercise-card:hover::before{
   background:linear-gradient(180deg,var(--gold),var(--gold-dim));
-  box-shadow:0 0 14px rgba(212,168,67,0.5),0 0 28px rgba(212,168,67,0.2);
+  box-shadow:0 0 10px rgba(212,168,67,0.4);
 }
-/* Gradient overlay + border scanner on hover */
+/* Gradient overlay on hover (no animated scanner for perf) */
 .exercise-card::after{
   content:'';
   position:absolute;
   inset:0;
   pointer-events:none;
   background:linear-gradient(135deg,rgba(212,168,67,0.05) 0%,transparent 50%,rgba(211,47,47,0.04) 100%);
+  opacity:0;
   z-index:0;
-  transition:opacity .4s ease;
+  transition:opacity .3s ease;
 }
-.exercise-card:hover::after{
-  background:
-    linear-gradient(135deg,rgba(212,168,67,0.05) 0%,transparent 50%,rgba(211,47,47,0.04) 100%),
-    linear-gradient(90deg,transparent 0%,rgba(212,168,67,0.15) 25%,rgba(212,168,67,0.25) 50%,rgba(212,168,67,0.15) 75%,transparent 100%);
-  background-size:100% 100%,200% 100%;
-  animation:exBorderScan 2.5s linear infinite;
-}
-@keyframes exBorderScan{
-  0%{background-position:0 0,0% 0%}
-  100%{background-position:0 0,200% 0%}
-}
-.exercise-card .ex-noise{
-  position:absolute;
-  inset:0;
-  opacity:.03;
-  pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size:128px 128px;
-  mix-blend-mode:overlay;
-  z-index:0;
-}
-/* Corner glow */
+.exercise-card:hover::after{opacity:1}
+/* Corner glow (reduced) */
 .exercise-card .ex-corner-glow{
   position:absolute;
-  width:100px;height:100px;
+  width:80px;height:80px;
   border-radius:50%;
   pointer-events:none;
   z-index:0;
-  opacity:.08;
-  transition:opacity .4s ease;
+  opacity:.05;
+  transition:opacity .3s ease;
 }
-.exercise-card .ex-corner-glow-tl{top:-30px;left:-30px;background:radial-gradient(circle,rgba(204,0,0,0.5) 0%,transparent 70%)}
-.exercise-card .ex-corner-glow-br{bottom:-30px;right:-30px;background:radial-gradient(circle,rgba(212,168,67,0.3) 0%,transparent 70%)}
-.exercise-card:hover .ex-corner-glow{opacity:.18}
-/* Hover lift + glow */
+.exercise-card .ex-corner-glow-tl{top:-25px;left:-25px;background:radial-gradient(circle,rgba(204,0,0,0.4) 0%,transparent 70%)}
+.exercise-card .ex-corner-glow-br{bottom:-25px;right:-25px;background:radial-gradient(circle,rgba(212,168,67,0.25) 0%,transparent 70%)}
+.exercise-card:hover .ex-corner-glow{opacity:.12}
+/* Hover lift (no scale, reduced shadow) */
 .exercise-card:hover{
-  border-color:rgba(212,168,67,0.5);
-  transform:translateY(-4px) scale(1.01);
-  box-shadow:0 16px 48px rgba(0,0,0,0.5),0 0 0 1px rgba(212,168,67,0.3),0 0 32px rgba(212,168,67,0.15),var(--inner-glow);
+  border-color:rgba(212,168,67,0.4);
+  transform:translateY(-3px);
+  box-shadow:0 10px 30px rgba(0,0,0,0.4),0 0 0 1px rgba(212,168,67,0.2),var(--inner-glow);
 }
 /* Enhanced header */
 .exercise-card-header{
@@ -4539,11 +4521,11 @@ body::after{
   opacity:.1;
   transition:opacity .5s ease;
 }
-.xp-corner-glow-tl{top:-50px;left:-50px;background:radial-gradient(circle,rgba(212,168,67,0.5) 0%,transparent 70%)}
-.xp-corner-glow-br{bottom:-50px;right:-50px;background:radial-gradient(circle,rgba(0,229,255,0.3) 0%,transparent 70%)}
-.xp-card:hover .xp-corner-glow{opacity:.2}
+.xp-corner-glow-tl{top:-50px;left:-50px;background:radial-gradient(circle,rgba(212,168,67,0.4) 0%,transparent 70%)}
+.xp-corner-glow-br{bottom:-50px;right:-50px;background:radial-gradient(circle,rgba(0,229,255,0.2) 0%,transparent 70%)}
+.xp-card:hover .xp-corner-glow{opacity:.15}
 
-/* --- Border scanner on hover --- */
+/* --- Border scanner on hover (slower, lighter) --- */
 @keyframes xpBorderScan{
   0%{background-position:0% 0%}
   100%{background-position:200% 0%}
@@ -4554,7 +4536,7 @@ body::after{
   inset:-1px;
   border-radius:inherit;
   padding:1px;
-  background:linear-gradient(90deg,transparent 0%,rgba(212,168,67,0.5) 25%,rgba(212,168,67,0.8) 50%,rgba(212,168,67,0.5) 75%,transparent 100%);
+  background:linear-gradient(90deg,transparent 0%,rgba(212,168,67,0.3) 25%,rgba(212,168,67,0.5) 50%,rgba(212,168,67,0.3) 75%,transparent 100%);
   background-size:200% 100%;
   -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
@@ -4562,10 +4544,10 @@ body::after{
   pointer-events:none;
   z-index:4;
   opacity:0;
-  transition:opacity .4s ease;
-  animation:xpBorderScan 2.5s linear infinite;
+  transition:opacity .3s ease;
+  animation:xpBorderScan 4s linear infinite;
 }
-.xp-card:hover::after{opacity:1}
+.xp-card:hover::after{opacity:.7}
 
 /* --- XP BAR — SUBMARINE FLUID ANIMATION --- */
 .xp-bar-outer{
@@ -4594,57 +4576,37 @@ body::after{
     #81d4fa 88%,
     #e1f5fe 100%);
   background-size:200% 100%;
-  animation:xpFlow 4s ease-in-out infinite;
+  animation:xpFlow 4s linear infinite;
   transition:width .4s cubic-bezier(.25,.8,.25,1);
   overflow:hidden;
   border-radius:5px 0 0 5px;
   z-index:1;
 }
 
-/* --- Submarine liquid wave --- */
+/* --- Submarine liquid wave (simplified) --- */
 .xp-bar-liquid{
   position:absolute;
   inset:0;
   background:
-    linear-gradient(180deg,transparent 20%,rgba(255,255,255,0.18) 45%,rgba(255,255,255,0.25) 50%,rgba(255,255,255,0.18) 55%,transparent 80%);
-  animation:xpSubmarineWave 3s ease-in-out infinite;
+    linear-gradient(180deg,transparent 20%,rgba(255,255,255,0.12) 45%,rgba(255,255,255,0.18) 50%,rgba(255,255,255,0.12) 55%,transparent 80%);
+  animation:xpSubmarineWave 4s ease-in-out infinite;
   pointer-events:none;
+  opacity:0.6;
 }
 @keyframes xpSubmarineWave{
-  0%{transform:translateX(-12px) scaleY(0.7);opacity:.6}
-  25%{transform:translateX(-4px) scaleY(1.1);opacity:.9}
-  50%{transform:translateX(6px) scaleY(0.85);opacity:1}
-  75%{transform:translateX(10px) scaleY(1.15);opacity:.9}
-  100%{transform:translateX(-12px) scaleY(0.7);opacity:.6}
+  0%{transform:translateX(-8px) scaleY(0.8)}
+  50%{transform:translateX(8px) scaleY(1.1)}
+  100%{transform:translateX(-8px) scaleY(0.8)}
 }
 
-/* --- Submarine bubble particles --- */
-.xp-bar-fill::before{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 20% 30%,rgba(255,255,255,0.3) 0%,transparent 3%),
-    radial-gradient(circle at 45% 60%,rgba(255,255,255,0.2) 0%,transparent 2%),
-    radial-gradient(circle at 70% 25%,rgba(255,255,255,0.25) 0%,transparent 2.5%),
-    radial-gradient(circle at 85% 55%,rgba(255,255,255,0.15) 0%,transparent 2%),
-    radial-gradient(circle at 30% 70%,rgba(255,255,255,0.2) 0%,transparent 1.5%);
-  animation:xpBubbles 4s ease-in-out infinite;
-  pointer-events:none;
-}
-@keyframes xpBubbles{
-  0%,100%{opacity:.4;transform:translateY(0)}
-  50%{opacity:.8;transform:translateY(-2px)}
-}
-
-/* --- Submarine depth shimmer --- */
+/* --- Submarine depth shimmer (single animation) --- */
 .xp-bar-fill::after{
   content:'';
   position:absolute;
   top:0;left:-150%;
-  width:60%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.35),rgba(200,230,255,0.2),transparent);
-  animation:xpDepthShimmer 3.5s ease-in-out infinite;
+  width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);
+  animation:xpDepthShimmer 4s ease-in-out infinite;
   pointer-events:none;
 }
 @keyframes xpDepthShimmer{
@@ -4652,17 +4614,17 @@ body::after{
   100%{left:250%}
 }
 
-/* --- Scanlines --- */
+/* --- Scanlines (slower, lighter) --- */
 .xp-bar-scanlines{
   position:absolute;
   inset:0;
-  background:repeating-linear-gradient(180deg,transparent 0px,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);
+  background:repeating-linear-gradient(180deg,transparent 0px,transparent 3px,rgba(0,0,0,0.04) 3px,rgba(0,0,0,0.04) 6px);
   pointer-events:none;
   z-index:3;
-  animation:scanlinesMove 10s linear infinite;
+  animation:scanlinesMove 20s linear infinite;
   border-radius:5px;
 }
-@keyframes scanlinesMove{0%{background-position:0 0}100%{background-position:0 40px}}
+@keyframes scanlinesMove{0%{background-position:0 0}100%{background-position:0 60px}}
 
 /* --- Shine overlay --- */
 .xp-bar-shine{
@@ -4691,10 +4653,10 @@ body::after{
 }
 @keyframes energyFlow{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 
-/* --- XP flow keyframes --- */
+/* --- XP flow keyframes (lighter, linear) --- */
 @keyframes xpFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
 
-/* --- Endcap pulse --- */
+/* --- Endcap pulse (simplified) --- */
 .xp-bar-endcap{
   position:absolute;
   top:50%;right:-2px;
@@ -4710,24 +4672,23 @@ body::after{
 .xp-bar-endcap.visible{
   width:10px;height:10px;
   opacity:1;
-  animation:endcapPulse 1.5s ease-in-out infinite;
+  animation:endcapPulse 2s ease-in-out infinite;
 }
 @keyframes endcapPulse{
   0%,100%{box-shadow:0 0 8px rgba(212,168,67,0.9),0 0 16px rgba(212,168,67,0.5);transform:translateY(-50%) scale(1)}
-  50%{box-shadow:0 0 16px rgba(212,168,67,1),0 0 32px rgba(212,168,67,0.7),0 0 48px rgba(212,168,67,0.2);transform:translateY(-50%) scale(1.4)}
+  50%{box-shadow:0 0 12px rgba(212,168,67,1),0 0 24px rgba(212,168,67,0.7);transform:translateY(-50%) scale(1.2)}
 }
 
-/* --- Anticipate glow --- */
+/* --- Anticipate glow (lighter) --- */
 .xp-bar-outer.anticipate{
-  animation:xpAnticipate 1.2s ease-in-out infinite;
-  border-color:rgba(212,168,67,0.4);
+  animation:xpAnticipate 2s ease-in-out infinite;
+  border-color:rgba(212,168,67,0.3);
 }
 @keyframes xpAnticipate{
-  0%,100%{box-shadow:inset 0 2px 10px rgba(0,0,0,0.9),0 0 16px rgba(212,168,67,0.1)}
-  50%{box-shadow:inset 0 2px 10px rgba(0,0,0,0.9),0 0 32px rgba(212,168,67,0.5),0 0 64px rgba(212,168,67,0.2)}
+  0%,100%{box-shadow:inset 0 2px 10px rgba(0,0,0,0.9),0 0 12px rgba(212,168,67,0.1)}
+  50%{box-shadow:inset 0 2px 10px rgba(0,0,0,0.9),0 0 20px rgba(212,168,67,0.3),0 0 40px rgba(212,168,67,0.1)}
 }
-.xp-bar-outer.anticipate .xp-bar-fill{animation:xpFlow 2s linear infinite,xpFillPulse 1.2s ease-in-out infinite}
-@keyframes xpFillPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4)}}
+.xp-bar-outer.anticipate .xp-bar-fill{animation:xpFlow 2s linear infinite}
 
 /* --- Float text --- */
 .xp-float-text{
@@ -4862,23 +4823,23 @@ body::after{
   box-shadow:0 0 14px rgba(212,168,67,0.5),0 0 28px rgba(68,204,68,0.2);
 }
 
-/* --- Corner glow orbs --- */
+/* --- Corner glow orbs (reduced) --- */
 .wu-corner-glow{
   position:absolute;
-  width:120px;height:120px;
+  width:100px;height:100px;
   border-radius:50%;
   pointer-events:none;
   z-index:0;
-  opacity:.1;
-  transition:opacity .5s ease;
+  opacity:.06;
+  transition:opacity .4s ease;
 }
-.wu-corner-glow-tl{top:-35px;left:-35px;background:radial-gradient(circle,rgba(204,0,0,0.5) 0%,transparent 70%)}
-.wu-corner-glow-br{bottom:-35px;right:-35px;background:radial-gradient(circle,rgba(212,168,67,0.4) 0%,transparent 70%)}
-.sb-card-warmup-premium:hover .wu-corner-glow{opacity:.2}
-.sb-card-warmup-premium:has(.sb-warmup-item.done) .wu-corner-glow-tl{background:radial-gradient(circle,rgba(68,204,68,0.5) 0%,transparent 70%)}
-.sb-card-warmup-premium:has(.sb-warmup-item.done) .wu-corner-glow-br{background:radial-gradient(circle,rgba(68,204,68,0.3) 0%,transparent 70%)}
+.wu-corner-glow-tl{top:-30px;left:-30px;background:radial-gradient(circle,rgba(204,0,0,0.4) 0%,transparent 70%)}
+.wu-corner-glow-br{bottom:-30px;right:-30px;background:radial-gradient(circle,rgba(212,168,67,0.3) 0%,transparent 70%)}
+.sb-card-warmup-premium:hover .wu-corner-glow{opacity:.12}
+.sb-card-warmup-premium:has(.sb-warmup-item.done) .wu-corner-glow-tl{background:radial-gradient(circle,rgba(68,204,68,0.4) 0%,transparent 70%)}
+.sb-card-warmup-premium:has(.sb-warmup-item.done) .wu-corner-glow-br{background:radial-gradient(circle,rgba(68,204,68,0.25) 0%,transparent 70%)}
 
-/* --- Border scanner on hover --- */
+/* --- Border scanner on hover (slower, lighter) --- */
 @keyframes wuBorderScan{
   0%{background-position:0% 0%}
   100%{background-position:200% 0%}
@@ -4889,7 +4850,7 @@ body::after{
   inset:-1px;
   border-radius:inherit;
   padding:1px;
-  background:linear-gradient(90deg,transparent 0%,rgba(204,0,0,0.5) 25%,rgba(204,0,0,0.8) 50%,rgba(204,0,0,0.5) 75%,transparent 100%);
+  background:linear-gradient(90deg,transparent 0%,rgba(204,0,0,0.3) 25%,rgba(204,0,0,0.5) 50%,rgba(204,0,0,0.3) 75%,transparent 100%);
   background-size:200% 100%;
   -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
@@ -4897,11 +4858,11 @@ body::after{
   pointer-events:none;
   z-index:4;
   opacity:0;
-  transition:opacity .4s ease;
-  animation:wuBorderScan 2.5s linear infinite;
+  transition:opacity .3s ease;
+  animation:wuBorderScan 4s linear infinite;
 }
-.sb-card-warmup-premium:hover::after{opacity:1}
-.sb-card-warmup-premium:has(.sb-warmup-item.done)::after{background:linear-gradient(90deg,transparent 0%,rgba(68,204,68,0.5) 25%,rgba(68,204,68,0.8) 50%,rgba(68,204,68,0.5) 75%,transparent 100%);background-size:200% 100%}
+.sb-card-warmup-premium:hover::after{opacity:.7}
+.sb-card-warmup-premium:has(.sb-warmup-item.done)::after{background:linear-gradient(90deg,transparent 0%,rgba(68,204,68,0.3) 25%,rgba(68,204,68,0.5) 50%,rgba(68,204,68,0.3) 75%,transparent 100%);background-size:200% 100%}
 
 /* --- Enhanced header --- */
 .sb-warmup-header{
@@ -5767,8 +5728,8 @@ html { transition: background-color 0.5s ease }
   box-shadow:none !important;
 }
 [data-theme=light] .exercise-card:hover{
-  transform:translateY(-4px) !important;
-  box-shadow:0 12px 40px rgba(20,50,80,0.08) !important;
+  transform:translateY(-3px) !important;
+  box-shadow:0 10px 30px rgba(20,50,80,0.08) !important;
   border-color:rgba(120,170,220,0.28) !important;
 }
 [data-theme=light] .exercise-card-header{

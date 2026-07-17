@@ -595,8 +595,8 @@
 /* Atraso escalonado injetado via JS: style="--delay: Xms" */
 .skill-tree-node { animation-delay: var(--delay, 0ms); }
 
-.skill-tree-node:hover  { transform: scale(1.08) translateY(-3px); z-index: 10; }
-.skill-tree-node:active { transform: scale(0.96); }
+.skill-tree-node:hover  { transform: translateY(-2px); z-index: 10; }
+.skill-tree-node:active { transform: scale(0.98); }
 .skill-tree-node:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; border-radius: 4px; }
 
 /* Shell interno — aplica o clip-path octógono */
