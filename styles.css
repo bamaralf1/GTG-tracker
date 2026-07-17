@@ -519,7 +519,6 @@ body::after{
 .sb-sprog{text-align:center}
 .sb-sprog-title{font-size:13px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
 .sb-sprog-timer{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(212,168,67,.45),0 0 60px rgba(212,168,67,.15);margin:16px 0;letter-spacing:6px;font-variant-numeric:tabular-nums}
-.sb-sprog-timer.rest{color:var(--green-bright);text-shadow:0 0 30px rgba(68,204,68,.45)}
 .sb-sprog-state{font-size:12px;color:var(--gray-light);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
 .sb-sprog-dots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}
 .sb-sprog-actions{display:flex;gap:10px;margin-top:14px}
@@ -1856,8 +1855,6 @@ body::after{
 @keyframes timerPulse{0%,100%{text-shadow:0 0 60px rgba(255,59,48,0.6),0 0 100px rgba(255,59,48,0.3)}50%{text-shadow:0 0 80px rgba(255,59,48,0.8),0 0 120px rgba(255,59,48,0.4)}}
 #prepNumber{font-size:clamp(48px,15vw,120px)!important}
 #prepCountdown{font-size:clamp(18px,4vw,28px)!important}
-.timer-controls{display:flex;gap:clamp(6px,2vw,12px);justify-content:center;margin-top:20px;flex-wrap:wrap}
-.timer-controls button{flex:1 1 auto;min-width:clamp(90px,20vw,160px);padding:clamp(8px,1.5vw,12px) clamp(10px,2vw,18px);font-size:clamp(11px,1.5vw,14px);white-space:nowrap}
 
 /* === PROGRESS TIMELINE === */
 .progress-timeline{position:relative;padding-left:24px}
@@ -1893,7 +1890,6 @@ body::after{
   box-shadow:0 0 12px rgba(204,0,0,0.7),0 0 0 3px rgba(7,7,7,1);
 }
 .timeline-week-title{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.06em;color:var(--gold);margin-bottom:10px;text-shadow:0 0 12px rgba(212,168,67,0.3)}
-.week-bars{display:flex;gap:4px;align-items:flex-end;height:60px;margin-top:8px}
 
 
 /* === LOG ENTRIES === */
@@ -2103,7 +2099,6 @@ body::after{
 .mb-8{margin-bottom:8px}
 .mb-16{margin-bottom:16px}
 .text-mono{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--gray-light);letter-spacing:1px}
-.hidden{display:none!important}
 
 /* === REST WARNING === */
 .rest-warning{
@@ -3238,7 +3233,6 @@ body::after{
 .readiness-card.dragging .readiness-circle-label{transition:none!important}
 .readiness-card.dragging .readiness-circle-sub{transition:none!important}
 .readiness-card.dragging .readiness-suggestion{transition:none!important}
-.readiness-card.dragging .readiness-sub{transition:none!important}
 .readiness-card.dragging .header-readiness-score{transition:none!important}
 .readiness-card.dragging .header-readiness{transition:box-shadow .3s ease!important}
 
