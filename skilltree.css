@@ -296,7 +296,7 @@
 .st-next-unlock__icon {
   font-size: 24px;
   flex-shrink: 0;
-  animation: pulseMaster 2s ease-in-out infinite;
+  animation: pulseMaster 4s ease-in-out infinite;
 }
 
 .st-next-unlock__body {
@@ -675,10 +675,9 @@
     rgba(204,0,0,0.25),
     rgba(30,10,10,0.9));
   box-shadow:
-    0 0 30px rgba(255,59,48,0.4),
-    0 0 10px rgba(255,136,0,0.2),
+    0 0 16px rgba(255,59,48,0.25),
     var(--inner-glow);
-  animation: pulseMaster 2.5s ease-in-out infinite;
+  animation: pulseMaster 4s ease-in-out infinite;
 }
 
 .skill-tree-node--mestre .st-node__shell::before {
@@ -702,8 +701,8 @@
 /* DISPONIVEL */
 .skill-tree-node--disponivel .st-node__shell {
   background: rgba(212,168,67,0.06);
-  box-shadow: 0 0 12px rgba(212,168,67,0.15), var(--inner-glow);
-  animation: pulseAvailable 3s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(212,168,67,0.12), var(--inner-glow);
+  animation: pulseAvailable 4s ease-in-out infinite;
 }
 
 /* ── CONTEÚDO INTERNO DO NÓ ── */
@@ -1103,7 +1102,7 @@
   transition: transform 0.3s ease;
 }
 
-.st-legend__item:hover .st-legend__node { transform: scale(1.1); }
+.st-legend__item:hover .st-legend__node { filter: brightness(1.15); }
 
 .st-legend__node--base {
   background: linear-gradient(135deg, rgba(100,0,0,0.3), rgba(20,10,10,0.9));
@@ -1115,7 +1114,7 @@
   background: rgba(212,168,67,0.1);
   color: var(--gold);
   box-shadow: 0 0 10px rgba(212,168,67,0.15);
-  animation: pulseAvailable 2.5s ease-in-out infinite;
+  animation: pulseAvailable 4s ease-in-out infinite;
 }
 
 .st-legend__node--unlocked {
@@ -1128,7 +1127,7 @@
   background: linear-gradient(135deg, rgba(204,0,0,0.3), rgba(30,10,10,0.95));
   color: var(--red-bright);
   box-shadow: 0 0 14px rgba(255,59,48,0.35);
-  animation: pulseMaster 2s ease-in-out infinite;
+  animation: pulseMaster 4s ease-in-out infinite;
 }
 
 .st-legend__node--locked {
