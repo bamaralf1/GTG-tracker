@@ -848,6 +848,9 @@ const EXERCICIOS_DEFAULT = [{
   LEMBRETES_GTG = ["⏰ Hora de uma série! Lembre: 50-60% do seu máximo. Qualidade acima de tudo.", "🔔 Pavel diz: 'Uma série perfeita agora vale mais do que dez séries ruins depois.'", "⚡ 15 minutos de descanso respeitados. Hora de trabalhar!", "🎯 Micro-dose de força. Uma série. Agora. Sem desculpa.", "💪 O sistema nervoso está pronto. Mais uma série constrói o padrão.", "🔥 Streak em andamento. Não quebre a corrente — uma série mantém tudo!", "⭐ Frequência > Intensidade. Uma série agora > Zero séries depois.", "🪖 O soldado não espera a hora perfeita. Ele treina quando pode.", "🧠 Cada repetição de qualidade mieliniza a via nervosa. Faça agora.", "⚔ GTG é sobre acúmulo. Cada série conta — mesmo a mais simples."];
 let fraseAtualIndex = -1,
   lembreteInterval = null,
+  lembreteContagem = 0,
+  lembreteProximo = null,
+  lembreteIntervaloMs = 900000,
   filtroPerfeitas = false,
   dados = {
     exercicios: [],
@@ -1541,7 +1544,7 @@ function renderExercicios() {
         i = o.length,
         d = o.reduce((e, a) => e + (a.valor || 0), 0),
         se = calcularStreakExercicio(a.id);
-      e.innerHTML += `\n      <div class="exercise-card" id="excard-${a.id}" style="--i:${idx}">\n        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>\n        <div class="ex-noise"></div>\n        <div class="ex-corner-glow ex-corner-glow-tl"></div>\n        <div class="ex-corner-glow ex-corner-glow-br"></div>\n        <div class="exercise-card-header">\n          <div class="exercise-name">${escapeHtml(a.nome)}</div>\n          <div class="sugestao-gtg" id="sugestao-${a.id}" onclick="aplicarSugestaoGTG('${a.id}', event)">\n            <span class="bulb">💡</span>\n            <span class="gtg-val" id="gtg-val-${a.id}">GTG: --</span>\n            <span class="gtg-label">reps</span>\n            <div class="gtg-tooltip">\n              <strong style="color:var(--gold)">SÉRIE SUGERIDA — MÉTODO GTG</strong><br>\n              PR (30 dias): <span id="tooltip-pr-${a.id}">0</span> ${"tempo"===a.tipo?"seg":a.unidade||"reps"}<br>\n              Sugestão: 50% do máximo<br>\n              <em style="color:var(--gold-dim)">"Nunca vá ao fracasso" — Pavel</em>\n            </div>\n          </div>\n          <div class="exercise-card-actions">\n            <button class="btn-icon btn-meta" onclick="abrirModalMeta('${a.id}')">🎯</button>\n            <button class="btn-icon" onclick="mostrarInfoExercicio('${a.id}')" title="Informações">ℹ</button>\n            <button class="btn-icon danger" onclick="removerExercicio('${a.id}')" title="Remover">✕</button>\n            <div class="quality-badge-wrap" id="qbadge-wrap-${a.id}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;"></div>\n          </div>\n        </div>\n        <div class="exercise-stats">\n          <div class="ex-stat">\n            <div class="ex-stat-val">${i}</div>\n            <div class="ex-stat-lbl">SÉRIES HOJE</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${d}</div>\n            <div class="ex-stat-lbl">${"tempo"===a.tipo?"SEG HOJE":"REPS HOJE"}</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${r}</div>\n            <div class="ex-stat-lbl">TOTAL SÉRIES</div>\n          </div>\n          <div class="ex-stat" title="Dias consecutivos treinando este exercício">\n            <div class="ex-stat-val" style="color:var(--gold);">${se}<span class="exercise-streak-fire${se>0?'':' no-streak'}">${se>0?'⚡':'🎯'}</span></div>\n            <div class="ex-stat-lbl">STREAK DIAS</div>\n          </div>\n        </div>\n        <div class="pr-display">\n          <div>\n            <div class="pr-display-label">PR (30 DIAS)</div>\n            <div class="pr-display-val" id="pr-display-${a.id}">0 ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</div>\n          </div>\n          <button class="test-max-btn" onclick="abrirTesteMaximo('${a.id}')">🎯 TESTAR MÁXIMO</button>\n        </div>\n        <div class="exercise-pr">\n          <span class="pr-label">PR ESTIMADO:</span>\n          <span class="pr-value">${n} ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</span>\n          <span style="margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gray);">${s} total acum.</span>\n        </div>\n        <div class="rpe-avg-display" id="rpe-avg-${a.id}">\n          RPE MÉDIO HOJE: <span class="rpe-avg-val" id="rpe-avg-val-${a.id}">—</span>\n        </div>\n        <div class="exercise-add-form">\n          ${"peso"===a.tipo?`\n            <div class="form-group">\n              <label class="form-label">Peso (kg)</label>\n              <input type="number" class="form-input" id="peso-${a.id}" placeholder="0" min="0" step="0.5">\n            </div>`:""}\n          <div class="form-group">\n            <label class="form-label">${"tempo"===a.tipo?"Segundos":"Reps"}</label>\n            <input type="number" class="form-input" id="valor-${a.id}" placeholder="${"tempo"===a.tipo?"60":"10"}" min="1">\n          </div>\n          <button class="btn btn-red" onclick="adicionarSerie('${a.id}')">+ REGISTRAR</button>\n          <button class="btn btn-outline btn-sm" onclick="abrirTimerDescanso('${a.id}')">⏱ DESCANSO</button>\n          <div class="groove-toggles" id="groove-toggles-${a.id}" style="flex-basis:100%;">
+      e.innerHTML += `\n      <div class="exercise-card" id="excard-${a.id}" style="--i:${idx}">\n        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>\n        <div class="ex-noise"></div>\n        <div class="ex-corner-glow ex-corner-glow-tl"></div>\n        <div class="ex-corner-glow ex-corner-glow-br"></div>\n        <div class="exercise-card-header">\n          <div class="exercise-name">${escapeHtml(a.nome)}</div>\n          <div class="sugestao-gtg" id="sugestao-${a.id}" onclick="aplicarSugestaoGTG('${a.id}', event)">\n            <span class="bulb">💡</span>\n            <span class="gtg-val" id="gtg-val-${a.id}">GTG: --</span>\n            <span class="gtg-label">reps</span>\n            <div class="gtg-tooltip">\n              <strong style="color:var(--gold)">SÉRIE SUGERIDA — MÉTODO GTG</strong><br>\n              PR (30 dias): <span id="tooltip-pr-${a.id}">0</span> ${"tempo"===a.tipo?"seg":a.unidade||"reps"}<br>\n              Sugestão: 50% do máximo<br>\n              <em style="color:var(--gold-dim)">"Nunca vá ao fracasso" — Pavel</em>\n            </div>\n          </div>\n          <div class="exercise-card-actions">\n            <button class="btn-icon btn-meta" onclick="abrirModalMeta('${a.id}')">🎯</button>\n            <button class="btn-icon" onclick="mostrarInfoExercicio('${a.id}')" title="Informações">ℹ</button>\n            <button class="btn-icon danger" onclick="removerExercicio('${a.id}')" title="Remover">✕</button>\n            <div class="quality-badge-wrap" id="qbadge-wrap-${a.id}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;"></div>\n          </div>\n        </div>\n        <div class="exercise-stats">\n          <div class="ex-stat">\n            <div class="ex-stat-val">${i}</div>\n            <div class="ex-stat-lbl">SÉRIES HOJE</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${d}</div>\n            <div class="ex-stat-lbl">${"tempo"===a.tipo?"SEG HOJE":"REPS HOJE"}</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${r}</div>\n            <div class="ex-stat-lbl">TOTAL SÉRIES</div>\n          </div>\n          <div class="ex-stat" title="Dias consecutivos treinando este exercício">\n            <div class="ex-stat-val" style="color:var(--gold);">${se}<span class="exercise-streak-fire${se>0?'':' no-streak'}">${se>0?'⚡':'🎯'}</span></div>\n            <div class="ex-stat-lbl">STREAK DIAS</div>\n          </div>\n        </div>\n        <div class="pr-display">\n          <div>\n            <div class="pr-display-label">PR (30 DIAS)</div>\n            <div class="pr-display-val" id="pr-display-${a.id}">0 ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</div>\n          </div>\n          <button class="test-max-btn" onclick="abrirTesteMaximo('${a.id}')">🎯 TESTAR MÁXIMO</button>\n        </div>\n        <div class="exercise-pr">\n          <span class="pr-label">PR ESTIMADO:</span>\n          <span class="pr-value">${n} ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</span>\n          <span style="margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gray);">${s} total acum.</span>\n        </div>\n        <div class="rpe-avg-display" id="rpe-avg-${a.id}">\n          RPE MÉDIO HOJE: <span class="rpe-avg-val" id="rpe-avg-val-${a.id}">—</span>\n        </div>\n        <div class="exercise-add-form">\n          ${"peso"===a.tipo?`\n            <div class="form-group">\n              <label class="form-label">Peso (kg)</label>\n              <input type="number" class="form-input" id="peso-${a.id}" placeholder="0" min="0" step="0.5">\n            </div>`:""}\n          <div class="form-group">\n            <label class="form-label">${"tempo"===a.tipo?"Segundos":"Reps"}</label>\n            <input type="number" class="form-input" id="valor-${a.id}" placeholder="${"tempo"===a.tipo?"60":"10"}" min="1">\n          </div>\n          <button class="btn btn-red" onclick="adicionarSerie('${a.id}')">+ REGISTRAR</button>\n          <button class="btn btn-outline btn-sm" onclick="abrirTimerDescanso('${a.id}')">⏱ DESCANSO</button>\n          ${"tempo"===a.tipo?'<button class="btn btn-outline btn-sm timer-trigger-btn" onclick="startPlankTimer(\'' + a.id + '\')">▶ TIMER</button>':''}\n          <div class="groove-toggles" id="groove-toggles-${a.id}" style="flex-basis:100%;">
             <span class="groove-label">⚙ GROOVE</span>
             <div class="groove-slider" id="groove-amp-${a.id}" title="Amplitude completa: do topo ao fundo, sem truncar.">
               <span class="missile-switch__icon">🏋️</span>
@@ -2269,7 +2272,29 @@ function preencherSelects() {
       const opt = document.createElement("option");
       opt.value = ex.id, opt.textContent = ex.nome, el.appendChild(opt)
     }), prevVal && (el.value = prevVal)
-  })
+  });
+  _atualizarTimerWarning();
+}
+
+function _obterExercicioDoTimer() {
+  const id = document.getElementById("timerExerciseSelect").value;
+  if (!id) return null;
+  return dados.exercicios.find(ex => ex.id === id) || null;
+}
+
+function _atualizarTimerWarning() {
+  const warn = document.getElementById("timerWarning");
+  if (!warn) return;
+  const ex = _obterExercicioDoTimer();
+  if (ex) {
+    warn.textContent = "⏱ " + ex.nome + " — " + (ex.instrucoes || "Sem instruções").slice(0, 60);
+    warn.className = "timer-warning timer-warning-ok";
+    document.getElementById("timerLabel").textContent = ex.nome;
+  } else {
+    warn.textContent = "⚠ Selecione um exercício antes de iniciar o timer";
+    warn.className = "timer-warning";
+    document.getElementById("timerLabel").textContent = "CRONÔMETRO";
+  }
 }
 
 function tocarSomPreparo(countdown) {
@@ -2302,14 +2327,27 @@ function _timerRun() {
   plankTimer.intervalo = setInterval(_timerTick, 1000);
 }
 
-function startPlankTimer() {
+function startPlankTimer(fromExId) {
   if (plankTimer.rodando || plankTimer.preparando) return;
   if (plankTimer.pausado) {
     plankTimer.pausado = !1;
     _timerRun();
     return;
   }
+  if (fromExId) {
+    document.getElementById("timerExerciseSelect").value = fromExId;
+    _atualizarTimerWarning();
+  }
+  const exSel = document.getElementById("timerExerciseSelect");
+  if (!exSel.value) {
+    exSel.style.borderColor = "var(--red-bright)";
+    exSel.style.boxShadow = "0 0 12px rgba(255,26,26,0.4)";
+    mostrarToast("Selecione um exercício", "Escolha no cronômetro qual exercício timer vai registrar.", "warning");
+    setTimeout(() => { exSel.style.borderColor = ""; exSel.style.boxShadow = ""; }, 2000);
+    return;
+  }
   plankTimer.preparando = !0;
+  plankTimer.exercicioId = exSel.value;
   document.getElementById("btnStartTimer").textContent = "⏳ PREPARANDO...";
   document.getElementById("btnStartTimer").disabled = !0;
   document.getElementById("timerDisplay").style.opacity = "0.3";
@@ -2350,14 +2388,21 @@ function stopPlankTimer() {
   somTimer();
   const fill = document.getElementById('timerRingFill');
   if (fill) { fill.classList.remove('running'); fill.style.strokeDashoffset = 471; }
-  const selectedExId = document.getElementById("timerExerciseSelect").value;
+  const selectedExId = plankTimer.exercicioId || document.getElementById("timerExerciseSelect").value;
   if (selectedExId && plankTimer.segundos > 0) {
     grooveState[selectedExId] = window.plankGroove ? [...window.plankGroove] : [0, 0, 0];
     document.getElementById(`valor-${selectedExId}`).value = plankTimer.segundos;
     adicionarSerie(selectedExId);
-    mostrarToast("Timer Salvo", `${plankTimer.segundos}s registrados`, "success");
+    mostrarToast("Timer Salvo", `${plankTimer.segundos}s registrados em ${_nomeExercicio(selectedExId)}`, "success");
+  } else if (!selectedExId) {
+    mostrarToast("Timer descartado", "Nenhum exercício selecionado — segundos não salvos.", "info");
   }
   resetPlankTimer()
+}
+
+function _nomeExercicio(id) {
+  const ex = dados.exercicios.find(e => e.id === id);
+  return ex ? ex.nome : id;
 }
 
 function resetPlankTimer() {
@@ -2365,7 +2410,7 @@ function resetPlankTimer() {
   clearInterval(plankTimer.intervalo);
   plankTimer = {
     intervalo: null, prepIntervalo: null, segundos: 0,
-    rodando: !1, preparando: !1, pausado: !1
+    rodando: !1, preparando: !1, pausado: !1, exercicioId: null
   };
   document.getElementById("timerDisplay").textContent = "00:00";
   document.getElementById("timerDisplay").classList.remove("running");
@@ -2709,10 +2754,19 @@ function proximaFrase() {
 }
 
 function iniciarLembretes(showUI) {
-  lembreteInterval && clearInterval(lembreteInterval), lembreteInterval = setInterval(() => {
+  lembreteInterval && clearInterval(lembreteInterval);
+  if (window._lembreteCountdownInterval) clearInterval(window._lembreteCountdownInterval);
+  const intervalo = lembreteIntervaloMs || 900000;
+  lembreteProximo = Date.now() + intervalo;
+  lembreteInterval = setInterval(() => {
     const msg = LEMBRETES_GTG[Math.floor(Math.random() * LEMBRETES_GTG.length)];
-    mostrarToast("LEMBRETE GTG", msg, "success"), tocarSomLembrete(), enviarNotificacaoSW(msg)
-  }, 12e5);
+    mostrarToast("LEMBRETE GTG", msg, "success"), tocarSomLembrete(), enviarNotificacaoSW(msg);
+    lembreteContagem++;
+    lembreteProximo = Date.now() + intervalo;
+    _atualizarUIAlertas();
+  }, intervalo);
+  window._lembreteCountdownInterval = setInterval(_atualizarUIAlertas, 1000);
+  _atualizarUIAlertas();
   if (showUI) {
     document.getElementById("btnAtivarLembrete").style.display = "none";
     document.getElementById("btnDesativarLembrete").style.display = "inline-block";
@@ -2721,6 +2775,8 @@ function iniciarLembretes(showUI) {
 
 function desativarLembretes() {
   lembreteInterval && (clearInterval(lembreteInterval), lembreteInterval = null);
+  window._lembreteCountdownInterval && (clearInterval(window._lembreteCountdownInterval), window._lembreteCountdownInterval = null);
+  lembreteProximo = null;
   if (swRegistration && swRegistration.active) {
     swRegistration.active.postMessage("PARAR_LEMBRETES");
   }
@@ -2730,7 +2786,49 @@ function desativarLembretes() {
   document.getElementById("btnAtivarLembrete").style.background = "rgba(204,0,0,.25)";
   document.getElementById("btnAtivarLembrete").style.borderColor = "rgba(204,0,0,.5)";
   document.getElementById("btnAtivarLembrete").style.color = "var(--red-bright)";
+  _atualizarUIAlertas();
   mostrarToast("Lembretes desativados", "Intervalo de notificações pausado.", "info");
+}
+
+function alterarIntervaloLembrete(val) {
+  lembreteIntervaloMs = parseInt(val);
+  if (lembreteInterval) {
+    iniciarLembretes(true);
+    mostrarToast("Intervalo alterado", "Lembretes a cada " + (lembreteIntervaloMs / 60000) + " min", "success");
+  } else {
+    _atualizarUIAlertas();
+  }
+}
+
+function testarLembrete() {
+  const msg = LEMBRETES_GTG[Math.floor(Math.random() * LEMBRETES_GTG.length)];
+  mostrarToast("🔔 TESTE", msg, "success");
+  tocarSomLembrete();
+  enviarNotificacaoSW("🧪 TESTE: " + msg);
+}
+
+function _atualizarUIAlertas() {
+  const dot = document.getElementById("lembreteStatusDot");
+  const desc = document.getElementById("lembreteDesc");
+  const proxEl = document.getElementById("lembreteProximo");
+  const cntEl = document.getElementById("lembreteContagem");
+  const ultMsg = document.getElementById("lembreteUltimaMsg");
+  if (lembreteInterval) {
+    if (dot) dot.className = "rm-status-dot active";
+    if (desc) desc.textContent = "ATIVO — A CADA " + (lembreteIntervaloMs / 60000) + " MIN";
+    if (cntEl) cntEl.textContent = lembreteContagem;
+    if (proxEl) {
+      const resto = Math.max(0, Math.round((lembreteProximo - Date.now()) / 1000));
+      const m = Math.floor(resto / 60), s = resto % 60;
+      proxEl.textContent = m + ":" + (s < 10 ? "0" : "") + s;
+    }
+  } else {
+    if (dot) dot.className = "rm-status-dot";
+    if (desc) desc.textContent = "DESLIGADO";
+    if (proxEl) proxEl.textContent = "—";
+    if (cntEl) cntEl.textContent = lembreteContagem || "0";
+  }
+  if (ultMsg && !lembreteInterval) ultMsg.textContent = "";
 }
 
 function tocarSomLembrete() {
@@ -2799,7 +2897,7 @@ async function solicitarPermissaoNotificacao() {
       e.installing?.addEventListener("statechange", () => {
         e.active && e.active.postMessage("INICIAR_LEMBRETES")
       })
-    }),     document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (BACKGROUND)", document.getElementById("btnAtivarLembrete").textContent = "✓ ATIVO", document.getElementById("btnAtivarLembrete").style.background = "rgba(45,122,45,0.3)", document.getElementById("btnAtivarLembrete").style.borderColor = "var(--green-bright)", document.getElementById("btnAtivarLembrete").style.color = "var(--green-bright)", document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", mostrarToast("✓ Ativado!", "Lembretes a cada 20 min — funcionam mesmo com a tela bloqueada!", "success")) : (document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (PÁGINA ABERTA)", document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", mostrarToast("Ativado", "Lembretes a cada 20 min (instale o app para funcionar em background).", "success")), iniciarLembretes(true), deferredInstallPrompt && (document.getElementById("btnInstalarPWA").style.display = "inline-block")
+    }),     document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", mostrarToast("✓ Ativado!", "Lembretes ativos — funcionam mesmo com a tela bloqueada!", "success")) : (document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", mostrarToast("Ativado", "Lembretes ativos (instale o app para funcionar em background).", "success")), iniciarLembretes(true), deferredInstallPrompt && (document.getElementById("btnInstalarPWA").style.display = "inline-block")
   } else mostrarToast("Bloqueado", "Permissão negada. Habilite notificações nas configurações do navegador.", "error")
 }
 
@@ -4894,7 +4992,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const e = cssVar("--accent-red") || "#CC0000";
   const d = document.querySelector('meta[name="theme-color"]');
   d && d.setAttribute("content", e), "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
-    e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), document.getElementById("lembreteDesc").textContent = "✓ ATIVO — A CADA 20 MIN (BACKGROUND)", document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block"))
+    e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", _atualizarUIAlertas()))
   }), inicializar();
 
   // Drag tracking — only on slider inputs

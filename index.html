@@ -442,45 +442,50 @@
             </div>
           </div>
 
-          <!-- LEMBRETES — Premium Military Panel -->
-          <div class="card sb-card sb-card-remind-premium" style="margin:0;overflow:hidden">
-            <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
-            <div class="rm-accent-bar"></div>
-            <div class="rm-scan-line"></div>
-            <div class="rm-noise"></div>
-            <div class="rm-corner-glow rm-corner-glow-tl"></div>
-            <div class="rm-corner-glow rm-corner-glow-br"></div>
+          <!-- LEMBRETES — CENTRO DE ALERTA REFATORADO -->
+          <div class="card sb-card sb-card-remind-premium" id="alertaCard" style="margin:0;overflow:hidden">
             <div class="rm-content">
               <div class="rm-header">
                 <div class="rm-icon-wrap">
                   <div class="rm-icon-ring"></div>
-                  <div class="rm-icon-radar"></div>
                   <div class="rm-icon">🔔</div>
                 </div>
                 <div class="rm-label-wrap">
                   <span class="rm-label">CENTRO DE ALERTA</span>
                   <div class="rm-status-row">
-                    <span class="rm-status-dot"></span>
-                    <span class="rm-status-text" id="lembreteDesc">DESLIGADOS</span>
+                    <span class="rm-status-dot" id="lembreteStatusDot"></span>
+                    <span class="rm-status-text" id="lembreteDesc">DESLIGADO</span>
                   </div>
+                </div>
+              </div>
+              <div class="rm-config-row">
+                <div class="rm-config-item">
+                  <span class="rm-config-label">INTERVALO</span>
+                  <select class="form-select rm-config-select" id="lembreteIntervalo" onchange="alterarIntervaloLembrete(this.value)">
+                    <option value="300">5 min</option>
+                    <option value="600">10 min</option>
+                    <option value="900" selected>15 min</option>
+                    <option value="1200">20 min</option>
+                    <option value="1800">30 min</option>
+                    <option value="3600">60 min</option>
+                  </select>
+                </div>
+                <div class="rm-config-item">
+                  <span class="rm-config-label">PRÓXIMO</span>
+                  <span class="rm-config-value" id="lembreteProximo">—</span>
+                </div>
+                <div class="rm-config-item">
+                  <span class="rm-config-label">ENVIADOS</span>
+                  <span class="rm-config-value" id="lembreteContagem">0</span>
                 </div>
               </div>
               <div class="rm-btn-group">
                 <button class="rm-btn rm-btn-activate" id="btnAtivarLembrete" onclick="solicitarPermissaoNotificacao()">⚡ ATIVAR</button>
                 <button class="rm-btn rm-btn-deactivate" id="btnDesativarLembrete" style="display:none" onclick="desativarLembretes()">■ DESATIVAR</button>
+                <button class="rm-btn rm-btn-test" id="btnTestarLembrete" onclick="testarLembrete()">🔔 TESTAR</button>
                 <button class="rm-btn rm-btn-install" id="btnInstalarPWA" style="display:none" onclick="instalarPWA()">📲 INSTALAR</button>
               </div>
-              <div class="rm-info-row">
-                <div class="rm-info-item">
-                  <span class="rm-info-icon">⏱</span>
-                  <span class="rm-info-text">INTERVALO: 20 MIN</span>
-                </div>
-                <div class="rm-info-divider"></div>
-                <div class="rm-info-item">
-                  <span class="rm-info-icon">📡</span>
-                  <span class="rm-info-text">BACKGROUND SYNC</span>
-                </div>
-              </div>
+              <div class="rm-last-msg" id="lembreteUltimaMsg"></div>
             </div>
           </div>
 
@@ -639,9 +644,10 @@
             <div class="card-header">
               <div class="timer-header-row">
                 <span class="timer-header-icon">⏱</span>
-                <span class="card-title">TIMER ISOMÉTRICO</span>
+                <span class="card-title">CRONÔMETRO DE EXERCÍCIO</span>
               </div>
-              <select class="form-select timer-ex-select" id="timerExerciseSelect"></select>
+              <select class="form-select timer-ex-select" id="timerExerciseSelect" onchange="_atualizarTimerWarning()"></select>
+              <div class="timer-warning" id="timerWarning"></div>
             </div>
             <div class="card-body timer-body">
               <div id="prepCountdown" class="timer-prep">PREPARE-SE</div>
@@ -652,7 +658,7 @@
                   <circle class="timer-ring-fill" id="timerRingFill" cx="90" cy="90" r="80"/>
                 </svg>
                 <div class="timer-center">
-                  <div class="timer-label">ISOMÉTRICO</div>
+                  <div class="timer-label" id="timerLabel">CRONÔMETRO</div>
                   <div class="timer-digits" id="timerDisplay">00:00</div>
                   <div class="timer-sec" id="timerSeconds">0s</div>
                 </div>

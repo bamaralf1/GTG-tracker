@@ -758,7 +758,7 @@ body::after{
 .level-badge{
   display:inline-flex;
   align-items:center;
-  gap:12px;
+  gap:14px;
   cursor:default;
 }
 .level-badge[data-tier="2"] .level-ring-fill{stroke:var(--gold-light)}
@@ -766,7 +766,7 @@ body::after{
 .level-badge[data-tier="4"] .level-ring-fill{stroke:var(--red-bright)}
 .level-ring-wrap{
   position:relative;
-  width:44px;height:44px;
+  width:52px;height:52px;
   flex-shrink:0;
 }
 .level-ring{
@@ -785,20 +785,20 @@ body::after{
   position:absolute;
   inset:0;
   display:flex;align-items:center;justify-content:center;
-  font-size:18px;
+  font-size:22px;
 }
-.level-info{display:flex;flex-direction:column;gap:1px}
+.level-info{display:flex;flex-direction:column;gap:2px}
 .level-rank-label{
-  font-family:'Share Tech Mono',monospace;font-size:6px;
-  color:var(--gray);letter-spacing:1.2px;text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;font-size:9px;
+  color:var(--gray);letter-spacing:1.5px;text-transform:uppercase;
 }
 .level-name{
-  font-family:'Bebas Neue',sans-serif;font-size:20px;
-  letter-spacing:0.06em;color:var(--gold);line-height:1.05;
+  font-family:'Bebas Neue',sans-serif;font-size:26px;
+  letter-spacing:0.08em;color:var(--gold);line-height:1.05;
 }
 .level-sub{
-  font-family:'Share Tech Mono',monospace;font-size:7px;
-  color:var(--gray);letter-spacing:0.5px;
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  color:var(--gray);letter-spacing:0.8px;
 }
 
 /* === XP CARD — GTG PAVEL === */
@@ -819,19 +819,19 @@ body::after{
 .xp-rank-section{
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:10px;
   grid-row:1;
   grid-column:1;
 }
 .xp-quote{
-  font-family:Rajdhani,sans-serif;font-size:12px;
+  font-family:Rajdhani,sans-serif;font-size:14px;
   color:var(--gray-light);font-style:italic;
-  padding:6px 0;
+  padding:8px 0;
   border-top:1px solid rgba(255,255,255,0.06);
 }
 .xp-next-rank{
-  font-family:'Share Tech Mono',monospace;font-size:7px;
-  color:var(--gray);letter-spacing:0.5px;
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  color:var(--gray);letter-spacing:0.8px;
 }
 
 /* Progress section — col 2 */
@@ -840,7 +840,7 @@ body::after{
   grid-column:2;
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:10px;
   justify-content:center;
 }
 .xp-bar-header{
@@ -849,19 +849,19 @@ body::after{
   align-items:baseline;
 }
 .xp-bar-title{
-  font-family:'Bebas Neue',sans-serif;font-size:13px;
-  color:var(--gold);letter-spacing:1.5px;
+  font-family:'Bebas Neue',sans-serif;font-size:20px;
+  color:var(--gold);letter-spacing:2px;
 }
 .xp-bar-pct{
-  font-family:'Bebas Neue',sans-serif;font-size:14px;
-  color:var(--gold-dim);opacity:.7;
+  font-family:'Bebas Neue',sans-serif;font-size:17px;
+  color:var(--gold-dim);opacity:.8;
 }
 .xp-bar-outer{
   position:relative;
   background:rgba(0,0,0,0.55);
-  height:14px;
+  height:18px;
   border-radius:999px;
-  margin:2px 0;
+  margin:4px 0;
   border:1px solid rgba(212,168,67,0.12);
 }
 .xp-bar-fill{
@@ -879,20 +879,20 @@ body::after{
 }
 .xp-bar-milestone{
   position:absolute;
-  font-family:'Share Tech Mono',monospace;font-size:5px;
+  font-family:'Share Tech Mono',monospace;font-size:8px;
   color:rgba(255,255,255,0.15);
   transform:translateX(-50%);
-  top:-10px;
+  top:-12px;
 }
 .xp-numbers-row{
   text-align:right;
 }
 .xp-numbers-inline{
-  font-family:'Share Tech Mono',monospace;font-size:10px;
+  font-family:'Share Tech Mono',monospace;font-size:13px;
   color:var(--gray-light);letter-spacing:1px;
 }
 .xp-current{
-  font-size:14px;font-weight:bold;
+  font-size:18px;font-weight:bold;
   color:var(--gold);
   transition:color .3s ease;
 }
@@ -919,12 +919,12 @@ body::after{
   gap:2px;
 }
 .xp-metric-val{
-  font-family:'Bebas Neue',sans-serif;font-size:18px;
+  font-family:'Bebas Neue',sans-serif;font-size:22px;
   color:var(--gray-light);line-height:1;
 }
 .xp-metric-lbl{
-  font-family:'Share Tech Mono',monospace;font-size:6px;
-  color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;font-size:9px;
+  color:var(--gray);letter-spacing:0.1em;text-transform:uppercase;
 }
 
 /* Streak bar — right side of metrics row */
@@ -932,12 +932,12 @@ body::after{
   display:flex;
   flex-direction:column;
   justify-content:center;
-  gap:4px;
-  padding:0 0 0 12px;
+  gap:6px;
+  padding:0 0 0 16px;
   border-left:1px solid rgba(68,204,68,0.12);
 }
 .xp-streak-bar-track{
-  height:6px;
+  height:8px;
   background:rgba(255,255,255,0.06);
   border-radius:999px;
   overflow:hidden;
@@ -954,16 +954,16 @@ body::after{
   align-items:center;
 }
 .xp-streak-bar-next{
-  font-family:'Share Tech Mono',monospace;font-size:6px;
-  color:var(--gray);letter-spacing:0.5px;
+  font-family:'Share Tech Mono',monospace;font-size:9px;
+  color:var(--gray);letter-spacing:0.8px;
 }
-.xp-streak-bar-mbs{display:flex;gap:4px}
+.xp-streak-bar-mbs{display:flex;gap:6px}
 .streak-mb{
   font-family:'Share Tech Mono',monospace;
-  font-size:5px;color:var(--gray);
+  font-size:7px;color:var(--gray);
   background:rgba(255,255,255,0.04);
   border:1px solid rgba(255,255,255,0.08);
-  border-radius:2px;padding:1px 4px;
+  border-radius:2px;padding:2px 6px;
   transition:all .3s ease;
 }
 .streak-mb.reached{
@@ -977,18 +977,72 @@ body::after{
   grid-column:1 / -1;
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:12px;
 }
 .xp-sparkline{
-  width:140px;height:28px;
+  width:180px;height:32px;
   border-radius:2px;
   background:rgba(255,255,255,0.02);
   flex-shrink:0;
 }
 .xp-chart-label{
-  font-family:'Share Tech Mono',monospace;font-size:6px;
+  font-family:'Share Tech Mono',monospace;font-size:9px;
+  color:var(--gray);letter-spacing:0.1em;text-transform:uppercase;
+}
+
+/* === TIMER TRIGGER BUTTON (on exercise cards) === */
+.timer-trigger-btn{
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  padding:4px 10px;background:rgba(212,168,67,0.1);
+  border:1px solid rgba(212,168,67,0.25);color:var(--gold);
+  border-radius:2px;cursor:pointer;
+  transition:all .2s ease;
+}
+.timer-trigger-btn:hover{
+  background:rgba(212,168,67,0.2);border-color:var(--gold);
+}
+
+/* === CENTRO DE ALERTA — CONFIG ROW === */
+.rm-config-row{
+  display:flex;gap:8px;padding:6px 14px;
+  flex-wrap:wrap;align-items:center;
+}
+.rm-config-item{
+  display:flex;flex-direction:column;gap:2px;flex:1;min-width:60px;
+}
+.rm-config-label{
+  font-family:'Share Tech Mono',monospace;font-size:7px;
   color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;
 }
+.rm-config-value{
+  font-family:'Bebas Neue',sans-serif;font-size:16px;
+  color:var(--gray-light);line-height:1;
+}
+.rm-config-select{
+  font-family:'Share Tech Mono',monospace;font-size:9px;
+  padding:3px 6px;background:rgba(0,0,0,0.3);
+  border:1px solid rgba(255,255,255,0.08);color:var(--gray-light);
+  border-radius:2px;cursor:pointer;
+}
+.rm-btn-test{
+  background:rgba(68,204,68,0.1);border:1px solid rgba(68,204,68,0.2);
+  color:var(--green-bright);
+}
+.rm-btn-test:hover{border-color:var(--green-bright);background:rgba(68,204,68,0.15)}
+.rm-last-msg{
+  font-family:Rajdhani,sans-serif;font-size:11px;
+  color:var(--gray-light);padding:6px 14px 10px;
+  min-height:16px;font-style:italic;
+}
+.rm-status-dot.active{background:var(--green-bright);box-shadow:0 0 8px rgba(68,204,68,0.6)}
+
+/* === TIMER WARNING === */
+.timer-warning{
+  font-family:'Share Tech Mono',monospace;font-size:9px;
+  color:var(--accent-red-bright);padding:4px 8px;
+  min-height:16px;
+}
+.timer-warning-ok{color:var(--green-bright)}
 
 /* === XP LEVEL-UP OVERLAY === */
 .xp-levelup-overlay{
@@ -1160,15 +1214,15 @@ body::after{
 .readiness-factor-chip-value{font-weight:700}
 @media (max-width: 920px){.readiness-factor-strip{grid-template-columns:1fr}}
 @media (max-width: 700px){
-  .xp-card-body{grid-template-columns:1fr;padding:16px}
-  .xp-rank-section{grid-row:auto;grid-column:auto;flex-direction:row;align-items:center;flex-wrap:wrap;gap:6px}
+  .xp-card-body{grid-template-columns:1fr;padding:16px;gap:12px}
+  .xp-rank-section{grid-row:auto;grid-column:auto;flex-direction:row;align-items:center;flex-wrap:wrap;gap:8px}
   .xp-quote{display:none}
   .xp-next-rank{display:none}
   .xp-progress-section{grid-row:auto;grid-column:auto}
-  .xp-metrics-section{grid-template-columns:1fr;gap:8px}
+  .xp-metrics-section{grid-template-columns:1fr;gap:10px}
   .xp-metric-group{grid-template-columns:repeat(2,1fr)}
-  .xp-streak-bar{border-left:none;padding:0;margin-top:4px}
-  .xp-chart-section{flex-direction:column;align-items:flex-start;gap:4px}
+  .xp-streak-bar{border-left:none;padding:0;margin-top:6px}
+  .xp-chart-section{flex-direction:column;align-items:flex-start;gap:6px}
   .xp-sparkline{width:100%}
 }
 
