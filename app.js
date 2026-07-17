@@ -1233,14 +1233,14 @@ function _initXPBarParticles() {
 function _initStreakParticles() {
   const wrap = document.getElementById("streakParticles");
   if (!wrap || wrap.children.length > 0) return;
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 3; i++) {
     const p = document.createElement("div");
     p.className = "streak-particle";
-    const angle = (i / 8) * Math.PI * 2;
+    const angle = (i / 3) * Math.PI * 2;
     const dist = 8 + Math.random() * 12;
     p.style.setProperty("--tx", Math.cos(angle) * dist + "px");
     p.style.setProperty("--ty", (Math.sin(angle) * dist - 10) + "px");
-    p.style.setProperty("--dur", (1 + Math.random() * 1.5) + "s");
+    p.style.setProperty("--dur", (1.5 + Math.random()) + "s");
     p.style.setProperty("--delay", (Math.random() * 2) + "s");
     wrap.appendChild(p);
   }
