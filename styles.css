@@ -554,7 +554,6 @@ body::after{
 .sb-card-radio-premium.playing .sb-eq-bar:nth-child(5){animation-delay:.12s}
 .sb-card-radio-premium.playing .sb-eq-bar:nth-child(6){animation-delay:.2s}
 .sb-card-radio-premium.playing .sb-eq-bar:nth-child(7){animation-delay:.06s}
-@keyframes eqBounce{0%{height:3px}100%{height:14px}}
 .sb-card-radio-premium .sb-radio-star{animation:rdStarPulse 4s ease-in-out infinite}
 @keyframes rdStarPulse{0%,100%{opacity:.6}50%{opacity:1}}
 .sb-card-radio-premium .sb-status-dot{transition:all .4s}
@@ -889,7 +888,6 @@ body::after{
   clip-path:inherit;
   opacity:.7;
 }
-@keyframes badgeGlow{0%,100%{opacity:.35}50%{opacity:.75}}
 @keyframes badgeHolo{0%{background-position:300% 0}100%{background-position:-300% 0}}
 @keyframes badgeRays{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 .level-badge-scan{
@@ -1037,7 +1035,6 @@ body::after{
   background:linear-gradient(90deg,transparent 0%,rgba(212,168,67,0.15) 20%,rgba(0,229,255,0.1) 50%,rgba(212,168,67,0.15) 80%,transparent 100%);
   animation:energyFlow 3s ease-in-out infinite;
 }
-@keyframes energyFlow{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 
 .xp-bar-outer{
   position:relative;
@@ -1084,7 +1081,6 @@ body::after{
   pointer-events:none;
   z-index:5;
 }
-@keyframes xpFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
 
 .xp-bar-scanlines{
   position:absolute;
@@ -1094,7 +1090,6 @@ body::after{
   z-index:3;
   animation:scanlinesMove 8s linear infinite;
 }
-@keyframes scanlinesMove{0%{background-position:0 0}100%{background-position:0 40px}}
 
 .xp-bar-fill::after{
   content:'';
@@ -1142,11 +1137,6 @@ body::after{
   opacity:1;
   animation:endcapPulse 1.5s ease-in-out infinite;
 }
-@keyframes endcapPulse{
-  0%,100%{box-shadow:0 0 8px rgba(212,168,67,0.9),0 0 16px rgba(212,168,67,0.5);transform:translateY(-50%) scale(1)}
-  50%{box-shadow:0 0 16px rgba(212,168,67,1),0 0 32px rgba(212,168,67,0.7),0 0 48px rgba(212,168,67,0.2);transform:translateY(-50%) scale(1.4)}
-}
-
 /* XP Bar particles */
 .xp-bar-particles{
   position:absolute;
@@ -1255,13 +1245,6 @@ body::after{
 .xp-float-text.show{
   animation:xpFloatUp 1.5s cubic-bezier(.25,.8,.25,1) forwards;
 }
-@keyframes xpFloatUp{
-  0%{opacity:1;transform:translateY(0) scale(0.8);filter:blur(0)}
-  15%{transform:translateY(-3px) scale(1.25);filter:blur(0)}
-  50%{opacity:1;transform:translateY(-20px) scale(1.1);filter:blur(0)}
-  100%{opacity:0;transform:translateY(-44px) scale(.8);filter:blur(2px)}
-}
-
 /* Bottom row */
 .xp-bottom-row{
   display:flex;justify-content:space-between;
@@ -4581,7 +4564,6 @@ body::after{
 .sb-warmup-progress-wrap{padding:6px 0 2px}
 .sb-warmup-progress{height:3px;background:rgba(255,255,255,0.04);border-radius:2px;overflow:hidden;position:relative}
 .sb-warmup-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright));background-size:200% 100%;border-radius:2px;transition:width .5s var(--ease-expo);animation:warmupFlow 3s linear infinite}
-@keyframes warmupFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
 .sb-warmup-footer{display:flex;justify-content:space-between;align-items:center;margin-top:4px;flex-wrap:wrap;gap:4px}
 .sb-warmup-status{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;transition:all .4s;text-shadow:0 0 8px transparent}
 .sb-warmup-dica{font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--gray-dark);letter-spacing:1px;font-style:italic}
