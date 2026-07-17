@@ -201,11 +201,11 @@ body::after{
   opacity:0;
 }
 @keyframes lightningDance{
-  0%,100%{transform:scale(1) rotate(-3deg) translateY(0);filter:drop-shadow(0 0 8px rgba(0,200,255,0.7)) hue-rotate(0deg)}
-  20%{transform:scale(1.18) rotate(3deg) translateY(-2px);filter:drop-shadow(0 0 14px rgba(120,95,255,0.9)) hue-rotate(-10deg)}
-  40%{transform:scale(0.92) rotate(-2deg) translateY(1px);filter:drop-shadow(0 0 16px rgba(0,150,255,0.8)) hue-rotate(8deg)}
-  60%{transform:scale(1.12) rotate(2deg) translateY(-1px);filter:drop-shadow(0 0 18px rgba(100,80,255,0.9)) hue-rotate(-6deg)}
-  80%{transform:scale(1.04) rotate(-1deg) translateY(0);filter:drop-shadow(0 0 12px rgba(0,200,255,0.8)) hue-rotate(4deg)}
+  0%,100%{transform:scale(1) rotate(-3deg) translateY(0)}
+  20%{transform:scale(1.18) rotate(3deg) translateY(-2px)}
+  40%{transform:scale(0.92) rotate(-2deg) translateY(1px)}
+  60%{transform:scale(1.12) rotate(2deg) translateY(-1px)}
+  80%{transform:scale(1.04) rotate(-1deg) translateY(0)}
 }
 @keyframes lightningGlow{
   0%,100%{
@@ -223,9 +223,9 @@ body::after{
   }
 }
 @keyframes lightningColor{
-  0%,100%{color:#88E8FF;filter:drop-shadow(0 0 10px rgba(0,200,255,0.8)) hue-rotate(0deg)}
-  33%{color:#B8A8FF;filter:drop-shadow(0 0 14px rgba(120,95,255,0.95)) hue-rotate(-8deg)}
-  66%{color:#00C8FF;filter:drop-shadow(0 0 16px rgba(0,180,255,0.9)) hue-rotate(6deg)}
+  0%,100%{color:#88E8FF}
+  33%{color:#B8A8FF}
+  66%{color:#00C8FF}
 }
 @keyframes lightningSpark{
   0%{transform:translate(-50%,0) scale(0.3);opacity:0;background:radial-gradient(circle,rgba(220,240,255,1) 0%,rgba(0,200,255,0.8) 50%,transparent 85%)}
@@ -1239,12 +1239,6 @@ body::after{
   animation:xpAnticipate 1.2s ease-in-out infinite;
   border-color:rgba(212,168,67,0.4);
 }
-@keyframes xpAnticipate{
-  0%,100%{box-shadow:inset 0 2px 8px rgba(0,0,0,0.8),0 0 12px rgba(212,168,67,0.1)}
-  50%{box-shadow:inset 0 2px 8px rgba(0,0,0,0.8),0 0 28px rgba(212,168,67,0.5),0 0 56px rgba(212,168,67,0.2)}
-}
-.xp-bar-outer.anticipate .xp-bar-fill{animation:xpFlow 1.5s linear infinite,xpFillPulse 1.2s ease-in-out infinite}
-@keyframes xpFillPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4)}}
 
 /* Floating XP text */
 .xp-float-text{
