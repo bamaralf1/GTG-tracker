@@ -2873,7 +2873,7 @@ body::after{
 .readiness-sliders{display:flex;flex-direction:column;gap:4px}
 .readiness-slider-group{display:flex;flex-direction:column;gap:1px}
 .readiness-slider-label{display:flex;justify-content:space-between;align-items:center}
-.readiness-slider-name{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--white-dim);letter-spacing:0.5px;text-transform:uppercase}
+.readiness-slider-name{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--white-dim);letter-spacing:0.5px;text-transform:uppercase;line-height:1}
 .readiness-slider-value{font-family:'Bebas Neue',sans-serif;font-size:11px;color:var(--gold);min-width:20px;text-align:right;text-shadow:0 0 8px rgba(212,168,67,0.4)}
 .readiness-slider-track{
   position:relative;
@@ -3016,7 +3016,7 @@ body::after{
 .readiness-slider-ends{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:6px;color:var(--gray);margin-top:1px;padding:0 2px}
 
 /* Value number bounce */
-.readiness-slider-value{display:inline-block;font-variant-numeric:tabular-nums;transition:color .3s ease}
+.readiness-slider-value{font-variant-numeric:tabular-nums;transition:color .3s ease;line-height:1}
 .readiness-slider-value.bounce{animation:valBounce .3s cubic-bezier(.34,1.56,.64,1)}
 @keyframes valBounce{
   0%{transform:scale(1)}
@@ -3455,7 +3455,7 @@ body::after{
   border-radius:8px;
   padding:1px 6px;
   cursor:pointer;
-  line-height:1.5;
+  line-height:1;
   transition:all .2s var(--ease-expo);
   min-width:24px;
   text-align:center;
