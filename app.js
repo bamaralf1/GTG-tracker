@@ -1144,6 +1144,8 @@ function atualizarXP() {
   document.getElementById("levelRankLabel").textContent = level.divisao.toUpperCase();
   const starsEl = document.getElementById("levelStars");
   if (starsEl) starsEl.textContent = "★".repeat(Math.min(level.estrelas || 0, 7));
+  const divisaoEl = document.querySelector(".level-divisao");
+  if (divisaoEl) divisaoEl.textContent = level.divisao.toUpperCase();
   const badge = document.getElementById("levelBadge");
   if (badge) {
     const divMap = { Tropa:1, Graduado:2, Oficial:2, "Oficial Superior":3, "Alto Comando":4, Lenda:4 };
@@ -1267,11 +1269,17 @@ function _updateStreakBox() {
   else box.classList.remove("active");
   const nextEl = document.getElementById("streakNext");
   if (nextEl) {
-    if (days < 7) nextEl.textContent = "Próximo: 7 dias → +10%";
-    else if (days < 14) nextEl.textContent = "Próximo: 14 dias → +15%";
-    else if (days < 30) nextEl.textContent = "Próximo: 30 dias → +25%";
-    else nextEl.textContent = "BÔNUS MÁXIMO: +25%";
+    if (days < 7) { nextEl.textContent = "Próximo: 7 dias → +10%"; _setStreakProgress(days, 7); }
+    else if (days < 14) { nextEl.textContent = "Próximo: 14 dias → +15%"; _setStreakProgress(days, 14); }
+    else if (days < 30) { nextEl.textContent = "Próximo: 30 dias → +25%"; _setStreakProgress(days, 30); }
+    else { nextEl.textContent = "BÔNUS MÁXIMO: +25%"; _setStreakProgress(30, 30); }
   }
+}
+function _setStreakProgress(current, target) {
+  const fill = document.querySelector(".streak-progress-fill");
+  if (!fill) return;
+  const pct = Math.min(100, Math.round((current / target) * 100));
+  fill.style.width = pct + "%";
 }
 
 function _renderXPSparkline() {
@@ -3301,6 +3309,7 @@ function _cacheReadinessDOM() {
 
 async function updateReadinessUI() {
   _cacheReadinessDOM();
+  READINESS_FACTOR_KEYS.forEach(atualizarChipPrioridade);
   const c = _rdCache;
   const sono = readinessData.sono;
   const stress = readinessData.stress;
