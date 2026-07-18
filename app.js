@@ -923,7 +923,6 @@ function inicializar() {
     setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), inicializarSkillTree(), renderCalendario(), verificarRelatorioSemanal();
     const ultimoGroove = dados.registros.filter(r => r.groove).pop();
     const grooveTotal = ultimoGroove ? ultimoGroove.groove.reduce((a, b) => a + b, 0) : (plankGroove ? plankGroove[0] + plankGroove[1] + plankGroove[2] : 0);
-    console.log('[GTG] grooveTotal:', grooveTotal, 'ultimoGroove:', ultimoGroove, 'registros:', dados.registros.length);
     atualizarGrooveStatus(grooveTotal);
     const pesoDataEl = document.getElementById("pesoData");
     if (pesoDataEl && !pesoDataEl.value) pesoDataEl.value = new Date().toISOString().slice(0, 10);
