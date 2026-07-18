@@ -227,8 +227,6 @@ body::after{
   .ex-streak-flame-3{transform:rotate(-45deg) scaleY(1)}
 }
 
-  66%{transform:scale(0.96) rotate(-0.5deg);text-shadow:0 0 10px rgba(255,68,0,0.6),0 0 18px rgba(255,170,0,0.3)}
-}
 .streak-count{
   font-family:'Bebas Neue',sans-serif;
   font-size:20px;
