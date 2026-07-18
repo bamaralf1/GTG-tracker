@@ -6331,6 +6331,32 @@ html[data-theme=light]::after{
 .tab-content.active {
   will-change: transform, opacity;
 }
+.groove-toggles{
+  background:rgba(0,0,0,.14);
+  border-radius:8px;
+  margin-top:6px;
+  padding:10px 12px 8px;
+}
+[data-theme=light] .groove-toggles{
+  background:rgba(10,30,52,.03);
+}
+.groove-toggles .groove-label{
+  font-size:10px;
+  letter-spacing:2.2px;
+}
+.groove-slider{
+  padding:5px 9px 5px 7px;
+}
+.groove-slider .missile-switch__icon{font-size:12px}
+.groove-lvl{font-size:10px}
+.groove-slider > span:last-child{
+  font-family:'Share Tech Mono',monospace;
+  font-size:8px;
+  letter-spacing:1px;
+  color:var(--gray-light);
+}
+.groove-bonus-preview{font-size:11px}
+
 
 /* === OTIMIZAÃ‡Ã•ES DE PERFORMANCE === */
 .log-entry {
