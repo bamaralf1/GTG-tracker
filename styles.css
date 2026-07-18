@@ -3894,7 +3894,7 @@ body::after{
 .sb-warmup-sub{font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--gray);letter-spacing:2px;margin-bottom:10px;padding-left:26px}
 .sb-warmup-list{display:flex;flex-direction:column;gap:3px}
 .sb-warmup-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;transition:all .25s var(--ease-expo);border:1px solid transparent;position:relative;overflow:hidden}
-.sb-warmup-item::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,168,67,0.04),transparent);opacity:0;transition:opacity .25s}
+.sb-warmup-item::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,168,67,0.04),transparent);opacity:0;transition:opacity .25s;pointer-events:none}
 .sb-warmup-item:hover{border-color:rgba(212,168,67,0.12);background:rgba(255,255,255,0.01)}
 .sb-warmup-item:active{transform:scale(0.98)}
 .sb-warmup-item.done{border-color:rgba(68,204,68,0.2);background:rgba(68,204,68,0.03)}
@@ -4134,6 +4134,7 @@ body::after{
   position:absolute;inset:0;
   background:linear-gradient(135deg,rgba(204,0,0,0.04),transparent);
   opacity:0;transition:opacity .3s;
+  pointer-events:none;
 }
 .sb-warmup-item:hover::before{opacity:1}
 .sb-warmup-item:hover{
