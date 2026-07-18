@@ -1158,7 +1158,7 @@ function adicionarXP(amount) {
     }
   }
   _animateXPCounter(prevTotal, xpData.total);
-  _renderXPSparkline();
+  renderXPWeeklyChart();
   atualizarXP(), salvarDados()
 }
 
@@ -1206,7 +1206,7 @@ function atualizarXP() {
   document.getElementById("headerXpBar").style.width = pct + "%";
   document.getElementById("headerXP").setAttribute("data-estrelas", "★".repeat(Math.min(level.estrelas || 0, 7)));
   _updateStreakBox();
-  _renderXPSparkline();
+  renderXPWeeklyChart();
   _updateStreakMilestones()
 }
 
@@ -1263,34 +1263,127 @@ function _updateStreakBox() {
   }
 }
 
-function _renderXPSparkline() {
-  const svg = document.getElementById("xpSparkline");
-  if (!svg) return;
-  const history = xpData.xpHistory || [];
-  const byDay = {};
-  history.forEach(h => {
-    byDay[h.date] = (byDay[h.date] || 0) + h.xp;
+// ============================================================
+// GRÁFICO SEMANAL DETALHADO DE XP (substitui a antiga sparkline)
+// Mostra XP ganho por dia (barras) + séries realizadas (linha)
+// nos últimos 7 dias, além de mini-stats de total/média/melhor dia.
+// ============================================================
+let _xpWeeklyChart = null;
+
+function renderXPWeeklyChart() {
+  const canvas = document.getElementById("xpWeeklyChart");
+  if (!canvas || typeof Chart === "undefined") return;
+
+  // Monta os últimos 7 dias (do mais antigo ao mais recente)
+  const dias = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dias.push(d.toISOString().slice(0, 10));
+  }
+
+  const nomesDia = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
+  const labels = dias.map(d => {
+    const dt = new Date(d + "T12:00:00");
+    return nomesDia[dt.getDay()] + " " + String(dt.getDate()).padStart(2, "0");
   });
-  const dates = Object.keys(byDay).sort().slice(-7);
-  if (dates.length < 2) { svg.innerHTML = '<text x="100" y="18" text-anchor="middle" fill="var(--gray)" font-size="8" font-family="Share Tech Mono">—</text>'; return; }
-  const vals = dates.map(d => byDay[d]);
-  const max = Math.max(...vals, 1);
-  const w = 200, h = 28;
-  const stepX = w / (dates.length - 1);
-  let pathD = "";
-  vals.forEach((v, i) => {
-    const x = i * stepX;
-    const y = h - (v / max) * (h - 6) - 3;
-    pathD += (i === 0 ? "M" : "L") + x.toFixed(1) + "," + y.toFixed(1);
+
+  const regsPorDia = dias.map(d => (dados.registros || []).filter(r => r.data === d && !r.isTest));
+  const xpPorDia = regsPorDia.map(regs => regs.reduce((acc, r) => acc + (r.xp || 0), 0));
+  const seriesPorDia = regsPorDia.map(regs => regs.length);
+
+  // Mini-stats
+  const totalSemana = xpPorDia.reduce((a, b) => a + b, 0);
+  const mediaSemana = Math.round(totalSemana / 7);
+  const melhorDia = Math.max(...xpPorDia, 0);
+  const totalSeries = seriesPorDia.reduce((a, b) => a + b, 0);
+
+  const totalEl = document.getElementById("xpWeekTotal");
+  const avgEl = document.getElementById("xpWeekAvg");
+  const bestEl = document.getElementById("xpWeekBest");
+  const seriesEl = document.getElementById("xpWeekSeries");
+  if (totalEl) totalEl.textContent = totalSemana.toLocaleString("pt-BR");
+  if (avgEl) avgEl.textContent = mediaSemana.toLocaleString("pt-BR");
+  if (bestEl) bestEl.textContent = melhorDia.toLocaleString("pt-BR");
+  if (seriesEl) seriesEl.textContent = totalSeries.toLocaleString("pt-BR");
+
+  const hojeIdx = dias.length - 1;
+  const corBarras = xpPorDia.map((_, i) => i === hojeIdx ? cssVar("--gold") : "rgba(204,0,0,0.55)");
+  const corBordas = xpPorDia.map((_, i) => i === hojeIdx ? cssVar("--gold-light") : cssVar("--accent-red"));
+
+  if (_xpWeeklyChart) { _xpWeeklyChart.destroy(); _xpWeeklyChart = null; }
+
+  _xpWeeklyChart = new Chart(canvas.getContext("2d"), {
+    data: {
+      labels,
+      datasets: [
+        {
+          type: "bar",
+          label: "XP Ganho",
+          data: xpPorDia,
+          backgroundColor: corBarras,
+          borderColor: corBordas,
+          borderWidth: 1,
+          borderRadius: 3,
+          order: 2,
+          yAxisID: "yXP"
+        },
+        {
+          type: "line",
+          label: "Séries",
+          data: seriesPorDia,
+          borderColor: cssVar("--accent-cyan"),
+          backgroundColor: "rgba(0,229,255,0.08)",
+          borderWidth: 2,
+          pointRadius: 3,
+          pointBackgroundColor: cssVar("--accent-cyan"),
+          pointBorderColor: cssVar("--bg-dark"),
+          fill: false,
+          tension: .35,
+          order: 1,
+          yAxisID: "ySeries"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: {
+          labels: { color: "#9A9A9A", font: { family: "Share Tech Mono", size: 9 }, boxWidth: 10 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              if (ctx.dataset.label === "XP Ganho") return " +" + ctx.parsed.y + " XP";
+              return " " + ctx.parsed.y + " série(s)";
+            }
+          }
+        }
+      },
+      scales: {
+        yXP: {
+          position: "left",
+          beginAtZero: true,
+          ticks: { color: "#9A9A9A", font: { family: "Share Tech Mono", size: 8 } },
+          grid: { color: "rgba(255,255,255,0.05)" },
+          title: { display: true, text: "XP", color: "#9A9A9A", font: { family: "Share Tech Mono", size: 8 } }
+        },
+        ySeries: {
+          position: "right",
+          beginAtZero: true,
+          ticks: { color: "#9A9A9A", font: { family: "Share Tech Mono", size: 8 }, stepSize: 1, precision: 0 },
+          grid: { display: false },
+          title: { display: true, text: "Séries", color: "#9A9A9A", font: { family: "Share Tech Mono", size: 8 } }
+        },
+        x: {
+          ticks: { color: "#9A9A9A", font: { family: "Share Tech Mono", size: 9 } },
+          grid: { display: false }
+        }
+      }
+    }
   });
-  let areaD = pathD + "L" + ((dates.length - 1) * stepX) + "," + h + "L0," + h + "Z";
-  let dotsHtml = "";
-  vals.forEach((v, i) => {
-    const x = i * stepX;
-    const y = h - (v / max) * (h - 6) - 3;
-    dotsHtml += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="2" fill="var(--gold)" opacity="0.7"/><circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="4" fill="var(--gold)" opacity="0.15"/>';
-  });
-  svg.innerHTML = '<defs><linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--gold)" stop-opacity="0.35"/><stop offset="100%" stop-color="var(--gold)" stop-opacity="0"/></linearGradient></defs><path d="' + areaD + '" fill="url(#sparkGrad)"/><path d="' + pathD + '" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>' + dotsHtml;
 }
 
 function _updateStreakMilestones() {
@@ -1430,6 +1523,8 @@ function setGrooveLevel(exId, idx, val) {
     tier > 0 ? sliderEl.setAttribute('data-tier', tier) : sliderEl.removeAttribute('data-tier');
   }
   atualizarPreviewGroove(exId);
+  const st = grooveState[exId] || [0, 0, 0];
+  atualizarGrooveStatus(st[0] + st[1] + st[2]);
 }
 
 const PLANK_GROOVE_IDS = ['plank-groove-amp', 'plank-groove-ten', 'plank-groove-bal'];

@@ -1,4 +1,4 @@
-﻿/* ============================================
+/* ============================================
    GTG 
    Dark-mode ExÃ©rcito vermelho
    ============================================ */
@@ -496,9 +496,9 @@ body::after{
 .sb-session-label{font-size:10px!important;color:var(--gold-dim)!important}
 .sb-session-select{width:100%;font-size:13px;padding:6px 8px}
 .sb-session-input{width:100%;font-size:15px;padding:6px 8px}
-.sb-session-meta{display:flex;gap:10px;margin-top:4px;align-items:center}
+.sb-session-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;align-items:center;row-gap:8px}
 .sb-session-hint{font-size:12px;color:var(--gray-light);font-family:'Share Tech Mono',monospace;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sb-session-start{min-width:52px;flex-shrink:0}
+.sb-session-start{min-width:52px;flex:0 0 auto;box-sizing:border-box}
 
 /* Session progress */
 .sb-sprog{text-align:center}
@@ -587,7 +587,7 @@ body::after{
 /* ================================================================
    SESSION GTG â€” PREMIUM MILITARY OPERATIONS CENTER
    ================================================================ */
-.sb-card-session-premium{position:relative;background:linear-gradient(135deg,rgba(212,168,67,.04),rgba(12,12,12,.98) 20%,rgba(12,12,12,.98) 80%,rgba(204,0,0,.03));border:1px solid rgba(212,168,67,.15)}
+.sb-card-session-premium{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(212,168,67,.04),rgba(12,12,12,.98) 20%,rgba(12,12,12,.98) 80%,rgba(204,0,0,.03));border:1px solid rgba(212,168,67,.15)}
 .sb-card-session-premium::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(212,168,67,.35),transparent)}
 .ss-accent-bar{position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--gold),rgba(212,168,67,.1));border-radius:0 2px 2px 0}
 .ss-noise{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:128px 128px}
@@ -1057,6 +1057,60 @@ body::after{
   font-family:'Share Tech Mono',monospace;font-size:9px;
   color:var(--gray);letter-spacing:0.1em;text-transform:uppercase;
 }
+
+/* === XP WEEKLY DETAILED STATS + CHART === */
+.xp-weekly-section{
+  flex-direction:column;
+  align-items:stretch;
+  gap:10px;
+}
+.xp-weekly-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.xp-weekly-mini-stats{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.xp-weekly-mini-stat{
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;
+  letter-spacing:1px;
+  color:var(--gray-light);
+  background:rgba(212,168,67,0.06);
+  border:1px solid rgba(212,168,67,0.15);
+  border-radius:4px;
+  padding:3px 8px;
+  white-space:nowrap;
+}
+.xp-weekly-mini-stat strong{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:13px;
+  letter-spacing:1px;
+  color:var(--gold);
+  margin-left:4px;
+  text-shadow:0 0 6px rgba(212,168,67,0.3);
+}
+.xp-weekly-canvas-wrap{
+  position:relative;
+  width:100%;
+  height:190px;
+}
+@media (max-width:700px){
+  .xp-weekly-canvas-wrap{height:160px}
+  .xp-weekly-mini-stat{font-size:8px;padding:2px 6px}
+  .xp-weekly-mini-stat strong{font-size:11px}
+}
+[data-theme=light] .xp-weekly-mini-stat{
+  background:rgba(58,122,170,0.06);
+  border-color:rgba(58,122,170,0.15);
+  color:var(--gray-light);
+}
+[data-theme=light] .xp-weekly-mini-stat strong{color:var(--gold);text-shadow:none}
 
 /* === TIMER TRIGGER BUTTON (on exercise cards) === */
 .timer-trigger-btn{

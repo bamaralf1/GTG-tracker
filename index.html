@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
   <html lang="pt-BR" data-theme="dark">
   <head>
   <meta charset="UTF-8">
@@ -313,9 +313,19 @@
               </div>
             </div>
           </div>
-          <div class="xp-chart-section">
-            <svg class="xp-sparkline" id="xpSparkline" viewBox="0 0 200 30" preserveAspectRatio="none"></svg>
-            <span class="xp-chart-label">EVOLUÇÃO 7 DIAS</span>
+          <div class="xp-chart-section xp-weekly-section">
+            <div class="xp-weekly-header">
+              <span class="xp-chart-label">📊 ESTATÍSTICA SEMANAL — ÚLTIMOS 7 DIAS</span>
+              <div class="xp-weekly-mini-stats">
+                <span class="xp-weekly-mini-stat">TOTAL <strong id="xpWeekTotal">0</strong></span>
+                <span class="xp-weekly-mini-stat">MÉDIA/DIA <strong id="xpWeekAvg">0</strong></span>
+                <span class="xp-weekly-mini-stat">MELHOR DIA <strong id="xpWeekBest">0</strong></span>
+                <span class="xp-weekly-mini-stat">SÉRIES <strong id="xpWeekSeries">0</strong></span>
+              </div>
+            </div>
+            <div class="xp-weekly-canvas-wrap">
+              <canvas id="xpWeeklyChart"></canvas>
+            </div>
           </div>
         </div>
       </div>
