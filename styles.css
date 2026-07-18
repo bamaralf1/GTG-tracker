@@ -694,6 +694,13 @@ body::after{
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
 .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.grid-4 .stat-card{position:relative;overflow:hidden}
+.grid-4 .stat-card::after{position:absolute;top:8px;right:10px;font-size:13px;opacity:.35;filter:grayscale(.3);pointer-events:none;transition:opacity .3s var(--ease-expo,ease)}
+.grid-4 .stat-card:hover::after{opacity:.6}
+.grid-4 .stat-card:nth-child(1)::after{content:"⚔"}
+.grid-4 .stat-card:nth-child(2)::after{content:"📆"}
+.grid-4 .stat-card:nth-child(3)::after{content:"Σ"}
+.grid-4 .stat-card:nth-child(4)::after{content:"🔥";opacity:.5}
 
 @media (max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr 1fr}.grid-2{grid-template-columns:1fr}}
 @media (max-width:600px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.main{padding:12px}}
