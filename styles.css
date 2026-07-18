@@ -1246,7 +1246,10 @@ body::after{
 }
 .btn-icon:hover{background:rgba(212,168,67,0.1);color:var(--gold);border-color:var(--gold)}
 .btn-icon.danger:hover{background:rgba(204,0,0,0.15);color:var(--red-bright);border-color:var(--red)}
-.exercise-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(212,168,67,0.1)}
+.exercise-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(212,168,67,0.1)}
+@media (max-width:380px){
+  .exercise-stats{grid-template-columns:repeat(2,1fr)}
+}
 .ex-stat{background:var(--black-card);padding:10px;text-align:center;transition:background .25s var(--ease-expo)}
 .ex-stat:hover{background:rgba(212,168,67,0.05)}
 .ex-stat-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold)}
@@ -5987,6 +5990,26 @@ html[data-theme=light]::after{
   outline-offset:2px;
   box-shadow:0 0 0 5px rgba(0,174,219,.15);
 }
+.btn:focus-visible,
+.btn-icon:focus-visible,
+.form-input:focus-visible,
+.form-select:focus-visible,
+.nav-tab:focus-visible,
+.exercise-card:focus-within .exercise-name,
+.groove-range:focus-visible,
+.sugestao-gtg:focus-visible,
+.stat-card:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:2px;
+  border-radius:3px;
+}
+[data-theme=light] .btn:focus-visible,
+[data-theme=light] .form-input:focus-visible,
+[data-theme=light] .form-select:focus-visible{
+  outline-color:var(--gold, #3A7AAA);
+}
+
+
 
 /* â”€â”€ 3. LOGO â€” FLOCO DE NEVE NO LUGAR DA ESTRELA SOVIÃ‰TICA â”€â”€ */
 [data-theme=light] .header-logo{position:relative}
