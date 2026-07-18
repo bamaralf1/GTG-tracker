@@ -17,6 +17,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="treino-ux-refinements.css">
   <link rel="stylesheet" href="skilltree.css">
   <link rel="manifest" href="manifest.webmanifest">
   </head>
@@ -70,8 +71,15 @@
           </div>
         </a>
             <div class="header-streak">
-<span class="streak-fire">🔥</span> <span class="streak-count" id="streakCountHeader">0</span>
+<span class="streak-fire" id="streakFire"><span class="streak-flame streak-flame-1"></span><span class="streak-flame streak-flame-2"></span><span class="streak-flame streak-flame-3"></span></span> <span class="streak-count" id="streakCountHeader">0</span>
           <div class="streak-label">DIAS<br>STREAK</div>
+        </div>
+        <div class="groove-status" id="grooveStatus" title="Qualidade do Groove atual">
+          <div class="groove-status-ring"><div class="groove-status-ring-fill" id="grooveStatusRingFill"></div></div>
+          <div class="groove-status-info">
+            <div class="groove-status-label">GROOVE</div>
+            <div class="groove-status-score" id="grooveStatusScore">—</div>
+          </div>
         </div>
         <div class="streak-shield-display" title="Escudos da Streak"><div class="shield-star" id="shieldStar"><span class="shield-star-icon">★</span><span class="shield-star-count" id="shieldCount">0</span></div></div>
         <div class="header-xp" id="headerXP"><span class="xp-rank" id="headerRank">RECRUTA</span>
@@ -165,43 +173,43 @@
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Quantas horas dormiu e qualidade do sono profundo">😴 Qualidade do Sono</span> <button class="readiness-prio-chip" id="prioSono" onclick="cyclePriority('sono')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valSono">5</span></div>
               <div class="readiness-slider-track" id="trackSono">
-                <div class="readiness-slider-fill" id="fillSono" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderSono" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
+                <div class="readiness-slider-fill readiness-fill-up" id="fillSono" style="width:50%"></div><input type="range" class="readiness-slider-input" id="sliderSono" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
             </div>
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Estresse acumulado do trabalho, vida, treinos">😰 Nível de Stress</span> <button class="readiness-prio-chip" id="prioStress" onclick="cyclePriority('stress')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valStress">5</span></div>
               <div class="readiness-slider-track" id="trackStress">
-                <div class="readiness-slider-fill" id="fillStress" style="width:50%;background:linear-gradient(90deg,var(--green-bright),var(--gold),var(--red),var(--red-dark))"></div><input type="range" class="readiness-slider-input" id="sliderStress" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
+                <div class="readiness-slider-fill readiness-fill-down" id="fillStress" style="width:50%"></div><input type="range" class="readiness-slider-input" id="sliderStress" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
             </div>
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Dor ou rigidez muscular residual do treino anterior">💥 Dor Muscular</span> <button class="readiness-prio-chip" id="prioDor" onclick="cyclePriority('dor')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valDor">5</span></div>
               <div class="readiness-slider-track" id="trackDor">
-                <div class="readiness-slider-fill" id="fillDor" style="width:50%;background:linear-gradient(90deg,var(--green-bright),var(--gold),var(--red),var(--red-dark))"></div><input type="range" class="readiness-slider-input" id="sliderDor" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
+                <div class="readiness-slider-fill readiness-fill-down" id="fillDor" style="width:50%"></div><input type="range" class="readiness-slider-input" id="sliderDor" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
             </div>
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Disposição do sistema nervoso para produzir força">⚡ Nível de Energia</span> <button class="readiness-prio-chip" id="prioEnergia" onclick="cyclePriority('energia')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valEnergia">5</span></div>
               <div class="readiness-slider-track" id="trackEnergia">
-                <div class="readiness-slider-fill" id="fillEnergia" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderEnergia" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
+                <div class="readiness-slider-fill readiness-fill-up" id="fillEnergia" style="width:50%"></div><input type="range" class="readiness-slider-input" id="sliderEnergia" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
             </div>
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Nível de hidratação atual — desidratação reduz força 5-10%">💧 Hidratação</span> <button class="readiness-prio-chip" id="prioHidratacao" onclick="cyclePriority('hidratacao')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valHidratacao">5</span></div>
               <div class="readiness-slider-track" id="trackHidratacao">
-                <div class="readiness-slider-fill" id="fillHidratacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderHidratacao" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
+                <div class="readiness-slider-fill readiness-fill-up" id="fillHidratacao" style="width:50%"></div><input type="range" class="readiness-slider-input" id="sliderHidratacao" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
             </div>
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Qualidade e timing da última refeição">🍽️ Alimentação</span> <button class="readiness-prio-chip" id="prioAlimentacao" onclick="cyclePriority('alimentacao')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valAlimentacao">5</span></div>
               <div class="readiness-slider-track" id="trackAlimentacao">
-                <div class="readiness-slider-fill" id="fillAlimentacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderAlimentacao" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
+                <div class="readiness-slider-fill readiness-fill-up" id="fillAlimentacao" style="width:50%"></div><input type="range" class="readiness-slider-input" id="sliderAlimentacao" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
             </div>
             <div class="readiness-slider-group">
               <div class="readiness-slider-label"><span class="readiness-slider-name" title="Vontade de treinar — GTG exige disciplina diária">🧠 Motivação</span> <button class="readiness-prio-chip" id="prioMotivacao" onclick="cyclePriority('motivacao')" title="Prioridade deste fator no cálculo final">1×</button> <span class="readiness-slider-value" id="valMotivacao">5</span></div>
               <div class="readiness-slider-track" id="trackMotivacao">
-                <div class="readiness-slider-fill" id="fillMotivacao" style="width:50%;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))"></div><input type="range" class="readiness-slider-input" id="sliderMotivacao" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
+                <div class="readiness-slider-fill readiness-fill-up" id="fillMotivacao" style="width:50%"></div><input type="range" class="readiness-slider-input" id="sliderMotivacao" min="0" max="10" step="any" value="5" oninput="updateReadiness()">
               </div>
             </div>
           </div>
@@ -577,13 +585,13 @@
             <audio id="armyPlayerAudio" preload="none" style="display:none"></audio>
           </div>
 
-          <div class="card sb-card sb-card-session-premium" style="margin:0;overflow:hidden">
+          <div class="card sb-card sb-card-session-premium" style="margin:0">
             <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
             <div class="ss-accent-bar"></div>
             <div class="ss-noise"></div>
             <div class="ss-corner-glow ss-corner-glow-tl"></div>
             <div class="ss-corner-glow ss-corner-glow-br"></div>
-            <div class="card-header" style="border-color:rgba(212,160,23,.15);padding:12px 16px;position:relative;z-index:1">
+            <div class="card-header" style="border-color:rgba(212,160,23,.15);padding:12px 16px;position:relative">
               <div class="ss-header-row">
                 <div class="ss-icon-wrap">
                   <div class="ss-icon-ring"></div>
@@ -592,7 +600,7 @@
                 <span class="card-title" style="color:var(--gold);font-size:17px">SESSÃO GTG</span>
               </div>
             </div>
-            <div class="card-body" style="padding:14px 16px;position:relative;z-index:1">
+            <div class="card-body" style="padding:14px 16px;position:relative">
               <div class="session-setup" id="sessionSetup">
                 <div class="sb-session-form">
                   <div class="sb-session-row">
@@ -633,7 +641,7 @@
                   </div>
                   <div class="sb-sprog-actions">
                     <button class="btn btn-gold" id="sessionActionBtn" onclick="executarSerieSessao()">✓ REGISTRAR</button>
-                    <button class="btn btn-outline sb-sprog-stop" onclick="pararSessaoGTG()">■</button>
+                    <button class="btn btn-red sb-sprog-stop" onclick="pararSessaoGTG()">■ PARAR</button>
                   </div>
                 </div>
               </div>
