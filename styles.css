@@ -1312,6 +1312,19 @@ body::after{
 .btn-outline:hover{background:rgba(212,168,67,0.1);border-color:var(--gold)}
 .btn-sm{padding:4px 10px;font-size:12px}
 .btn:disabled{opacity:0.4;cursor:not-allowed}
+@supports selector(:has(*)){
+  .exercise-add-form:has(input[id^="valor-"]:not(:placeholder-shown)) .btn-red{
+    box-shadow:0 0 0 2px rgba(212,168,67,.25), 0 0 18px rgba(212,168,67,.35);
+    animation:ctaReady 1.6s ease-in-out infinite;
+  }
+  @keyframes ctaReady{
+    0%,100%{box-shadow:0 0 0 2px rgba(212,168,67,.2), 0 0 14px rgba(212,168,67,.25)}
+    50%{box-shadow:0 0 0 2px rgba(212,168,67,.35), 0 0 22px rgba(212,168,67,.45)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .exercise-add-form:has(input[id^="valor-"]:not(:placeholder-shown)) .btn-red{animation:none}
+  }
+}
 
 /* === BADGES GRID === */
 .badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(180px,100%),1fr));gap:16px;min-width:0}
