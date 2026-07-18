@@ -889,6 +889,7 @@ let fraseAtualIndex = -1,
   badgesData = {
     desbloqueadas: []
   },
+  warmupTimers = {},
   plankTimer = {
     intervalo: null,
     segundos: 0,
@@ -1023,6 +1024,7 @@ function renderWarmup() {
   const feitos = dados.aquecimento.feitos || [];
   const total = WARMUP_DRILLS.length;
   const count = feitos.length;
+  const card = document.getElementById("warmupCard");
   const badge = document.getElementById("warmupBadge");
   const progress = document.getElementById("warmupProgressFill");
   const status = document.getElementById("warmupStatus");
@@ -1051,6 +1053,10 @@ function renderWarmup() {
     Array.from(list.querySelectorAll(".sb-warmup-item")).forEach(el => {
       const idx = parseInt(el.dataset.idx);
       el.classList.toggle("done", feitos.includes(idx));
+      const btnEl = el.querySelector(".sb-warmup-timer-btn");
+      if (btnEl) {
+        btnEl.onclick = function(e) { e.stopPropagation(); startWarmupTimer(idx); };
+      }
     });
   }
 }
@@ -1065,19 +1071,63 @@ function toggleWarmup(idx) {
   salvarDados();
 }
 
+function startWarmupTimer(idx) {
+  if (warmupTimers[idx]) return;
+  const item = document.querySelector(`.sb-warmup-item[data-idx="${idx}"]`);
+  if (!item || item.classList.contains("done")) return;
+  const btn = item.querySelector(".sb-warmup-timer-btn");
+  if (!btn) return;
+  btn.dataset.remaining = "30";
+  btn.textContent = "30";
+  btn.classList.add("running");
+  btn.disabled = true;
+  function tick() {
+    let r = parseInt(btn.dataset.remaining, 10);
+    if (isNaN(r)) r = 30;
+    r--;
+    if (r <= 0) {
+      delete warmupTimers[idx];
+      btn.textContent = "▶ 30s";
+      btn.classList.remove("running");
+      btn.disabled = false;
+      delete btn.dataset.remaining;
+      toggleWarmup(idx);
+    } else {
+      btn.dataset.remaining = String(r);
+      btn.textContent = String(r);
+      warmupTimers[idx] = setTimeout(tick, 1000);
+    }
+  }
+  warmupTimers[idx] = setTimeout(tick, 1000);
+}
+
 function completarWarmup() {
   initWarmupData();
   dados.aquecimento.feitos = Array.from({ length: WARMUP_DRILLS.length }, (_, idx) => idx);
   renderWarmup();
   salvarDados();
+  const card = document.getElementById("warmupCard");
+  if (card) card.classList.add("minimized");
   mostrarToast("Ativação concluída", "Seu corpo já está preparado para a sessão.", "success");
 }
 
+function toggleWarmupCard() {
+  const card = document.getElementById("warmupCard");
+  if (card) {
+    card.classList.toggle("minimized");
+    if (!card.classList.contains("minimized")) renderWarmup();
+  }
+}
+
 function resetWarmup() {
+  Object.keys(warmupTimers).forEach(k => { clearTimeout(warmupTimers[k]); delete warmupTimers[k]; });
+  document.querySelectorAll(".sb-warmup-timer-btn.running").forEach(el => { el.textContent = "▶ 30s"; el.classList.remove("running"); el.disabled = false; delete el.dataset.remaining; });
   initWarmupData();
   dados.aquecimento.feitos = [];
   renderWarmup();
   salvarDados();
+  const card = document.getElementById("warmupCard");
+  if (card) card.classList.remove("minimized");
   mostrarToast("Ativação reiniciada", "Você pode refazer os passos quando quiser.", "info");
 }
 

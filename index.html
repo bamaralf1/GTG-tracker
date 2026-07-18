@@ -317,13 +317,13 @@
         </div>
       </div>
       <div class="foco-banner" id="focoBanner">🔥 MODO FOCO ATIVO — <span id="focoBannerEx">NENHUM EXERCÍCIO SELECIONADO</span></div>
-      <div class="card sb-card sb-card-warmup sb-card-warmup-premium">
+      <div class="card sb-card sb-card-warmup sb-card-warmup-premium" id="warmupCard">
         <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
         <div class="wu-accent-bar"></div>
         <div class="wu-noise"></div>
         <div class="wu-corner-glow wu-corner-glow-tl"></div>
         <div class="wu-corner-glow wu-corner-glow-br"></div>
-        <div class="sb-warmup-header">
+        <div class="sb-warmup-header" onclick="toggleWarmupCard()" style="cursor:pointer">
           <span class="sb-warmup-shield">⚡</span>
           <div class="sb-warmup-title">ATIVAÇÃO PRÉ-COMBATE</div>
           <span class="sb-warmup-badge" id="warmupBadge">0/4</span>
@@ -335,33 +335,33 @@
             <div class="sb-warmup-circle"><span class="sb-warmup-num">1</span><span class="sb-warmup-check">✓</span></div>
             <div class="sb-warmup-info">
               <div class="sb-warmup-name">AGACHAMENTO DE MOBILIDADE</div>
-              <div class="sb-warmup-desc">Prying Goblet Squat — segure o fundo 5s, alongue ativamente</div>
+              <div class="sb-warmup-desc">Pés afastados na largura dos ombros, segure um peso leve no peito (goblet). Agache até o fundo mantendo o tronco ereto, cotovelos entre os joelhos. Na posição mais baixa, faça pequenos círculos com os quadris (prying) por 5 segundos para abrir o quadril e alongar a virilha. Suba com controle.</div>
             </div>
-            <span class="sb-warmup-time">30s</span>
+            <button class="sb-warmup-timer-btn" type="button">▶ 30s</button>
           </div>
           <div class="sb-warmup-item" data-idx="1" onclick="toggleWarmup(1)">
             <div class="sb-warmup-circle"><span class="sb-warmup-num">2</span><span class="sb-warmup-check">✓</span></div>
             <div class="sb-warmup-info">
               <div class="sb-warmup-name">CÍRCULO DE OMBROS</div>
-              <div class="sb-warmup-desc">Halos — gire ao redor da cabeça, cotovelos para trás, ritmo controlado</div>
+              <div class="sb-warmup-desc">Em pé, segure um disco ou kettlebell leve com as duas mãos. Eleve o peso acima da cabeça e faça círculos amplos ao redor da cabeça (halos), mantendo os braços estendidos e o core contraído. Os cotovelos devem passar para trás das orelhas a cada volta. Controle o movimento — sem inclinar o tronco.</div>
             </div>
-            <span class="sb-warmup-time">30s</span>
+            <button class="sb-warmup-timer-btn" type="button">▶ 30s</button>
           </div>
           <div class="sb-warmup-item" data-idx="2" onclick="toggleWarmup(2)">
             <div class="sb-warmup-circle"><span class="sb-warmup-num">3</span><span class="sb-warmup-check">✓</span></div>
             <div class="sb-warmup-info">
               <div class="sb-warmup-name">PONTE DE GLÚTEOS</div>
-              <div class="sb-warmup-desc">Hip Bridge — aperte glúteos no topo, segure 2s, desça controlado</div>
+              <div class="sb-warmup-desc">Deitado de costas, joelhos flexionados e pés no chão na largura do quadril. Eleve o quadril apertando os glúteos no topo do movimento, formando uma linha reta dos ombros aos joelhos. Segure a contração por 2 segundos no topo, depois desça lentamente sem encostar o quadril no chão. Mantenha o abdômen contraído.</div>
             </div>
-            <span class="sb-warmup-time">30s</span>
+            <button class="sb-warmup-timer-btn" type="button">▶ 30s</button>
           </div>
           <div class="sb-warmup-item" data-idx="3" onclick="toggleWarmup(3)">
             <div class="sb-warmup-circle"><span class="sb-warmup-num">4</span><span class="sb-warmup-check">✓</span></div>
             <div class="sb-warmup-info">
               <div class="sb-warmup-name">LEVANTAMENTO TERRA ATIVO</div>
-              <div class="sb-warmup-desc">Active Deadlift — barra leve, ative dorsais e glúteos em cada repetição</div>
+              <div class="sb-warmup-desc">Com uma barra leve ou cabo de vassoura, execute o movimento do levantamento terra: pés sob a barra, flexione quadris e joelhos, mantenha as costas retas. Ao puxar, ative os dorsais (pense em "quebrar a barra" com as mãos) e aperte os glúteos no topo. Cada repetição é lenta e consciente — desça com controle e repita.</div>
             </div>
-            <span class="sb-warmup-time">30s</span>
+            <button class="sb-warmup-timer-btn" type="button">▶ 30s</button>
           </div>
         </div>
         <div class="sb-warmup-progress-wrap">
