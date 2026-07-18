@@ -1,0 +1,595 @@
+/* ==============================================================================
+ * TREINO — REFINAMENTOS DE UI/UX
+ * ------------------------------------------------------------------------------
+ * Camada aditiva: não substitui nada de styles.css, só refina.
+ * Todas as regras usam as mesmas variáveis (--gold, --red, --ease-expo etc.)
+ * e respeitam os dois temas (Exército Vermelho / Sibéria) e prefers-reduced-motion.
+ * Para ativar: adicione depois do <link rel="stylesheet" href="styles.css">
+ *   <link rel="stylesheet" href="treino-ux-refinements.css">
+ * ============================================================================ */
+
+
+/* ------------------------------------------------------------------------------
+ * 1) CORREÇÃO — GRID DE STATS DO EXERCÍCIO (bug real de layout)
+ * O card de cada exercício tem 4 estatísticas (Séries hoje / Reps hoje /
+ * Total séries / Streak) mas a grid original tinha só 3 colunas — o 4º item
+ * (streak) sobrava sozinho numa linha nova, deixando espaço vazio à direita.
+ * Corrige para 4 colunas simétricas, com fallback 2×2 em telas estreitas.
+ * ---------------------------------------------------------------------------- */
+.exercise-stats{
+  grid-template-columns:repeat(4,1fr);
+}
+@media (max-width:380px){
+  .exercise-stats{grid-template-columns:repeat(2,1fr)}
+}
+
+
+/* ------------------------------------------------------------------------------
+ * 2) ACESSIBILIDADE — FOCO VISÍVEL CONSISTENTE
+ * O app tinha :focus{outline:none} em botões sem substituto. Sempre que
+ * alguém navega por teclado, é preciso um indicador claro — sutil no visual,
+ * mas nítido o suficiente para orientar.
+ * ---------------------------------------------------------------------------- */
+.btn:focus-visible,
+.btn-icon:focus-visible,
+.form-input:focus-visible,
+.form-select:focus-visible,
+.nav-tab:focus-visible,
+.exercise-card:focus-within .exercise-name,
+.groove-range:focus-visible,
+.sugestao-gtg:focus-visible,
+.stat-card:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:2px;
+  border-radius:3px;
+}
+[data-theme=light] .btn:focus-visible,
+[data-theme=light] .form-input:focus-visible,
+[data-theme=light] .form-select:focus-visible{
+  outline-color:var(--gold, #3A7AAA);
+}
+
+
+/* ------------------------------------------------------------------------------
+ * 3) BOTÕES — RESPOSTA TÁTIL
+ * Um "press" físico mais perceptível ao clicar/tocar, sem exagero.
+ * ---------------------------------------------------------------------------- */
+.btn, .btn-icon, .test-max-btn, .timer-btn, .rm-btn, .sb-radio-play,
+.sb-warmup-action-btn, .cal-nav-btn, .readiness-trend-btn, .toggle-btn{
+  transition:transform .15s var(--ease-expo, ease), background .2s, border-color .2s, box-shadow .2s;
+}
+.btn:active, .btn-icon:active, .test-max-btn:active, .timer-btn:active,
+.rm-btn:active, .toggle-btn:active, .cal-nav-btn:active{
+  transform:scale(.96);
+}
+@media (prefers-reduced-motion:reduce){
+  .btn:active, .btn-icon:active, .test-max-btn:active{transform:none}
+}
+
+/* Alvo de toque mínimo confortável em mobile (44px recomendado) */
+@media (max-width:600px){
+  .exercise-add-form .btn,
+  .exercise-card-actions .btn-icon{
+    min-height:40px;
+  }
+  .exercise-add-form .btn-red{
+    flex:1 1 100%;
+  }
+}
+
+
+/* ------------------------------------------------------------------------------
+ * 4) STAT CARDS DO TOPO (SÉRIES HOJE / SEMANA / TOTAL / STREAK)
+ * Pequeno ícone de contexto no canto + hover mais direcional, sem mudar a
+ * estrutura existente (usa apenas pseudo-elemento).
+ * ---------------------------------------------------------------------------- */
+.grid-4 .stat-card{position:relative; overflow:hidden}
+.grid-4 .stat-card::after{
+  position:absolute;
+  top:8px; right:10px;
+  font-size:13px;
+  opacity:.35;
+  filter:grayscale(.3);
+  pointer-events:none;
+  transition:opacity .3s var(--ease-expo,ease);
+}
+.grid-4 .stat-card:hover::after{opacity:.6}
+.grid-4 .stat-card:nth-child(1)::after{content:"⚔"}
+.grid-4 .stat-card:nth-child(2)::after{content:"📆"}
+.grid-4 .stat-card:nth-child(3)::after{content:"Σ"}
+.grid-4 .stat-card:nth-child(4)::after{content:"🔥"; opacity:.5}
+
+
+/* ------------------------------------------------------------------------------
+ * 5) EXERCISE GRID — ENTRADA ESCALONADA
+ * app.js já define `style="--i:${idx}"` em cada card; aproveitamos essa
+ * variável (sem tocar no JS) para um fade-in sutil e escalonado ao renderizar.
+ * ---------------------------------------------------------------------------- */
+.exercise-grid .exercise-card{
+  animation:exCardIn .45s var(--ease-expo, ease) both;
+  animation-delay:calc(var(--i, 0) * 45ms);
+}
+@keyframes exCardIn{
+  from{opacity:0; transform:translateY(8px)}
+  to{opacity:1; transform:translateY(0)}
+}
+@media (prefers-reduced-motion:reduce){
+  .exercise-grid .exercise-card{animation:none}
+}
+
+/* Elevação sutil no hover — o card já tem borda reativa, faltava profundidade */
+.exercise-card{
+  transition:border-color .25s var(--ease-expo,ease), transform .25s var(--ease-expo,ease), box-shadow .25s var(--ease-expo,ease);
+}
+.exercise-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 28px rgba(0,0,0,.28);
+}
+[data-theme=light] .exercise-card:hover{
+  box-shadow:0 10px 24px rgba(16,55,100,.12);
+}
+
+
+/* ------------------------------------------------------------------------------
+ * 6) CTA "REGISTRAR" — REFORÇO VISUAL QUANDO PRONTO
+ * Assim que a pessoa digita um valor válido, o botão de registrar ganha um
+ * leve destaque — feedback claro de "pronto para enviar" sem poluir o resto.
+ * Requer :has() (Chrome/Edge/Safari recentes); navegadores sem suporte apenas
+ * não recebem o realce — nada quebra.
+ * ---------------------------------------------------------------------------- */
+@supports selector(:has(*)){
+  .exercise-add-form:has(input[id^="valor-"]:not(:placeholder-shown)) .btn-red{
+    box-shadow:0 0 0 2px rgba(212,168,67,.25), 0 0 18px rgba(212,168,67,.35);
+    animation:ctaReady 1.6s ease-in-out infinite;
+  }
+  @keyframes ctaReady{
+    0%,100%{box-shadow:0 0 0 2px rgba(212,168,67,.2), 0 0 14px rgba(212,168,67,.25)}
+    50%{box-shadow:0 0 0 2px rgba(212,168,67,.35), 0 0 22px rgba(212,168,67,.45)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .exercise-add-form:has(input[id^="valor-"]:not(:placeholder-shown)) .btn-red{animation:none}
+  }
+}
+
+
+/* ------------------------------------------------------------------------------
+ * 7) GROOVE QUALITY — LEGIBILIDADE
+ * Os três sliders (AMP / TEN / S-B) usam fontes de 7-9px, difíceis de ler.
+ * Aumenta a fonte, dá mais respiro e deixa o bloco visualmente separado do
+ * resto do formulário como um "painel" — sem alterar a lógica dos sliders.
+ * ---------------------------------------------------------------------------- */
+.groove-toggles{
+  background:rgba(0,0,0,.14);
+  border-radius:8px;
+  margin-top:6px;
+  padding:10px 12px 8px;
+}
+[data-theme=light] .groove-toggles{
+  background:rgba(10,30,52,.03);
+}
+.groove-toggles .groove-label{
+  font-size:10px;
+  letter-spacing:2.2px;
+}
+.groove-slider{
+  padding:5px 9px 5px 7px;
+}
+.groove-slider .missile-switch__icon{font-size:12px}
+.groove-lvl{font-size:10px}
+.groove-slider > span:last-child{
+  font-family:'Share Tech Mono',monospace;
+  font-size:8px;
+  letter-spacing:1px;
+  color:var(--gray-light);
+}
+.groove-bonus-preview{font-size:11px}
+
+
+/* ------------------------------------------------------------------------------
+ * 8) FORMULÁRIO "+ ADICIONAR EXERCÍCIO"
+ * É uma ação rara comparada a registrar séries — hoje ele compete visualmente
+ * com os cards de exercício ativos. Um tratamento "utilitário" (borda
+ * tracejada, cabeçalho mais discreto) sinaliza a diferença de frequência de
+ * uso sem esconder a função.
+ * ---------------------------------------------------------------------------- */
+.main > .tab-content .card:has(#newExName){
+  border-style:dashed;
+  border-color:rgba(212,168,67,.25);
+  background:rgba(212,168,67,.02);
+}
+.main > .tab-content .card:has(#newExName):hover{
+  border-color:rgba(212,168,67,.45);
+}
+.main > .tab-content .card:has(#newExName) .card-title::before{
+  content:"＋ ";
+  opacity:.6;
+}
+
+
+/* ------------------------------------------------------------------------------
+ * 9) ESTADO VAZIO — GRID DE EXERCÍCIOS
+ * Mensagem padrão era um parágrafo cinza solto. Transforma em um cartão
+ * convidativo, coerente com o resto da linguagem visual (bevel, borda dourada
+ * tracejada), reforçando a ação esperada.
+ * ---------------------------------------------------------------------------- */
+#exerciseGrid:empty{
+  display:none; /* innerHTML sempre popula algo, mas protege contra o caso vazio real */
+}
+.exercise-grid > div.text-mono{
+  border:1px dashed rgba(212,168,67,.3);
+  border-radius:8px;
+  background:rgba(212,168,67,.03);
+  grid-column:1/-1;
+}
+
+
+/* ------------------------------------------------------------------------------
+ * 10) SIDEBAR — RITMO DE ENTRADA
+ * Mesmo tratamento de entrada suave dos cards principais, aplicado aos
+ * blocos da coluna lateral (Frase do dia, Lembretes, Rádio, Sessão, Timer).
+ * ---------------------------------------------------------------------------- */
+.treino-sidebar > .card{
+  animation:sbCardIn .5s var(--ease-expo, ease) both;
+}
+.treino-sidebar > .card:nth-child(1){animation-delay:.03s}
+.treino-sidebar > .card:nth-child(2){animation-delay:.08s}
+.treino-sidebar > .card:nth-child(3){animation-delay:.13s}
+.treino-sidebar > .card:nth-child(4){animation-delay:.18s}
+@keyframes sbCardIn{
+  from{opacity:0; transform:translateX(8px)}
+  to{opacity:1; transform:translateX(0)}
+}
+@media (prefers-reduced-motion:reduce){
+  .treino-sidebar > .card{animation:none}
+}
+
+
+/* ------------------------------------------------------------------------------
+ * 11) BADGE DE QUALIDADE / PR — ALINHAMENTO
+ * Pequeno ajuste de respiro entre os botões de ação do card e o badge de
+ * qualidade que é injetado dinamicamente ao lado, evitando que colem quando
+ * o nome do exercício é curto.
+ * ---------------------------------------------------------------------------- */
+.exercise-card-actions{
+  gap:8px;
+}
+.quality-badge-wrap:empty{
+  display:none;
+}
+
+
+/* ------------------------------------------------------------------------------
+ * 12) INPUTS NUMÉRICOS — CLAREZA DE ESTADO
+ * Realce mais visível quando o campo de valor recebe foco, reforçando onde a
+ * digitação está acontecendo em telas com múltiplos cards de exercício.
+ * ---------------------------------------------------------------------------- */
+.exercise-add-form .form-input:focus{
+  box-shadow:0 0 0 3px rgba(212,168,67,.15);
+}
+[data-theme=light] .exercise-add-form .form-input:focus{
+  box-shadow:0 0 0 3px rgba(58,122,170,.12);
+}
+
+
+/* ------------------------------------------------------------------------------
+ * 13) READINESS — FILLS SEM INLINE GRADIENTS
+ * Remove os backgrounds inline do HTML substituindo por classes CSS.
+ * As barras de prontidão usam gradientes fixos por tipo de fator.
+ * ---------------------------------------------------------------------------- */
+.readiness-fill-up{background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--green-bright))}
+.readiness-fill-down{background:linear-gradient(90deg,var(--green-bright),var(--gold),var(--red),var(--red-dark))}
+
+/* ------------------------------------------------------------------------------
+ * 14) XP CARD — REFINAMENTOS GTG
+ * Barra de XP com gradiente mais vibrante, métricas com cor por tipo,
+ * streak bar com destaque verde, e glow sutil no level badge.
+ * ---------------------------------------------------------------------------- */
+.xp-bar-fill{
+  background:linear-gradient(90deg,var(--red),var(--gold),var(--green-bright));
+}
+.xp-metric-item:nth-child(1) .xp-metric-val{color:var(--gold)}
+.xp-metric-item:nth-child(2) .xp-metric-val{color:var(--green-bright)}
+.xp-metric-item:nth-child(3) .xp-metric-val{color:var(--accent-cyan)}
+.xp-metric-item:nth-child(4) .xp-metric-val{color:var(--red-bright)}
+.xp-streak-bar-fill{
+  background:linear-gradient(90deg,var(--green),var(--green-bright));
+  box-shadow:0 0 8px rgba(68,204,68,0.3);
+}
+.level-ring-fill{
+  filter:drop-shadow(0 0 6px rgba(212,168,67,0.3));
+}
+
+/* ------------------------------------------------------------------------------
+ * 15) WARMUP — REFORÇO GTG
+ * A barra de progresso com gradiente mais vibrante e glow no badge ao
+ * completar todos os passos.
+ * ---------------------------------------------------------------------------- */
+.sb-warmup-item.done .sb-warmup-badge{
+  color:var(--green-bright);
+  border-color:rgba(68,204,68,0.4);
+  box-shadow:0 0 8px rgba(68,204,68,0.15);
+}
+.sb-warmup-progress-fill{
+  background:linear-gradient(90deg,var(--red),var(--gold),var(--green-bright));
+  background-size:200% 100%;
+}
+
+/* ------------------------------------------------------------------------------
+ * 16) SESSÃO GTG — BOTÃO STOP VISÍVEL
+ * O botão ■ PARAR substituiu o antigo btn-outline compacto (só ícone) por um
+ * btn-red com texto, para garantir que esteja sempre visível e funcional.
+ * Remove a largura fixa que truncava o texto e aplica padding adequado.
+ * ---------------------------------------------------------------------------- */
+.sb-card-session-premium .sb-sprog-actions .btn.sb-sprog-stop{
+  flex:0 1 auto;
+  min-width:44px;
+  padding:11px 16px!important;
+  font-size:14px!important;
+  letter-spacing:1.5px;
+}
+
+
+/* ------------------------------------------------------------------------------
+ * 17) GROOVE STATUS — INDICADOR NO HEADER
+ * Um medidor estilizado "Groove:" no canto superior com anel de progresso
+ * animado, gradiente dinâmico (vermelho→ouro→verde) e glow pulsante.
+ * Glassmorphism, backdrop-blur e animação contínua.
+ * ---------------------------------------------------------------------------- */
+.groove-status{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(212,168,67,.06);
+  border:1px solid rgba(212,168,67,.15);
+  border-radius:8px;
+  padding:4px 10px 4px 6px;
+  backdrop-filter:blur(12px);
+  transition:border-color .3s, box-shadow .3s, background .3s;
+  position:relative;
+  overflow:hidden;
+}
+.groove-status::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,transparent 40%,rgba(212,168,67,.04) 50%,transparent 60%);
+  background-size:200% 200%;
+  animation:grooveShimmer 4s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes grooveShimmer{
+  0%,100%{background-position:0% 0%}
+  50%{background-position:100% 100%}
+}
+.groove-status:hover{
+  border-color:rgba(212,168,67,.35);
+  box-shadow:0 0 20px rgba(212,168,67,.08), inset 0 0 12px rgba(212,168,67,.03);
+}
+.groove-status-ring{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:rgba(255,255,255,.03);
+  border:2px solid rgba(212,168,67,.15);
+  position:relative;
+  flex-shrink:0;
+  overflow:hidden;
+}
+.groove-status-ring-fill{
+  position:absolute;
+  inset:2px;
+  border-radius:50%;
+  background:conic-gradient(var(--red) 0deg, var(--gold) 180deg, var(--green-bright) 360deg);
+  mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#fff calc(100% - 3px));
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#fff calc(100% - 3px));
+  transition:transform .5s cubic-bezier(.22,1,.36,1);
+  transform:rotate(-90deg);
+}
+.groove-status-ring-fill.active{
+  animation:grooveRingGlow 2s ease-in-out infinite;
+}
+@keyframes grooveRingGlow{
+  0%,100%{filter:drop-shadow(0 0 4px rgba(212,168,67,.3))}
+  50%{filter:drop-shadow(0 0 10px rgba(212,168,67,.5))}
+}
+.groove-status-info{
+  display:flex;
+  flex-direction:column;
+  line-height:1;
+  position:relative;
+  z-index:1;
+}
+.groove-status-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:7px;
+  letter-spacing:1.5px;
+  color:var(--gold-dim);
+  text-transform:uppercase;
+}
+.groove-status-score{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:16px;
+  letter-spacing:1px;
+  color:var(--gold);
+  text-shadow:0 0 12px rgba(212,168,67,.25);
+  transition:color .3s, text-shadow .3s;
+  line-height:1.2;
+}
+.groove-status.score-low .groove-status-score{color:var(--red-bright);text-shadow:0 0 12px rgba(255,59,48,.3)}
+.groove-status.score-mid .groove-status-score{color:var(--gold);text-shadow:0 0 14px rgba(212,168,67,.35)}
+.groove-status.score-high .groove-status-score{color:var(--green-bright);text-shadow:0 0 14px rgba(68,204,68,.35)}
+.groove-status.score-perfect .groove-status-score{
+  color:var(--green-bright);
+  text-shadow:0 0 20px rgba(68,204,68,.5), 0 0 40px rgba(68,204,68,.2);
+  animation:groovePerfectPulse 1.5s ease-in-out infinite;
+}
+@keyframes groovePerfectPulse{
+  0%,100%{text-shadow:0 0 16px rgba(68,204,68,.4), 0 0 30px rgba(68,204,68,.15)}
+  50%{text-shadow:0 0 24px rgba(68,204,68,.6), 0 0 50px rgba(68,204,68,.25)}
+}
+.groove-status.score-perfect{
+  border-color:rgba(68,204,68,.3);
+  background:rgba(68,204,68,.06);
+  box-shadow:0 0 24px rgba(68,204,68,.1), inset 0 0 12px rgba(68,204,68,.03);
+}
+
+
+/* ------------------------------------------------------------------------------
+ * 18) STREAK — FOGO ANIMADO
+ * Substitui o emoji 🔥 por chamas CSS em camadas com animação contínua.
+ * Três línguas de fogo com cores, escalas e delays diferentes para um
+ * efeito realista de combustão.
+ * ---------------------------------------------------------------------------- */
+.streak-fire{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:20px;
+  height:22px;
+  position:relative;
+  flex-shrink:0;
+  animation:none;
+  text-shadow:none;
+}
+.streak-flame{
+  position:absolute;
+  bottom:2px;
+  border-radius:50% 0 60% 50%;
+  transform:rotate(-45deg);
+  opacity:.85;
+}
+.streak-flame-1{
+  width:10px;
+  height:14px;
+  background:linear-gradient(180deg,#ff6b35,#ff2d00);
+  left:2px;
+  animation:flameDance1 .6s ease-in-out infinite alternate;
+  filter:blur(.5px);
+  box-shadow:0 0 6px rgba(255,45,0,.5);
+}
+.streak-flame-2{
+  width:8px;
+  height:11px;
+  background:linear-gradient(180deg,#ffd700,#ff6b00);
+  left:6px;
+  bottom:3px;
+  animation:flameDance2 .5s ease-in-out infinite alternate;
+  filter:blur(.3px);
+  box-shadow:0 0 8px rgba(255,107,0,.4);
+}
+.streak-flame-3{
+  width:7px;
+  height:9px;
+  background:linear-gradient(180deg,#fff7a0,#ffd700);
+  left:3px;
+  bottom:1px;
+  animation:flameDance3 .7s ease-in-out infinite alternate;
+  filter:blur(.2px);
+  box-shadow:0 0 10px rgba(255,215,0,.5);
+}
+@keyframes flameDance1{
+  0%{transform:rotate(-45deg) scaleY(1) translateX(0);opacity:.8}
+  50%{transform:rotate(-40deg) scaleY(1.08) translateX(1px);opacity:.9}
+  100%{transform:rotate(-50deg) scaleY(.95) translateX(-.5px);opacity:.85}
+}
+@keyframes flameDance2{
+  0%{transform:rotate(-45deg) scaleY(1) translateX(0);opacity:.75}
+  50%{transform:rotate(-35deg) scaleY(1.12) translateX(-1px);opacity:.9}
+  100%{transform:rotate(-55deg) scaleY(.9) translateX(1px);opacity:.8}
+}
+@keyframes flameDance3{
+  0%{transform:rotate(-45deg) scaleY(1) translateX(0);opacity:.7}
+  50%{transform:rotate(-42deg) scaleY(1.05) translateX(.5px);opacity:.85}
+  100%{transform:rotate(-48deg) scaleY(.93) translateX(-.5px);opacity:.75}
+}
+@media (prefers-reduced-motion:reduce){
+  .streak-flame{animation:none}
+  .streak-flame-1{transform:rotate(-45deg) scaleY(1)}
+  .streak-flame-2{transform:rotate(-45deg) scaleY(1)}
+  .streak-flame-3{transform:rotate(-45deg) scaleY(1)}
+}
+
+/* ------------------------------------------------------------------------------
+ * 19) EXERCISE CARD — STREAK FOGO ANIMADO
+ * Mesmo efeito de chama do header aplicado ao streak de cada exercício.
+ * Usa posicionamento relativo dentro do span .exercise-streak-fire.
+ * ---------------------------------------------------------------------------- */
+.exercise-streak-fire{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:22px;
+  height:22px;
+  position:relative;
+  animation:none;
+  text-shadow:none;
+  vertical-align:middle;
+}
+.ex-streak-flame{
+  position:absolute;
+  bottom:2px;
+  border-radius:50% 0 60% 50%;
+  transform:rotate(-45deg);
+  opacity:.85;
+}
+.ex-streak-flame-1{
+  width:9px;height:13px;
+  background:linear-gradient(180deg,#ff6b35,#ff2d00);
+  left:2px;
+  animation:exFlameDance1 .6s ease-in-out infinite alternate;
+  filter:blur(.5px);
+  box-shadow:0 0 5px rgba(255,45,0,.5);
+}
+.ex-streak-flame-2{
+  width:7px;height:10px;
+  background:linear-gradient(180deg,#ffd700,#ff6b00);
+  left:7px;bottom:3px;
+  animation:exFlameDance2 .5s ease-in-out infinite alternate;
+  filter:blur(.3px);
+  box-shadow:0 0 6px rgba(255,107,0,.4);
+}
+.ex-streak-flame-3{
+  width:6px;height:8px;
+  background:linear-gradient(180deg,#fff7a0,#ffd700);
+  left:3px;bottom:1px;
+  animation:exFlameDance3 .7s ease-in-out infinite alternate;
+  filter:blur(.2px);
+  box-shadow:0 0 8px rgba(255,215,0,.5);
+}
+@keyframes exFlameDance1{
+  0%{transform:rotate(-45deg) scaleY(1) translateX(0);opacity:.8}
+  50%{transform:rotate(-40deg) scaleY(1.08) translateX(1px);opacity:.9}
+  100%{transform:rotate(-50deg) scaleY(.95) translateX(-.5px);opacity:.85}
+}
+@keyframes exFlameDance2{
+  0%{transform:rotate(-45deg) scaleY(1) translateX(0);opacity:.75}
+  50%{transform:rotate(-35deg) scaleY(1.12) translateX(-1px);opacity:.9}
+  100%{transform:rotate(-55deg) scaleY(.9) translateX(1px);opacity:.8}
+}
+@keyframes exFlameDance3{
+  0%{transform:rotate(-45deg) scaleY(1) translateX(0);opacity:.7}
+  50%{transform:rotate(-42deg) scaleY(1.05) translateX(.5px);opacity:.85}
+  100%{transform:rotate(-48deg) scaleY(.93) translateX(-.5px);opacity:.75}
+}
+.exercise-streak-fire.no-streak{
+  animation:none;
+  opacity:.8;
+  text-shadow:none;
+}
+.exercise-streak-fire.no-streak .ex-streak-flame{display:none}
+@media (prefers-reduced-motion:reduce){
+  .ex-streak-flame{animation:none}
+  .ex-streak-flame-1{transform:rotate(-45deg) scaleY(1)}
+  .ex-streak-flame-2{transform:rotate(-45deg) scaleY(1)}
+  .ex-streak-flame-3{transform:rotate(-45deg) scaleY(1)}
+}
+
+/* ------------------------------------------------------------------------------
+ * 20) SHIELD — SEMPRE VISÍVEL NO HEADER
+ * O escudo com estrela ficava oculto (display:none) até ter shields salvos.
+ * Agora aparece sempre como parte da identidade visual do header, mesmo com
+ * contagem 0.
+ * ---------------------------------------------------------------------------- */
+.shield-star{display:flex}
+.shield-star.has-shields .shield-star-icon{color:var(--gold);filter:drop-shadow(0 0 8px rgba(212,168,67,.5)) drop-shadow(0 0 16px rgba(212,168,67,.2))}
+.shield-star.has-shields .shield-star-count{background:var(--gold);color:var(--black)}

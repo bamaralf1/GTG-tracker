@@ -1292,10 +1292,10 @@ body::after{
   cursor:pointer;
   padding:7px 16px;
   font-size:14px;
-  transition:background .2s var(--ease-expo),opacity .2s var(--ease-expo);
+  transition:background .2s var(--ease-expo),opacity .2s var(--ease-expo),transform .15s var(--ease-expo, ease);
   border-radius:6px;
 }
-.btn:active{opacity:.85}
+.btn:active{opacity:.85;transform:scale(.96)}
 .btn:focus{outline:none}
 .btn-red{background:var(--red);color:var(--white)}
 .btn-red:hover{background:var(--red-bright)}
@@ -6316,4 +6316,18 @@ html[data-theme=light]::after{
 .main::before,
 .main::after{
   will-change: transform;
+}
+
+.btn-icon:active,.test-max-btn:active,.timer-btn:active,.rm-btn:active,.toggle-btn:active,.cal-nav-btn:active{transform:scale(.96)}
+@media (prefers-reduced-motion:reduce){
+  .btn:active, .btn-icon:active, .test-max-btn:active{transform:none}
+}
+@media (max-width:600px){
+  .exercise-add-form .btn,
+  .exercise-card-actions .btn-icon{
+    min-height:40px;
+  }
+  .exercise-add-form .btn-red{
+    flex:1 1 100%;
+  }
 }
