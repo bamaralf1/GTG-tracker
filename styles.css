@@ -236,32 +236,47 @@ body::after{
 .streak-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--gray-light);letter-spacing:1px;text-transform:uppercase;line-height:1.2}
 
 /* === REST TIMER WIDGET === */
+.rest-timer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:900;animation:restOverlayIn .3s var(--ease-expo)}
+.rest-timer-overlay.active{display:block}
+@keyframes restOverlayIn{from{opacity:0}to{opacity:1}}
 .rest-timer-widget{
   display:none;
   position:fixed;
-  top:100px;
-  right:24px;
-  background:linear-gradient(180deg,rgba(18,18,18,0.95),rgba(10,10,10,0.95));
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  background:linear-gradient(180deg,rgba(18,18,18,0.97),rgba(10,10,10,0.97));
   border:1px solid var(--gold);
-  box-shadow:0 12px 40px rgba(0,0,0,0.6),0 4px 12px rgba(0,0,0,0.4),0 0 30px rgba(212,168,67,0.3),inset 0 1px 0 rgba(255,255,255,0.05),inset 0 0 30px rgba(0,0,0,0.5);
-  z-index:500;
-  padding:20px 24px;
-  min-width:220px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.6),0 0 60px rgba(212,168,67,0.25),inset 0 0 40px rgba(0,0,0,0.5);
+  z-index:901;
+  padding:28px 36px;
+  min-width:300px;
   border-radius:4px;
-  overflow:visible;
+  text-align:center;
 }
-.rest-timer-widget.active{display:block;animation:widgetIn .4s var(--ease-expo)}
-@keyframes widgetIn{from{opacity:0;transform:translateY(-8px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-.rest-timer-title{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:4px;color:var(--gold-dim);margin-bottom:8px;text-shadow:0 0 8px rgba(212,168,67,0.3)}
-.rest-timer-countdown{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--gold);text-align:center;text-shadow:0 0 20px rgba(212,168,67,0.6),0 0 40px rgba(212,168,67,0.3);line-height:1;font-variant-numeric:tabular-nums}
-.rest-timer-exercise{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gray-light);text-align:center;letter-spacing:2px;margin-top:4px;margin-bottom:10px}
-.rest-timer-controls{display:flex;gap:8px}
-.rest-timer-controls button{flex:1;padding:6px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;border:none;cursor:pointer;transition:all .25s var(--ease-expo)}
+.rest-timer-widget.active{display:block;animation:restWidgetIn .4s var(--ease-expo)}
+@keyframes restWidgetIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.rest-timer-progress-ring{width:90px;height:90px;margin:0 auto 12px;position:relative}
+.rest-timer-progress-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.rest-ring-bg{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:4}
+.rest-ring-fill{fill:none;stroke:var(--gold);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .5s ease,stroke .3s}
+.rest-timer-title{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:4px;color:var(--gold-dim);margin-bottom:8px}
+.rest-timer-countdown{font-family:'Bebas Neue',sans-serif;font-size:64px;color:var(--gold);text-shadow:0 0 30px rgba(212,168,67,0.5);line-height:1;font-variant-numeric:tabular-nums;transition:color .3s}
+.rest-timer-exercise{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--gray-light);letter-spacing:2px;margin:6px 0 14px}
+.rest-timer-controls{display:flex;gap:10px;justify-content:center}
+.rest-timer-controls button{flex:1;max-width:140px;padding:8px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;border:none;cursor:pointer;transition:all .25s var(--ease-expo);border-radius:2px}
 .btn-pause-timer{background:var(--gold-dim);color:var(--black)}
 .btn-reset-timer{background:var(--gray);color:var(--white)}
-.btn-pause-timer:hover{background:var(--gold);box-shadow:0 0 16px rgba(212,168,67,0.5);transform:translateY(-1px)}
-.btn-reset-timer:hover{background:var(--gray-light);transform:translateY(-1px)}
-.rest-timer-controls button:active{transform:translateY(2px)}
+.btn-pause-timer:hover{background:var(--gold);box-shadow:0 0 16px rgba(212,168,67,0.5)}
+.btn-reset-timer:hover{background:var(--gray-light)}
+.rest-timer-controls button:active{transform:scale(.96)}
+.rest-timer-widget.rest-warning .rest-timer-countdown{color:var(--accent-ffaa)}
+.rest-timer-widget.rest-warning .rest-ring-fill{stroke:var(--accent-ffaa)}
+.rest-timer-widget.rest-urgent .rest-timer-countdown{color:var(--accent-orange);animation:restPulse 0.8s ease-in-out infinite}
+.rest-timer-widget.rest-urgent .rest-ring-fill{stroke:var(--accent-orange)}
+.rest-timer-widget.rest-critical .rest-timer-countdown{color:var(--red-bright);animation:restPulse 0.4s ease-in-out infinite}
+.rest-timer-widget.rest-critical .rest-ring-fill{stroke:var(--red-bright)}
+.rest-timer-widget.rest-critical{border-color:var(--red-bright);box-shadow:0 12px 40px rgba(0,0,0,0.6),0 0 60px rgba(204,0,0,0.3),inset 0 0 40px rgba(0,0,0,0.5)}
+@keyframes restPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}
 
 /* === NAV TABS === */
 .nav-tabs{

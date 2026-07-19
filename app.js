@@ -2840,16 +2840,36 @@ function iniciarRestTimer(duration, exId, exName) {
     segundos: duration,
     rodando: !0,
     exercicioId: exId,
-    exercicioNome: exName
-  }, document.getElementById("restTimerWidget").classList.add("active"), document.getElementById("restTimerExercise").textContent = exName, atualizarDisplayRestTimer(), restTimer.intervalo = setInterval(() => {
-    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), mostrarToast("✓ DESCANSO COMPLETO!", `Hora de mais uma série de ${exName}!`, "success"), setTimeout(() => document.getElementById("restTimerWidget").classList.remove("active"), 5e3))
+    exercicioNome: exName,
+    _total: duration
+  }, document.getElementById("restTimerWidget").classList.add("active"), document.getElementById("restTimerBackdrop").classList.add("active"), document.getElementById("restTimerExercise").textContent = exName, atualizarDisplayRestTimer(), restTimer.intervalo = setInterval(() => {
+    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), mostrarToast("✓ DESCANSO COMPLETO!", `Hora de mais uma série de ${exName}!`, "success"), setTimeout(function() { document.getElementById("restTimerWidget").classList.remove("active"); document.getElementById("restTimerBackdrop").classList.remove("active"); }, 5e3))
   }, 1e3)
 }
 
 function atualizarDisplayRestTimer() {
-  const mins = String(Math.floor(restTimer.segundos / 60)).padStart(2, "0"),
-    secs = String(restTimer.segundos % 60).padStart(2, "0");
-  document.getElementById("restTimerDisplay").textContent = `${mins}:${secs}`
+  var el = document.getElementById("restTimerDisplay");
+  if (!el) return;
+  var total = restTimer._total || 900;
+  var restantes = restTimer.segundos;
+  var mins = String(Math.floor(restantes / 60)).padStart(2, "0");
+  var secs = String(restantes % 60).padStart(2, "0");
+  el.textContent = mins + ":" + secs;
+  var pct = total > 0 ? restantes / total : 0;
+  var ring = document.getElementById("restRingFill");
+  if (ring) {
+    var circ = 2 * Math.PI * 52;
+    var offset = circ * (1 - pct);
+    ring.style.strokeDasharray = circ;
+    ring.style.strokeDashoffset = offset;
+  }
+  var widget = document.getElementById("restTimerWidget");
+  if (widget) {
+    widget.classList.remove("rest-urgent", "rest-warning", "rest-critical");
+    if (pct <= 0.15) widget.classList.add("rest-critical");
+    else if (pct <= 0.3) widget.classList.add("rest-urgent");
+    else if (pct <= 0.5) widget.classList.add("rest-warning");
+  }
 }
 
 function toggleRestTimer() {
@@ -2859,7 +2879,7 @@ function toggleRestTimer() {
 }
 
 function resetRestTimer() {
-  clearInterval(restTimer.intervalo), document.getElementById("restTimerWidget").classList.remove("active"), restTimer = {
+  clearInterval(restTimer.intervalo), document.getElementById("restTimerWidget").classList.remove("active"), document.getElementById("restTimerBackdrop").classList.remove("active"), restTimer = {
     intervalo: null,
     segundos: 0,
     rodando: !1,

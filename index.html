@@ -1577,7 +1577,14 @@
       <div class="badge-unlock-desc" id="unlockDesc">Descrição</div><button class="btn btn-gold" style="margin-top:20px" onclick="closeBadgeUnlock()">✓ RECEBER HONRA</button>
     </div>
   </div>
+  <div class="rest-timer-overlay" id="restTimerBackdrop"></div>
   <div class="rest-timer-widget" id="restTimerWidget">
+    <div class="rest-timer-progress-ring">
+      <svg viewBox="0 0 120 120">
+        <circle class="rest-ring-bg" cx="60" cy="60" r="52"/>
+        <circle class="rest-ring-fill" id="restRingFill" cx="60" cy="60" r="52"/>
+      </svg>
+    </div>
     <div class="rest-timer-title">⏱ DESCANSO</div>
     <div class="rest-timer-countdown" id="restTimerDisplay">15:00</div>
     <div class="rest-timer-exercise" id="restTimerExercise">—</div>
