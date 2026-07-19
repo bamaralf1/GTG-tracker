@@ -3675,20 +3675,16 @@ async function updateReadinessUI() {
 
   // Fill widths + values + zones — batched
   for (let j = 0; j < 7; j++) {
-    const val = vals[j];
-    const pct = 10 * val;
-    const zone = getZonaSlider(val, j === 1 || j === 2);
-    const cor = zone === "green" ? "var(--green-bright)" : zone === "yellow" ? "var(--accent-yellow)" : zone === "orange" ? "var(--accent-orange)" : "var(--red-bright)";
     const track = c.tracks[j];
-    const trackW = track.getBoundingClientRect().width;
-    const thumbW = 12;
-    const fillPx = val <= 0 ? 0 : ((val / 10) * (trackW - thumbW) + thumbW / 2);
-    c.fills[j].style.width = fillPx + "px";
-    track.setAttribute("data-zone", zone);
     const input = track.querySelector(".readiness-slider-input");
-    if (input) input.style.removeProperty("background");
+    const rawVal = input ? parseFloat(input.value) : vals[j];
+    const zone = getZonaSlider(rawVal, j === 1 || j === 2);
+    track.setAttribute("data-zone", zone);
+    const trackW = track.getBoundingClientRect().width;
+    const fillPx = rawVal <= 0 ? 0 : ((rawVal / 10) * (trackW - 14) + 6);
+    c.fills[j].style.width = Math.max(0, fillPx) + "px";
     const el = c.vals[j];
-    const newVal = String(val);
+    const newVal = String(vals[j]);
     if (el.textContent !== newVal) el.textContent = newVal;
   }
 
