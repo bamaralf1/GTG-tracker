@@ -955,7 +955,16 @@ function inicializar() {
       const e = document.getElementById("modoFocoToggle");
       e && e.classList.add("active"), populateFocoSelect(), document.getElementById("modoFocoSelect").value = modoFocoState.exercicioId || "", aplicarModoFoco()
     }
-    setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), inicializarSkillTree(), renderCalendario(), verificarRelatorioSemanal();
+    setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), setTimeout(function() {
+      // Se readiness não foi preenchido hoje, destaca o header
+      if (readinessData.data !== (new Date).toISOString().slice(0, 10)) {
+        var hdr = document.getElementById("headerReadiness");
+        if (hdr) {
+          hdr.classList.add("header-readiness-pulse");
+          hdr.title = "🎯 Preencha seu check-in matinal!";
+        }
+      }
+    }, 1800), inicializarSkillTree(), renderCalendario(), verificarRelatorioSemanal();
     const ultimoGroove = dados.registros.filter(r => r.groove).pop();
     const grooveTotal = ultimoGroove ? ultimoGroove.groove.reduce((a, b) => a + b, 0) : (plankGroove ? plankGroove[0] + plankGroove[1] + plankGroove[2] : 0);
     atualizarGrooveStatus(grooveTotal);
