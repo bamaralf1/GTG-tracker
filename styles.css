@@ -1415,6 +1415,11 @@ body::after{
   border-color:var(--gold);
 }
 .form-input-wide{width:120px}
+.valor-suggestions{display:none;position:absolute;top:100%;left:0;right:0;z-index:50;background:rgba(10,10,10,0.97);border:1px solid rgba(212,168,67,0.3);border-top:none}
+.sug-item{padding:4px 8px;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--gray-light);cursor:pointer;display:flex;gap:8px;align-items:center}
+.sug-item:hover{background:rgba(212,168,67,0.15);color:var(--gold)}
+.sug-freq{font-size:9px;color:var(--gold-dim);margin-left:auto}
+.form-group{position:relative}
 
 /* === BUTTONS (Physical press) === */
 .btn{
