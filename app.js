@@ -472,7 +472,7 @@ const EXERCICIOS_DEFAULT = [{
     "id": "radio_10h",
     "icone": "🎵",
     "nome": "Rádio do Front",
-    "desc": "Ouça a Rádio Soviética por 10 horas totais — música de guerra"
+    "desc": "Ouça a Rádio GTG por 10 horas totais — música de treino"
   }, {
     "id": "gtg_manual",
     "icone": "📖",
@@ -1620,18 +1620,26 @@ function atualizarGrooveStatus(total) {
   const el = document.getElementById('grooveStatus');
   const scoreEl = document.getElementById('grooveStatusScore');
   const ringEl = document.getElementById('grooveStatusRingFill');
+  const ringContainer = document.querySelector('.groove-status-ring');
   if (!el || !scoreEl) return;
   const pct = Math.min(100, Math.round(total / 3));
-  scoreEl.textContent = total >= 300 ? '★' : pct + '%';
+  scoreEl.textContent = pct + '%';
   el.className = 'groove-status';
   if (total >= 300) el.classList.add('score-perfect');
   else if (total >= 200) el.classList.add('score-high');
   else if (total >= 100) el.classList.add('score-mid');
   else if (total > 0) el.classList.add('score-low');
   if (ringEl) {
+    const prevActive = ringEl.classList.contains('active');
     const deg = total >= 300 ? 360 : Math.round(total / 300 * 360);
     ringEl.style.transform = 'rotate(-90deg) rotate(' + deg + 'deg)';
     ringEl.classList.toggle('active', total > 0);
+    if (ringContainer) ringContainer.classList.toggle('active', total > 0);
+    if (!prevActive && total > 0) {
+      ringEl.classList.remove('bump');
+      void ringEl.offsetWidth;
+      ringEl.classList.add('bump');
+    }
   }
 }
 

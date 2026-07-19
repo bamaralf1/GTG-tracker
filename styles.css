@@ -6645,31 +6645,69 @@ html[data-theme=light]::after{
   box-shadow:0 0 20px rgba(212,168,67,.08), inset 0 0 12px rgba(212,168,67,.03);
 }
 .groove-status-ring{
-  width:22px;
-  height:22px;
+  width:26px;
+  height:26px;
   border-radius:50%;
   background:rgba(255,255,255,.03);
   border:2px solid rgba(212,168,67,.15);
   position:relative;
   flex-shrink:0;
-  overflow:hidden;
+  overflow:visible;
+  transition:border-color .4s, box-shadow .4s;
+}
+.groove-status-ring::after{
+  content:'';
+  position:absolute;
+  inset:-3px;
+  border-radius:50%;
+  background:conic-gradient(transparent 0deg, rgba(212,168,67,.35) 10deg, transparent 30deg);
+  mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#fff calc(100% - 5px));
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#fff calc(100% - 5px));
+  opacity:0;
+  transition:opacity .5s;
+  pointer-events:none;
+}
+.groove-status-ring.active::after{
+  opacity:1;
+  animation:grooveSweep 2s linear infinite;
+}
+.groove-status.score-low .groove-status-ring::after{background:conic-gradient(transparent 0deg, rgba(255,59,48,.5) 10deg, transparent 30deg)}
+.groove-status.score-mid .groove-status-ring::after{background:conic-gradient(transparent 0deg, rgba(212,168,67,.5) 10deg, transparent 30deg)}
+.groove-status.score-high .groove-status-ring::after{background:conic-gradient(transparent 0deg, rgba(68,204,68,.5) 10deg, transparent 30deg)}
+.groove-status.score-perfect .groove-status-ring::after{background:conic-gradient(transparent 0deg, rgba(68,204,68,.7) 10deg, transparent 30deg)}
+.groove-status.score-low .groove-status-ring{border-color:rgba(255,59,48,.3);box-shadow:0 0 8px rgba(255,59,48,.15), inset 0 0 8px rgba(255,59,48,.05)}
+.groove-status.score-mid .groove-status-ring{border-color:rgba(212,168,67,.3);box-shadow:0 0 10px rgba(212,168,67,.2), inset 0 0 8px rgba(212,168,67,.05)}
+.groove-status.score-high .groove-status-ring{border-color:rgba(68,204,68,.35);box-shadow:0 0 12px rgba(68,204,68,.25), inset 0 0 8px rgba(68,204,68,.05)}
+.groove-status.score-perfect .groove-status-ring{border-color:rgba(68,204,68,.5);box-shadow:0 0 20px rgba(68,204,68,.35), inset 0 0 12px rgba(68,204,68,.08)}
+@keyframes grooveSweep{
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
 }
 .groove-status-ring-fill{
   position:absolute;
   inset:2px;
   border-radius:50%;
   background:conic-gradient(var(--red) 0deg, var(--gold) 180deg, var(--green-bright) 360deg);
-  mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#fff calc(100% - 3px));
-  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#fff calc(100% - 3px));
-  transition:transform .5s cubic-bezier(.22,1,.36,1);
+  mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff calc(100% - 4px));
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#fff calc(100% - 4px));
+  transition:transform .5s cubic-bezier(.22,1,.36,1), filter .5s;
   transform:rotate(-90deg);
+  z-index:1;
 }
 .groove-status-ring-fill.active{
-  animation:grooveRingGlow 2s ease-in-out infinite;
+  animation:grooveRingBreathe 3s ease-in-out infinite;
 }
-@keyframes grooveRingGlow{
-  0%,100%{filter:drop-shadow(0 0 4px rgba(212,168,67,.3))}
-  50%{filter:drop-shadow(0 0 10px rgba(212,168,67,.5))}
+.groove-status-ring-fill.bump{
+  animation:grooveRingBump .5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes grooveRingBump{
+  0%{transform:scale(1)}
+  40%{transform:scale(1.35);filter:drop-shadow(0 0 18px rgba(212,168,67,.7)) brightness(1.4)}
+  100%{transform:scale(1)}
+}
+@keyframes grooveRingBreathe{
+  0%,100%{filter:drop-shadow(0 0 4px rgba(212,168,67,.25));opacity:.8}
+  50%{filter:drop-shadow(0 0 10px rgba(212,168,67,.45));opacity:1}
 }
 .groove-status-info{
   display:flex;
