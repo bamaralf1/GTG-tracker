@@ -2095,7 +2095,7 @@ function adicionarSerie(exId) {
 
   atualizarCardExercicio(exId), atualizarStats(), renderHistory(), setTimeout(() => {
     renderGraficos(), renderProgresso(), renderEstatisticasMensais()
-  }, 100), somRegistrar(), iniciarTimerGTG(exId)
+    }, 100), somRegistrar(), mostrarConfete(), iniciarTimerGTG(exId)
 }
 
 let exercicioEditandoId = null;
@@ -4081,6 +4081,25 @@ function _animateScore(el, from, to, duration) {
     if (progress < 1) _readinessAnimFrame = requestAnimationFrame(tick);
   }
   _readinessAnimFrame = requestAnimationFrame(tick);
+}
+
+function mostrarConfete() {
+  var container = document.getElementById("confettiContainer");
+  if (!container) return;
+  var cores = ["var(--gold)", "var(--red-bright)", "var(--accent-cyan)", "var(--green-bright)", "var(--accent-ffaa)", "var(--accent-orange)"];
+  for (var i = 0; i < 30; i++) {
+    var p = document.createElement("div");
+    p.className = "confetti-piece";
+    var cor = cores[i % cores.length];
+    var left = Math.random() * 100;
+    var delay = Math.random() * 0.5;
+    var dur = 0.8 + Math.random() * 0.6;
+    var size = 4 + Math.random() * 6;
+    var rot = Math.random() * 360;
+    p.style.cssText = "left:" + left + "%;--delay:" + delay + "s;--dur:" + dur + "s;width:" + size + "px;height:" + size * 0.6 + "px;background:" + cor + ";--rot:" + rot + "deg;";
+    container.appendChild(p);
+  }
+  setTimeout(function() { container.innerHTML = ""; }, 2000);
 }
 
 function _spawnParticles(circle, color) {
