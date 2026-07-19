@@ -2244,6 +2244,30 @@ function atualizarStats() {
     registrosSemana = dados.registros.filter(r => r.data >= inicioSemana);
   document.getElementById("statHoje").textContent = registrosHoje.length, document.getElementById("statRepsHoje").textContent = registrosHoje.reduce((acc, r) => acc + (r.valor || 0), 0) + " reps", document.getElementById("statSemana").textContent = registrosSemana.length, document.getElementById("statRepsSemanaSub").textContent = registrosSemana.reduce((acc, r) => acc + (r.valor || 0), 0) + " reps esta semana", document.getElementById("statTotal").textContent = dados.registros.length, document.getElementById("statTotalSub").textContent = dados.registros.reduce((acc, r) => acc + (r.valor || 0), 0).toLocaleString("pt-BR") + " reps acum."
   typeof _renderReadinessCorrelation === "function" && _renderReadinessCorrelation();
+  atualizarResumoDiario();
+}
+
+function atualizarResumoDiario() {
+  const hoje = (new Date).toISOString().slice(0, 10);
+  const registrosHoje = dados.registros.filter(r => r.data === hoje);
+  const totalSeries = registrosHoje.length;
+  const totalReps = registrosHoje.reduce((a, r) => a + (r.valor || 0), 0);
+  const totalXP = registrosHoje.reduce((a, r) => a + (r.xp || 0), 0);
+  document.getElementById("dailySummaryDate").textContent = hoje;
+  document.getElementById("dsSeriesHoje").textContent = totalSeries;
+  document.getElementById("dsRepsHoje").textContent = totalReps;
+  document.getElementById("dsXPHoje").textContent = "+" + totalXP;
+  const grupos = {};
+  registrosHoje.forEach(r => {
+    const key = r.exercicioNome || r.exercicioId;
+    if (!grupos[key]) grupos[key] = { nome: key, series: 0, reps: 0 };
+    grupos[key].series++;
+    grupos[key].reps += r.valor || 0;
+  });
+  const container = document.getElementById("dsExerciciosList");
+  container.innerHTML = Object.values(grupos).sort((a, b) => b.series - a.series).map(g =>
+    `<div class="ds-ex-item"><span class="ds-ex-name">${g.nome}</span><span class="ds-ex-count">${g.series}s</span><span class="ds-ex-reps">${g.reps} reps</span></div>`
+  ).join("");
 }
 
 function getDadosUltimasSemanas(numSemanas = 8, registrosSource) {

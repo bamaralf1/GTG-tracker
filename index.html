@@ -438,6 +438,28 @@
             </div>
           </div>
 
+          <!-- RESUMO DO DIA -->
+          <div class="card sb-card sb-card-daily" id="dailySummaryCard" style="margin:0;overflow:hidden">
+            <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
+            <div class="rd-accent-bar"></div>
+            <div class="rd-noise"></div>
+            <div class="sb-radio-header" style="padding:12px 14px 10px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                <span style="font-size:16px">📊</span>
+                <span style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--gold)">RESUMO DO DIA</span>
+                <span class="text-mono" style="font-size:10px;color:var(--gray);margin-left:auto" id="dailySummaryDate"></span>
+              </div>
+              <div id="dailySummaryBody">
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px">
+                  <div class="ds-stat"><div class="ds-stat-val" id="dsSeriesHoje">0</div><div class="ds-stat-lbl">SÉRIES</div></div>
+                  <div class="ds-stat"><div class="ds-stat-val" id="dsRepsHoje">0</div><div class="ds-stat-lbl">REPS</div></div>
+                  <div class="ds-stat"><div class="ds-stat-val" id="dsXPHoje">0</div><div class="ds-stat-lbl">XP</div></div>
+                </div>
+                <div id="dsExerciciosList" style="display:flex;flex-direction:column;gap:3px"></div>
+              </div>
+            </div>
+          </div>
+
           <!-- LEMBRETES — CENTRO DE ALERTA REFATORADO -->
           <div class="card sb-card sb-card-remind-premium" id="alertaCard" style="margin:0;overflow:hidden">
             <div class="rm-content">

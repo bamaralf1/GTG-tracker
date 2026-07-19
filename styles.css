@@ -544,6 +544,21 @@ body::after{
 .rd-corner-glow-tl{top:-15px;left:-15px;background:radial-gradient(circle,rgba(204,0,0,.12),transparent);animation-delay:0s}
 .rd-corner-glow-br{bottom:-15px;right:-15px;background:radial-gradient(circle,rgba(212,168,67,.08),transparent);animation-delay:2.5s}
 @keyframes rdCornerPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.9;transform:scale(1.12)}}
+
+/* Daily Summary Card */
+.sb-card-daily{background:linear-gradient(135deg,rgba(204,0,0,.04),rgba(12,12,12,.98) 15%,rgba(12,12,12,.98) 85%,rgba(212,168,67,.03));border:1px solid rgba(255,255,255,.06)}
+.ds-stat{text-align:center;background:rgba(0,0,0,.25);border-radius:6px;padding:6px 4px;border:1px solid rgba(255,255,255,.04)}
+.ds-stat-val{font-family:'Share Tech Mono',monospace;font-size:18px;font-weight:700;color:var(--gold);line-height:1.2}
+.ds-stat-lbl{font-size:8px;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-top:2px}
+#dsExerciciosList{max-height:180px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(204,0,0,.2) transparent}
+#dsExerciciosList::-webkit-scrollbar{width:3px}
+#dsExerciciosList::-webkit-scrollbar-track{background:transparent}
+#dsExerciciosList::-webkit-scrollbar-thumb{background:rgba(204,0,0,.2);border-radius:2px}
+.ds-ex-item{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:4px;background:rgba(0,0,0,.15);border-left:2px solid rgba(204,0,0,.3);font-size:11px}
+.ds-ex-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);font-weight:500}
+.ds-ex-count{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);white-space:nowrap}
+.ds-ex-reps{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gray)}
+
 .sb-card-radio-premium .sb-eq{height:16px;align-items:flex-end;gap:3px}
 .sb-card-radio-premium .sb-eq-bar{background:var(--gold-dim);transition:background .3s,height .15s;border-radius:1px 1px 0 0;min-width:3px}
 .sb-card-radio-premium.playing .sb-eq-bar{background:var(--red-bright);animation:eqBounce .5s ease-in-out infinite alternate}
