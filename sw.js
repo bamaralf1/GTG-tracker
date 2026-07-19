@@ -11,10 +11,13 @@ const PRECACHE_URLS = [
   "./index.html",
   "./app.js",
   "./styles.css",
+  "./treino-ux-refinements.css",
   "./skilltree.css",
   "./skilltree.js",
   "./skilltree-render.js",
   "./storage.js",
+  "./warmup.js",
+  "./gtg-session.js",
   "./manifest.webmanifest"
 ];
 
@@ -124,12 +127,24 @@ async function cacheFirst(request) {
   }
 }
 
+let _lembreteIntervalo = INTERVALO_MS;
+
 self.addEventListener("message", (e) => {
   const data = e.data;
   if (data === "INICIAR_LEMBRETES") agendarProximo();
   if (data === "PARAR_LEMBRETES" && self._lembreteTimeout) {
     clearTimeout(self._lembreteTimeout);
     self._lembreteTimeout = null;
+  }
+  if (data && data.type === "ALTERAR_INTERVALO") {
+    const novo = parseInt(data.intervalo);
+    if (novo > 0 && novo !== _lembreteIntervalo) {
+      _lembreteIntervalo = novo;
+      if (self._lembreteTimeout) {
+        clearTimeout(self._lembreteTimeout);
+        agendarProximo();
+      }
+    }
   }
   if (data === "LIMPAR_CACHES_PWA") {
     e.waitUntil((async () => {
@@ -165,7 +180,7 @@ function agendarProximo() {
   self._lembreteTimeout = setTimeout(() => {
     dispararNotificacao();
     agendarProximo();
-  }, INTERVALO_MS);
+  }, _lembreteIntervalo);
 }
 
 function dispararNotificacao() {

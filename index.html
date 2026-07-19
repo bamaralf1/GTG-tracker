@@ -637,6 +637,7 @@
                       <option value="60">1 min</option>
                     </select>
                     <span class="sb-session-hint">💡 <span id="sessionSugestao">—</span></span>
+                    <span class="sb-session-pr" id="sessionPRDisplay">PR: —</span>
                     <button class="btn btn-red sb-session-start" onclick="iniciarSessaoGTG()">▶</button>
                   </div>
                 </div>
@@ -645,9 +646,21 @@
                 <div class="sb-sprog">
                   <div class="sb-sprog-title" id="sessionProgressTitle">SESSÃO EM ANDAMENTO</div>
                   <div id="sessionSeriesDots" class="sb-sprog-dots"></div>
-                  <div>
-                    <div class="sb-sprog-state" id="sessionStateLabel">PRÓXIMA SÉRIE</div>
-                    <div class="sb-sprog-timer" id="sessionTimerDisplay">PRONTO</div>
+                  <div class="sb-sprog-ring-wrap">
+                    <svg class="sb-sprog-ring" viewBox="0 0 180 180">
+                      <circle class="sb-sprog-ring-bg" cx="90" cy="90" r="80"/>
+                      <circle class="sb-sprog-ring-fill" id="sessionRingFill" cx="90" cy="90" r="80"/>
+                    </svg>
+                    <div class="sb-sprog-ring-center">
+                      <div class="sb-sprog-state" id="sessionStateLabel">PRONTO</div>
+                      <div class="sb-sprog-timer" id="sessionTimerDisplay">▶</div>
+                    </div>
+                  </div>
+                  <div class="sb-sprog-bar-wrap">
+                    <div class="sb-sprog-bar-bg">
+                      <div class="sb-sprog-bar-fill" id="sessionProgressBar" style="width:0%"></div>
+                    </div>
+                    <span class="sb-sprog-bar-label" id="sessionProgressLabel">0 / 0</span>
                   </div>
                   <div class="sb-sprog-actions">
                     <button class="btn btn-gold" id="sessionActionBtn" onclick="executarSerieSessao()">✓ REGISTRAR</button>
@@ -1711,6 +1724,8 @@
   <script src="skilltree.js"></script>
   <script src="skilltree-render.js"></script>
   <script src="storage.js"></script>
+  <script src="warmup.js"></script>
+  <script src="gtg-session.js"></script>
   <script src="app.js"></script>
   <script>
     function switchTab(e, tabName) {

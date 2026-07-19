@@ -923,7 +923,6 @@ let fraseAtualIndex = -1,
   badgesData = {
     desbloqueadas: []
   },
-  warmupTimers = {},
   plankTimer = {
     intervalo: null,
     segundos: 0,
@@ -1051,132 +1050,6 @@ function salvarDadosDebounced() {
 function atualizarDataHeader() {
   const now = new Date;
   document.getElementById("headerDate").innerHTML = `${["DOM","SEG","TER","QUA","QUI","SEX","SAB"][now.getDay()]} ${String(now.getDate()).padStart(2,"0")} ${["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"][now.getMonth()]} ${now.getFullYear()}<br>\n     <span style="font-size:16px;">${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}</span>`, setTimeout(atualizarDataHeader, 3e4)
-}
-
-/* ===== AQUECIMENTO / ATIVAÇÃO PRÉ-COMBATE ===== */
-const WARMUP_DRILLS = [
-  "Agachamento de Mobilidade",
-  "Círculo de Ombros",
-  "Ponte de Glúteos",
-  "Levantamento Terra Ativo"
-];
-
-function initWarmupData() {
-  if (!dados.aquecimento) dados.aquecimento = {};
-  const hoje = (new Date).toISOString().slice(0, 10);
-  if (dados.aquecimento.data !== hoje) dados.aquecimento = { data: hoje, feitos: [] };
-}
-
-function renderWarmup() {
-  initWarmupData();
-  const feitos = dados.aquecimento.feitos || [];
-  const total = WARMUP_DRILLS.length;
-  const count = feitos.length;
-  const card = document.getElementById("warmupCard");
-  const badge = document.getElementById("warmupBadge");
-  const progress = document.getElementById("warmupProgressFill");
-  const status = document.getElementById("warmupStatus");
-  const list = document.getElementById("warmupList");
-  const summary = document.getElementById("warmupSummary");
-  const hint = document.getElementById("warmupHint");
-  if (badge) badge.textContent = count + "/" + total;
-  if (progress) progress.style.width = (count / total * 100) + "%";
-  if (status) {
-    status.classList.remove("ready");
-    if (count === 0) status.innerHTML = "❄ NÃO AQUECIDO";
-    else if (count < total) status.innerHTML = "🔥 AQUECENDO · " + count + "/" + total;
-    else { status.innerHTML = "★ PRONTO PARA O COMBATE"; status.classList.add("ready"); }
-  }
-  if (summary) {
-    if (count === 0) summary.textContent = "Sua preparação começa com 4 passos simples: mobilidade, ombros, glúteos e ativação de cadeia posterior.";
-    else if (count < total) summary.textContent = `Faltam ${total - count} passos para fechar a ativação e entrar em modo de trabalho.`;
-    else summary.textContent = "Ativação concluída. O corpo já está pronto para a sessão e a mente pode focar no esforço.";
-  }
-  if (hint) {
-    if (count === 0) hint.textContent = "Toque nos passos para marcar a ativação e preparar o corpo para a série.";
-    else if (count < total) hint.textContent = "Continue marcando os blocos até chegar no estado ideal de prontidão.";
-    else hint.textContent = "Ativação completa. Agora você está pronto para encarar a sessão com mais presença.";
-  }
-  if (list) {
-    Array.from(list.querySelectorAll(".sb-warmup-item")).forEach(el => {
-      const idx = parseInt(el.dataset.idx);
-      el.classList.toggle("done", feitos.includes(idx));
-      const btnEl = el.querySelector(".sb-warmup-timer-btn");
-      if (btnEl) {
-        btnEl.onclick = function(e) { e.stopPropagation(); startWarmupTimer(idx); };
-      }
-    });
-  }
-}
-
-function toggleWarmup(idx) {
-  initWarmupData();
-  if (!dados.aquecimento.feitos) dados.aquecimento.feitos = [];
-  const i = dados.aquecimento.feitos.indexOf(idx);
-  if (i >= 0) dados.aquecimento.feitos.splice(i, 1);
-  else dados.aquecimento.feitos.push(idx);
-  renderWarmup();
-  salvarDados();
-}
-
-function startWarmupTimer(idx) {
-  if (warmupTimers[idx]) return;
-  const item = document.querySelector(`.sb-warmup-item[data-idx="${idx}"]`);
-  if (!item || item.classList.contains("done")) return;
-  const btn = item.querySelector(".sb-warmup-timer-btn");
-  if (!btn) return;
-  btn.dataset.remaining = "30";
-  btn.textContent = "30";
-  btn.classList.add("running");
-  btn.disabled = true;
-  function tick() {
-    let r = parseInt(btn.dataset.remaining, 10);
-    if (isNaN(r)) r = 30;
-    r--;
-    if (r <= 0) {
-      delete warmupTimers[idx];
-      btn.textContent = "▶ 30s";
-      btn.classList.remove("running");
-      btn.disabled = false;
-      delete btn.dataset.remaining;
-      toggleWarmup(idx);
-    } else {
-      btn.dataset.remaining = String(r);
-      btn.textContent = String(r);
-      warmupTimers[idx] = setTimeout(tick, 1000);
-    }
-  }
-  warmupTimers[idx] = setTimeout(tick, 1000);
-}
-
-function completarWarmup() {
-  initWarmupData();
-  dados.aquecimento.feitos = Array.from({ length: WARMUP_DRILLS.length }, (_, idx) => idx);
-  renderWarmup();
-  salvarDados();
-  const card = document.getElementById("warmupCard");
-  if (card) card.classList.add("minimized");
-  mostrarToast("Ativação concluída", "Seu corpo já está preparado para a sessão.", "success");
-}
-
-function toggleWarmupCard() {
-  const card = document.getElementById("warmupCard");
-  if (card) {
-    card.classList.toggle("minimized");
-    if (!card.classList.contains("minimized")) renderWarmup();
-  }
-}
-
-function resetWarmup() {
-  Object.keys(warmupTimers).forEach(k => { clearTimeout(warmupTimers[k]); delete warmupTimers[k]; });
-  document.querySelectorAll(".sb-warmup-timer-btn.running").forEach(el => { el.textContent = "▶ 30s"; el.classList.remove("running"); el.disabled = false; delete el.dataset.remaining; });
-  initWarmupData();
-  dados.aquecimento.feitos = [];
-  renderWarmup();
-  salvarDados();
-  const card = document.getElementById("warmupCard");
-  if (card) card.classList.remove("minimized");
-  mostrarToast("Ativação reiniciada", "Você pode refazer os passos quando quiser.", "info");
 }
 
 function verificarStreak() {
@@ -3280,6 +3153,9 @@ function desativarLembretes() {
 
 function alterarIntervaloLembrete(val) {
   lembreteIntervaloMs = parseInt(val);
+  if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({ type: "ALTERAR_INTERVALO", intervalo: lembreteIntervaloMs });
+  }
   if (lembreteInterval) {
     iniciarLembretes(true);
     mostrarToast("Intervalo alterado", "Lembretes a cada " + (lembreteIntervaloMs / 60000) + " min", "success");
@@ -3381,9 +3257,9 @@ async function solicitarPermissaoNotificacao() {
   let e = Notification.permission;
   if ("default" === e && (e = await Notification.requestPermission()), "granted" === e) {
     const e = await registrarServiceWorker();
-    e ? (e.active ? e.active.postMessage("INICIAR_LEMBRETES") : e.addEventListener("updatefound", () => {
+    e ? (e.active ? (e.active.postMessage("INICIAR_LEMBRETES"), e.active.postMessage({ type: "ALTERAR_INTERVALO", intervalo: lembreteIntervaloMs || 900000 })) : e.addEventListener("updatefound", () => {
       e.installing?.addEventListener("statechange", () => {
-        e.active && e.active.postMessage("INICIAR_LEMBRETES")
+        e.active && (e.active.postMessage("INICIAR_LEMBRETES"), e.active.postMessage({ type: "ALTERAR_INTERVALO", intervalo: lembreteIntervaloMs || 900000 }))
       })
     }),     document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", mostrarToast("✓ Ativado!", "Lembretes ativos — funcionam mesmo com a tela bloqueada!", "success")) : (document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", mostrarToast("Ativado", "Lembretes ativos (instale o app para funcionar em background).", "success")), iniciarLembretes(true), deferredInstallPrompt && (document.getElementById("btnInstalarPWA").style.display = "inline-block")
   } else mostrarToast("Bloqueado", "Permissão negada. Habilite notificações nas configurações do navegador.", "error")
@@ -5503,7 +5379,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const e = cssVar("--accent-red") || "#CC0000";
   const d = document.querySelector('meta[name="theme-color"]');
   d && d.setAttribute("content", e), "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
-    e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", _atualizarUIAlertas()))
+    e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), e.active.postMessage({ type: "ALTERAR_INTERVALO", intervalo: lembreteIntervaloMs || 900000 }), document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", _atualizarUIAlertas()))
   }), inicializar();
 
   // Drag tracking — only on slider inputs
@@ -5528,158 +5404,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("touchend", endDrag);
 });
 
-
-/* === SESSÃO GTG — MODO COMPRIMIDO === */
-let sessaoGTGState = null;
-
-function atualizarSugestaoSessao() {
-  const e = document.getElementById("sessionExSelect"),
-    a = document.getElementById("sessionSugestao"),
-    t = document.getElementById("sessionSerieValor");
-  if (!e || !a) return;
-  const o = dados.exercicios.find(a => a.id === e.value);
-  if (!o) return void(a.textContent = "—");
-  const r = calcularSugestaoGTG(calcularPR2(o), o.tipo),
-    s = "tempo" === o.tipo ? "seg" : o.unidade || "reps";
-  r ? (a.textContent = `${r} ${s} por série`, t && !t.value && (t.value = r, t.placeholder = String(r))) : a.textContent = "Sem histórico — defina manualmente"
-}
-
-function iniciarSessaoGTG() {
-  const e = document.getElementById("sessionExSelect").value;
-  if (!e) return void mostrarToast("Erro", "Selecione um exercício para a sessão.", "error");
-  const a = dados.exercicios.find(a => a.id === e);
-  if (!a) return;
-  const t = parseInt(document.getElementById("sessionNumSeries").value) || 5,
-    o = parseInt(document.getElementById("sessionSerieValor").value) || calcularSugestaoGTG(calcularPR2(a), a.tipo) || 1,
-    r = parseInt(document.getElementById("sessionDescanso").value) || 900;
-  if (t < 1) return void mostrarToast("Erro", "Número de séries inválido.", "error");
-  sessaoGTGState = {
-    exercicioId: e,
-    exercicioNome: a.nome,
-    tipo: a.tipo,
-    unidade: "tempo" === a.tipo ? "seg" : a.unidade || "reps",
-    totalSeries: t,
-    valorPorSerie: o,
-    descansoSeg: r,
-    seriesFeitas: 0,
-    fase: "pronta",
-    intervalo: null,
-    segundosRestantes: 0
-  }, document.getElementById("sessionSetup").style.display = "none", document.getElementById("sessionProgress").style.display = "block", renderSessaoDots(), atualizarSessaoUI(), mostrarToast("🔗 SESSÃO INICIADA", `${a.nome} — ${t} séries de ${o} ${sessaoGTGState.unidade}`, "success")
-}
-
-function renderSessaoDots() {
-  const e = document.getElementById("sessionSeriesDots");
-  if (!e || !sessaoGTGState) return;
-  e.innerHTML = "";
-  for (let a = 0; a < sessaoGTGState.totalSeries; a++) {
-    const t = document.createElement("div");
-    t.style.cssText = "width:14px;height:14px;border-radius:50%;border:1px solid var(--gold-dim);" + (a < sessaoGTGState.seriesFeitas ? "background:var(--gold);box-shadow:0 0 8px rgba(212,160,23,.6);" : "background:transparent;"), e.appendChild(t)
-  }
-}
-
-function atualizarSessaoUI() {
-  if (!sessaoGTGState) return;
-  const e = document.getElementById("sessionProgressTitle"),
-    a = document.getElementById("sessionStateLabel"),
-    t = document.getElementById("sessionTimerDisplay"),
-    o = document.getElementById("sessionActionBtn");
-  e && (e.textContent = `SÉRIE ${Math.min(sessaoGTGState.seriesFeitas+1,sessaoGTGState.totalSeries)} DE ${sessaoGTGState.totalSeries}`), "pronta" === sessaoGTGState.fase ? (a && (a.textContent = "PRONTO PARA REGISTRAR"), t && (t.textContent = "▶", t.style.color = "var(--gold)"), o && (o.disabled = !1, o.textContent = "✓ REGISTRAR SÉRIE AGORA")) : "descansando" === sessaoGTGState.fase && (a && (a.textContent = "DESCANSO — PRÓXIMA SÉRIE EM"), o && (o.disabled = !0, o.textContent = "⏳ AGUARDE O DESCANSO"))
-}
-
-function executarSerieSessao() {
-  if (!sessaoGTGState || "pronta" !== sessaoGTGState.fase) return;
-  const e = dados.exercicios.find(e => e.id === sessaoGTGState.exercicioId);
-  if (!e) return void pararSessaoGTG();
-  const a = document.getElementById(`valor-${e.id}`);
-  a ? (a.value = sessaoGTGState.valorPorSerie, adicionarSerie(e.id)) : (() => {
-    const a = new Date,
-      t = {
-        id: Date.now() + Math.random().toString(36).slice(2),
-        exercicioId: e.id,
-        exercicioNome: e.nome,
-        valor: sessaoGTGState.valorPorSerie,
-        peso: 0,
-        data: a.toISOString().slice(0, 10),
-        hora: a.toTimeString().slice(0, 5),
-        timestamp: a.getTime(),
-        xp: calcularXPSerie(e, sessaoGTGState.valorPorSerie, 0),
-        rpe: null
-      };
-    dados.registros.push(t), adicionarXP(t.xp), _gtgSpark(), verificarStreak(), verificarBadges(), salvarDadosDebounced(), atualizarCardExercicio(t.exercicioId), atualizarStats(), renderHistory(), somRegistrar()
-  })(), sessaoGTGState.seriesFeitas++, renderSessaoDots(), mostrarToast(`✓ Série ${sessaoGTGState.seriesFeitas}/${sessaoGTGState.totalSeries}`, `${sessaoGTGState.valorPorSerie} ${sessaoGTGState.unidade} registrados`, "success"), sessaoGTGState.seriesFeitas >= sessaoGTGState.totalSeries ? concluirSessaoGTG() : iniciarDescansoSessao()
-}
-
-function iniciarDescansoSessao() {
-  sessaoGTGState.fase = "descansando", sessaoGTGState.segundosRestantes = sessaoGTGState.descansoSeg, atualizarSessaoUI();
-  const e = document.getElementById("sessionTimerDisplay");
-  sessaoGTGState.intervalo && clearInterval(sessaoGTGState.intervalo), sessaoGTGState.intervalo = setInterval(() => {
-    sessaoGTGState.segundosRestantes--;
-    const a = Math.floor(sessaoGTGState.segundosRestantes / 60),
-      t = sessaoGTGState.segundosRestantes % 60;
-    e && (e.textContent = `${String(a).padStart(2,"0")}:${String(t).padStart(2,"0")}`, e.style.color = sessaoGTGState.segundosRestantes < 30 ? "var(--green-bright)" : "var(--gold)"), sessaoGTGState.segundosRestantes <= 0 && (clearInterval(sessaoGTGState.intervalo), sessaoGTGState.intervalo = null, sessaoGTGState.fase = "pronta", atualizarSessaoUI(), somTimer(), mostrarToast("⚡ DESCANSO CONCLUÍDO", "Hora da próxima série!", "success"))
-  }, 1e3)
-}
-
-function concluirSessaoGTG() {
-  sessaoGTGState.intervalo && clearInterval(sessaoGTGState.intervalo);
-  const e = sessaoGTGState.exercicioNome,
-    a = sessaoGTGState.totalSeries;
-  mostrarToast("🏆 SESSÃO CONCLUÍDA", `${a} séries de ${e} completadas. Excelente trabalho!`, "success"), _mostrarGTGNeural(), sessaoGTGState = null, resetarPainelSessao()
-}
-
-function _gtgSpark() {
-  const p = document.createElement("div");
-  p.className = "gtg-neural-particle";
-  p.style.left = "50vw";
-  p.style.top = "50vh";
-  p.style.width = p.style.height = "3px";
-  p.style.animation = "gtgSignalPulse 0.6s ease-out forwards";
-  p.style.background = "var(--gold-light)";
-  p.style.boxShadow = "0 0 8px var(--gold-light)";
-  document.body.appendChild(p);
-  setTimeout(() => { if (p.parentNode) p.remove(); }, 700);
-}
-
-function _mostrarGTGNeural() {
-  const existing = document.querySelector(".gtg-neural-container");
-  if (existing) existing.remove();
-  const container = document.createElement("div");
-  container.className = "gtg-neural-container";
-  document.body.appendChild(container);
-  for (let i = 0; i < 18; i++) {
-    const p = document.createElement("div");
-    p.className = "gtg-neural-particle";
-    const x = 10 + Math.random() * 80, y = 10 + Math.random() * 80;
-    p.style.left = x + "vw";
-    p.style.top = y + "vh";
-    p.style.animationDelay = (i * 0.07) + "s";
-    p.style.width = p.style.height = (3 + Math.random() * 4) + "px";
-    container.appendChild(p);
-  }
-  for (let i = 0; i < 6; i++) {
-    const l = document.createElement("div");
-    l.className = "gtg-nerve-line";
-    const x = 5 + Math.random() * 90, y = 10 + Math.random() * 80;
-    l.style.left = x + "vw";
-    l.style.top = y + "vh";
-    l.style.width = (30 + Math.random() * 80) + "px";
-    l.style.animationDelay = (i * 0.15 + 0.5) + "s";
-    l.style.transform = "rotate(" + (Math.random() * 60 - 30) + "deg)";
-    container.appendChild(l);
-  }
-  setTimeout(() => { if (container.parentNode) container.remove(); }, 3000);
-}
-
-function pararSessaoGTG() {
-  sessaoGTGState && sessaoGTGState.intervalo && clearInterval(sessaoGTGState.intervalo), sessaoGTGState && sessaoGTGState.seriesFeitas > 0 && mostrarToast("Sessão encerrada", `${sessaoGTGState.seriesFeitas} série(s) registrada(s) antes de encerrar.`, "warning"), sessaoGTGState = null, resetarPainelSessao()
-}
-
-function resetarPainelSessao() {
-  const e = document.getElementById("sessionSetup"),
-    a = document.getElementById("sessionProgress");
-  e && (e.style.display = "block"), a && (a.style.display = "none")
-}
 
 /* === CALENDÁRIO HEATMAP === */
 const CAL_MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
