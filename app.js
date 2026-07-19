@@ -3675,7 +3675,10 @@ async function updateReadinessUI() {
 
   // Fill widths + values + zones — batched
   for (let j = 0; j < 7; j++) {
-    c.fills[j].style.width = 10 * vals[j] + "%";
+    const pct = 10 * vals[j];
+    c.fills[j].style.width = pct + "%";
+    const input = c.tracks[j].querySelector(".readiness-slider-input");
+    if (input) input.style.setProperty("--fill-pct", pct + "%");
     const el = c.vals[j];
     const newVal = String(vals[j]);
     if (el.textContent !== newVal) el.textContent = newVal;
