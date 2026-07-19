@@ -1135,14 +1135,14 @@
       </div>
       <div class="card">
         <div class="card-header"><span class="card-title">📋 REGISTRO DE COMBATE</span>
-          <div class="flex gap-8" style="flex-wrap:wrap"><input type="date" class="form-input" id="filterDate" oninput="renderHistory()"> <select class="form-select" id="filterExercise" onchange="renderHistory()">
+          <div class="flex gap-8" style="flex-wrap:wrap"><input type="date" class="form-input" id="filterDate" oninput="renderHistory()"> <span class="text-mono" style="font-size:10px;color:var(--gray);letter-spacing:1px">até</span> <input type="date" class="form-input" id="filterDateEnd" oninput="renderHistory()"> <select class="form-select" id="filterExercise" onchange="renderHistory()">
               <option value="">TODOS OS EXERCÍCIOS
             </select> <select class="form-select" id="filterOrdem" onchange="renderHistory()" style="font-size:12px">
               <option value="recente">↓ MAIS RECENTE
               <option value="antigo">↑ MAIS ANTIGO
               <option value="exercicio">A–Z EXERCÍCIO
               <option value="xp">★ MAIOR XP
-            </select> <button class="btn btn-outline btn-sm" onclick="copiarTreinoDia()" title="Copiar treino de hoje">📋 COPIAR DIA</button> <button class="btn btn-outline btn-sm" onclick="clearFilters()">LIMPAR</button></div>
+            </select> <button class="btn btn-outline btn-sm" onclick="setFiltroDataPreset('hoje')">HOJE</button> <button class="btn btn-outline btn-sm" onclick="setFiltroDataPreset('7d')">7D</button> <button class="btn btn-outline btn-sm" onclick="setFiltroDataPreset('30d')">30D</button> <button class="btn btn-outline btn-sm" onclick="copiarTreinoDia()" title="Copiar treino de hoje">📋 COPIAR DIA</button> <button class="btn btn-outline btn-sm" onclick="clearFilters()">LIMPAR</button></div>
         </div>
         <div class="card-body" id="historyLog" style="max-height:600px;overflow-y:auto"></div>
       </div>

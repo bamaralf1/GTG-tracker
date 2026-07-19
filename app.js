@@ -2597,13 +2597,40 @@ function setProgressMode(e, a) {
   modoProgresso = e, a.closest(".card").querySelectorAll(".toggle-btn").forEach(e => e.classList.remove("active")), a.classList.add("active"), renderProgresso()
 }
 
+function setFiltroDataPreset(preset) {
+  var hoje = new Date();
+  var dataStr = hoje.toISOString().slice(0, 10);
+  if (preset === "hoje") {
+    document.getElementById("filterDate").value = dataStr;
+    document.getElementById("filterDateEnd").value = "";
+  } else if (preset === "7d") {
+    var d7 = new Date(hoje);
+    d7.setDate(d7.getDate() - 6);
+    document.getElementById("filterDate").value = d7.toISOString().slice(0, 10);
+    document.getElementById("filterDateEnd").value = dataStr;
+  } else if (preset === "30d") {
+    var d30 = new Date(hoje);
+    d30.setDate(d30.getDate() - 29);
+    document.getElementById("filterDate").value = d30.toISOString().slice(0, 10);
+    document.getElementById("filterDateEnd").value = dataStr;
+  }
+  renderHistory();
+}
+
 function renderHistory() {
   var container = document.getElementById("historyLog"),
     filterDate = document.getElementById("filterDate")?.value,
+    filterDateEnd = document.getElementById("filterDateEnd")?.value,
     filterEx = document.getElementById("filterExercise")?.value,
     filterOrdem = document.getElementById("filterOrdem")?.value || "recente";
   var filtered = dados.registros.slice();
-  if (filterDate) filtered = filtered.filter(function(r) { return r.data === filterDate; });
+  if (filterDate) {
+    if (filterDateEnd) {
+      filtered = filtered.filter(function(r) { return r.data >= filterDate && r.data <= filterDateEnd; });
+    } else {
+      filtered = filtered.filter(function(r) { return r.data === filterDate; });
+    }
+  }
   if (filterEx) filtered = filtered.filter(function(r) { return r.exercicioId === filterEx; });
   if (filtered.length === 0) {
     container.innerHTML = '<div class="text-mono" style="text-align:center;padding:30px;">Nenhum registro encontrado. Comece a treinar!</div>';
@@ -2673,7 +2700,11 @@ function removerRegistroComConfirm(regId) {
 }
 
 function clearFilters() {
-  document.getElementById("filterDate").value = "", document.getElementById("filterExercise").value = "", renderHistory()
+  var d1 = document.getElementById("filterDate"), d2 = document.getElementById("filterDateEnd"), ex = document.getElementById("filterExercise");
+  if (d1) d1.value = "";
+  if (d2) d2.value = "";
+  if (ex) ex.value = "";
+  renderHistory();
 }
 
 function preencherSelects() {
