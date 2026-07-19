@@ -157,8 +157,42 @@ const EXERCICIOS_DEFAULT = [{
       pavelQuote: '"Rosca direta sem controle não é força — é momentum. Controle o peso em cada milímetro do movimento. Aí sim você está treinando o bíceps."',
       variacoes: ["Rosca com haltere alternado — permite supinação completa no topo", "Rosca concentrada (sentado, cotovelo na coxa) — isolamento total", "Rosca com barra EZ — reduz estresse no punho", "Rosca Zottman (sobe supinado, desce pronado) — antebraço e bíceps", "Rosca com banda elástica — resistência variável, ótimo para GTG em casa"]
     }
-  }],
-  TODAS_BADGES = [{
+  }]
+
+// Mapa de exercícios da Skill Tree que são baseados em tempo (não reps)
+const SKILLTREE_TEMPO_EXERCICIOS = new Set([
+  "prancha_lateral","prancha_elevacao","prancha_toque",
+  "one_arm_hang","plate_pinch","farmers_walk",
+  "dragon_flag","ab_wheel"
+]);
+
+function skilltreeSyncExercicios() {
+  if (typeof skilltree === "undefined" || typeof skilltree.calcularEstadoArvore !== "function") return;
+  const estado = skilltree.calcularEstadoArvore();
+  let mudou = false;
+  for (const [nodeId, info] of Object.entries(estado)) {
+    if (!info.desbloqueado) continue;
+    const exId = info.exercicioId;
+    if (dados.exercicios.some(e => e.id === exId)) continue;
+    const defaultEx = EXERCICIOS_DEFAULT.find(d => d.id === exId);
+    if (defaultEx) {
+      dados.exercicios.push({ ...defaultEx });
+    } else {
+      const isTempo = SKILLTREE_TEMPO_EXERCICIOS.has(exId);
+      dados.exercicios.push({
+        id: exId,
+        nome: info.nome,
+        tipo: isTempo ? "tempo" : "reps",
+        unidade: isTempo ? "seg" : "reps",
+        instrucoes: info.nome + " — registre suas reps aqui."
+      });
+    }
+    mudou = true;
+  }
+  if (mudou) { salvarDados(); renderExercicios(); }
+}
+
+var TODAS_BADGES = [{
     id: "submaximo_mestre",
     icone: "⚔",
     nome: "Submáximo Mestre",
@@ -913,7 +947,7 @@ let fraseAtualIndex = -1,
 
 function inicializar() {
   carregarDados().then(async () => {
-    atualizarDataHeader(), renderExercicios(), renderBadges(), renderHistory(), renderGuiaExercicios(), atualizarXP(), atualizarUIStreak(), atualizarStats(), renderWarmup(), setTimeout(() => {
+    skilltreeSyncExercicios(), atualizarDataHeader(), renderExercicios(), renderBadges(), renderHistory(), renderGuiaExercicios(), atualizarXP(), atualizarUIStreak(), atualizarStats(), renderWarmup(), setTimeout(() => {
       renderGraficos(), renderProgresso(), renderEstatisticasMensais()
     }, 300), verificarStreak(), verificarBadges(), preencherSelects(), exibirFraseDoDia(), iniciarLembretes();
     await Promise.all([carregarReadiness(), carregarMetas(), carregarPlanejador(), carregarModoFoco()]);
