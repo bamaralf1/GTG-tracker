@@ -956,6 +956,11 @@ function inicializar() {
       e && e.classList.add("active"), populateFocoSelect(), document.getElementById("modoFocoSelect").value = modoFocoState.exercicioId || "", aplicarModoFoco()
     }
     setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), setTimeout(function() {
+      // Restaura ordenação salva
+      var savedOrder = null;
+      try { savedOrder = localStorage.getItem("gtg_ex_order"); } catch(e){}
+      var sel = document.getElementById("sortExercicios");
+      if (sel && savedOrder) sel.value = savedOrder;
       // Se readiness não foi preenchido hoje, destaca o header
       if (readinessData.data !== (new Date).toISOString().slice(0, 10)) {
         var hdr = document.getElementById("headerReadiness");
@@ -1746,11 +1751,35 @@ function toggleFiltroPerfeitas(el) {
 }
 // ===== END GROOVE =====
 
+function _sortExercicios() {
+  var modo = document.getElementById("sortExercicios")?.value || "padrao";
+  if (modo === "padrao") { try { localStorage.setItem("gtg_ex_order", modo); } catch(e){} return; }
+  try { localStorage.setItem("gtg_ex_order", modo); } catch(e){} 
+  dados.exercicios.sort(function(a, b) {
+    if (modo === "az") return (a.nome || "").localeCompare(b.nome || "");
+    // "recente" — usa timestamp do último registro
+    var lastA = 0, lastB = 0;
+    for (var i = 0; i < dados.registros.length; i++) {
+      var r = dados.registros[i];
+      if (r.exercicioId === a.id && r.timestamp > lastA) lastA = r.timestamp;
+      if (r.exercicioId === b.id && r.timestamp > lastB) lastB = r.timestamp;
+    }
+    return lastB - lastA;
+  });
+}
+
+function alterarOrdemExercicios() {
+  _sortExercicios();
+  salvarDados();
+  renderExercicios();
+}
+
 function renderExercicios() {
   try {
     const e = document.getElementById("exerciseGrid");
     if (!e) return void console.error("Elemento exerciseGrid não encontrado");
     if (e.innerHTML = "", !dados.exercicios || 0 === dados.exercicios.length) return void(e.innerHTML = '<div class="text-mono" style="text-align:center; padding:30px; color:var(--gray-light);">Nenhum exercício encontrado. Adicione um exercício acima.</div>');
+    _sortExercicios();
     dados.exercicios.forEach((a, idx) => {
       const t = (new Date).toISOString().slice(0, 10),
         o = dados.registros.filter(e => {

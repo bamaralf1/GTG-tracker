@@ -381,6 +381,14 @@
         <div class="section-divider-text">★ EXERCÍCIOS ATIVOS ★</div>
         <div class="section-divider-line" style="background:linear-gradient(270deg,var(--red),rgba(212,160,23,.3),transparent)"></div>
       </div>
+      <div style="display:flex;justify-content:flex-end;padding:4px 8px 0;gap:6px;align-items:center">
+        <span class="text-mono" style="font-size:9px;color:var(--gray);letter-spacing:1px">ORDENAR:</span>
+        <select class="form-select" id="sortExercicios" onchange="alterarOrdemExercicios()" style="font-size:11px;padding:3px 6px;width:auto">
+          <option value="padrao">MANUAL (ARRASTE)
+          <option value="recente">MAIS RECENTE
+          <option value="az">A–Z
+        </select>
+      </div>
       <div class="exercise-grid" id="exerciseGrid"></div>
       <div class="card" style="margin-top:20px">
         <div class="card-header"><span class="card-title">+ ADICIONAR EXERCÍCIO</span></div>
