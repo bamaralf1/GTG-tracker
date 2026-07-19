@@ -1596,6 +1596,13 @@ body::after{
 .log-exercise{font-family:Oswald,sans-serif;font-size:14px;color:var(--white);font-weight:500;flex:1}
 .log-detail{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);letter-spacing:2px;text-shadow:0 0 8px rgba(212,168,67,0.3)}
 .log-xp{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--accent-cyan);letter-spacing:1px;text-shadow:0 0 6px rgba(0,229,255,0.4)}
+.log-group{margin-bottom:4px}
+.log-group-header{display:flex;align-items:center;gap:8px;padding:6px 8px;background:rgba(212,168,67,0.08);border-left:2px solid var(--gold);cursor:pointer;user-select:none;transition:background .2s}
+.log-group-header:hover{background:rgba(212,168,67,0.14)}
+.log-group-name{font-family:Oswald,sans-serif;font-size:14px;color:var(--gold);flex:1}
+.log-group-stats{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold-dim)}
+.log-group-toggle{font-size:10px;color:var(--gold-dim);transition:transform .2s}
+.log-group-collapsed{display:none!important}
 
 /* === MODALS === */
 .modal-overlay{

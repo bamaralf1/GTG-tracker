@@ -2520,18 +2520,71 @@ function setProgressMode(e, a) {
 }
 
 function renderHistory() {
-  const container = document.getElementById("historyLog"),
+  var container = document.getElementById("historyLog"),
     filterDate = document.getElementById("filterDate")?.value,
     filterEx = document.getElementById("filterExercise")?.value,
     filterOrdem = document.getElementById("filterOrdem")?.value || "recente";
-  let filtered = [...dados.registros];
-  filterDate && (filtered = filtered.filter(r => r.data === filterDate)), filterEx && (filtered = filtered.filter(r => r.exercicioId === filterEx)), "recente" === filterOrdem ? filtered.sort((a, b) => b.timestamp - a.timestamp) : "antigo" === filterOrdem ? filtered.sort((a, b) => a.timestamp - b.timestamp) : "exercicio" === filterOrdem ? filtered.sort((a, b) => (a.exercicioNome || "").localeCompare(b.exercicioNome || "")) : "xp" === filterOrdem && filtered.sort((a, b) => (b.xp || 0) - (a.xp || 0)), 0 !== filtered.length ? container.innerHTML = filtered.slice(0, 200).map((reg, idx) => {
-    const ex = dados.exercicios.find(e => e.id === reg.exercicioId),
-      unit = "tempo" === ex?.tipo ? "seg" : ex?.unidade || "reps",
-      rpeCls = getRPEColorClass(reg.rpe),
-      rpeHtml = reg.rpe ? `<span class="log-rpe ${rpeCls}">RPE ${reg.rpe}</span>` : "";
-    return `\n      <div class="log-entry" style="--i:${idx}">\n        <div class="log-dot"></div>\n        <div class="log-time">${reg.data?.slice(5)} ${reg.hora}</div>\n        ${rpeHtml}\n        <div class="log-quality ${renderQualityClass(reg.groove)}">${renderQualityIcons(reg.groove)}</div>\n        <div class="log-exercise">${escapeHtml(reg.exercicioNome||reg.exercicioId)}</div>\n        <div class="log-detail">${escapeHtml(String(reg.valor))} ${unit}${reg.peso?` @ ${escapeHtml(String(reg.peso))}kg`:""}</div>\n        <div class="log-xp">+${reg.xp||0} XP</div>\n        <button class="btn-icon danger" onclick="removerRegistroComConfirm('${reg.id}')" style="flex-shrink:0;">✕</button>\n      </div>`
-  }).join("") : container.innerHTML = '<div class="text-mono" style="text-align:center;padding:30px;">Nenhum registro encontrado. Comece a treinar!</div>'
+  var filtered = dados.registros.slice();
+  if (filterDate) filtered = filtered.filter(function(r) { return r.data === filterDate; });
+  if (filterEx) filtered = filtered.filter(function(r) { return r.exercicioId === filterEx; });
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="text-mono" style="text-align:center;padding:30px;">Nenhum registro encontrado. Comece a treinar!</div>';
+    return;
+  }
+  if ("exercicio" === filterOrdem) {
+    var groups = {};
+    filtered.forEach(function(r) {
+      var key = r.exercicioNome || r.exercicioId || "DESCONHECIDO";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(r);
+    });
+    var sortedKeys = Object.keys(groups).sort();
+    container.innerHTML = sortedKeys.map(function(exName, gi) {
+      var regs = groups[exName];
+      var ex = dados.exercicios.find(function(e) { return e.id === regs[0].exercicioId; });
+      var unit = "tempo" === ex?.tipo ? "seg" : ex?.unidade || "reps";
+      var totalVal = 0;
+      regs.forEach(function(r) { totalVal += r.valor || 0; });
+      var headerHtml = '<div class="log-group-header" onclick="this.nextElementSibling.classList.toggle(\'log-group-collapsed\')">'
+        + '<span class="log-group-name">' + escapeHtml(exName) + '</span>'
+        + '<span class="log-group-stats">' + regs.length + ' s\u00e9ries \u00b7 ' + totalVal + ' ' + unit + '</span>'
+        + '<span class="log-group-toggle">\u25bc</span></div>';
+      var entriesHtml = regs.slice(0, 200).map(function(reg, idx) {
+        var rpeCls = getRPEColorClass(reg.rpe);
+        var rpeHtml = reg.rpe ? '<span class="log-rpe ' + rpeCls + '">RPE ' + reg.rpe + '</span>' : "";
+        return '<div class="log-entry" style="--i:' + idx + '">'
+          + '<div class="log-dot"></div>'
+          + '<div class="log-time">' + (reg.data ? reg.data.slice(5) : '') + ' ' + (reg.hora || '') + '</div>'
+          + rpeHtml
+          + '<div class="log-quality ' + renderQualityClass(reg.groove) + '">' + renderQualityIcons(reg.groove) + '</div>'
+          + '<div class="log-detail">' + escapeHtml(String(reg.valor)) + ' ' + unit + (reg.peso ? ' @ ' + escapeHtml(String(reg.peso)) + 'kg' : '') + '</div>'
+          + '<div class="log-xp">+' + (reg.xp||0) + ' XP</div>'
+          + '<button class="btn-icon danger" onclick="removerRegistroComConfirm(\'' + reg.id + '\')" style="flex-shrink:0;">\u2715</button>'
+          + '</div>';
+      }).join("");
+      return '<div class="log-group">' + headerHtml + '<div class="log-group-entries">' + entriesHtml + '</div></div>';
+    }).join("");
+  } else {
+    if ("recente" === filterOrdem) filtered.sort(function(a, b) { return b.timestamp - a.timestamp; });
+    else if ("antigo" === filterOrdem) filtered.sort(function(a, b) { return a.timestamp - b.timestamp; });
+    else if ("xp" === filterOrdem) filtered.sort(function(a, b) { return (b.xp || 0) - (a.xp || 0); });
+    container.innerHTML = filtered.slice(0, 200).map(function(reg, idx) {
+      var ex = dados.exercicios.find(function(e) { return e.id === reg.exercicioId; });
+      var unit = "tempo" === ex?.tipo ? "seg" : ex?.unidade || "reps";
+      var rpeCls = getRPEColorClass(reg.rpe);
+      var rpeHtml = reg.rpe ? '<span class="log-rpe ' + rpeCls + '">RPE ' + reg.rpe + '</span>' : "";
+      return '<div class="log-entry" style="--i:' + idx + '">'
+        + '<div class="log-dot"></div>'
+        + '<div class="log-time">' + (reg.data ? reg.data.slice(5) : '') + ' ' + (reg.hora || '') + '</div>'
+        + rpeHtml
+        + '<div class="log-quality ' + renderQualityClass(reg.groove) + '">' + renderQualityIcons(reg.groove) + '</div>'
+        + '<div class="log-exercise">' + escapeHtml(reg.exercicioNome||reg.exercicioId) + '</div>'
+        + '<div class="log-detail">' + escapeHtml(String(reg.valor)) + ' ' + unit + (reg.peso ? ' @ ' + escapeHtml(String(reg.peso)) + 'kg' : '') + '</div>'
+        + '<div class="log-xp">+' + (reg.xp||0) + ' XP</div>'
+        + '<button class="btn-icon danger" onclick="removerRegistroComConfirm(\'' + reg.id + '\')" style="flex-shrink:0;">\u2715</button>'
+        + '</div>';
+    }).join("");
+  }
 }
 
 function removerRegistroComConfirm(regId) {
