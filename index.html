@@ -1694,6 +1694,9 @@
       if (tab) tab.classList.add("active");
       if (content) content.classList.add("active");
 
+      if (tabName === 'treino' && typeof skilltreeSyncExercicios === 'function') {
+        skilltreeSyncExercicios();
+      }
       function _depoisPaint(fn) {
         requestAnimationFrame(function() { requestAnimationFrame(fn) });
       }
