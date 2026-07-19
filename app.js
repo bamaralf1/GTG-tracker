@@ -1754,7 +1754,7 @@ function renderExercicios() {
         i = o.length,
         d = o.reduce((e, a) => e + (a.valor || 0), 0),
         se = calcularStreakExercicio(a.id);
-      e.innerHTML += `\n      <div class="exercise-card" id="excard-${a.id}" style="--i:${idx}">\n        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>\n        <div class="ex-noise"></div>\n        <div class="ex-corner-glow ex-corner-glow-tl"></div>\n        <div class="ex-corner-glow ex-corner-glow-br"></div>\n        <div class="exercise-card-header">\n          <div class="exercise-name">${escapeHtml(a.nome)}</div>\n          <div class="sugestao-gtg" id="sugestao-${a.id}" onclick="aplicarSugestaoGTG('${a.id}', event)">\n            <span class="bulb">💡</span>\n            <span class="gtg-val" id="gtg-val-${a.id}">GTG: --</span>\n            <span class="gtg-label">reps</span>\n            <div class="gtg-tooltip">\n              <strong style="color:var(--gold)">SÉRIE SUGERIDA — MÉTODO GTG</strong><br>\n              PR (30 dias): <span id="tooltip-pr-${a.id}">0</span> ${"tempo"===a.tipo?"seg":a.unidade||"reps"}<br>\n              Sugestão: 50% do máximo<br>\n              <em style="color:var(--gold-dim)">"Nunca vá ao fracasso" — Pavel</em>\n            </div>\n          </div>\n          <div class="exercise-card-actions">\n            <button class="btn-icon btn-meta" onclick="abrirModalMeta('${a.id}')">🎯</button>\n            <button class="btn-icon" onclick="mostrarInfoExercicio('${a.id}')" title="Informações">ℹ</button>\n            <button class="btn-icon danger" onclick="removerExercicio('${a.id}')" title="Remover">✕</button>\n            <div class="quality-badge-wrap" id="qbadge-wrap-${a.id}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;"></div>\n          </div>\n        </div>\n        <div class="exercise-stats">\n          <div class="ex-stat">\n            <div class="ex-stat-val">${i}</div>\n            <div class="ex-stat-lbl">SÉRIES HOJE</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${d}</div>\n            <div class="ex-stat-lbl">${"tempo"===a.tipo?"SEG HOJE":"REPS HOJE"}</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${r}</div>\n            <div class="ex-stat-lbl">TOTAL SÉRIES</div>\n          </div>\n          <div class="ex-stat" title="Dias consecutivos treinando este exercício">\n            <div class="ex-stat-val" style="color:var(--gold);">${se}<span class="exercise-streak-fire${se>0?'':' no-streak'}">${se>0?'<span class="ex-streak-flame ex-streak-flame-1"></span><span class="ex-streak-flame ex-streak-flame-2"></span><span class="ex-streak-flame ex-streak-flame-3"></span>':'🎯'}</span></div>\n            <div class="ex-stat-lbl">STREAK DIAS</div>\n          </div>\n        </div>\n        <div class="pr-display">\n          <div>\n            <div class="pr-display-label">PR (30 DIAS)</div>\n            <div class="pr-display-val" id="pr-display-${a.id}">0 ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</div>\n          </div>\n          <button class="test-max-btn" onclick="abrirTesteMaximo('${a.id}')">🎯 TESTAR MÁXIMO</button>\n        </div>\n        <div class="exercise-pr">\n          <span class="pr-label">PR ESTIMADO:</span>\n          <span class="pr-value">${n} ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</span>\n          <span style="margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gray);">${s} total acum.</span>\n        </div>\n        <div class="rpe-avg-display" id="rpe-avg-${a.id}">\n          RPE MÉDIO HOJE: <span class="rpe-avg-val" id="rpe-avg-val-${a.id}">—</span>\n        </div>\n        <div class="exercise-add-form">\n          ${"peso"===a.tipo?`\n            <div class="form-group">\n              <label class="form-label">Peso (kg)</label>\n              <input type="number" class="form-input" id="peso-${a.id}" placeholder="0" min="0" step="0.5">\n            </div>`:""}\n          <div class="form-group">\n            <label class="form-label">${"tempo"===a.tipo?"Segundos":"Reps"}</label>\n            <input type="number" class="form-input" id="valor-${a.id}" placeholder="${"tempo"===a.tipo?"60":"10"}" min="1">\n          </div>\n          <button class="btn btn-red" onclick="adicionarSerie('${a.id}')">+ REGISTRAR</button>\n          <button class="btn btn-outline btn-sm" onclick="abrirTimerDescanso('${a.id}')">⏱ DESCANSO</button>\n          ${"tempo"===a.tipo?'<button class="btn btn-outline btn-sm timer-trigger-btn" onclick="startPlankTimer(\'' + a.id + '\')">▶ TIMER</button>':''}\n          <div class="groove-toggles" id="groove-toggles-${a.id}" style="flex-basis:100%;">
+      e.innerHTML += `\n      <div class="exercise-card" id="excard-${a.id}" style="--i:${idx}">\n        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>\n        <div class="ex-noise"></div>\n        <div class="ex-corner-glow ex-corner-glow-tl"></div>\n        <div class="ex-corner-glow ex-corner-glow-br"></div>\n        <div class="exercise-card-header">\n          <div class="exercise-name">${escapeHtml(a.nome)}</div>\n          <div class="sugestao-gtg" id="sugestao-${a.id}" onclick="aplicarSugestaoGTG('${a.id}', event)">\n            <span class="bulb">💡</span>\n            <span class="gtg-val" id="gtg-val-${a.id}">GTG: --</span>\n            <span class="gtg-label">reps</span>\n            <div class="gtg-tooltip">\n              <strong style="color:var(--gold)">SÉRIE SUGERIDA — MÉTODO GTG</strong><br>\n              PR (30 dias): <span id="tooltip-pr-${a.id}">0</span> ${"tempo"===a.tipo?"seg":a.unidade||"reps"}<br>\n              Sugestão: 50% do máximo<br>\n              <em style="color:var(--gold-dim)">"Nunca vá ao fracasso" — Pavel</em>\n            </div>\n          </div>\n          <div class="exercise-card-actions">\n            <button class="btn-icon btn-meta" onclick="abrirModalMeta('${a.id}')">🎯</button>\n            <button class="btn-icon" onclick="mostrarInfoExercicio('${a.id}')" title="Informações">ℹ</button>\n            <button class="btn-icon danger" onclick="removerExercicio('${a.id}')" title="Remover">✕</button>\n            <div class="quality-badge-wrap" id="qbadge-wrap-${a.id}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;"></div>\n          </div>\n        </div>\n        <div class="exercise-stats">\n          <div class="ex-stat">\n            <div class="ex-stat-val">${i}</div>\n            <div class="ex-stat-lbl">SÉRIES HOJE</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${d}</div>\n            <div class="ex-stat-lbl">${"tempo"===a.tipo?"SEG HOJE":"REPS HOJE"}</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${r}</div>\n            <div class="ex-stat-lbl">TOTAL SÉRIES</div>\n          </div>\n          <div class="ex-stat" title="Dias consecutivos treinando este exercício">\n            <div class="ex-stat-val" style="color:var(--gold);">${se}<span class="exercise-streak-fire${se>0?'':' no-streak'}">${se>0?'<span class="ex-streak-flame ex-streak-flame-1"></span><span class="ex-streak-flame ex-streak-flame-2"></span><span class="ex-streak-flame ex-streak-flame-3"></span>':'🎯'}</span></div>\n            <div class="ex-stat-lbl">STREAK DIAS</div>\n          </div>\n        </div>\n        <div class="pr-display">\n          <div>\n            <div class="pr-display-label">PR (30 DIAS)</div>\n            <div class="pr-display-val" id="pr-display-${a.id}">0 ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</div>\n          </div>\n          <button class="test-max-btn" onclick="abrirTesteMaximo('${a.id}')">🎯 TESTAR MÁXIMO</button>\n        </div>\n        <div class="exercise-pr">\n          <span class="pr-label">PR ESTIMADO:</span>\n          <span class="pr-value">${n} ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</span>\n          <span style="margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gray);">${s} total acum.</span>\n        </div>\n        <div class="exercise-details">\n          <div class="ex-detail-section">\n            <div class="details-header">ÚLTIMAS 3 SÉRIES (HOJE)</div>\n            <div class="recent-series-list" id="recent-series-${a.id}">\n              ${o.length > 0 ? o.slice(-3).reverse().map(r => '<span class="recent-set-item">' + r.valor + ' ' + ("tempo"===a.tipo?"seg":a.unidade||"reps") + (r.rpe ? ' · RPE ' + r.rpe : '') + (r.hora ? ' · ' + r.hora.slice(0,5) : '') + '</span>').join('') : '<span class="recent-set-empty">Nenhuma série hoje</span>'}\n            </div>\n          </div>\n          <div class="ex-detail-section">\n            <div class="details-header">PR 30 DIAS</div>\n            <div class="sparkline-container" id="sparkline-container-${a.id}">\n              ${gerarSVGSparkline(calcularSparklinePR(a.id, 30), 120, 30)}\n            </div>\n          </div>\n        </div>\n        <div class="rpe-avg-display" id="rpe-avg-${a.id}">\n          RPE MÉDIO HOJE: <span class="rpe-avg-val" id="rpe-avg-val-${a.id}">—</span>\n        </div>\n        <div class="exercise-add-form">\n          ${"peso"===a.tipo?`\n            <div class="form-group">\n              <label class="form-label">Peso (kg)</label>\n              <input type="number" class="form-input" id="peso-${a.id}" placeholder="0" min="0" step="0.5">\n            </div>`:""}\n          <div class="form-group">\n            <label class="form-label">${"tempo"===a.tipo?"Segundos":"Reps"}</label>\n            <input type="number" class="form-input" id="valor-${a.id}" placeholder="${"tempo"===a.tipo?"60":"10"}" min="1">\n          </div>\n          <button class="btn btn-red" onclick="adicionarSerie('${a.id}')">+ REGISTRAR</button>\n          <button class="btn btn-outline btn-sm" onclick="abrirTimerDescanso('${a.id}')">⏱ DESCANSO</button>\n          ${"tempo"===a.tipo?'<button class="btn btn-outline btn-sm timer-trigger-btn" onclick="startPlankTimer(\'' + a.id + '\')">▶ TIMER</button>':''}\n          <div class="groove-toggles" id="groove-toggles-${a.id}" style="flex-basis:100%;">
             <span class="groove-label">⚙ GROOVE</span>
             <div class="groove-slider" id="groove-amp-${a.id}" title="Amplitude completa: do topo ao fundo, sem truncar.">
               <span class="missile-switch__icon">🏋️</span>
@@ -1889,6 +1889,28 @@ function atualizarCardExercicio(exId) {
     const valorInput = document.getElementById('valor-' + exId);
     if (valorInput && sug && !valorInput.value && !valorInput.placeholder.startsWith('GTG')) {
       valorInput.placeholder = 'GTG: ' + sug;
+    }
+
+    // Recent series (últimas 3 de hoje)
+    var recentEl = document.getElementById('recent-series-' + exId);
+    if (recentEl) {
+      var hojeRegs = dados.registros.filter(function(r) {
+        var d = r.data || (r.timestamp ? new Date(r.timestamp).toISOString().slice(0, 10) : null);
+        return r.exercicioId === exId && d === hoje;
+      });
+      if (hojeRegs.length === 0) {
+        recentEl.innerHTML = '<span class="recent-set-empty">Nenhuma série hoje</span>';
+      } else {
+        recentEl.innerHTML = hojeRegs.slice(-3).reverse().map(function(r) {
+          return '<span class="recent-set-item">' + r.valor + ' ' + unit + (r.rpe ? ' \u00b7 RPE ' + r.rpe : '') + (r.hora ? ' \u00b7 ' + r.hora.slice(0,5) : '') + '</span>';
+        }).join('');
+      }
+    }
+
+    // Sparkline PR 30d
+    var sparkEl = document.getElementById('sparkline-container-' + exId);
+    if (sparkEl) {
+      sparkEl.innerHTML = gerarSVGSparkline(calcularSparklinePR(exId, 30), 120, 30);
     }
 
     // Meta bar
@@ -2087,6 +2109,54 @@ function calcularPR(ex) {
   const tresMesesAtras = Date.now() - 2592e6;
   const registros = dados.registros.filter(r => r.exercicioId === ex.id && !r.isTest && r.timestamp > tresMesesAtras);
   return registros.length === 0 ? 0 : Math.max(...registros.map(r => Number(r.valor) || 0));
+}
+
+function calcularSparklinePR(exId, dias) {
+  dias = dias || 30;
+  const regs = dados.registros.filter(function(r) { return r.exercicioId === exId && !r.isTest; });
+  var hoje = new Date();
+  var pontos = [];
+  for (var i = dias - 1; i >= 0; i--) {
+    var d = new Date(hoje);
+    d.setDate(d.getDate() - i);
+    var dataStr = d.toISOString().slice(0, 10);
+    var maxDia = 0;
+    for (var j = 0; j < regs.length; j++) {
+      if (regs[j].data === dataStr) {
+        maxDia = Math.max(maxDia, Number(regs[j].valor) || 0);
+      }
+    }
+    pontos.push(maxDia);
+  }
+  return pontos;
+}
+
+function gerarSVGSparkline(vals, w, h) {
+  w = w || 120;
+  h = h || 30;
+  var max = 1;
+  var min = Infinity;
+  for (var i = 0; i < vals.length; i++) {
+    if (vals[i] > max) max = vals[i];
+    if (vals[i] < min) min = vals[i];
+  }
+  if (min === Infinity) min = 0;
+  var range = max - min || 1;
+  if (range === 0) range = 1;
+  var pontos = [];
+  for (var i = 0; i < vals.length; i++) {
+    var x = vals.length > 1 ? 2 + (i / (vals.length - 1)) * (w - 4) : w / 2;
+    var y = h - 4 - ((vals[i] - min) / range) * (h - 8);
+    pontos.push(x.toFixed(1) + ',' + y.toFixed(1));
+  }
+  var gradId = 'spark-grad-' + Math.random().toString(36).slice(2, 6);
+  var area = '<polygon fill="url(#' + gradId + ')" points="' + pontos[0] + ' ' + pontos.join(' ') + ' ' + pontos[pontos.length-1].split(',')[0] + ',' + (h-4) + ' ' + pontos[0].split(',')[0] + ',' + (h-4) + '"/>';
+  return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" style="width:100%;height:100%;display:block">'
+    + '<defs><linearGradient id="' + gradId + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--gold)" stop-opacity="0.25"/><stop offset="100%" stop-color="var(--gold)" stop-opacity="0.02"/></linearGradient></defs>'
+    + area
+    + '<polyline fill="none" stroke="var(--gold)" stroke-width="1.5" points="' + pontos.join(' ') + '"/>'
+    + '<circle cx="' + pontos[pontos.length-1].split(',')[0] + '" cy="' + pontos[pontos.length-1].split(',')[1] + '" r="2" fill="var(--gold)"/>'
+    + '</svg>';
 }
 
 function atualizarStats() {
