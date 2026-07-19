@@ -3678,7 +3678,11 @@ async function updateReadinessUI() {
     const pct = 10 * vals[j];
     c.fills[j].style.width = pct + "%";
     const input = c.tracks[j].querySelector(".readiness-slider-input");
-    if (input) input.style.setProperty("--fill-pct", pct + "%");
+    if (input) {
+      const zone = getZonaSlider(vals[j], j === 1 || j === 2);
+      const cor = zone === "green" ? "var(--green-bright)" : zone === "yellow" ? "var(--accent-yellow)" : zone === "orange" ? "var(--accent-orange)" : "var(--red-bright)";
+      input.style.background = `linear-gradient(90deg, ${cor} ${pct}%, transparent ${pct}%)`;
+    }
     const el = c.vals[j];
     const newVal = String(vals[j]);
     if (el.textContent !== newVal) el.textContent = newVal;
