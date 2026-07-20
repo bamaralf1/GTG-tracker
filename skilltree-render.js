@@ -1063,18 +1063,10 @@
 
     // Verifica se o exercício existe no app
     const ex = _getExercicio(estadoNo.exercicioId);
-    if (!ex) {
-      if (typeof mostrarToast === 'function') {
-        mostrarToast(
-          '⚠ EXERCÍCIO NÃO CADASTRADO',
-          `${estadoNo.nome} ainda não está na sua lista. Adicione manualmente!`,
-          'warning'
-        );
-      }
-      return;
+    if (!ex && typeof skilltreeSyncExercicios === 'function') {
+      skilltreeSyncExercicios();
     }
 
-    // Muda para aba de treino
     if (typeof switchTab === 'function') switchTab('treino');
 
     // Aguarda a aba renderizar, depois faz scroll + highlight

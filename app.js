@@ -1,4 +1,4 @@
-function cssVar(name) {
+﻿function cssVar(name) {
   if (!window._cssVarCache) window._cssVarCache = {};
   if (window._cssVarCache[name] !== undefined) return window._cssVarCache[name];
   try {
@@ -885,6 +885,7 @@ let fraseAtualIndex = -1,
   lembreteContagem = 0,
   lembreteProximo = null,
   lembreteIntervaloMs = 900000,
+  lembreteSWAtivo = false,
   filtroPerfeitas = false,
   dados = {
     exercicios: [],
@@ -1056,12 +1057,11 @@ function verificarStreak() {
   const hoje = (new Date).toISOString().slice(0, 10),
     ontem = new Date(Date.now() - 864e5).toISOString().slice(0, 10),
     temHoje = dados.registros.some(reg => (reg.data || (reg.timestamp ? new Date(reg.timestamp).toISOString().slice(0, 10) : null)) === hoje);
-  dados.registros.some(reg => (reg.data || (reg.timestamp ? new Date(reg.timestamp).toISOString().slice(0, 10) : null)) === ontem);
   if (streakData.ultimaData === hoje);
   else if (temHoje) {
     if (streakData.ultimaData !== ontem && streakData.ultimaData) {
       const diff = streakData.ultimaData ? Math.floor((new Date(hoje) - new Date(streakData.ultimaData)) / 864e5) : 999;
-      2 === diff && streakData.diasFolgaUsados < 1 ? (streakData.diasFolgaUsados += 1, streakData.atual += 2, mostrarToast("Dia de Folga Usado", "Sua streak foi preservada! (1 folga/semana)", "warning")) : diff > 1 && diff < 999 && (usarShield() ? streakData.atual += diff : (streakData.atual = 1, streakData.diasFolgaUsados = 0, mostrarToast("💔 Streak Quebrada", "Sua streak foi resetada. Compre escudos para proteção!", "error")))
+      2 === diff && streakData.diasFolgaUsados < 1 ? (streakData.diasFolgaUsados += 1, streakData.atual += 1, mostrarToast("Dia de Folga Usado", "Sua streak foi preservada! (1 folga/semana)", "warning")) : diff > 1 && diff < 999 && (usarShield() ? streakData.atual += 1 : (streakData.atual = 1, streakData.diasFolgaUsados = 0, mostrarToast("💔 Streak Quebrada", "Sua streak foi resetada. Compre escudos para proteção!", "error")))
     } else streakData.atual += 1;
     streakData.ultimaData = hoje, streakData.atual > streakData.recorde && (streakData.recorde = streakData.atual);
     const inicioSemana = getInicioSemana(hoje);
@@ -1665,7 +1665,7 @@ function renderExercicios() {
         i = o.length,
         d = o.reduce((e, a) => e + (a.valor || 0), 0),
         se = calcularStreakExercicio(a.id);
-      e.innerHTML += `\n      <div class="exercise-card" id="excard-${a.id}" style="--i:${idx}">\n        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>\n        <div class="ex-noise"></div>\n        <div class="ex-corner-glow ex-corner-glow-tl"></div>\n        <div class="ex-corner-glow ex-corner-glow-br"></div>\n        <div class="exercise-card-header">\n          <div class="exercise-name">${escapeHtml(a.nome)}</div>\n          <div class="sugestao-gtg" id="sugestao-${a.id}" onclick="aplicarSugestaoGTG('${a.id}', event)">\n            <span class="bulb">💡</span>\n            <span class="gtg-val" id="gtg-val-${a.id}">GTG: --</span>\n            <span class="gtg-label">reps</span>\n            <div class="gtg-tooltip">\n              <strong style="color:var(--gold)">SÉRIE SUGERIDA — MÉTODO GTG</strong><br>\n              PR (30 dias): <span id="tooltip-pr-${a.id}">0</span> ${"tempo"===a.tipo?"seg":a.unidade||"reps"}<br>\n              Sugestão: 50% do máximo<br>\n              <em style="color:var(--gold-dim)">"Nunca vá ao fracasso" — Pavel</em>\n            </div>\n          </div>\n          <div class="exercise-card-actions">\n            <button class="btn-icon btn-meta" onclick="abrirModalMeta('${a.id}')">🎯</button>\n            <button class="btn-icon" onclick="mostrarInfoExercicio('${a.id}')" title="Informações">ℹ</button>\n            <button class="btn-icon danger" onclick="removerExercicio('${a.id}')" title="Remover">✕</button>\n            <div class="quality-badge-wrap" id="qbadge-wrap-${a.id}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;"></div>\n          </div>\n        </div>\n        <div class="exercise-stats">\n          <div class="ex-stat">\n            <div class="ex-stat-val">${i}</div>\n            <div class="ex-stat-lbl">SÉRIES HOJE</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${d}</div>\n            <div class="ex-stat-lbl">${"tempo"===a.tipo?"SEG HOJE":"REPS HOJE"}</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${r}</div>\n            <div class="ex-stat-lbl">TOTAL SÉRIES</div>\n          </div>\n          <div class="ex-stat" title="Dias consecutivos treinando este exercício">\n            <div class="ex-stat-val" style="color:var(--gold);">${se}<span class="exercise-streak-fire${se>0?'':' no-streak'}">${se>0?'<span class="ex-streak-flame ex-streak-flame-1"></span><span class="ex-streak-flame ex-streak-flame-2"></span><span class="ex-streak-flame ex-streak-flame-3"></span>':'🎯'}</span></div>\n            <div class="ex-stat-lbl">STREAK DIAS</div>\n          </div>\n        </div>\n        <div class="pr-display">\n          <div>\n            <div class="pr-display-label">PR (30 DIAS)</div>\n            <div class="pr-display-val" id="pr-display-${a.id}">0 ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</div>\n          </div>\n          <button class="test-max-btn" onclick="abrirTesteMaximo('${a.id}')">🎯 TESTAR MÁXIMO</button>\n        </div>\n        <div class="exercise-pr">\n          <span class="pr-label">PR ESTIMADO:</span>\n          <span class="pr-value">${n} ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</span>\n          <span style="margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gray);">${s} total acum.</span>\n        </div>\n        <div class="exercise-details">\n          <div class="ex-detail-section">\n            <div class="details-header">ÚLTIMAS 3 SÉRIES (HOJE)</div>\n            <div class="recent-series-list" id="recent-series-${a.id}">\n              ${o.length > 0 ? o.slice(-3).reverse().map(r => '<span class="recent-set-item">' + r.valor + ' ' + ("tempo"===a.tipo?"seg":a.unidade||"reps") + (r.rpe ? ' · RPE ' + r.rpe : '') + (r.hora ? ' · ' + r.hora.slice(0,5) : '') + '</span>').join('') : '<span class="recent-set-empty">Nenhuma série hoje</span>'}\n            </div>\n          </div>\n          <div class="ex-detail-section">\n            <div class="details-header">PR 30 DIAS</div>\n            <div class="sparkline-container" id="sparkline-container-${a.id}">\n              ${gerarSVGSparkline(calcularSparklinePR(a.id, 30), 120, 30)}\n            </div>\n          </div>\n        </div>\n        <div class="rpe-avg-display" id="rpe-avg-${a.id}">\n          RPE MÉDIO HOJE: <span class="rpe-avg-val" id="rpe-avg-val-${a.id}">—</span>\n        </div>\n        <div class="exercise-add-form">\n          ${"peso"===a.tipo?`\n            <div class="form-group">\n              <label class="form-label">Peso (kg)</label>\n              <input type="number" class="form-input" id="peso-${a.id}" placeholder="0" min="0" step="0.5">\n            </div>`:""}\n          <div class="form-group">\n            <label class="form-label">${"tempo"===a.tipo?"Segundos":"Reps"}</label>\n            <input type="number" class="form-input" id="valor-${a.id}" placeholder="${"tempo"===a.tipo?"60":"10"}" min="1" autocomplete="off" onfocus="mostrarSugestoesValores('${a.id}')">\n            <div class="valor-suggestions" id="sug-${a.id}"></div>\n          </div>\n          <button class="btn btn-red" onclick="adicionarSerie('${a.id}')">+ REGISTRAR</button>\n          <button class="btn btn-outline btn-sm" onclick="abrirTimerDescanso('${a.id}')">⏱ DESCANSO</button>\n          ${"tempo"===a.tipo?'<button class="btn btn-outline btn-sm timer-trigger-btn" onclick="startPlankTimer(\'' + a.id + '\')">▶ TIMER</button>':''}\n          <div class="groove-toggles" id="groove-toggles-${a.id}" style="flex-basis:100%;">
+      e.innerHTML += `\n      <div class="exercise-card" id="excard-${a.id}" style="--i:${idx}">\n        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>\n        <div class="ex-noise"></div>\n        <div class="ex-corner-glow ex-corner-glow-tl"></div>\n        <div class="ex-corner-glow ex-corner-glow-br"></div>\n        <div class="exercise-card-header">\n          <div class="exercise-name">${escapeHtml(a.nome)}</div>\n          <div class="sugestao-gtg" id="sugestao-${a.id}" onclick="aplicarSugestaoGTG('${a.id}', event)">\n            <span class="bulb">💡</span>\n            <span class="gtg-val" id="gtg-val-${a.id}">GTG: --</span>\n            <span class="gtg-label">reps</span>\n            <div class="gtg-tooltip">\n              <strong style="color:var(--gold)">SÉRIE SUGERIDA — MÉTODO GTG</strong><br>\n              PR (30 dias): <span id="tooltip-pr-${a.id}">0</span> ${"tempo"===a.tipo?"seg":a.unidade||"reps"}<br>\n              Sugestão: 50% do máximo<br>\n              <em style="color:var(--gold-dim)">"Nunca vá ao fracasso" — Pavel</em>\n            </div>\n          </div>\n          <div class="exercise-card-actions">\n            <button class="btn-icon btn-meta" onclick="abrirModalMeta('${a.id}')">🎯</button>\n            <button class="btn-icon" onclick="mostrarInfoExercicio('${a.id}')" title="Informações">ℹ</button>\n            <button class="btn-icon danger" onclick="removerExercicio('${a.id}')" title="Remover">✕</button>\n            <div class="quality-badge-wrap" id="qbadge-wrap-${a.id}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;"></div>\n          </div>\n        </div>\n        <div class="exercise-stats">\n          <div class="ex-stat">\n            <div class="ex-stat-val">${i}</div>\n            <div class="ex-stat-lbl">SÉRIES HOJE</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${d}</div>\n            <div class="ex-stat-lbl">${"tempo"===a.tipo?"SEG HOJE":"REPS HOJE"}</div>\n          </div>\n          <div class="ex-stat">\n            <div class="ex-stat-val">${r}</div>\n            <div class="ex-stat-lbl">TOTAL SÉRIES</div>\n          </div>\n          <div class="ex-stat" title="Dias consecutivos treinando este exercício">\n            <div class="ex-stat-val" style="color:var(--gold);">${se}<span class="exercise-streak-fire${se>0?'':' no-streak'}">${se>0?'<span class="ex-streak-flame ex-streak-flame-1"></span><span class="ex-streak-flame ex-streak-flame-2"></span><span class="ex-streak-flame ex-streak-flame-3"></span>':'🎯'}</span></div>\n            <div class="ex-stat-lbl">STREAK DIAS</div>\n          </div>\n        </div>\n        <div class="pr-display">\n          <div>\n            <div class="pr-display-label">PR (30 DIAS)</div>\n            <div class="pr-display-val" id="pr-display-${a.id}">0 ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</div>\n          </div>\n          <button class="test-max-btn" onclick="abrirTesteMaximo('${a.id}')">🎯 TESTAR MÁXIMO</button>\n        </div>\n        <div class="exercise-pr">\n          <span class="pr-label">PR ESTIMADO:</span>\n          <span class="pr-value">${n} ${"tempo"===a.tipo?"seg":a.unidade||"reps"}</span>\n          <span style="margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gray);">${s} total acum.</span>\n        </div>\n        <div class="exercise-details">\n          <div class="ex-detail-section">\n            <div class="details-header">ÚLTIMAS 3 SÉRIES (HOJE)</div>\n            <div class="recent-series-list" id="recent-series-${a.id}">\n              ${o.length > 0 ? o.slice(-3).reverse().map(r => '<span class="recent-set-item">' + r.valor + ' ' + ("tempo"===a.tipo?"seg":a.unidade||"reps") + (r.rpe ? ' · RPE ' + r.rpe : '') + (r.hora ? ' · ' + r.hora.slice(0,5) : '') + '</span>').join('') : '<span class="recent-set-empty">Nenhuma série hoje</span>'}\n            </div>\n          </div>\n          <div class="ex-detail-section">\n            <div class="details-header">PR 30 DIAS</div>\n            <div class="sparkline-container" id="sparkline-container-${a.id}">\n              ${gerarSVGSparkline(calcularSparklinePR(a.id, 30), 120, 30)}\n            </div>\n          </div>\n        </div>\n        <div class="rpe-avg-display" id="rpe-avg-${a.id}">\n          RPE MÉDIO HOJE: <span class="rpe-avg-val" id="rpe-avg-val-${a.id}">—</span>\n        </div>\n        <div class="exercise-add-form">\n          ${"peso"===a.tipo?`\n            <div class="form-group">\n              <label class="form-label">Peso (kg)</label>\n              <input type="number" class="form-input" id="peso-${a.id}" placeholder="0" min="0" step="0.5">\n            </div>`:""}\n          <div class="form-group">\n            <label class="form-label">${"tempo"===a.tipo?"Segundos":"Reps"}</label>\n            <input type="number" class="form-input" id="valor-${a.id}" placeholder="${"tempo"===a.tipo?"60":"10"}" min="1" autocomplete="off" onfocus="mostrarSugestoesValores('${a.id}')">\n            <div class="valor-suggestions" id="sug-${a.id}"></div>\n          </div>\n          <button class="btn btn-red" onclick="adicionarSerie('${a.id}')">+ REGISTRAR</button>\n          <button class="btn btn-outline btn-sm" onclick="abrirTimerDescanso('${a.id}')">⏱ DESCANSO</button>\n          ${"tempo"===a.tipo?'<button class="btn btn-outline btn-sm timer-trigger-btn" onclick="startPlankTimer(\'' + a.id + '\')">▶ TIMER</button>':''}\n          <div class="rpe-scale" id="rpe-scale-${a.id}">\n            <span class="rpe-label">RPE:</span>\n            <button class="rpe-btn" onclick="selecionarRPE('${a.id}',1)">1</button>\n            <button class="rpe-btn" onclick="selecionarRPE('${a.id}',2)">2</button>\n            <button class="rpe-btn" onclick="selecionarRPE('${a.id}',3)">3</button>\n            <button class="rpe-btn" onclick="selecionarRPE('${a.id}',4)">4</button>\n            <button class="rpe-btn" onclick="selecionarRPE('${a.id}',5)">5</button>\n            <button class="rpe-btn" onclick="selecionarRPE('${a.id}',6)">6</button>\n            <button class="rpe-btn" onclick="selecionarRPE('${a.id}',7)">7</button>\n            <button class="rpe-btn" onclick="selecionarRPE('${a.id}',8)">8</button>\n            <button class="rpe-btn" onclick="selecionarRPE('${a.id}',9)">9</button>\n            <button class="rpe-btn" onclick="selecionarRPE('${a.id}',10)">10</button>\n          </div>\n          <div class="rpe-warn" id="rpe-warn-${a.id}"></div>\n          <div class="groove-toggles" id="groove-toggles-${a.id}" style="flex-basis:100%;">
             <span class="groove-label">⚙ GROOVE</span>
             <div class="groove-slider" id="groove-amp-${a.id}" title="Amplitude completa: do topo ao fundo, sem truncar.">
               <span class="missile-switch__icon">🏋️</span>
@@ -1765,6 +1765,18 @@ function atualizarCardExercicio(exId) {
       } else {
         rpeValEl.textContent = '—';
         rpeValEl.style.color = 'var(--gold)';
+      }
+    }
+
+    // RPE warn
+    const rpeWarnEl = document.getElementById('rpe-warn-' + exId);
+    if (rpeWarnEl) {
+      if (rpeVal && parseFloat(rpeVal) > 7) {
+        rpeWarnEl.classList.add('show');
+        rpeWarnEl.innerHTML = '⚠ Pavel recomenda submáximo. RPE médio hoje: ' + rpeVal + '. Considere reduzir reps.';
+      } else {
+        rpeWarnEl.classList.remove('show');
+        rpeWarnEl.innerHTML = '';
       }
     }
 
@@ -2792,15 +2804,17 @@ function confirmRestTimer() {
 }
 
 function iniciarRestTimer(duration, exId, exName) {
+  restTimer._hideTimeout && clearTimeout(restTimer._hideTimeout);
   restTimer.intervalo && clearInterval(restTimer.intervalo), restTimer = {
     intervalo: null,
     segundos: duration,
     rodando: !0,
     exercicioId: exId,
     exercicioNome: exName,
-    _total: duration
+    _total: duration,
+    _hideTimeout: null
   }, document.getElementById("restTimerWidget").classList.add("active"), document.getElementById("restTimerBackdrop").classList.add("active"), document.getElementById("restTimerExercise").textContent = exName, atualizarDisplayRestTimer(), restTimer.intervalo = setInterval(() => {
-    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), mostrarToast("✓ DESCANSO COMPLETO!", `Hora de mais uma série de ${exName}!`, "success"), setTimeout(function() { document.getElementById("restTimerWidget").classList.remove("active"); document.getElementById("restTimerBackdrop").classList.remove("active"); }, 5e3))
+    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), mostrarToast("✓ DESCANSO COMPLETO!", `Hora de mais uma série de ${exName}!`, "success"), restTimer._hideTimeout = setTimeout(function() { document.getElementById("restTimerWidget").classList.remove("active"); document.getElementById("restTimerBackdrop").classList.remove("active"); }, 5e3))
   }, 1e3)
 }
 
@@ -2831,11 +2845,12 @@ function atualizarDisplayRestTimer() {
 
 function toggleRestTimer() {
   restTimer.rodando ? (clearInterval(restTimer.intervalo), restTimer.rodando = !1, document.getElementById("btnPauseRestTimer").textContent = "▶ RETOMAR") : (restTimer.rodando = !0, document.getElementById("btnPauseRestTimer").textContent = "⏸ PAUSAR", restTimer.intervalo = setInterval(() => {
-    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), mostrarToast("✓ DESCANSO COMPLETO!", `Hora de mais uma série de ${restTimer.exercicioNome}!`, "success"), setTimeout(() => document.getElementById("restTimerWidget").classList.remove("active"), 5e3))
+    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), mostrarToast("✓ DESCANSO COMPLETO!", `Hora de mais uma série de ${restTimer.exercicioNome}!`, "success"), restTimer._hideTimeout = setTimeout(() => document.getElementById("restTimerWidget").classList.remove("active"), 5e3))
   }, 1e3))
 }
 
 function resetRestTimer() {
+  restTimer._hideTimeout && clearTimeout(restTimer._hideTimeout);
   clearInterval(restTimer.intervalo), document.getElementById("restTimerWidget").classList.remove("active"), document.getElementById("restTimerBackdrop").classList.remove("active"), restTimer = {
     intervalo: null,
     segundos: 0,
@@ -3106,7 +3121,7 @@ function iniciarLembretes(showUI) {
   lembreteProximo = Date.now() + intervalo;
   lembreteInterval = setInterval(() => {
     const msg = LEMBRETES_GTG[Math.floor(Math.random() * LEMBRETES_GTG.length)];
-    mostrarToast("LEMBRETE GTG", msg, "success"), tocarSomLembrete(), enviarNotificacaoSW(msg);
+    mostrarToast("LEMBRETE GTG", msg, "success"), tocarSomLembrete();
     lembreteContagem++;
     lembreteProximo = Date.now() + intervalo;
     _atualizarUIAlertas();
@@ -3123,6 +3138,7 @@ function desativarLembretes() {
   lembreteInterval && (clearInterval(lembreteInterval), lembreteInterval = null);
   window._lembreteCountdownInterval && (clearInterval(window._lembreteCountdownInterval), window._lembreteCountdownInterval = null);
   lembreteProximo = null;
+  lembreteSWAtivo = false;
   if (swRegistration && swRegistration.active) {
     swRegistration.active.postMessage("PARAR_LEMBRETES");
   }
@@ -3162,11 +3178,11 @@ function _atualizarUIAlertas() {
   const proxEl = document.getElementById("lembreteProximo");
   const cntEl = document.getElementById("lembreteContagem");
   const ultMsg = document.getElementById("lembreteUltimaMsg");
-  if (lembreteInterval) {
+  if (lembreteInterval || lembreteSWAtivo) {
     if (dot) dot.className = "rm-status-dot active";
-    if (desc) desc.textContent = "ATIVO — A CADA " + (lembreteIntervaloMs / 60000) + " MIN";
+    if (desc) desc.textContent = (lembreteInterval ? "ATIVO" : "SW ATIVO") + " — A CADA " + (lembreteIntervaloMs / 60000) + " MIN";
     if (cntEl) cntEl.textContent = lembreteContagem;
-    if (proxEl) {
+    if (proxEl && lembreteProximo) {
       const resto = Math.max(0, Math.round((lembreteProximo - Date.now()) / 1000));
       const m = Math.floor(resto / 60), s = resto % 60;
       proxEl.textContent = m + ":" + (s < 10 ? "0" : "") + s;
@@ -3177,7 +3193,7 @@ function _atualizarUIAlertas() {
     if (proxEl) proxEl.textContent = "—";
     if (cntEl) cntEl.textContent = lembreteContagem || "0";
   }
-  if (ultMsg && !lembreteInterval) ultMsg.textContent = "";
+  if (ultMsg && !lembreteInterval && !lembreteSWAtivo) ultMsg.textContent = "";
 }
 
 function tocarSomLembrete() {
@@ -3524,6 +3540,15 @@ function desfazerRegistro() {
   dados.registros.some(e => e.data === a) || streakData.ultimaData !== a || (streakData.ultimaData = null, streakData.atual = Math.max(0, streakData.atual - 1)), salvarDadosDebounced(), atualizarCardExercicio(e.exercicioId), atualizarStats(), renderHistory(), atualizarXP(), atualizarUIStreak(), esconderUndoBar(), mostrarToast("↩ Desfeito", e.exercicioNome + " removido. XP revertido.", "success")
 }
 let rpeSelecionado = {};
+function selecionarRPE(exId, val) {
+  rpeSelecionado[exId] = val;
+  var scale = document.getElementById("rpe-scale-" + exId);
+  if (scale) {
+    scale.querySelectorAll(".rpe-btn").forEach(function(b) { b.classList.remove("selected"); });
+    var btns = scale.querySelectorAll(".rpe-btn");
+    if (btns[val - 1]) btns[val - 1].classList.add("selected");
+  }
+}
 
 function getRPEColorClass(e) {
   return e ? e <= 4 ? "rpe-low" : e <= 6 ? "rpe-mid" : e <= 8 ? "rpe-high" : "rpe-max" : ""
@@ -5329,8 +5354,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const e = cssVar("--accent-red") || "#CC0000";
   const d = document.querySelector('meta[name="theme-color"]');
   d && d.setAttribute("content", e), "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
-    e && e.active && (swRegistration = e, "granted" === Notification.permission && (e.active.postMessage("INICIAR_LEMBRETES"), e.active.postMessage({ type: "ALTERAR_INTERVALO", intervalo: lembreteIntervaloMs || 900000 }), document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", _atualizarUIAlertas()))
-  }), inicializar();
+    e && e.active && (swRegistration = e, "granted" === Notification.permission && (lembreteSWAtivo = true, lembreteProximo = Date.now() + (lembreteIntervaloMs || 900000), e.active.postMessage("INICIAR_LEMBRETES"), e.active.postMessage({ type: "ALTERAR_INTERVALO", intervalo: lembreteIntervaloMs || 900000 }), document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", window._lembreteCountdownInterval || (window._lembreteCountdownInterval = setInterval(_atualizarUIAlertas, 1000)), _atualizarUIAlertas()))
+  }), document.addEventListener("visibilitychange", () => { "visible" === document.visibilityState && _atualizarUIAlertas() }), inicializar();
 
   // Drag tracking — only on slider inputs
   const sliderIds = ["sliderSono","sliderStress","sliderDor","sliderEnergia","sliderHidratacao","sliderAlimentacao","sliderMotivacao"];

@@ -57,9 +57,8 @@ self.addEventListener("activate", (event) => {
         names.filter((name) => name.startsWith("gtg-cache-") && name !== CACHE_NAME)
           .map((name) => caches.delete(name))
       )
-    ).then(() => self.clients.claim())
+    )    .then(() => self.clients.claim())
   );
-  agendarProximo();
 });
 
 self.addEventListener("fetch", (event) => {

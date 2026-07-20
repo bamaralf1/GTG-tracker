@@ -45,7 +45,7 @@ function renderWarmup() {
   const drillsHoje = getDrillsDoDia();
   const feitos = dados.aquecimento.feitos || [];
   const total = drillsHoje.length;
-  const count = feitos.filter(f => f < 4).length;
+  const count = feitos.filter(f => f < total).length;
   const badge = document.getElementById("warmupBadge");
   const progress = document.getElementById("warmupProgressFill");
   const status = document.getElementById("warmupStatus");
