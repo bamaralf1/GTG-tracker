@@ -383,14 +383,14 @@
         <div class="card-header"><span class="card-title">+ ADICIONAR EXERCÍCIO</span></div>
         <div class="card-body">
           <div class="add-exercise-form">
-            <div class="form-group"><label class="form-label">Nome</label> <input class="form-input form-input-wide" id="newExName" placeholder="Ex: Flexão"></div>
+            <div class="form-group"><label class="form-label">Nome</label> <input class="form-input form-input-wide" id="newExName" placeholder="Ex: Flexão" maxlength="60" required></div>
             <div class="form-group"><label class="form-label">Tipo</label> <select class="form-select" id="newExType">
                 <option value="reps">Reps
                 <option value="tempo">Tempo (seg)
                 <option value="peso">Peso × Reps
               </select></div>
-            <div class="form-group"><label class="form-label">Unidade/Info</label> <input class="form-input" id="newExUnit" placeholder="reps / seg"></div>
-            <div class="form-group"><label class="form-label">Instruções</label> <input class="form-input" style="width:200px" id="newExInstructions" placeholder="Como executar..."></div><button class="btn btn-red" onclick="addExercise()">★ ADICIONAR</button>
+            <div class="form-group"><label class="form-label">Unidade/Info</label> <input class="form-input" id="newExUnit" placeholder="reps / seg" maxlength="20"></div>
+            <div class="form-group"><label class="form-label">Instruções</label> <input class="form-input" style="width:200px" id="newExInstructions" placeholder="Como executar..." maxlength="200"></div><button class="btn btn-red" onclick="addExercise()">★ ADICIONAR</button>
           </div>
         </div>
       </div>

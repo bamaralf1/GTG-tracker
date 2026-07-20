@@ -3386,9 +3386,20 @@ function handleImport(ev) {
   reader.onload = e => {
     try {
       const parsed = JSON.parse(e.target.result);
-      parsed.dados && (dados = parsed.dados), parsed.streakData && (streakData = parsed.streakData), parsed.xpData && (xpData = parsed.xpData), parsed.badgesData && (badgesData = parsed.badgesData), salvarDados(), inicializar(), mostrarToast("Importado", "Dados restaurados com sucesso!", "success")
+      if (!parsed || typeof parsed !== "object") throw new Error("Formato inválido");
+      if (parsed.dados) {
+        if (typeof parsed.dados !== "object" || !Array.isArray(parsed.dados.exercicios) || !Array.isArray(parsed.dados.registros)) throw new Error("Estrutura 'dados' inválida");
+        dados = parsed.dados;
+      }
+      if (parsed.streakData) {
+        if (typeof parsed.streakData !== "object" || typeof parsed.streakData.atual !== "number") throw new Error("Estrutura 'streakData' inválida");
+        streakData = parsed.streakData;
+      }
+      if (parsed.xpData && typeof parsed.xpData === "object") xpData = parsed.xpData;
+      if (parsed.badgesData && typeof parsed.badgesData === "object") badgesData = parsed.badgesData;
+      salvarDados(), inicializar(), mostrarToast("Importado", "Dados restaurados com sucesso!", "success")
     } catch (err) {
-      mostrarToast("Erro", "Arquivo inválido", "error")
+      mostrarToast("Erro", err.message === "Arquivo inválido" || err.message.startsWith("Estrutura") ? err.message : "Arquivo inválido", "error")
     }
   }, reader.readAsText(file)
 }
