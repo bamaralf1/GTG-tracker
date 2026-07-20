@@ -958,10 +958,8 @@ function inicializar() {
     }
     setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), setTimeout(function() {
       // Restaura ordenação salva
-      var savedOrder = null;
-      try { savedOrder = localStorage.getItem("gtg_ex_order"); } catch(e){}
       var sel = document.getElementById("sortExercicios");
-      if (sel && savedOrder) sel.value = savedOrder;
+      getItem("gtg_ex_order").then(function(v) { if (sel && v) sel.value = v; }).catch(function(){});
       // Se readiness não foi preenchido hoje, destaca o header
       if (readinessData.data !== (new Date).toISOString().slice(0, 10)) {
         var hdr = document.getElementById("headerReadiness");
@@ -985,11 +983,11 @@ async function carregarDados() {
   try {
     await window.storageReady;
     try {
-      const audioRaw = await getItem("gtg_audio_muted") || localStorage.getItem("gtg_audio_muted");
+      const audioRaw = await getItem("gtg_audio_muted");
       if (audioRaw !== null) audioMuted = JSON.parse(audioRaw) === true;
     } catch (e) {}
-    const raw = await getItem("gtg_data") || localStorage.getItem("gtg_data");
-    raw ? (dados = JSON.parse(raw), dados && dados.exercicios && Array.isArray(dados.exercicios) || (console.warn("Dados corrompidos, resetando para defaults"), await removeItem("gtg_data").catch(e => console.warn("[storage]", e)), localStorage.removeItem("gtg_data"), dados = {
+    const raw = await getItem("gtg_data");
+    raw ? (dados = JSON.parse(raw), dados && dados.exercicios && Array.isArray(dados.exercicios) || (console.warn("Dados corrompidos, resetando para defaults"), await removeItem("gtg_data").catch(e => console.warn("[storage]", e)), dados = {
       exercicios: EXERCICIOS_DEFAULT.map(ex => ({ ...ex })),
       registros: []
     })) : (dados.exercicios = EXERCICIOS_DEFAULT.map(ex => ({ ...ex })), dados.registros = []), dados.exercicios && 0 !== dados.exercicios.length || (dados.exercicios = EXERCICIOS_DEFAULT.map(ex => ({ ...ex }))), dados.exercicios.forEach(ex => {
@@ -1005,22 +1003,22 @@ async function carregarDados() {
   } catch (err) {
     console.error("Erro ao carregar dados:", err);
     try { await removeItem("gtg_data") } catch (e) {}
-    localStorage.removeItem("gtg_data"), dados = { exercicios: EXERCICIOS_DEFAULT.map(ex => ({ ...ex })), registros: [] }
+    dados = { exercicios: EXERCICIOS_DEFAULT.map(ex => ({ ...ex })), registros: [] }
   }
   try {
-    const raw = await getItem("gtg_streaks") || localStorage.getItem("gtg_streaks");
+    const raw = await getItem("gtg_streaks");
     raw && (streakData = JSON.parse(raw)), void 0 === streakData.streakShields && (streakData.streakShields = 0), void 0 === streakData.shieldCost && (streakData.shieldCost = 500)
   } catch (err) {
     console.error("[carregarDados] Falha ao carregar streakData:", err)
   }
   try {
-    const raw = await getItem("gtg_xp") || localStorage.getItem("gtg_xp");
+    const raw = await getItem("gtg_xp");
     raw && (xpData = JSON.parse(raw))
   } catch (err) {
     console.error("[carregarDados] Falha ao carregar xpData:", err)
   }
   try {
-    const raw = await getItem("gtg_badges") || localStorage.getItem("gtg_badges");
+    const raw = await getItem("gtg_badges");
     badgesData = raw ? JSON.parse(raw) : { desbloqueadas: [] }
   } catch (err) {
     badgesData = { desbloqueadas: [] }
@@ -1627,8 +1625,8 @@ function toggleFiltroPerfeitas(el) {
 
 function _sortExercicios() {
   var modo = document.getElementById("sortExercicios")?.value || "padrao";
-  if (modo === "padrao") { try { localStorage.setItem("gtg_ex_order", modo); } catch(e){} return; }
-  try { localStorage.setItem("gtg_ex_order", modo); } catch(e){} 
+  if (modo === "padrao") { setItem("gtg_ex_order", modo).catch(function(){}); return; }
+  setItem("gtg_ex_order", modo).catch(function(){});
   dados.exercicios.sort(function(a, b) {
     if (modo === "az") return (a.nome || "").localeCompare(b.nome || "");
     // "recente" — usa timestamp do último registro
@@ -3426,7 +3424,7 @@ async function clearAllData() {
   } catch (e) {
     console.warn("[pwa] Erro ao limpar caches da PWA:", e);
   }
-  localStorage.clear();
+  try { localStorage.clear(); } catch(e) {}
   location.reload()
 }
 
@@ -3455,7 +3453,7 @@ let modoFocoState = { ativo: !1, exercicioId: null };
 
 async function carregarModoFoco() {
   try {
-    const raw = await getItem("gtg_modo_foco") || localStorage.getItem("gtg_modo_foco");
+    const raw = await getItem("gtg_modo_foco");
     raw && (modoFocoState = JSON.parse(raw))
   } catch (err) {
     console.error("[carregarModoFoco] Falha ao carregar modoFocoState:", err)
@@ -3669,7 +3667,7 @@ let readinessWeights = { sono: 1, stress: 1, dor: 1, energia: 1, hidratacao: 1, 
 
 async function carregarPesosReadiness() {
   try {
-    const salvo = await getItem(READINESS_WEIGHTS_KEY) || localStorage.getItem(READINESS_WEIGHTS_KEY);
+    const salvo = await getItem(READINESS_WEIGHTS_KEY);
     if (salvo) Object.assign(readinessWeights, JSON.parse(salvo));
   } catch (e) {
     console.error("Erro ao carregar pesos de prontidão:", e);
@@ -3713,7 +3711,7 @@ async function cyclePriority(fator) {
 async function carregarReadiness() {
   await carregarPesosReadiness();
   try {
-    const e = await getItem(READINESS_KEY) || localStorage.getItem(READINESS_KEY);
+    const e = await getItem(READINESS_KEY);
     if (e) {
       const a = JSON.parse(e),
         t = (new Date).toISOString().slice(0, 10);
@@ -4045,7 +4043,7 @@ async function _renderReadinessPrev() {
   const el = document.getElementById("readinessPrev");
   if (!el) return;
   const today = (new Date).toISOString().slice(0, 10);
-  const history = JSON.parse(await getItem("gtg_readiness_history") || localStorage.getItem("gtg_readiness_history") || "{}");
+  const history = JSON.parse(await getItem("gtg_readiness_history") || "{}");
   let prevDate = null;
   for (let i = 1; i <= 7; i++) {
     const d = new Date(); d.setDate(d.getDate() - i);
@@ -4064,7 +4062,7 @@ async function _renderReadinessPrev() {
 async function _renderReadinessHistory() {
   const el = document.getElementById("readinessHistory");
   if (!el) return;
-  const history = JSON.parse(await getItem("gtg_readiness_history") || localStorage.getItem("gtg_readiness_history") || "{}");
+  const history = JSON.parse(await getItem("gtg_readiness_history") || "{}");
   const days = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
@@ -4090,7 +4088,7 @@ async function _renderReadinessHistory() {
 }
 
 async function _saveReadinessHistory() {
-  const history = JSON.parse(await getItem("gtg_readiness_history") || localStorage.getItem("gtg_readiness_history") || "{}");
+  const history = JSON.parse(await getItem("gtg_readiness_history") || "{}");
   const today = (new Date).toISOString().slice(0, 10);
   history[today] = { score: readinessData.score, data: readinessData };
   const keys = Object.keys(history).sort().slice(-14);
@@ -4225,7 +4223,7 @@ async function _renderReadinessTrendChart() {
   if (!canvas || typeof Chart === "undefined") return;
   const panel = document.getElementById("readinessTrendPanel");
   if (!panel || !panel.classList.contains("open")) return;
-  const history = JSON.parse(await getItem("gtg_readiness_history") || localStorage.getItem("gtg_readiness_history") || "{}");
+  const history = JSON.parse(await getItem("gtg_readiness_history") || "{}");
   const dias = [];
   for (let i = 29; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
@@ -4676,7 +4674,7 @@ function preencherSelectPR() {
 
 async function carregarMetas() {
   try {
-    const e = await getItem("gtg_metas") || localStorage.getItem("gtg_metas");
+    const e = await getItem("gtg_metas");
     e && (dados.metas = JSON.parse(e))
   } catch (e) {
     dados.metas = {}
@@ -4820,7 +4818,7 @@ let planejador = {};
 
 async function carregarPlanejador() {
   try {
-    const e = await getItem("gtg_planejador") || localStorage.getItem("gtg_planejador");
+    const e = await getItem("gtg_planejador");
     planejador = e ? JSON.parse(e) : {}
   } catch (e) {
     planejador = {}
@@ -4929,7 +4927,7 @@ let _notaData = (new Date).toISOString().slice(0, 10),
 
 async function carregarNotas() {
   try {
-    const raw = await getItem("gtg_notas") || localStorage.getItem("gtg_notas");
+    const raw = await getItem("gtg_notas");
     return JSON.parse(raw || "{}")
   } catch (e) {
     return {}
@@ -5089,7 +5087,7 @@ let _pesoChart = null;
 
 async function getPesoData() {
   try {
-    const raw = await getItem(PESO_KEY) || localStorage.getItem(PESO_KEY);
+    const raw = await getItem(PESO_KEY);
     return JSON.parse(raw || "{}")
   } catch (e) { return {} }
 }
