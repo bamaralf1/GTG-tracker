@@ -69,13 +69,6 @@
               <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
             </svg>
           </button>
-          <button class="theme-icon-btn" data-theme="light" onclick="setTheme('light')" title="Sibéria">
-            <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;">
-              <path d="M12 2L13.5 7.5L19 9L13.5 10.5L12 16L10.5 10.5L5 9L10.5 7.5L12 2Z"/>
-              <path d="M6 12L6.75 14.25L9 15L6.75 15.75L6 18L5.25 15.75L3 15L5.25 14.25L6 12Z"/>
-              <path d="M18 12L18.75 14.25L21 15L18.75 15.75L18 18L17.25 15.75L15 15L17.25 14.25L18 12Z"/>
-            </svg>
-          </button>
 
         </div>
         <div class="header-date" id="headerDate"></div>
@@ -1638,7 +1631,6 @@
   <div id="shareCardModal">
     <div class="share-modal-title">★ CARTÃO DO DIA ★</div>
     <div class="share-modal-subtitle">PRONTO PARA INSTAGRAM STORIES · WHATSAPP STATUS · DOWNLOAD</div><img id="shareCardPreview" src="" alt="Cartão do dia">
-    <div class="share-card-theme-toggle" style="display:flex;align-items:center;gap:8px;justify-content:center;margin:10px 0;"><span class="text-mono" style="font-size:10px;color:var(--gray-light);letter-spacing:2px">VISUAL:</span><button class="btn btn-sm btn-outline" id="btnCardTemaEscuro" onclick="toggleTemaCard('dark')" style="background:rgba(0,0,0,0.5);color:var(--white);border:1px solid var(--gold);border-radius:10px">☭ EXÉRCITO VERMELHO</button><button class="btn btn-sm btn-outline" id="btnCardTemaClaro" onclick="toggleTemaCard('light')" style="background:rgba(255,255,255,0.5);color:var(--gray-light);border:1px solid var(--gray);border-radius:10px;backdrop-filter:blur(8px)">❄ SIBÉRIA</button></div>
     <div class="share-actions"><button class="btn btn-red" onclick="baixarShareCard()"><i class="fas fa-download"></i> BAIXAR IMAGEM</button> <button class="btn btn-green" onclick="compartilharWhatsApp()"><i class="fab fa-whatsapp"></i> WHATSAPP</button> <button class="btn btn-purple" onclick="compartilharInstagram()"><i class="fab fa-instagram"></i> INSTAGRAM</button> <button class="btn btn-gold" onclick="copiarShareCard()"><i class="fas fa-copy"></i> COPIAR</button> <button class="btn btn-outline" onclick='document.getElementById("shareCardModal").classList.remove("active")'>✕ FECHAR</button></div>
     <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#444;letter-spacing:2px;text-align:center">DICA: SALVE A IMAGEM E POSTE NOS STORIES / STATUS COMO FOTO</div>
   </div>

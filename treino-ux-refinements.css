@@ -43,9 +43,6 @@
   outline-offset:2px;
   border-radius:3px;
 }
-[data-theme=light] .btn:focus-visible,
-[data-theme=light] .form-input:focus-visible,
-[data-theme=light] .form-select:focus-visible{
   outline-color:var(--gold, #3A7AAA);
 }
 
@@ -125,7 +122,6 @@
   transform:translateY(-3px);
   box-shadow:0 10px 28px rgba(0,0,0,.28);
 }
-[data-theme=light] .exercise-card:hover{
   box-shadow:0 10px 24px rgba(16,55,100,.12);
 }
 
@@ -164,7 +160,6 @@
   margin-top:6px;
   padding:10px 12px 8px;
 }
-[data-theme=light] .groove-toggles{
   background:rgba(10,30,52,.03);
 }
 .groove-toggles .groove-label{
@@ -266,7 +261,6 @@
 .exercise-add-form .form-input:focus{
   box-shadow:0 0 0 3px rgba(212,168,67,.15);
 }
-[data-theme=light] .exercise-add-form .form-input:focus{
   box-shadow:0 0 0 3px rgba(58,122,170,.12);
 }
 

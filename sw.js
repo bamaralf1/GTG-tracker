@@ -22,7 +22,7 @@ const PRECACHE_URLS = [
 ];
 
 const CACHE_PREFIX = "gtg-cache-";
-let CACHE_NAME = "gtg-cache-v6";
+let CACHE_NAME = "gtg-cache-v7";
 
 const LEMBRETES = [
   "Hora de uma serie! Lembre: 50-60% do seu maximo. Qualidade acima de tudo.",

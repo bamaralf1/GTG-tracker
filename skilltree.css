@@ -1291,67 +1291,6 @@
 
 
 /* ──────────────────────────────────────────────────────────
-   TEMA CLARO (body.light-theme, seguindo o padrão do app)
-   ────────────────────────────────────────────────────────── */
-
-body.light-theme .st-page-header {
-  background: linear-gradient(135deg, rgba(240,232,208,0.9), rgba(220,200,170,0.8));
-  border-color: rgba(160,120,60,0.25);
-}
-
-body.light-theme .st-page-header__title { color: #1A1A1A; }
-body.light-theme .st-page-header__sub   { color: #7D6C28; }
-body.light-theme .st-page-header__star  { color: #CC0000; }
-
-body.light-theme .st-wrapper {
-  background: rgba(240,232,208,0.3);
-  border-color: rgba(160,120,60,0.15);
-}
-
-body.light-theme .st-wrapper::before {
-  background-image:
-    linear-gradient(rgba(160,120,60,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(160,120,60,0.06) 1px, transparent 1px);
-}
-
-body.light-theme .skill-tree-node--bloqueado .st-node__shell {
-  background: rgba(0,0,0,0.08);
-}
-
-body.light-theme .st-tooltip {
-  background: linear-gradient(145deg, rgba(240,232,208,0.99), rgba(230,220,195,0.99));
-  border-color: rgba(160,120,60,0.35);
-  color: #1A1A1A;
-}
-
-body.light-theme .st-tooltip__name  { color: #1A1A1A; }
-body.light-theme .st-tooltip__close { color: #5C5C5C; }
-body.light-theme .st-tooltip__close:hover { background: rgba(0,0,0,0.08); color: #1A1A1A; }
-
-body.light-theme .st-cat-tab {
-  background: rgba(0,0,0,0.04);
-  border-color: rgba(0,0,0,0.12);
-  color: #5C5C5C;
-}
-
-body.light-theme .st-cat-tab.active {
-  background: rgba(212,168,67,0.15);
-  border-color: var(--gold);
-  color: #7D6C28;
-}
-
-body.light-theme .st-legend {
-  background: rgba(0,0,0,0.03);
-  border-color: rgba(0,0,0,0.08);
-}
-
-body.light-theme .st-legend__text strong { color: #1A1A1A; }
-body.light-theme .st-legend__text span   { color: #5C5C5C; }
-body.light-theme .st-legend__note        { color: #9A9A9A; }
-
-
-/* ============================================
-   SKILLTREE PERFORMANCE OVERRIDES
    Acelera render da árvore e reduz repaint
    ============================================ */
 

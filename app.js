@@ -2939,22 +2939,7 @@ function somTimer() {
 let shareCardTema = "dark";
 
 function toggleTemaCard(tema) {
-  shareCardTema = tema;
-  const canvas = document.getElementById("shareCardCanvas");
-  canvas && (canvas.classList.remove("sc-light"), "light" === tema && canvas.classList.add("sc-light"));
-  const btnDark = document.getElementById("btnCardTemaEscuro"),
-    btnLight = document.getElementById("btnCardTemaClaro");
-  const activeStyle = { background: "rgba(0,0,0,0.5)", color: "var(--white)", borderColor: "var(--gold)" };
-  const inactiveStyle = { background: "transparent", color: "var(--gray-light)", borderColor: "var(--gray)" };
-  if (btnDark && btnLight) {
-    if (tema === "light") {
-      Object.assign(btnLight.style, activeStyle);
-      Object.assign(btnDark.style, inactiveStyle);
-    } else {
-      Object.assign(btnDark.style, activeStyle);
-      Object.assign(btnLight.style, inactiveStyle);
-    }
-  }
+  shareCardTema = "dark";
   abrirShareCard(!0);
 }
 let shareCardBlob = null;
@@ -4858,62 +4843,27 @@ function irParaTreinoHoje() {
 
 function aplicarTema(e) {
   _limparCacheCssVar();
-  document.documentElement.setAttribute("data-theme", e), setItem("gtg_tema", e).catch(e => console.warn("[storage]", e));
+  document.documentElement.setAttribute("data-theme", "dark"), setItem("gtg_tema", "dark").catch(e => console.warn("[storage]", e));
   const a = document.getElementById("themeSwitchBtn");
   if (a) {
-    if (e === "light") {
-      a.textContent = "❄";
-      a.title = "SIBÉRIA — Nordic Frost";
-      a.style.borderColor = "rgba(160,195,230,0.3)";
-      a.style.color = "#5A7090";
-      a.style.background = "rgba(255,255,255,0.5)";
-      a.style.boxShadow = "0 2px 8px rgba(20,50,80,0.06)";
-      a.style.borderRadius = "10px";
-      a.style.backdropFilter = "blur(8px)";
-    } else {
-      a.textContent = "🔴";
-      a.title = "EXÉRCITO VERMELHO — Red Army";
-      a.style.borderColor = "rgba(255,26,26,0.3)";
-      a.style.color = "inherit";
-      a.style.background = "rgba(255,26,26,0.08)";
-      a.style.boxShadow = "0 0 8px rgba(255,26,26,0.2)";
-      a.style.borderRadius = "4px";
-      a.style.backdropFilter = "none";
-    }
+    a.textContent = "🔴";
+    a.title = "EXÉRCITO VERMELHO — Red Army";
+    a.style.borderColor = "rgba(255,26,26,0.3)";
+    a.style.color = "inherit";
+    a.style.background = "rgba(255,26,26,0.08)";
+    a.style.boxShadow = "0 0 8px rgba(255,26,26,0.2)";
+    a.style.borderRadius = "4px";
+    a.style.backdropFilter = "none";
   }
 }
 
 function setTheme(theme) {
-  aplicarTema(theme);
-  updateThemeButtons(theme);
+  aplicarTema("dark");
 }
-
-function updateThemeButtons(activeTheme) {
-  document.querySelectorAll('.theme-icon-btn').forEach(btn => {
-    btn.classList.remove('active');
-    if (btn.dataset.theme === activeTheme) {
-      btn.classList.add('active');
-    }
-  });
-}
-
-// Update theme buttons on load
-document.addEventListener('DOMContentLoaded', () => {
-  const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
-  updateThemeButtons(currentTheme);
-});
 
 async function carregarTema() {
   await window.storageReady;
-  try {
-    const saved = await getItem("gtg_tema") || localStorage.getItem("gtg_tema") || "dark";
-    if (saved !== "dark") {
-      aplicarTema(saved);
-      updateThemeButtons(saved);
-    }
-  } catch (e) {
-    console.warn("Erro ao carregar tema:", e);
-  }
+  aplicarTema("dark");
 }
 carregarTema();
 let _notaData = (new Date).toISOString().slice(0, 10),
