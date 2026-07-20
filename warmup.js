@@ -93,9 +93,12 @@ function toggleWarmup(idx) {
   if (!dados.aquecimento.feitos) dados.aquecimento.feitos = [];
   const i = dados.aquecimento.feitos.indexOf(idx);
   if (i >= 0) dados.aquecimento.feitos.splice(i, 1);
-  else dados.aquecimento.feitos.push(idx);
+  else {
+    dados.aquecimento.feitos.push(idx);
+    if (warmupTimers[idx]) { clearTimeout(warmupTimers[idx]); delete warmupTimers[idx]; }
+  }
   renderWarmup();
-  salvarDados();
+  salvarDadosDebounced();
 }
 
 function startWarmupTimer(idx) {

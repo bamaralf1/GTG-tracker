@@ -4292,29 +4292,50 @@ function scrollToReadiness(e) {
 let _dragSrcId = null;
 
 function _initDragDrop() {
-  const e = document.getElementById("exerciseGrid");
-  e && e.querySelectorAll(".exercise-card").forEach(a => {
-    const t = a.id.replace("excard-", ""),
-      o = a.querySelector(".exercise-card-header");
-    o && (o.style.cursor = "grab", o.title = "Arraste para reordenar", o.setAttribute("draggable", "true")), a.addEventListener("dragstart", e => {
-      _dragSrcId = t, e.dataTransfer.effectAllowed = "move", setTimeout(() => a.style.opacity = "0.4", 0)
-    }), a.addEventListener("dragend", () => {
-      a.style.opacity = "", e.querySelectorAll(".exercise-card").forEach(e => {
-        e.style.outline = ""
-      })
-    }), a.addEventListener("dragover", e => {
-      e.preventDefault(), e.dataTransfer.dropEffect = "move", t !== _dragSrcId && (a.style.outline = "2px solid var(--gold)")
-    }), a.addEventListener("dragleave", () => {
-      a.style.outline = ""
-    }), a.addEventListener("drop", e => {
-      if (e.preventDefault(), a.style.outline = "", !_dragSrcId || _dragSrcId === t) return;
-      const o = dados.exercicios.findIndex(e => e.id === _dragSrcId),
-        r = dados.exercicios.findIndex(e => e.id === t);
-      if (-1 === o || -1 === r) return;
-      const [s] = dados.exercicios.splice(o, 1);
-      dados.exercicios.splice(r, 0, s), salvarDados(), renderExercicios(), _dragSrcId = null
-    })
-  })
+  const grid = document.getElementById("exerciseGrid");
+  if (!grid) return;
+  grid.querySelectorAll(".exercise-card .exercise-card-header").forEach(h => {
+    h.style.cursor = "grab"; h.title = "Arraste para reordenar"; h.setAttribute("draggable", "true");
+  });
+  if (grid.dataset.dragInit) return;
+  grid.dataset.dragInit = "1";
+  grid.addEventListener("dragstart", e => {
+    const card = e.target.closest(".exercise-card");
+    if (!card) return;
+    _dragSrcId = card.id.replace("excard-", "");
+    e.dataTransfer.effectAllowed = "move";
+    setTimeout(() => card.style.opacity = "0.4", 0);
+  });
+  grid.addEventListener("dragend", () => {
+    grid.querySelectorAll(".exercise-card").forEach(c => { c.style.opacity = ""; c.style.outline = ""; });
+  });
+  grid.addEventListener("dragover", e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    const card = e.target.closest(".exercise-card");
+    if (card) {
+      const id = card.id.replace("excard-", "");
+      if (id !== _dragSrcId) card.style.outline = "2px solid var(--gold)";
+    }
+  });
+  grid.addEventListener("dragleave", e => {
+    const card = e.target.closest(".exercise-card");
+    if (card) card.style.outline = "";
+  });
+  grid.addEventListener("drop", e => {
+    e.preventDefault();
+    const card = e.target.closest(".exercise-card");
+    if (!card) return;
+    card.style.outline = "";
+    const targetId = card.id.replace("excard-", "");
+    if (!_dragSrcId || _dragSrcId === targetId) return;
+    const srcIdx = dados.exercicios.findIndex(ex => ex.id === _dragSrcId);
+    const tgtIdx = dados.exercicios.findIndex(ex => ex.id === targetId);
+    if (srcIdx === -1 || tgtIdx === -1) return;
+    const [moved] = dados.exercicios.splice(srcIdx, 1);
+    dados.exercicios.splice(tgtIdx, 0, moved);
+    salvarDados(); renderExercicios(); _dragSrcId = null;
+  });
 }
 
 
