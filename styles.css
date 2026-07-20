@@ -4802,3 +4802,5 @@ body::after{
 .shield-star{display:flex}
 .shield-star.has-shields .shield-star-icon{color:var(--gold);filter:drop-shadow(0 0 8px rgba(212,168,67,.5)) drop-shadow(0 0 16px rgba(212,168,67,.2))}
 .shield-star.has-shields .shield-star-count{background:var(--gold);color:var(--black)}
+button:focus-visible, .btn:focus-visible, .rpe-btn:focus-visible, .form-input:focus-visible, .form-select:focus-visible, .groove-range:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.modal-overlay.active:focus-visible{outline:none}
