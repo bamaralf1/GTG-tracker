@@ -2,7 +2,7 @@
  * warmup.js — Aquecimento / Ativação Pré-Combate
  * ========================================================================== */
 
-let warmupTimers = {};
+GTG.warmupTimers = {};
 
 const WARMUP_DRILLS = [
   { id: "mobilidade", name: "Agachamento de Mobilidade", time: 30, desc: "Pés afastados na largura dos ombros, segure um peso leve no peito (goblet). Agache até o fundo mantendo o tronco ereto, cotovelos entre os joelhos. Na posição mais baixa, faça pequenos círculos com os quadris (prying) por 5 segundos para abrir o quadril e alongar a virilha. Suba com controle.", cat: "general" },
@@ -16,15 +16,15 @@ const WARMUP_DRILLS = [
 ];
 
 function initWarmupData() {
-  if (!dados.aquecimento) dados.aquecimento = {};
+  if (!GTG.dados.aquecimento) GTG.dados.aquecimento = {};
   const hoje = (new Date).toISOString().slice(0, 10);
-  if (dados.aquecimento.data !== hoje) dados.aquecimento = { data: hoje, feitos: [] };
+  if (GTG.dados.aquecimento.data !== hoje) GTG.dados.aquecimento = { data: hoje, feitos: [] };
 }
 
 function getExerciciosHoje() {
   const hoje = (new Date).toISOString().slice(0, 10);
-  const ids = new Set(dados.registros.filter(r => r.data === hoje).map(r => r.exercicioId));
-  return dados.exercicios.filter(e => ids.has(e.id));
+  const ids = new Set(GTG.dados.registros.filter(r => r.data === hoje).map(r => r.exercicioId));
+  return GTG.dados.exercicios.filter(e => ids.has(e.id));
 }
 
 function getDrillsDoDia() {
@@ -43,7 +43,7 @@ function getDrillsDoDia() {
 function renderWarmup() {
   initWarmupData();
   const drillsHoje = getDrillsDoDia();
-  const feitos = dados.aquecimento.feitos || [];
+  const feitos = GTG.dados.aquecimento.feitos || [];
   const total = drillsHoje.length;
   const count = feitos.filter(f => f < total).length;
   const badge = document.getElementById("warmupBadge");
@@ -90,19 +90,19 @@ function renderWarmup() {
 
 function toggleWarmup(idx) {
   initWarmupData();
-  if (!dados.aquecimento.feitos) dados.aquecimento.feitos = [];
-  const i = dados.aquecimento.feitos.indexOf(idx);
-  if (i >= 0) dados.aquecimento.feitos.splice(i, 1);
+  if (!GTG.dados.aquecimento.feitos) GTG.dados.aquecimento.feitos = [];
+  const i = GTG.dados.aquecimento.feitos.indexOf(idx);
+  if (i >= 0) GTG.dados.aquecimento.feitos.splice(i, 1);
   else {
-    dados.aquecimento.feitos.push(idx);
-    if (warmupTimers[idx]) { clearTimeout(warmupTimers[idx]); delete warmupTimers[idx]; }
+    GTG.dados.aquecimento.feitos.push(idx);
+    if (GTG.warmupTimers[idx]) { clearTimeout(GTG.warmupTimers[idx]); delete GTG.warmupTimers[idx]; }
   }
   renderWarmup();
   salvarDadosDebounced();
 }
 
 function startWarmupTimer(idx) {
-  if (warmupTimers[idx]) return;
+  if (GTG.warmupTimers[idx]) return;
   const drillsHoje = getDrillsDoDia();
   const drill = drillsHoje[idx];
   const dur = drill ? drill.time : 30;
@@ -119,7 +119,7 @@ function startWarmupTimer(idx) {
     if (isNaN(r)) r = dur;
     r--;
     if (r <= 0) {
-      delete warmupTimers[idx];
+      delete GTG.warmupTimers[idx];
       btn.textContent = `▶ ${dur}s`;
       btn.classList.remove("running");
       btn.disabled = false;
@@ -128,16 +128,16 @@ function startWarmupTimer(idx) {
     } else {
       btn.dataset.remaining = String(r);
       btn.textContent = String(r);
-      warmupTimers[idx] = setTimeout(tick, 1000);
+      GTG.warmupTimers[idx] = setTimeout(tick, 1000);
     }
   }
-  warmupTimers[idx] = setTimeout(tick, 1000);
+  GTG.warmupTimers[idx] = setTimeout(tick, 1000);
 }
 
 function completarWarmup() {
   initWarmupData();
   const drillsHoje = getDrillsDoDia();
-  dados.aquecimento.feitos = Array.from({ length: drillsHoje.length }, (_, idx) => idx);
+  GTG.dados.aquecimento.feitos = Array.from({ length: drillsHoje.length }, (_, idx) => idx);
   renderWarmup();
   salvarDados();
   const card = document.getElementById("warmupCard");
@@ -154,10 +154,10 @@ function toggleWarmupCard() {
 }
 
 function resetWarmup() {
-  Object.keys(warmupTimers).forEach(k => { clearTimeout(warmupTimers[k]); delete warmupTimers[k]; });
+  Object.keys(GTG.warmupTimers).forEach(k => { clearTimeout(GTG.warmupTimers[k]); delete GTG.warmupTimers[k]; });
   document.querySelectorAll(".sb-warmup-timer-btn.running").forEach(el => { el.textContent = "▶ 30s"; el.classList.remove("running"); el.disabled = false; delete el.dataset.remaining; });
   initWarmupData();
-  dados.aquecimento.feitos = [];
+  GTG.dados.aquecimento.feitos = [];
   renderWarmup();
   salvarDados();
   const card = document.getElementById("warmupCard");

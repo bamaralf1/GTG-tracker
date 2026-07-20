@@ -22,7 +22,7 @@ const PRECACHE_URLS = [
 ];
 
 const CACHE_PREFIX = "gtg-cache-";
-let CACHE_NAME = "gtg-cache-v7";
+let CACHE_NAME = "gtg-cache-v9";
 
 const LEMBRETES = [
   "Hora de uma serie! Lembre: 50-60% do seu maximo. Qualidade acima de tudo.",
@@ -67,34 +67,29 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   event.respondWith(
     url.origin === self.location.origin
-      ? staleWhileRevalidate(request)
+      ? networkFirst(request)
       : cacheFirst(request)
   );
 });
 
-async function staleWhileRevalidate(request) {
+async function networkFirst(request) {
   const cache = await caches.open(CACHE_NAME);
-  const cached = await cache.match(request);
-  if (cached && request.mode !== "navigate") return cached;
-
-  const networkFetch = fetch(request).then((response) => {
+  try {
+    // cache:"no-store" evita que o próprio navegador sirva uma resposta HTTP
+    // cacheada por baixo do nosso controle — sempre busca a versão real do servidor.
+    const response = await fetch(request, { cache: "no-store" });
     if (response && response.ok) cache.put(request, response.clone());
     return response;
-  }).catch(() => null);
-
-  if (request.mode === "navigate") {
-    const fallback = await getFallbackNavigationResponse(cache);
+  } catch (err) {
+    // Offline ou rede falhou: cai pro cache como fallback.
+    const cached = await cache.match(request);
     if (cached) return cached;
-    const network = await networkFetch;
-    if (network) return network;
-    if (fallback) return fallback;
+    if (request.mode === "navigate") {
+      const fallback = await getFallbackNavigationResponse(cache);
+      if (fallback) return fallback;
+    }
     return new Response("Offline e recurso nao disponivel em cache.", { status: 503, statusText: "Offline" });
   }
-
-  if (cached) return cached;
-  const network = await networkFetch;
-  if (network) return network;
-  return new Response("Offline e recurso nao disponivel em cache.", { status: 503, statusText: "Offline" });
 }
 
 async function getFallbackNavigationResponse(cache) {

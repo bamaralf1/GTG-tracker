@@ -10,7 +10,7 @@ function atualizarSugestaoSessao() {
     t = document.getElementById("sessionSerieValor"),
     n = document.getElementById("sessionPRDisplay");
   if (!e || !a) return;
-  const o = dados.exercicios.find(a => a.id === e.value);
+  const o = GTG.dados.exercicios.find(a => a.id === e.value);
   if (!o) return void(a.textContent = "—");
   const pr = calcularPR2(o),
     r = calcularSugestaoGTG(pr, o.tipo),
@@ -22,7 +22,7 @@ function atualizarSugestaoSessao() {
 function iniciarSessaoGTG() {
   const e = document.getElementById("sessionExSelect").value;
   if (!e) return void mostrarToast("Erro", "Selecione um exercício para a sessão.", "error");
-  const a = dados.exercicios.find(a => a.id === e);
+  const a = GTG.dados.exercicios.find(a => a.id === e);
   if (!a) return;
   const t = parseInt(document.getElementById("sessionNumSeries").value) || 5,
     o = parseInt(document.getElementById("sessionSerieValor").value) || calcularSugestaoGTG(calcularPR2(a), a.tipo) || 1,
@@ -70,7 +70,7 @@ function atualizarSessaoUI() {
 
 function executarSerieSessao() {
   if (!sessaoGTGState || "pronta" !== sessaoGTGState.fase) return;
-  const e = dados.exercicios.find(e => e.id === sessaoGTGState.exercicioId);
+  const e = GTG.dados.exercicios.find(e => e.id === sessaoGTGState.exercicioId);
   if (!e) return void pararSessaoGTG();
   const a = document.getElementById(`valor-${e.id}`);
   a ? (a.value = sessaoGTGState.valorPorSerie, adicionarSerie(e.id)) : (() => {
@@ -87,7 +87,7 @@ function executarSerieSessao() {
         xp: calcularXPSerie(e, sessaoGTGState.valorPorSerie, 0),
         rpe: null
       };
-    dados.registros.push(t), adicionarXP(t.xp), _gtgSpark(), verificarStreak(), verificarBadges(), salvarDadosDebounced(), atualizarCardExercicio(t.exercicioId), atualizarStats(), renderHistory(), somRegistrar()
+    GTG.dados.registros.push(t), adicionarXP(t.xp), _gtgSpark(), verificarStreak(), verificarBadges(), salvarDadosDebounced(), atualizarCardExercicio(t.exercicioId), atualizarStats(), renderHistory(), somRegistrar()
   })(), sessaoGTGState.seriesFeitas++, renderSessaoDots(), mostrarToast(`✓ Série ${sessaoGTGState.seriesFeitas}/${sessaoGTGState.totalSeries}`, `${sessaoGTGState.valorPorSerie} ${sessaoGTGState.unidade} registrados`, "success"), sessaoGTGState.seriesFeitas >= sessaoGTGState.totalSeries ? concluirSessaoGTG() : iniciarDescansoSessao()
 }
 

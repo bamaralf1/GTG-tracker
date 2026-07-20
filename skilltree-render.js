@@ -72,8 +72,8 @@
 
   /** Busca exercício nos dados do app (dados.exercicios) */
   function _getExercicio(exercicioId) {
-    if (typeof dados === 'undefined' || !Array.isArray(dados.exercicios)) return null;
-    return dados.exercicios.find(e => e.id === exercicioId) || null;
+    if (typeof GTG === 'undefined' || !GTG.dados || !Array.isArray(GTG.dados.exercicios)) return null;
+    return GTG.dados.exercicios.find(e => e.id === exercicioId) || null;
   }
 
   /** Verifica se estamos em viewport mobile */
@@ -1151,11 +1151,11 @@
   // ============================================================
 
   function _injetarDadosTeste() {
-    if (typeof dados === 'undefined') return;
-    if (!Array.isArray(dados.registros)) dados.registros = [];
+    if (typeof GTG === 'undefined' || !GTG.dados) return;
+    if (!Array.isArray(GTG.dados.registros)) GTG.dados.registros = [];
 
     // Só injeta se não há registros reais
-    if (dados.registros.filter(r => !r.isTest).length > 0) return;
+    if (GTG.dados.registros.filter(r => !r.isTest).length > 0) return;
 
     const hoje = new Date().toISOString().slice(0, 10);
     const ts   = Date.now();
@@ -1169,7 +1169,7 @@
     ];
 
     mock.forEach((m, i) => {
-      dados.registros.push({
+      GTG.dados.registros.push({
         id:          `test_st_${i}`,
         exercicioId: m.exercicioId,
         valor:       m.valor,
