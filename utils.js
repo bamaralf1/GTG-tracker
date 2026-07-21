@@ -19,7 +19,7 @@ function escapeHtml(str) {
 function mostrarToast(title, msg, type = "success") {
   const container = document.getElementById("toastContainer"),
     el = document.createElement("div"),
-    timeout = "success" === type ? 3e3 : "warning" === type || "info" === type ? 5e3 : 8e3;
+    timeout = "success" === type ? 6e3 : "warning" === type || "info" === type ? 1e4 : 16e3;
   el.className = `toast ${type}`, el.innerHTML = `<div class="toast-title">${escapeHtml(title)}</div><div class="toast-msg">${escapeHtml(msg)}</div>`, container.appendChild(el), setTimeout(() => {
     el.style.animation = "toastOut 0.4s ease forwards", setTimeout(() => el.remove(), 400)
   }, timeout)
