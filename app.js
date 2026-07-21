@@ -1157,14 +1157,17 @@ const READINESS_WEIGHTS_KEY = "gtg_readiness_weights";
 
 document.addEventListener("keydown", e => {
   if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
-  const a = ["treino", "stats", "badges", "historico", "metodo", "exportar", "planejador"];
+  const a = ["treino", "stats", "badges", "historico", "metodo", "exportar", "planejador", "skilltree", "calendario"];
   switch (e.key) {
     case "1":
     case "2":
     case "3":
     case "4":
     case "5":
-    case "6": {
+    case "6":
+    case "7":
+    case "8":
+    case "9": {
       const t = parseInt(e.key) - 1,
         o = document.querySelector(`.nav-tab[data-tab="${a[t]}"]`);
       o && o.click();
@@ -1263,7 +1266,7 @@ function aplicarTema(e) {
   }
 }
 
-function setTheme(theme) {
+function setTheme() {
   aplicarTema("dark");
 }
 

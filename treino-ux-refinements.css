@@ -419,7 +419,16 @@
 
 
 /* ------------------------------------------------------------------------------
- * 23) GROOVE STATUS — INDICADOR NO HEADER
+ * 23) HISTORY — PAGINAÇÃO
+ * ---------------------------------------------------------------------------- */
+.history-pagination{display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 0 6px}
+.history-pagination .btn{font-size:11px;padding:6px 12px;letter-spacing:1px}
+.history-pagination .btn[disabled]{opacity:.3;pointer-events:none}
+.history-page-info{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold-dim);letter-spacing:1px}
+.log-group-collapsed-hint{text-align:center;font-size:9px;color:var(--gray);padding:6px;letter-spacing:.5px;border-top:1px solid rgba(255,255,255,.03)}
+
+/* ------------------------------------------------------------------------------
+ * 24) GROOVE STATUS — INDICADOR NO HEADER
  * Um medidor estilizado "Groove:" no canto superior com anel de progresso
  * animado, gradiente dinâmico (vermelho→ouro→verde) e glow pulsante.
  * Glassmorphism, backdrop-blur e animação contínua.
