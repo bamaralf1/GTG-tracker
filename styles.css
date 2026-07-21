@@ -4778,23 +4778,3 @@ button:focus-visible, .btn:focus-visible, .rpe-btn:focus-visible, .form-input:fo
 .header-greeting{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--gold-dim);letter-spacing:0.5px;padding:0 0 0 18px;white-space:nowrap}
 .header-greeting strong{color:var(--gold-light);font-weight:400}
 
-/* ===== SETTINGS BUTTON ===== */
-.settings-btn{background:0 0;border:1px solid rgba(255,255,255,.12);border-radius:4px;color:var(--gray-light);cursor:pointer;font-size:18px;padding:4px 10px;margin-left:8px;transition:all .3s;line-height:1;display:flex;align-items:center}
-.settings-btn:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 12px rgba(212,160,23,.2);transform:rotate(45deg)}
-
-/* ===== SETTINGS OVERLAY ===== */
-.settings-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:rgba(0,0,0,.7);display:none;align-items:flex-start;justify-content:center;padding-top:80px;backdrop-filter:blur(4px)}
-.settings-overlay.active{display:flex}
-.settings-panel{background:var(--card-bg);border:1px solid rgba(255,255,255,.1);border-radius:8px;width:400px;max-width:90vw;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-.settings-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.08);font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--gold)}
-.settings-close{background:0 0;border:0;color:var(--gray-light);cursor:pointer;font-size:18px;padding:4px 8px;transition:color .2s}
-.settings-close:hover{color:var(--gold)}
-.settings-body{padding:16px 18px}
-.settings-group{margin-bottom:18px}
-.settings-group:last-child{margin-bottom:0}
-.settings-label{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold-dim);letter-spacing:1.5px;display:block;margin-bottom:6px;text-transform:uppercase}
-.settings-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.settings-toggle{background:0 0;border:1px solid rgba(255,255,255,.15);border-radius:4px;color:inherit;cursor:pointer;font-size:16px;padding:4px 10px;transition:all .2s}
-.settings-toggle:hover{border-color:var(--gold)}
-.settings-footer{border-top:1px solid rgba(255,255,255,.06);padding-top:14px;margin-top:4px}
-@media(max-width:700px){.settings-overlay{padding-top:20px;align-items:center}.settings-panel{width:95vw}}
