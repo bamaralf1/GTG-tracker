@@ -4,14 +4,6 @@
 
 let warmupTimers = {};
 
-const CATEGORY_ICONS = {
-  general: { icon: "⚡", label: "GERAL" },
-  push:    { icon: "🔥", label: "EMPURRA" },
-  pull:    { icon: "💪", label: "PUXA" },
-  legs:    { icon: "🦵", label: "PERNAS" },
-  core:    { icon: "🌀", label: "CORE" }
-};
-
 const WARMUP_PHASES = [
   {
     id: "mobilidade",
@@ -51,10 +43,6 @@ const WARMUP_PHASES = [
     ]
   }
 ];
-
-function _obterTodasDrills() {
-  return WARMUP_PHASES.flatMap(p => p.drills);
-}
 
 function initWarmupData() {
   if (!dados.aquecimento) dados.aquecimento = {};
@@ -178,8 +166,8 @@ function renderWarmup() {
   if (status) {
     status.classList.remove("ready", "mission-done");
     if (count === 0) status.innerHTML = "❄ NÃO AQUECIDO";
-    else if (!allDone) status.innerHTML = "🔥 AQUECENDO · " + count + "/" + totalDrills;
-    else { status.innerHTML = "★ MISSÃO CUMPRIDA · PRONTO PARA O COMBATE"; status.classList.add("mission-done"); }
+    else if (!allDone) status.innerHTML = "🔥 " + count + "/" + totalDrills;
+    else { status.innerHTML = "★ PRONTO"; status.classList.add("mission-done"); }
   }
 
   const streak = dados.aquecimento.streak || 0;
@@ -199,41 +187,20 @@ function renderWarmup() {
     for (let p = 0; p < phases.length; p++) {
       const phase = phases[p];
       const unlocked = _phaseIsUnlocked(p);
-      const pDone = _phaseIsComplete(p);
-
-      const phaseStatus = pDone ? "done" : (unlocked ? "active" : "locked");
-      const phaseLabel = pDone
-        ? "✓ " + phase.name
-        : (unlocked ? "FASE " + (p + 1) + " — " + phase.name : "🔒 FASE " + (p + 1) + " — " + phase.name);
-      const phaseProgress = phase.drills.filter((_, di) => feitos.includes(_getGlobalDrillIndex(p, di))).length + "/" + phase.drills.length;
-
-      html += `<div class="wu-phase-divider wu-phase-${phaseStatus}">
-        <div class="wu-phase-line"></div>
-        <span class="wu-phase-label">${phaseLabel}</span>
-        <span class="wu-phase-pct">${phaseProgress}</span>
-        <div class="wu-phase-line"></div>
-      </div>`;
-
       for (let d = 0; d < phase.drills.length; d++) {
         const drill = phase.drills[d];
         const gi = _getGlobalDrillIndex(p, d);
         const done = feitos.includes(gi);
-        const cat = CATEGORY_ICONS[drill.cat] || { icon: "⚡", label: "" };
         const lockedItem = !unlocked && !done;
-
-        const clickHandler = !lockedItem
-          ? `onclick="toggleWarmup(${gi})"`
-          : "";
         const itemClass = "sb-warmup-item" + (done ? " done" : "") + (lockedItem ? " locked" : "");
 
-        html += `<div class="${itemClass}" data-idx="${gi}" ${clickHandler}>
+        html += `<div class="${itemClass}" data-idx="${gi}" onclick="${lockedItem ? "" : 'toggleWarmup(' + gi + ')'}">
           <div class="sb-warmup-circle">
             <span class="sb-warmup-num">${done ? "✓" : globalIdx + 1}</span>
             <span class="sb-warmup-check">✓</span>
           </div>
           <div class="sb-warmup-info">
-            <div class="sb-warmup-name">${lockedItem ? "🔒 " : ""}${drill.name} <span class="wu-cat-badge">${cat.icon}</span></div>
-            <div class="sb-warmup-desc${done || lockedItem ? "" : " collapsed"}">${lockedItem ? "Complete a fase anterior" : drill.desc}</div>
+            <div class="sb-warmup-name">${lockedItem ? "🔒 " : ""}${drill.name}</div>
           </div>
           <button class="sb-warmup-timer-btn${done ? " done" : ""}" type="button" onclick="event.stopPropagation();${done || lockedItem ? "" : 'startWarmupTimer(' + gi + ')'}">${done ? "✓" : (lockedItem ? "🔒" : "▶ " + drill.time + "s")}</button>
         </div>`;
@@ -246,20 +213,19 @@ function renderWarmup() {
   if (summary) {
     if (count === 0) {
       const exs = getExerciciosHoje();
-      if (exs.length > 0) summary.textContent = `Preparação para ${exs.map(e => e.nome).join(", ")}: ${totalDrills} passos em ${phases.length} fases.`;
-      else summary.textContent = "Ativação em 3 fases: mobilidade articular, ativação neural e preparação específica.";
+      if (exs.length > 0) summary.textContent = `${totalDrills} drills · preparação para o treino de hoje`;
+      else summary.textContent = `${totalDrills} drills de ativação pré-combate`;
     } else if (!allDone) {
-      summary.textContent = `Faltam ${totalDrills - count} passos · ~${_formatTime(_getTotalRemainingTime())} restantes.`;
+      summary.textContent = `${totalDrills - count} restantes · ~${_formatTime(_getTotalRemainingTime())}`;
     } else {
-      const streakCount = dados.aquecimento.streak || 0;
-      if (streakCount >= 7) summary.textContent = "Missão cumprida. Sequência de " + streakCount + " dias — o hábito está consolidado. O corpo reconhece o ritual.";
-      else if (streakCount >= 3) summary.textContent = "Ativação concluída. " + streakCount + " dias seguidos — a consistência está construindo disciplina.";
-      else summary.textContent = "Ativação concluída. O corpo está pronto e a mente pode focar no esforço que vem a seguir.";
+      const s = dados.aquecimento.streak || 0;
+      if (s >= 7) summary.textContent = `${s} dias seguidos 🔥`;
+      else if (s >= 3) summary.textContent = `${s} dias seguidos`;
+      else summary.textContent = "Ativação concluída";
     }
   }
   if (hint) {
-    if (!allDone) hint.textContent = "Toque nos passos para marcar conclusão ou no botão ▶ para iniciar o cronômetro.";
-    else hint.textContent = "Ativação completa. Seu warmup de " + _formatTime(_getTotalRemainingTime() > 0 ? _getTotalRemainingTime() : _obterTodasDrills().reduce((s, d) => s + d.time, 0)) + " está feito.";
+    hint.textContent = allDone ? "" : "Toque no drill ou aperte ▶ para iniciar o cronômetro";
   }
 
   _atualizarAutoBtn();
@@ -355,12 +321,6 @@ function startWarmupTimer(idx) {
   btn.textContent = String(dur);
   btn.classList.add("running");
   btn.disabled = true;
-  let expanded = false;
-  const desc = item.querySelector(".sb-warmup-desc");
-  if (desc && desc.classList.contains("collapsed")) {
-    desc.classList.remove("collapsed");
-    expanded = true;
-  }
 
   function tick() {
     let r = parseInt(btn.dataset.remaining, 10);

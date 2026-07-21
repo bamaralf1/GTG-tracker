@@ -909,166 +909,62 @@
 }
 
 /* ==============================================================================
- * 25) WARMUP — SISTEMA DE FASES + MISSÃO TIMER + STREAK + AUTO
+ * 25) WARMUP — REFINAMENTOS SUTIS
  * ============================================================================ */
 
-/* --- Streak badge in header --- */
+/* Streak badge — só um brilho a mais */
 .sb-warmup-streak{
   font-family:'Share Tech Mono',monospace;font-size:9px;
   color:var(--gold);letter-spacing:1px;
-  background:rgba(212,168,67,0.1);
-  border:1px solid rgba(212,168,67,0.2);
+  background:rgba(212,168,67,0.08);
+  border:1px solid rgba(212,168,67,0.15);
   padding:1px 6px;border-radius:10px;
   margin-right:4px;
 }
 
-/* --- Phase divider (section-divider style) --- */
-.wu-phase-divider{
-  display:flex;align-items:center;gap:6px;
-  margin:10px 0 4px;
-  position:relative;z-index:1;
-}
-.wu-phase-line{
-  flex:1;height:1px;
-  background:rgba(212,168,67,0.12);
-  transition:background .4s;
-}
-.wu-phase-label{
-  font-family:'Share Tech Mono',monospace;
-  font-size:8px;letter-spacing:1.5px;white-space:nowrap;
-  color:var(--gold-dim);
-  transition:color .4s;
-}
-.wu-phase-pct{
-  font-family:'Share Tech Mono',monospace;
-  font-size:7px;letter-spacing:1px;
-  color:var(--gray-dark);
-  transition:color .4s;
-}
+/* Locked = só opacidade, sem grayscale/overlay */
+.sb-warmup-item.locked{opacity:.4;cursor:default;pointer-events:none}
 
-/* Phase divider states */
-.wu-phase-active .wu-phase-line{background:rgba(212,168,67,0.35)}
-.wu-phase-active .wu-phase-label{color:var(--gold)}
-.wu-phase-active .wu-phase-pct{color:var(--gray-light)}
-
-.wu-phase-done .wu-phase-line{background:rgba(68,204,68,0.2)}
-.wu-phase-done .wu-phase-label{color:var(--green-bright)}
-.wu-phase-done .wu-phase-pct{color:var(--green-bright)}
-
-.wu-phase-locked .wu-phase-line{background:rgba(255,255,255,0.04)}
-.wu-phase-locked .wu-phase-label{color:var(--gray-dark)}
-.wu-phase-locked .wu-phase-pct{color:var(--gray-dark)}
-
-/* --- Category badge --- */
-.wu-cat-badge{
-  display:inline-block;
-  font-size:10px;line-height:1;
-  margin-left:3px;
-  opacity:.5;
-  vertical-align:middle;
-}
-.sb-warmup-item.done .wu-cat-badge{opacity:.3}
-
-/* --- Locked drill: dimmed, no pointer --- */
-.sb-warmup-item.locked{
-  opacity:.35;
-  cursor:default;
-  pointer-events:none;
-}
-.sb-warmup-item.locked .sb-warmup-circle{
-  border-color:rgba(255,255,255,0.06);
-}
-.sb-warmup-item.locked .sb-warmup-name{
-  color:var(--gray);
-}
-.sb-warmup-item.locked .sb-warmup-timer-btn{
-  border-color:rgba(255,255,255,0.06);
-  color:var(--gray-dark);
-}
-.sb-warmup-item.locked .sb-warmup-desc{
-  color:var(--gray-dark);
-}
-
-/* --- Collapsed/expanded description --- */
-.sb-warmup-desc.collapsed{
-  display:-webkit-box;
-  -webkit-line-clamp:1;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-  max-height:1.5em;
-  transition:all .3s;
-}
-.sb-warmup-desc:not(.collapsed){
-  max-height:200px;
-}
-
-/* --- Timer btn done state --- */
+/* Timer btn quando concluído */
 .sb-warmup-timer-btn.done{
   color:var(--green-bright);
-  border-color:rgba(68,204,68,0.25);
-  background:rgba(68,204,68,0.06);
-  cursor:default;
-  pointer-events:none;
+  border-color:rgba(68,204,68,0.2);
+  background:rgba(68,204,68,0.05);
+  cursor:default;pointer-events:none;
 }
 
-/* --- Auto-advance button --- */
+/* Auto-avanço */
 #warmupAutoBtn.active{
-  background:rgba(68,204,68,0.12);
-  border-color:var(--green-bright);
-  color:var(--green-bright);
+  background:rgba(68,204,68,0.1);border-color:var(--green-bright);color:var(--green-bright);
 }
 #warmupAutoBtn:not(.active){
-  color:var(--gray-light);
-  border-color:rgba(255,255,255,0.08);
-  background:rgba(255,255,255,0.02);
+  color:var(--gray-light);border-color:rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);
 }
 #warmupAutoBtn:not(.active):hover{
-  background:rgba(255,255,255,0.06);
-  border-color:rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.12);
 }
 
-/* --- Smaller action button variant --- */
-.sb-warmup-action-btn-small{
-  font-size:10px;padding:5px 8px;
-}
+/* Small action btn */
+.sb-warmup-action-btn-small{font-size:10px;padding:5px 8px}
 
-/* --- Mission complete status style --- */
-.sb-warmup-status.mission-done{
-  color:var(--green-bright);
-  animation:warmupShieldPulse 2s ease-in-out infinite;
-}
+/* Status complete */
+.sb-warmup-status.mission-done{color:var(--green-bright)}
 
-
-/* --- Progress bar complete state --- */
+/* Progress complete */
 .sb-warmup-progress-fill.complete{
-  background:linear-gradient(90deg,var(--green-bright),rgba(68,204,68,0.6));
-  box-shadow:0 0 10px rgba(68,204,68,0.3);
-  animation:none;
+  background:linear-gradient(90deg,var(--green-bright),rgba(68,204,68,0.5));
+  box-shadow:0 0 8px rgba(68,204,68,0.2);animation:none;
 }
 
-/* --- Celebration animation --- */
-@keyframes wuCelebrateFlash{
-  0%{border-color:var(--border)}
-  25%{border-color:var(--green-bright);box-shadow:0 0 30px rgba(68,204,68,0.2)}
-  50%{border-color:var(--gold);box-shadow:0 0 20px rgba(212,168,67,0.15)}
-  75%{border-color:var(--green-bright);box-shadow:0 0 30px rgba(68,204,68,0.2)}
-  100%{border-color:var(--border)}
-}
-.sb-card-warmup.wu-celebrate{
-  animation:wuCelebrateFlash 1.5s ease-in-out;
+/* Celebration — só a accent bar muda */
+@keyframes wuCelebratePulse{
+  0%,100%{opacity:1}
+  50%{opacity:.4}
 }
 .sb-card-warmup.wu-celebrate .wu-accent-bar{
-  background:linear-gradient(180deg,var(--green-bright),var(--gold),rgba(68,204,68,0.3)) !important;
-}
-.sb-card-warmup.wu-celebrate .wu-corner-glow-tl{
-  opacity:.15 !important;
-  background:radial-gradient(circle,rgba(68,204,68,0.4) 0%,transparent 70%) !important;
+  background:linear-gradient(180deg,var(--green-bright),var(--gold)) !important;
+  animation:wuCelebratePulse .8s ease-in-out 3 !important;
 }
 
-/* --- Minimized state --- */
+/* Minimized esconde streak */
 .sb-card-warmup.minimized .sb-warmup-streak{display:none!important}
-
-/* --- Responsive --- */
-@media (max-width:380px){
-  .wu-phase-label{font-size:7px}
-}
