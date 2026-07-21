@@ -10,6 +10,29 @@
 
 
 /* ------------------------------------------------------------------------------
+ * 0) BOOT OVERLAY — TELA DE INICIALIZAÇÃO CRT
+ * Aparece enquanto o app carrega dados e prepara a interface.
+ * ---------------------------------------------------------------------------- */
+.boot-overlay{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#080808;flex-direction:column;transition:opacity .5s var(--ease-expo);pointer-events:all}
+.boot-overlay.boot-hide{opacity:0;pointer-events:none}
+.boot-crt{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;animation:bootScanline 8s linear infinite}
+@keyframes bootScanline{0%{transform:translateY(0)}100%{transform:translateY(4px)}}
+.boot-content{text-align:center;position:relative;z-index:1}
+.boot-badge{font-size:48px;color:var(--gold);text-shadow:0 0 40px rgba(212,168,67,.5),0 0 80px rgba(212,168,67,.2);margin-bottom:12px;animation:bootBadgePulse 2s ease-in-out infinite}
+@keyframes bootBadgePulse{0%,100%{text-shadow:0 0 40px rgba(212,168,67,.5),0 0 80px rgba(212,168,67,.2)}50%{text-shadow:0 0 60px rgba(212,168,67,.7),0 0 100px rgba(212,168,67,.3)}}
+.boot-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:8px;color:var(--gold);margin-bottom:4px}
+.boot-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--gray-light);letter-spacing:4px;margin-bottom:20px}
+.boot-bar-track{width:220px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin:0 auto 16px;overflow:hidden}
+.boot-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:2px;transition:width .6s var(--ease-expo)}
+.boot-steps{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.boot-step{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--gray);letter-spacing:2px;opacity:.3;transition:all .4s var(--ease-expo)}
+.boot-step.active{opacity:1;color:var(--gold)}
+.boot-step.active::before{content:"▸ ";color:var(--gold-light)}
+.boot-cursor{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--gold-dim);animation:bootBlink .8s step-end infinite}
+@keyframes bootBlink{0%,100%{opacity:1}50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.boot-overlay{transition:none}.boot-crt,.boot-badge,.boot-cursor{animation:none}.boot-bar-fill{transition:none}}
+
+/* ------------------------------------------------------------------------------
  * 1) CORREÇÃO — GRID DE STATS DO EXERCÍCIO (bug real de layout)
  * O card de cada exercício tem 4 estatísticas (Séries hoje / Reps hoje /
  * Total séries / Streak) mas a grid original tinha só 3 colunas — o 4º item

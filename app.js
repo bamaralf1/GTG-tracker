@@ -805,6 +805,10 @@ function inicializar() {
     try { atualizarBadgeApp(); } catch (_) {}
     try { atualizarCheckinBanner(); } catch (_) {}
     try { renderPlanoHojeCard(); } catch (_) {}
+    setTimeout(() => {
+      const overlay = document.getElementById("bootOverlay");
+      if (overlay) { overlay.classList.add("boot-hide"); setTimeout(() => { overlay.style.display = "none" }, 600) }
+    }, 400)
   })
 }
 

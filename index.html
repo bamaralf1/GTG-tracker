@@ -16,9 +16,30 @@
   <link rel="stylesheet" href="treino-ux-refinements.css">
   <link rel="stylesheet" href="skilltree.css">
   <link rel="manifest" href="manifest.webmanifest">
+  <script>if (sessionStorage.getItem('gtg_auth') !== '1' && localStorage.getItem('gtg_auth') !== '1') location.href = 'entrar.html';</script>
   </head>
   <body>
-<script>if (sessionStorage.getItem('gtg_auth') !== '1' && localStorage.getItem('gtg_auth') !== '1') location.href = 'entrar.html';</script>
+  <div id="bootOverlay" class="boot-overlay">
+    <div class="boot-crt"></div>
+    <div class="boot-content">
+      <div class="boot-badge">★</div>
+      <div class="boot-title">GTG TRACKER</div>
+      <div class="boot-sub">INICIALIZANDO SISTEMA</div>
+      <div class="boot-bar-track"><div class="boot-bar-fill" id="bootBarFill"></div></div>
+      <div class="boot-steps">
+        <div class="boot-step" data-step="1">CARREGANDO DADOS</div>
+        <div class="boot-step" data-step="2">PREPARANDO INTERFACE</div>
+        <div class="boot-step" data-step="3">SINCRONIZANDO</div>
+      </div>
+      <div class="boot-cursor">_</div>
+    </div>
+  </div>
+  <script>
+    document.getElementById("bootBarFill").style.width = "15%";
+    setTimeout(function(){ document.querySelectorAll(".boot-step")[0].classList.add("active"); document.getElementById("bootBarFill").style.width = "40%"; }, 300);
+    setTimeout(function(){ document.querySelectorAll(".boot-step")[1].classList.add("active"); document.getElementById("bootBarFill").style.width = "70%"; }, 700);
+    setTimeout(function(){ document.querySelectorAll(".boot-step")[2].classList.add("active"); document.getElementById("bootBarFill").style.width = "90%"; }, 1200);
+  </script>
   <!-- NORMAL THEME STRUCTURE -->
   <div>
 

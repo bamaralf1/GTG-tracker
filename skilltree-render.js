@@ -1091,9 +1091,6 @@
   // ============================================================
 
   function inicializarSkillTree() {
-    // Injeta dados de teste apenas em ambiente de dev (sem registros reais)
-    _injetarDadosTeste();
-
     // Primeiro render
     renderSkillTree('TODOS');
 
@@ -1142,43 +1139,6 @@
         }
       }, { passive: false });
     }
-
-
-  }
-
-  // ============================================================
-  // DADOS DE TESTE (injetados se não há registros)
-  // ============================================================
-
-  function _injetarDadosTeste() {
-    if (!dados) return;
-    if (!Array.isArray(dados.registros)) dados.registros = [];
-
-    // Só injeta se não há registros reais
-    if (dados.registros.filter(r => !r.isTest).length > 0) return;
-
-    const hoje = new Date().toISOString().slice(0, 10);
-    const ts   = Date.now();
-
-    const mock = [
-      { exercicioId: 'flexao',      valor: 22, unidade: 'reps' },
-      { exercicioId: 'barra_fixa',  valor: 8,  unidade: 'reps' },
-      { exercicioId: 'agachamento', valor: 30, unidade: 'reps' },
-      { exercicioId: 'prancha',     valor: 75, unidade: 'seg'  },
-      { exercicioId: 'grip',        valor: 25, unidade: 'reps' }
-    ];
-
-    mock.forEach((m, i) => {
-      dados.registros.push({
-        id:          `test_st_${i}`,
-        exercicioId: m.exercicioId,
-        valor:       m.valor,
-        data:        hoje,
-        timestamp:   ts - i * 1000,
-        xp:          0,
-        isTest:      true   // flag para não poluir stats reais
-      });
-    });
 
 
   }
