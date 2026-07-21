@@ -143,18 +143,31 @@ function toggleFiltroPerfeitas(el) {
 
 let rpeSelecionado = {};
 
-function selecionarRPE(exId, val) {
-  rpeSelecionado[exId] = val;
+var RPE_ZONES = {
+  leve:     { val: 2,  label: "LEVE",     range: "1-3", desc: "Muito leve" },
+  moderado: { val: 5,  label: "MODERADO", range: "4-6", desc: "Moderado" },
+  pesado:   { val: 8,  label: "PESADO",   range: "7-8", desc: "Pesado" },
+  maximo:   { val: 10, label: "MÁXIMO",   range: "9-10",desc: "Máximo esforço" }
+};
+
+function selecionarRPE(exId, zone) {
+  var z = RPE_ZONES[zone];
+  if (!z) return;
+  rpeSelecionado[exId] = z.val;
   var scale = document.getElementById("rpe-scale-" + exId);
   if (scale) {
     scale.querySelectorAll(".rpe-btn").forEach(function(b) { b.classList.remove("selected"); });
-    var btns = scale.querySelectorAll(".rpe-btn");
-    if (btns[val - 1]) btns[val - 1].classList.add("selected");
+    var btn = scale.querySelector('.rpe-btn[data-zone="' + zone + '"]');
+    if (btn) btn.classList.add("selected");
   }
 }
 
-function getRPEColorClass(e) {
-  return e ? e <= 4 ? "rpe-low" : e <= 6 ? "rpe-mid" : e <= 8 ? "rpe-high" : "rpe-max" : ""
+function getRPEColorClass(val) {
+  if (!val) return "";
+  if (val <= 2) return "rpe-leve";
+  if (val <= 5) return "rpe-moderado";
+  if (val <= 8) return "rpe-pesado";
+  return "rpe-maximo";
 }
 
 function calcularRPEMedio(e, a) {
