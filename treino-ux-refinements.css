@@ -587,3 +587,323 @@
 .shield-star{display:flex}
 .shield-star.has-shields .shield-star-icon{color:var(--gold);filter:drop-shadow(0 0 8px rgba(212,168,67,.5)) drop-shadow(0 0 16px rgba(212,168,67,.2))}
 .shield-star.has-shields .shield-star-count{background:var(--gold);color:var(--black)}
+
+/* ------------------------------------------------------------------------------
+ * 21) QUICK LOG — FAB + OVERLAY
+ * ---------------------------------------------------------------------------- */
+.ql-fab{
+  position:fixed; bottom:28px; right:28px;
+  z-index:950;
+  width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold-dim));
+  border:1px solid rgba(212,168,67,0.4);
+  color:var(--black);
+  font-size:26px;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 20px rgba(212,168,67,0.3), 0 0 0 0 rgba(212,168,67,0.4);
+  transition:transform .2s var(--ease-expo,ease), box-shadow .2s;
+  animation:qlPulse 2s ease-in-out infinite;
+}
+.ql-fab:hover{
+  transform:scale(1.1);
+  box-shadow:0 6px 28px rgba(212,168,67,0.45);
+}
+.ql-fab:active{transform:scale(.92)}
+@keyframes qlPulse{
+  0%,100%{box-shadow:0 4px 20px rgba(212,168,67,0.3), 0 0 0 0 rgba(212,168,67,0.2)}
+  50%{box-shadow:0 4px 20px rgba(212,168,67,0.3), 0 0 0 12px rgba(212,168,67,0)}
+}
+@media (prefers-reduced-motion:reduce){.ql-fab{animation:none}}
+@media (max-width:600px){.ql-fab{bottom:16px; right:16px; width:50px; height:50px; font-size:22px}}
+
+.ql-overlay{
+  position:fixed; inset:0; z-index:960;
+  background:rgba(0,0,0,0.6);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none;
+  transition:opacity .2s;
+}
+.ql-overlay.active{opacity:1; pointer-events:auto}
+
+.ql-card{
+  width:320px; max-width:90vw;
+  background:var(--black-card);
+  border:1px solid rgba(212,168,67,0.2);
+  border-radius:12px;
+  overflow:hidden;
+  transform:translateY(20px) scale(.95);
+  transition:transform .25s var(--ease-expo,ease);
+}
+.ql-overlay.active .ql-card{transform:translateY(0) scale(1)}
+
+.ql-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.ql-title{font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:2px; color:var(--gold)}
+.ql-close{background:none; border:none; color:var(--gray); font-size:16px; cursor:pointer; padding:4px}
+
+.ql-body{padding:18px; display:flex; flex-direction:column; gap:14px}
+
+.ql-field{display:flex; flex-direction:column; gap:4px}
+.ql-label{font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:1.5px; color:var(--gray-light)}
+.ql-select,.ql-input{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:6px;
+  padding:10px 12px;
+  color:var(--white);
+  font-family:'Rajdhani',sans-serif;
+  font-size:16px;
+  outline:none;
+  transition:border-color .2s;
+}
+.ql-select:focus,.ql-input:focus{border-color:var(--gold)}
+.ql-input{width:100%}
+
+.ql-groove-row{display:flex; gap:8px}
+.ql-star{
+  font-size:28px; cursor:pointer;
+  color:var(--gold-dim);
+  transition:color .15s, transform .15s;
+  user-select:none;
+  line-height:1;
+}
+.ql-star:hover{transform:scale(1.15)}
+.ql-star:first-child{color:var(--gold)}
+
+.ql-submit{
+  width:100%;
+  background:linear-gradient(135deg,var(--gold),var(--gold-dim));
+  border:none;
+  border-radius:6px;
+  padding:12px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:16px;
+  letter-spacing:2px;
+  color:var(--black);
+  cursor:pointer;
+  transition:transform .15s, box-shadow .2s;
+}
+.ql-submit:active{transform:scale(.96)}
+
+/* ------------------------------------------------------------------------------
+ * 22) CHECK-IN BANNER
+ * ---------------------------------------------------------------------------- */
+.checkin-banner{
+  display:flex; align-items:center; gap:12px;
+  background:linear-gradient(135deg,rgba(212,168,67,0.12),rgba(212,168,67,0.04));
+  border:1px solid rgba(212,168,67,0.25);
+  border-radius:8px;
+  padding:12px 20px;
+  margin-bottom:16px;
+  cursor:pointer;
+  transition:background .2s, border-color .2s;
+  animation:checkinGlow 2s ease-in-out infinite;
+  user-select:none;
+}
+.checkin-banner:hover{
+  background:linear-gradient(135deg,rgba(212,168,67,0.18),rgba(212,168,67,0.08));
+  border-color:rgba(212,168,67,0.4);
+}
+@keyframes checkinGlow{
+  0%,100%{box-shadow:0 0 0 0 rgba(212,168,67,0.15)}
+  50%{box-shadow:0 0 20px rgba(212,168,67,0.25)}
+}
+@media (prefers-reduced-motion:reduce){.checkin-banner{animation:none}}
+.checkin-banner-icon{font-size:24px; flex-shrink:0}
+.checkin-banner-text{font-size:14px; color:var(--gold); font-family:'Rajdhani',sans-serif; letter-spacing:0.5px}
+.checkin-banner-arrow{font-size:18px; color:var(--gold-dim); margin-left:auto; animation:bannerBounce 1.5s ease-in-out infinite}
+@keyframes bannerBounce{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(4px)}
+}
+@media (prefers-reduced-motion:reduce){.checkin-banner-arrow{animation:none}}
+
+/* ------------------------------------------------------------------------------
+ * 23) PLANO DE HOJE — Premium card
+ * ---------------------------------------------------------------------------- */
+.planohoje-card{
+  position:relative;
+  background:var(--black-card);
+  border:1px solid rgba(212,168,67,0.12);
+  border-radius:8px;
+  clip-path:var(--clip-bevel);
+  transition:border-color .3s;
+}
+.planohoje-card:hover{border-color:rgba(212,168,67,0.2)}
+.planohoje-card .card-header{
+  display:flex; align-items:center;
+  padding:14px 18px 10px;
+  background:linear-gradient(135deg,rgba(212,168,67,0.06),transparent 60%);
+  transition:background .2s;
+}
+.planohoje-card .card-header:hover{background:linear-gradient(135deg,rgba(212,168,67,0.1),transparent 60%)}
+.planohoje-card.collapsed .card-body{display:none}
+.planohoje-card .card-title{color:var(--gold); font-size:16px}
+
+/* Accent bar */
+.ph-accent-bar{
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-dim));
+  opacity:.5; z-index:2;
+}
+.ph-noise{
+  position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:0; opacity:.4;
+}
+.ph-corner-glow{
+  position:absolute; width:120px; height:120px; border-radius:50%;
+  filter:blur(60px); pointer-events:none; z-index:0;
+}
+.ph-corner-glow-tl{top:-40px; left:-40px; background:rgba(212,168,67,0.06)}
+.ph-corner-glow-br{bottom:-40px; right:-40px; background:rgba(212,168,67,0.04)}
+
+/* Progress bar */
+.ph-progress-bar-wrap{
+  display:flex; align-items:center; gap:10px;
+  padding:0 4px 12px;
+}
+.ph-progress-track{
+  flex:1; height:4px;
+  background:rgba(255,255,255,0.06);
+  border-radius:2px; overflow:hidden;
+}
+.ph-progress-fill{
+  height:100%; width:0%;
+  background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--green-bright));
+  border-radius:2px;
+  transition:width .5s var(--ease-expo,ease);
+}
+.ph-progress-pct{
+  font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--gold); min-width:32px; text-align:right;
+}
+.ph-volume-est{
+  font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--gray-light); margin-left:auto; white-space:nowrap;
+}
+.ph-progress-label{
+  font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--green-bright); letter-spacing:1px;
+}
+
+/* Items */
+.ph-item{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; margin-bottom:6px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:6px;
+  transition:background .25s, border-color .25s, box-shadow .25s;
+  animation:phItemIn .4s var(--ease-expo,ease) both;
+  animation-delay:calc(var(--i,0)*50ms);
+}
+@keyframes phItemIn{
+  from{opacity:0; transform:translateY(-6px)}
+  to{opacity:1; transform:translateY(0)}
+}
+.ph-item:hover{background:rgba(255,255,255,0.07); border-color:rgba(212,168,67,0.2)}
+.ph-item-done{background:rgba(45,122,45,0.1); border-color:rgba(68,204,68,0.2)}
+.ph-item-done:hover{background:rgba(45,122,45,0.15); border-color:rgba(68,204,68,0.3)}
+@media (prefers-reduced-motion:reduce){
+  .ph-item{animation:none}
+  .ph-progress-fill{transition:none}
+}
+
+.ph-item-left{display:flex; align-items:center; gap:12px; min-width:0}
+.ph-item-status{
+  width:22px; height:22px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; flex-shrink:0;
+  border:1.5px solid var(--gray-dark);
+  color:var(--gray-dark);
+  transition:background .2s, border-color .2s, color .2s;
+}
+.ph-item-done .ph-item-status{
+  background:var(--green-bright); border-color:var(--green-bright);
+  color:var(--black); box-shadow:0 0 10px rgba(68,204,68,0.3);
+}
+.ph-item-name{
+  font-family:'Bebas Neue',sans-serif; font-size:17px; letter-spacing:1px;
+  color:var(--white); line-height:1.2;
+}
+.ph-item-done .ph-item-name{color:var(--green-bright)}
+.ph-item-meta{display:flex; gap:6px; flex-wrap:wrap; margin-top:2px}
+.ph-meta-chip{
+  font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:.5px;
+  padding:1px 7px; border-radius:3px;
+  background:rgba(255,255,255,0.05); color:var(--gray-light);
+}
+.ph-meta-done{background:rgba(68,204,68,0.1); color:var(--green-bright)}
+.ph-meta-sug{background:rgba(212,168,67,0.1); color:var(--gold)}
+
+.ph-item-right{display:flex; gap:6px; align-items:center; flex-shrink:0}
+.ph-btn-quick{
+  background:linear-gradient(135deg,var(--gold-dim),var(--gold));
+  border:none; border-radius:4px;
+  padding:6px 12px;
+  font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:1px;
+  color:var(--black); cursor:pointer;
+  transition:transform .15s, box-shadow .2s;
+}
+.ph-btn-quick:active{transform:scale(.92)}
+.ph-btn-ir{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:4px;
+  padding:6px 10px;
+  font-size:14px; color:var(--gray-light); cursor:pointer;
+  transition:background .2s, border-color .2s, color .2s;
+}
+.ph-btn-ir:hover{background:rgba(212,168,67,0.1); border-color:var(--gold); color:var(--gold)}
+
+/* Empty state */
+.ph-empty{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:24px 16px;
+}
+.ph-empty-icon{font-size:32px; opacity:.6}
+.ph-empty-text{font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:1px; color:var(--gray-light)}
+.ph-empty-sub{font-size:12px; color:var(--gray); text-align:center}
+
+/* Compact mode */
+.ph-compact .ph-item{padding:8px 12px; margin-bottom:4px}
+.ph-compact .ph-item-meta,.ph-compact .ph-btn-quick,.ph-compact .ph-volume-est{display:none}
+.ph-compact .ph-item-name{font-size:14px}
+.ph-compact .ph-item-status{width:18px; height:18px; font-size:9px}
+.ph-compact .ph-progress-bar-wrap{padding-bottom:8px}
+.ph-compact .ph-progress-pct{font-size:10px; min-width:28px}
+.ph-compact .ph-progress-label{font-size:9px}
+
+/* Checkoff label */
+.ph-checked-label{
+  font-family:'Share Tech Mono',monospace; font-size:8px; letter-spacing:.5px;
+  color:var(--gold-dim); background:rgba(212,168,67,0.08);
+  padding:2px 6px; border-radius:3px;
+}
+
+/* Toggle mode button */
+.ph-toggle-mode{
+  background:none; border:1px solid rgba(255,255,255,0.08);
+  border-radius:4px; padding:2px 6px; font-size:13px;
+  cursor:pointer; line-height:1; color:var(--gray-light);
+  transition:background .2s, border-color .2s;
+}
+.ph-toggle-mode:hover{background:rgba(212,168,67,0.1); border-color:var(--gold)}
+
+/* ------------------------------------------------------------------------------
+ * 24) VOLUME WARNING — indicador no card de exercício
+ * ---------------------------------------------------------------------------- */
+.ex-volume-badge{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10px; font-family:'Share Tech Mono',monospace;
+  padding:2px 8px; border-radius:3px;
+  margin-left:8px;
+}
+.ex-volume-badge.atingido{color:var(--green-bright); background:rgba(45,122,45,0.15); border:1px solid rgba(68,204,68,0.2)}
+.ex-volume-badge.excedido{color:var(--red-bright); background:rgba(204,0,0,0.12); border:1px solid rgba(255,26,26,0.2); animation:volExcedidoPulse 1.5s ease-in-out infinite}
+@keyframes volExcedidoPulse{
+  0%,100%{opacity:.8}
+  50%{opacity:1}
+}

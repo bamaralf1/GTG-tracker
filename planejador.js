@@ -182,16 +182,200 @@ function abrirSeletorExercicio(e) {
 function adicionarAoPlanejador(e, a) {
   planejador[e] || (planejador[e] = []), planejador[e].includes(a) || planejador[e].push(a), salvarPlanejador(), document.getElementById("seletorExModal").classList.remove("active"), renderPlanejador();
   const t = dados.exercicios.find(e => e.id === a);
+  renderPlanoHojeCard();
   mostrarToast("📅 Adicionado", (t ? t.nome : a) + " adicionado ao " + DIAS_COMPLETOS[e] + ".", "success")
 }
 
 function removerDoPlanejador(e, a) {
-  planejador[e] && (planejador[e] = planejador[e].filter(e => e !== a), salvarPlanejador(), renderPlanejador())
+  planejador[e] && (planejador[e] = planejador[e].filter(e => e !== a), salvarPlanejador(), renderPlanejador());
+  renderPlanoHojeCard()
+}
+
+let _phState = { collapsed: false, compact: false, checkoffs: {}, date: "" };
+
+function _phCarregarEstado() {
+  try {
+    const raw = localStorage.getItem("gtg_plano_hoje");
+    if (raw) {
+      const s = JSON.parse(raw);
+      const hoje = (new Date).toISOString().slice(0, 10);
+      if (s.date === hoje) { _phState = s; return; }
+    }
+  } catch (_) {}
+  _phState = { collapsed: false, compact: false, checkoffs: {}, date: (new Date).toISOString().slice(0, 10) };
+}
+
+function _phSalvarEstado() {
+  try { localStorage.setItem("gtg_plano_hoje", JSON.stringify(_phState)); } catch (_) {}
+}
+
+function togglePlanoHoje() {
+  _phCarregarEstado();
+  const card = document.getElementById("planoHojeCard");
+  if (!card) return;
+  _phState.collapsed = !_phState.collapsed;
+  card.classList.toggle("collapsed", _phState.collapsed);
+  const t = document.getElementById("planoHojeToggle");
+  if (t) t.textContent = _phState.collapsed ? "[+]" : "[—]";
+  _phSalvarEstado();
+}
+
+function togglePlanoHojeCompact() {
+  _phCarregarEstado();
+  _phState.compact = !_phState.compact;
+  const card = document.getElementById("planoHojeCard");
+  if (card) card.classList.toggle("ph-compact", _phState.compact);
+  const btn = document.getElementById("phToggleMode");
+  if (btn) btn.textContent = _phState.compact ? "📄" : "📋";
+  _phSalvarEstado();
+  renderPlanoHojeCard();
+}
+
+function phToggleCheckoff(exId) {
+  _phCarregarEstado();
+  _phState.checkoffs[exId] = !_phState.checkoffs[exId];
+  _phSalvarEstado();
+  renderPlanoHojeCard();
+  // Celebration when all checked off
+  const planos = planejador[(new Date).getDay()] || [];
+  const allDone = planos.every(id => {
+    const dataStr = (new Date).toISOString().slice(0, 10);
+    const hasSeries = dados.registros.some(r => r.exercicioId === id && r.data === dataStr);
+    return hasSeries || _phState.checkoffs[id];
+  });
+  if (allDone && planos.length > 0) {
+    try {
+      if (typeof mostrarConfete === "function") mostrarConfete();
+      mostrarToast("🎯 PLANO CONCLUÍDO!", "Todos os exercícios de hoje foram feitos!", "success");
+    } catch(_) {}
+    setTimeout(() => {
+      if (!document.getElementById("planoHojeCard")?.classList.contains("collapsed")) {
+        togglePlanoHoje();
+      }
+    }, 2000);
+  }
+}
+
+function _phCalcularVolume(exId, dataStr) {
+  const regs = dados.registros.filter(r => r.exercicioId === exId && r.data === dataStr);
+  const series = regs.length;
+  const reps = regs.reduce((s, r) => s + (r.valor || 0), 0);
+  const xp = regs.reduce((s, r) => s + (r.xp || 0), 0);
+  return { series, reps, xp };
+}
+
+function renderPlanoHojeCard() {
+  _phCarregarEstado();
+  const card = document.getElementById("planoHojeCard");
+  const body = document.getElementById("planoHojeContent");
+  const label = document.getElementById("phProgressLabel");
+  const wrap = document.getElementById("phProgressWrap");
+  const fill = document.getElementById("phProgressFill");
+  const pct = document.getElementById("phProgressPct");
+  const volEst = document.getElementById("phVolumeEst");
+  const toggleBtn = document.getElementById("phToggleMode");
+  if (!card || !body) return;
+
+  // Apply persisted states
+  card.classList.toggle("collapsed", _phState.collapsed);
+  card.classList.toggle("ph-compact", _phState.compact);
+  const t = document.getElementById("planoHojeToggle");
+  if (t) t.textContent = _phState.collapsed ? "[+]" : "[—]";
+  if (toggleBtn) toggleBtn.textContent = _phState.compact ? "📄" : "📋";
+
+  const hoje = (new Date).getDay(),
+    dataStr = (new Date).toISOString().slice(0, 10),
+    planos = planejador[hoje] || [];
+
+  if (planos.length === 0) {
+    card.style.display = "block";
+    body.innerHTML = '<div class="ph-empty"><span class="ph-empty-icon">📋</span><span class="ph-empty-text">Nada planejado para hoje</span><span class="ph-empty-sub">Vá em <strong style="color:var(--gold);cursor:pointer" onclick="document.querySelector(\'[data-tab=planejador]\')?.click()">📅 PLANEJADOR</strong> para montar seu plano semanal</span></div>';
+    if (label) label.textContent = "";
+    if (wrap) wrap.style.display = "none";
+    if (volEst) volEst.textContent = "";
+    return;
+  }
+
+  let feitos = 0, total = planos.length, totalSeries = 0, totalXP = 0;
+  const items = planos.map((exId, idx) => {
+    const ex = dados.exercicios.find(e => e.id === exId);
+    if (!ex) return "";
+    const vol = _phCalcularVolume(exId, dataStr);
+    const checked = !!_phState.checkoffs[exId];
+    const done = vol.series > 0 || checked;
+    if (done) feitos++;
+    totalSeries += vol.series;
+    totalXP += vol.xp;
+    const pr = typeof calcularPR2 === "function" ? calcularPR2(ex) : null;
+    const sug = pr ? (typeof calcularSugestaoGTG === "function" ? calcularSugestaoGTG(pr, ex.tipo) : null) : null;
+    const unit = "tempo" === ex.tipo ? "seg" : ex.unidade || "reps";
+
+    if (_phState.compact) {
+      return `<div class="ph-item ph-item-compact${done ? " ph-item-done" : ""}" style="--i:${idx}">
+        <span class="ph-item-status" onclick="event.stopPropagation();phToggleCheckoff('${exId}')" style="cursor:pointer">${done ? "✓" : "○"}</span>
+        <span class="ph-item-name" style="flex:1;${done ? 'color:var(--green-bright)' : ''}">${escapeHtml(ex.nome)}</span>
+        <span class="text-mono" style="font-size:10px;color:${vol.series > 0 ? 'var(--green-bright)' : 'var(--gray)'};margin-right:8px">${vol.series}s</span>
+        <button class="ph-btn-ir" onclick="planoHojeIrPara('${exId}')" title="Ir">→</button>
+      </div>`;
+    }
+
+    return `<div class="ph-item${done ? " ph-item-done" : ""}" style="--i:${idx}">
+      <div class="ph-item-left">
+        <span class="ph-item-status" onclick="event.stopPropagation();phToggleCheckoff('${exId}')" style="cursor:pointer">${done ? "✓" : "○"}</span>
+        <div>
+          <div class="ph-item-name" style="${done ? 'color:var(--green-bright)' : ''}">${escapeHtml(ex.nome)}</div>
+          <div class="ph-item-meta">
+            ${vol.series > 0
+              ? `<span class="ph-meta-chip ph-meta-done">${vol.series}s · ${vol.reps} ${unit} · +${vol.xp} XP</span>`
+              : `<span class="ph-meta-chip">0 séries</span>`}
+            ${sug ? `<span class="ph-meta-chip ph-meta-sug">GTG: ${sug}</span>` : ""}
+          </div>
+        </div>
+      </div>
+      <div class="ph-item-right">
+        ${done ? "" : `<button class="ph-btn-quick" onclick="event.stopPropagation();planoHojeQuickSerie('${exId}')" title="Registrar 1 série rápida">+1</button>`}
+        ${checked && vol.series === 0 ? `<span class="ph-checked-label">✓ manual</span>` : ""}
+        <button class="ph-btn-ir" onclick="event.stopPropagation();planoHojeIrPara('${exId}')" title="Ir para o card">→</button>
+      </div>
+    </div>`;
+  }).join("");
+  body.innerHTML = items;
+
+  if (label) label.textContent = feitos + "/" + total + " ✓";
+  if (wrap) {
+    const progress = total > 0 ? Math.round(feitos / total * 100) : 0;
+    wrap.style.display = "flex";
+    if (fill) fill.style.width = progress + "%";
+    if (pct) pct.textContent = progress + "%";
+  }
+  if (volEst) {
+    volEst.textContent = totalSeries > 0 ? `${totalSeries}s · +${totalXP} XP` : "";
+  }
+}
+
+function planoHojeIrPara(exId) {
+  const target = document.getElementById("excard-" + exId);
+  if (target) { target.scrollIntoView({ behavior: "smooth", block: "center" });
+    target.style.transition = "box-shadow 0.3s";
+    target.style.boxShadow = "0 0 40px rgba(212,168,67,0.4)";
+    setTimeout(() => { target.style.boxShadow = ""; }, 1200);
+  }
+}
+
+function planoHojeQuickSerie(exId) {
+  const ex = dados.exercicios.find(e => e.id === exId);
+  if (!ex) return;
+  const pr = typeof calcularPR2 === "function" ? calcularPR2(ex) : 0;
+  const sug = pr ? Math.max(1, Math.round(pr * 0.5)) : 10;
+  const input = document.getElementById("valor-" + exId);
+  if (input) input.value = sug;
+  if (typeof grooveState !== "undefined") grooveState[exId] = [100, 100, 100];
+  if (typeof adicionarSerie === "function") adicionarSerie(exId);
 }
 
 function limparPlanejador() {
   confirmarAcao("LIMPAR SEMANA?", "Remove todos os exercicios do planejador semanal.", () => {
-    planejador = {}, salvarPlanejador(), renderPlanejador(), mostrarToast("Planejador limpo", "", "success")
+    planejador = {}, salvarPlanejador(), renderPlanejador(), renderPlanoHojeCard(), mostrarToast("Planejador limpo", "", "success")
   })
 }
 

@@ -203,6 +203,7 @@ async function updateReadiness() {
       (async () => { await updateReadinessUI(); })().catch(e => console.warn("[storage]", e));
     });
   }
+  try { if (typeof atualizarCheckinBanner === "function") atualizarCheckinBanner(); } catch(_) {}
 }
 
 function getZonaSlider(valor, invertido) {

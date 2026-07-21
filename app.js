@@ -794,14 +794,6 @@ function inicializar() {
       // Restaura ordenação salva
       var sel = document.getElementById("sortExercicios");
       getItem("gtg_ex_order").then(function(v) { if (sel && v) sel.value = v; }).catch(function(){});
-      // Se readiness não foi preenchido hoje, destaca o header
-      if (readinessData.data !== (new Date).toISOString().slice(0, 10)) {
-        var hdr = document.getElementById("headerReadiness");
-        if (hdr) {
-          hdr.classList.add("header-readiness-pulse");
-          hdr.title = "🎯 Preencha seu check-in matinal!";
-        }
-      }
     }, 1800), inicializarSkillTree(), renderCalendario(), verificarRelatorioSemanal();
     const ultimoGroove = dados.registros.filter(r => r.groove).pop();
     const grooveTotal = ultimoGroove ? ultimoGroove.groove.reduce((a, b) => a + b, 0) : (plankGroove ? plankGroove[0] + plankGroove[1] + plankGroove[2] : 0);
@@ -810,6 +802,9 @@ function inicializar() {
     if (pesoDataEl && !pesoDataEl.value) pesoDataEl.value = new Date().toISOString().slice(0, 10);
     const audioBtn = document.getElementById("btnToggleAudio");
     audioBtn && (audioBtn.textContent = audioMuted ? "🔇" : "🔊");
+    try { atualizarBadgeApp(); } catch (_) {}
+    try { atualizarCheckinBanner(); } catch (_) {}
+    try { renderPlanoHojeCard(); } catch (_) {}
   })
 }
 
@@ -1229,6 +1224,24 @@ function mostrarModalAtalhos() {
 
 
 
+
+function atualizarCheckinBanner() {
+  const banner = document.getElementById("checkinBanner");
+  if (!banner) return;
+  const hoje = (new Date).toISOString().slice(0, 10);
+  const precisa = typeof readinessData !== "undefined" && readinessData.data !== hoje;
+  banner.style.display = precisa ? "flex" : "none";
+  const hdr = document.getElementById("headerReadiness");
+  if (hdr) {
+    if (precisa) {
+      hdr.classList.add("header-readiness-pulse");
+      hdr.title = "🎯 Preencha seu check-in matinal!";
+    } else {
+      hdr.classList.remove("header-readiness-pulse");
+      hdr.title = "";
+    }
+  }
+}
 
 function aplicarTema(e) {
   _limparCacheCssVar();

@@ -470,6 +470,8 @@ function desfazerRegistro() {
   dados.registros = dados.registros.filter(a => a.id !== e.id), xpData.total -= e.xp, xpData.total < 0 && (xpData.total = 0);
   const a = (new Date).toISOString().slice(0, 10);
   dados.registros.some(e => e.data === a) || streakData.ultimaData !== a || (streakData.ultimaData = null, streakData.atual = Math.max(0, streakData.atual - 1)), salvarDadosDebounced(), atualizarCardExercicio(e.exercicioId), atualizarStats(), renderHistory(), atualizarXP(), atualizarUIStreak(), esconderUndoBar(), mostrarToast("↩ Desfeito", e.exercicioNome + " removido. XP revertido.", "success")
+  try { atualizarBadgeApp(); } catch (_) {}
+  try { renderPlanoHojeCard(); } catch (_) {}
 }
 
 function calcularStreakExercicio(e) {

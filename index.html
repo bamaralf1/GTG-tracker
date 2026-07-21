@@ -85,6 +85,11 @@
   </header>
   <main class="main">
     <div class="tab-content active" id="tab-treino">
+      <div class="checkin-banner" id="checkinBanner" onclick="scrollToReadiness(event)" style="display:none">
+        <span class="checkin-banner-icon">🎯</span>
+        <span class="checkin-banner-text">Check-in matinal pendente — toque para avaliar sua prontidão</span>
+        <span class="checkin-banner-arrow">↓</span>
+      </div>
       <div class="treino-layout" style="display:flex; gap:32px; align-items:flex-start;">
         <div class="treino-main" style="flex:1; min-width:0;">
           <div class="grid-4 mb-16">
@@ -379,6 +384,29 @@
           <option value="az">A–Z
         </select>
       </div>
+      <div class="card planohoje-card" id="planoHojeCard" style="margin-top:20px; overflow:hidden;">
+        <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
+        <div class="ph-accent-bar"></div>
+        <div class="ph-noise"></div>
+        <div class="ph-corner-glow ph-corner-glow-tl"></div>
+        <div class="ph-corner-glow ph-corner-glow-br"></div>
+        <div class="card-header" onclick="togglePlanoHoje()" style="cursor:pointer;user-select:none;position:relative;z-index:1;">
+          <span class="card-title" id="planoHojeTitle">🎯 PLANO DE HOJE</span>
+          <span class="ph-progress-label" id="phProgressLabel" style="margin-left:12px;"></span>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+            <button class="ph-toggle-mode" id="phToggleMode" onclick="event.stopPropagation();togglePlanoHojeCompact()" title="Alternar modo">📋</button>
+            <span style="font-size:12px;color:var(--gray-light)" id="planoHojeToggle">[—]</span>
+          </div>
+        </div>
+        <div class="card-body" id="planoHojeBody" style="padding:0 16px 16px;position:relative;z-index:1;">
+          <div class="ph-progress-bar-wrap" id="phProgressWrap" style="display:none;">
+            <div class="ph-progress-track"><div class="ph-progress-fill" id="phProgressFill"></div></div>
+            <span class="ph-progress-pct" id="phProgressPct">0%</span>
+            <span class="ph-volume-est" id="phVolumeEst"></span>
+          </div>
+          <div id="planoHojeContent"></div>
+        </div>
+      </div>
       <div class="exercise-grid" id="exerciseGrid"></div>
       <div class="card" style="margin-top:20px">
         <div class="card-header"><span class="card-title">+ ADICIONAR EXERCÍCIO</span></div>
@@ -396,6 +424,39 @@
         </div>
       </div>
         </div>
+
+        <!-- Quick Log FAB -->
+        <button class="ql-fab" id="qlFab" onclick="toggleQuickLog()" title="Quick Log (registro rápido)">⚡</button>
+
+        <!-- Quick Log Overlay -->
+        <div class="ql-overlay" id="quickLogOverlay" onclick="if(event.target===this)toggleQuickLog()">
+          <div class="ql-card">
+            <div class="ql-header">
+              <span class="ql-title">⚡ QUICK LOG</span>
+              <button class="ql-close" onclick="toggleQuickLog()">✕</button>
+            </div>
+            <div class="ql-body">
+              <div class="ql-field">
+                <label class="ql-label">EXERCÍCIO</label>
+                <select class="ql-select" id="qlExercicio"></select>
+              </div>
+              <div class="ql-field">
+                <label class="ql-label">VALOR</label>
+                <input class="ql-input" id="qlReps" type="number" min="1" placeholder="reps / seg" autofocus>
+              </div>
+              <div class="ql-field">
+                <label class="ql-label">GROOVE</label>
+                <div class="ql-groove-row">
+                  <span class="ql-star" id="qlGroove0" onclick="qlSetGroove(0)" title="Amplitude completa">☆</span>
+                  <span class="ql-star" id="qlGroove1" onclick="qlSetGroove(1)" title="Tensão irradiante">☆</span>
+                  <span class="ql-star" id="qlGroove2" onclick="qlSetGroove(2)" title="Sem balanço">☆</span>
+                </div>
+              </div>
+              <button class="ql-submit" onclick="qlEnviar()">⚡ REGISTRAR</button>
+            </div>
+          </div>
+        </div>
+
         <div class="treino-sidebar" style="width:400px;flex-shrink:0;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;">
           <!-- FRASE DO DIA — Premium Quote Card -->
           <div class="card sb-card sb-card-quote-premium" style="margin:0;overflow:hidden">
@@ -1801,6 +1862,7 @@
   <script defer src="planejador.js"></script>
   <script defer src="warmup.js"></script>
   <script defer src="gtg-session.js"></script>
+  <script defer src="quicklog.js"></script>
   <script defer src="app.js"></script>
   </body>
   </html>

@@ -163,6 +163,10 @@ function confirmRestTimer() {
   closeModal("restTimerModal"), iniciarRestTimer(duration, exId, ex?.nome || exId)
 }
 
+function _darBonusDescanso() {
+  try { adicionarXP(3); mostrarToast("✓ DESCANSO RESPEITADO", "+3 XP bônus por descanso completo!", "success"); } catch(_) {}
+}
+
 function iniciarRestTimer(duration, exId, exName) {
   restTimer._hideTimeout && clearTimeout(restTimer._hideTimeout);
   restTimer.intervalo && clearInterval(restTimer.intervalo), restTimer = {
@@ -174,7 +178,7 @@ function iniciarRestTimer(duration, exId, exName) {
     _total: duration,
     _hideTimeout: null
   }, document.getElementById("restTimerWidget").classList.add("active"), document.getElementById("restTimerBackdrop").classList.add("active"), document.getElementById("restTimerExercise").textContent = exName, atualizarDisplayRestTimer(), restTimer.intervalo = setInterval(() => {
-    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), mostrarToast("✓ DESCANSO COMPLETO!", `Hora de mais uma série de ${exName}!`, "success"), restTimer._hideTimeout = setTimeout(function() { document.getElementById("restTimerWidget").classList.remove("active"); document.getElementById("restTimerBackdrop").classList.remove("active"); }, 5e3))
+    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), _darBonusDescanso(), restTimer._hideTimeout = setTimeout(function() { document.getElementById("restTimerWidget").classList.remove("active"); document.getElementById("restTimerBackdrop").classList.remove("active"); }, 5e3))
   }, 1e3)
 }
 
@@ -205,7 +209,7 @@ function atualizarDisplayRestTimer() {
 
 function toggleRestTimer() {
   restTimer.rodando ? (clearInterval(restTimer.intervalo), restTimer.rodando = !1, document.getElementById("btnPauseRestTimer").textContent = "▶ RETOMAR") : (restTimer.rodando = !0, document.getElementById("btnPauseRestTimer").textContent = "⏸ PAUSAR", restTimer.intervalo = setInterval(() => {
-    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), mostrarToast("✓ DESCANSO COMPLETO!", `Hora de mais uma série de ${restTimer.exercicioNome}!`, "success"), restTimer._hideTimeout = setTimeout(() => document.getElementById("restTimerWidget").classList.remove("active"), 5e3))
+    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), _darBonusDescanso(), restTimer._hideTimeout = setTimeout(() => document.getElementById("restTimerWidget").classList.remove("active"), 5e3))
   }, 1e3))
 }
 

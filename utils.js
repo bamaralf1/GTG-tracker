@@ -16,6 +16,14 @@ function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, c => map[c]);
 }
 
+function atualizarBadgeApp() {
+  const hoje = new Date().toISOString().slice(0, 10);
+  const countHoje = (dados.registros || []).filter(r => r.data === hoje).length;
+  if (navigator.setAppBadge) {
+    navigator.setAppBadge(countHoje).catch(() => {});
+  }
+}
+
 function mostrarToast(title, msg, type = "success") {
   const container = document.getElementById("toastContainer"),
     el = document.createElement("div"),
