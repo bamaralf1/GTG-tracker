@@ -148,19 +148,22 @@ function renderWarmup() {
   const count = feitos.filter(f => f < totalDrills).length;
   const allDone = count >= totalDrills && totalDrills > 0;
 
+  const card = document.getElementById("warmupCard");
   const badge = document.getElementById("warmupBadge");
   const progress = document.getElementById("warmupProgressFill");
   const status = document.getElementById("warmupStatus");
   const list = document.getElementById("warmupList");
   const summary = document.getElementById("warmupSummary");
-  const hint = document.getElementById("warmupHint");
+
+  const pct = totalDrills > 0 ? Math.round(count / totalDrills * 100) : 0;
+  if (card) card.dataset.warmupPct = String(pct);
 
   if (badge) {
     badge.textContent = count + "/" + totalDrills;
     if (count > 0) badge.style.opacity = "1";
   }
   if (progress) {
-    progress.style.width = (totalDrills > 0 ? (count / totalDrills * 100) : 0) + "%";
+    progress.style.width = pct + "%";
     progress.classList.toggle("complete", allDone);
   }
   if (status) {
@@ -191,22 +194,19 @@ function renderWarmup() {
         const drill = phase.drills[d];
         const gi = _getGlobalDrillIndex(p, d);
         const done = feitos.includes(gi);
-        const lockedItem = !unlocked && !done;
-        const itemClass = "sb-warmup-item" + (done ? " done" : "") + (lockedItem ? " locked" : "");
+        const locked = !unlocked && !done;
+        const cls = "wu-row" + (done ? " wu-done" : "") + (locked ? " wu-locked" : "");
 
-        html += `<div class="${itemClass}" data-idx="${gi}" onclick="${lockedItem ? "" : 'toggleWarmup(' + gi + ')'}">
-          <div class="sb-warmup-circle">
-            <span class="sb-warmup-num">${done ? "✓" : globalIdx + 1}</span>
-            <span class="sb-warmup-check">✓</span>
-          </div>
-          <div class="sb-warmup-info">
-            <div class="sb-warmup-name">${lockedItem ? "🔒 " : ""}${drill.name}</div>
-          </div>
-          <button class="sb-warmup-timer-btn${done ? " done" : ""}" type="button" onclick="event.stopPropagation();${done || lockedItem ? "" : 'startWarmupTimer(' + gi + ')'}">${done ? "✓" : (lockedItem ? "🔒" : "▶ " + drill.time + "s")}</button>
+        html += `<div class="${cls}" data-idx="${gi}" onclick="${locked ? "" : 'toggleWarmup(' + gi + ')'}">
+          <span class="wu-idx">${done ? "✓" : (locked ? "🔒" : globalIdx + 1)}</span>
+          <span class="wu-name">${drill.name}</span>
+          <button class="wu-timer${done ? " wu-timer-done" : ""}" type="button" onclick="event.stopPropagation();${done || locked ? "" : 'startWarmupTimer(' + gi + ')'}">${done ? "✓" : (locked ? "🔒" : "▶ " + drill.time + "s")}</button>
         </div>`;
         globalIdx++;
       }
     }
+
+    if (phases.length === 0 && list) html = `<div class="wu-empty">Nenhum drill necessário hoje — vá direto ao treino.</div>`;
     list.innerHTML = html;
   }
 
@@ -224,10 +224,6 @@ function renderWarmup() {
       else summary.textContent = "Ativação concluída";
     }
   }
-  if (hint) {
-    hint.textContent = allDone ? "" : "Toque no drill ou aperte ▶ para iniciar o cronômetro";
-  }
-
   _atualizarAutoBtn();
 }
 
@@ -310,9 +306,9 @@ function startWarmupTimer(idx) {
   }
   if (!targetDrill) return;
   const dur = targetDrill.time;
-  const item = document.querySelector(`.sb-warmup-item[data-idx="${idx}"]`);
-  if (!item || item.classList.contains("done") || item.classList.contains("locked")) return;
-  const btn = item.querySelector(".sb-warmup-timer-btn");
+  const item = document.querySelector(`.wu-row[data-idx="${idx}"]`);
+  if (!item || item.classList.contains("wu-done") || item.classList.contains("wu-locked")) return;
+  const btn = item.querySelector(".wu-timer");
   if (!btn) return;
 
   if (dados.aquecimento.feitos && dados.aquecimento.feitos.includes(idx)) return;
@@ -320,7 +316,6 @@ function startWarmupTimer(idx) {
   btn.dataset.remaining = String(dur);
   btn.textContent = String(dur);
   btn.classList.add("running");
-  btn.disabled = true;
 
   function tick() {
     let r = parseInt(btn.dataset.remaining, 10);
@@ -330,7 +325,6 @@ function startWarmupTimer(idx) {
       delete warmupTimers[idx];
       btn.textContent = "✓";
       btn.classList.remove("running");
-      btn.disabled = true;
       delete btn.dataset.remaining;
       toggleWarmup(idx);
       if (dados.aquecimento.autoAvancar) _autoAvancarProximo(idx);
@@ -347,7 +341,7 @@ function _autoAvancarProximo(currentIdx) {
   const phases = getPhasesDoDia();
   const total = phases.reduce((s, p) => s + p.drills.length, 0);
   if (currentIdx + 1 >= total) return;
-  const nextItem = document.querySelector(`.sb-warmup-item[data-idx="${currentIdx + 1}"]:not(.done):not(.locked)`);
+  const nextItem = document.querySelector(`.wu-row[data-idx="${currentIdx + 1}"]:not(.wu-done):not(.wu-locked)`);
   if (!nextItem) return;
   setTimeout(() => {
     startWarmupTimer(currentIdx + 1);
@@ -408,10 +402,10 @@ function _atualizarAutoBtn() {
 
 function resetWarmup() {
   Object.keys(warmupTimers).forEach(k => { clearTimeout(warmupTimers[k]); delete warmupTimers[k]; });
-  document.querySelectorAll(".sb-warmup-timer-btn.running").forEach(el => {
-    el.textContent = "▶ 30s";
+  document.querySelectorAll(".wu-timer.running").forEach(el => {
+    const dur = el.closest("[data-idx]") ? "▶ 30s" : "▶ 30s";
+    el.textContent = dur;
     el.classList.remove("running");
-    el.disabled = false;
     delete el.dataset.remaining;
   });
   initWarmupData();

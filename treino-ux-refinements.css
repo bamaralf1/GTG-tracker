@@ -909,62 +909,103 @@
 }
 
 /* ==============================================================================
- * 25) WARMUP — REFINAMENTOS SUTIS
+ * 25) WARMUP — LISTA COMPACTA + ACENT BAR DINÂMICA
  * ============================================================================ */
 
-/* Streak badge — só um brilho a mais */
+/* --- Summary simples (sem borda/box) --- */
+.sb-warmup-summary{
+  margin:0 0 4px!important;padding:0!important;
+  border:none!important;background:none!important;
+  font-family:'Share Tech Mono',monospace!important;
+  font-size:8px!important;color:var(--gray)!important;
+  letter-spacing:.5px!important;line-height:1.4!important;
+}
+
+/* --- Progress bar compacto --- */
+.sb-warmup-progress-wrap{padding:4px 0 2px!important}
+.sb-warmup-progress{height:2px!important}
+
+/* --- Streak badge (só existe, sem chamar atenção) --- */
 .sb-warmup-streak{
+  font-family:'Share Tech Mono',monospace;font-size:8px;
+  color:var(--gold-dim);letter-spacing:1px;
+  padding:0 4px;
+  display:none!important;
+}
+
+/* --- Drill row — compacto, sem círculo --- */
+.wu-row{
+  display:flex;align-items:center;gap:6px;
+  padding:3px 0;cursor:pointer;
+  transition:opacity .2s;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+}
+.wu-row:last-child{border-bottom:none}
+
+.wu-idx{
+  width:18px;flex-shrink:0;
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  color:var(--gold-dim);text-align:center;
+  transition:color .2s;
+}
+
+.wu-name{
+  flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:500;
+  color:var(--white-dim);letter-spacing:.3px;
+  transition:color .2s;
+}
+
+.wu-timer{
+  flex-shrink:0;
   font-family:'Share Tech Mono',monospace;font-size:9px;
-  color:var(--gold);letter-spacing:1px;
-  background:rgba(212,168,67,0.08);
-  border:1px solid rgba(212,168,67,0.15);
-  padding:1px 6px;border-radius:10px;
-  margin-right:4px;
+  color:var(--gold-dim);letter-spacing:.5px;
+  background:rgba(212,168,67,0.06);
+  border:1px solid rgba(212,168,67,0.12);
+  border-radius:3px;padding:1px 8px;min-width:38px;text-align:center;
+  cursor:pointer;transition:all .2s;line-height:1.6;
+}
+.wu-timer:hover{background:rgba(212,168,67,0.12);border-color:rgba(212,168,67,0.25);color:var(--gold)}
+.wu-timer.running{color:var(--green-bright);border-color:var(--green-bright);background:rgba(68,204,68,0.06)}
+
+/* --- Done state --- */
+.wu-done .wu-idx{color:var(--green-bright)}
+.wu-done .wu-name{color:var(--green-bright);opacity:.7}
+.wu-done .wu-timer,
+.wu-timer-done{color:var(--green-bright)!important;border-color:rgba(68,204,68,0.15)!important;background:rgba(68,204,68,0.04)!important;cursor:default!important}
+
+/* --- Locked state --- */
+.wu-locked{opacity:.3;cursor:default;pointer-events:none}
+
+/* --- Empty state --- */
+.wu-empty{
+  font-family:'Rajdhani',sans-serif;font-size:12px;
+  color:var(--gray);text-align:center;padding:8px 0;
 }
 
-/* Locked = só opacidade, sem grayscale/overlay */
-.sb-warmup-item.locked{opacity:.4;cursor:default;pointer-events:none}
+/* --- Accent bar dinâmica via data attribute --- */
+#warmupCard[data-warmup-pct="0"]  .wu-accent-bar,
+#warmupCard[data-warmup-pct=""]   .wu-accent-bar{background:linear-gradient(180deg,var(--red),rgba(204,0,0,0.2))!important;box-shadow:0 0 8px rgba(204,0,0,0.3)!important}
 
-/* Timer btn quando concluído */
-.sb-warmup-timer-btn.done{
-  color:var(--green-bright);
-  border-color:rgba(68,204,68,0.2);
-  background:rgba(68,204,68,0.05);
-  cursor:default;pointer-events:none;
-}
+#warmupCard[data-warmup-pct="100"] .wu-accent-bar{background:linear-gradient(180deg,var(--green-bright),rgba(68,204,68,0.2))!important;box-shadow:0 0 8px rgba(68,204,68,0.3)!important}
 
 /* Auto-avanço */
-#warmupAutoBtn.active{
-  background:rgba(68,204,68,0.1);border-color:var(--green-bright);color:var(--green-bright);
-}
-#warmupAutoBtn:not(.active){
-  color:var(--gray-light);border-color:rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);
-}
-#warmupAutoBtn:not(.active):hover{
-  background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.12);
-}
+#warmupAutoBtn.active{background:rgba(68,204,68,0.1);border-color:var(--green-bright);color:var(--green-bright)}
+#warmupAutoBtn:not(.active){color:var(--gray-light);border-color:rgba(255,255,255,0.06);background:transparent}
+#warmupAutoBtn:not(.active):hover{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.12)}
 
 /* Small action btn */
-.sb-warmup-action-btn-small{font-size:10px;padding:5px 8px}
+.sb-warmup-action-btn-small{font-size:9px;padding:3px 8px}
 
 /* Status complete */
 .sb-warmup-status.mission-done{color:var(--green-bright)}
 
 /* Progress complete */
-.sb-warmup-progress-fill.complete{
-  background:linear-gradient(90deg,var(--green-bright),rgba(68,204,68,0.5));
-  box-shadow:0 0 8px rgba(68,204,68,0.2);animation:none;
-}
+.sb-warmup-progress-fill.complete{background:linear-gradient(90deg,var(--green-bright),rgba(68,204,68,0.4));animation:none}
 
-/* Celebration — só a accent bar muda */
-@keyframes wuCelebratePulse{
-  0%,100%{opacity:1}
-  50%{opacity:.4}
-}
-.sb-card-warmup.wu-celebrate .wu-accent-bar{
-  background:linear-gradient(180deg,var(--green-bright),var(--gold)) !important;
-  animation:wuCelebratePulse .8s ease-in-out 3 !important;
-}
+/* Celebration — accent bar pisca */
+@keyframes wuPulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sb-card-warmup.wu-celebrate .wu-accent-bar{animation:wuPulse .6s ease-in-out 4!important}
 
 /* Minimized esconde streak */
 .sb-card-warmup.minimized .sb-warmup-streak{display:none!important}
