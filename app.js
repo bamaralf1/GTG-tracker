@@ -1199,9 +1199,7 @@ document.addEventListener("keydown", e => {
     case "?":
       mostrarModalAtalhos()
   }
-}), setTimeout(() => {
-  sessionStorage.getItem("gtg_atalhos_dica") || (sessionStorage.setItem("gtg_atalhos_dica", "1"), mostrarToast("⌨ Atalhos ativos", "Pressione ? para ver todos os atalhos de teclado.", "success"))
-}, 2500);
+});
 
 
 
