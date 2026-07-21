@@ -143,6 +143,21 @@ function toggleFiltroPerfeitas(el) {
 
 let rpeSelecionado = {};
 
+function calcularRPEPenalty(rpeVal) {
+  if (!rpeVal) return 0;
+  return Math.min(0.85, Math.max(0, (rpeVal - 2) * 0.106));
+}
+
+function calcularFatorReadiness() {
+  try {
+    var s = typeof readinessData !== "undefined" && readinessData ? readinessData.score : null;
+    if (s === null || s >= 80) return 1;
+    if (s >= 60) return 0.9;
+    if (s >= 40) return 0.75;
+    return 0.6;
+  } catch (e) { return 1; }
+}
+
 var RPE_ZONES = {
   leve:     { val: 2,  label: "LEVE",     range: "1-3", desc: "Muito leve" },
   moderado: { val: 5,  label: "MODERADO", range: "4-6", desc: "Moderado" },

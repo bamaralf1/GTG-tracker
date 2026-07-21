@@ -461,12 +461,15 @@ function adicionarSerie(exId) {
   const groovRaw = grooveState[exId] || [0, 0, 0];
   const groovLvls = groovRaw.map(v => Math.min(100, Math.max(0, parseInt(v) || 0)));
   const groovTotal = groovLvls[0] + groovLvls[1] + groovLvls[2];
-  const groovBonusMult = 1 + groovTotal / 1000;
-  const xpBase = calcularXPSerie(ex, valor, peso);
-  const xpComGroove = Math.round(xpBase * groovBonusMult);
-  const rankMult = calcularRankMult();
-  const xpFinal = Math.max(1, Math.round(xpComGroove * rankMult));
+  const groovBonus = groovTotal / 1000;
   const rpeVal = rpeSelecionado[exId] || null;
+  const rpePenalty = calcularRPEPenalty(rpeVal);
+  const readinessFactor = calcularFatorReadiness();
+  const effectiveBonus = groovBonus * (1 - rpePenalty) * readinessFactor;
+  const xpBase = calcularXPSerie(ex, valor, peso);
+  const xpComBonuses = Math.round(xpBase * (1 + effectiveBonus));
+  const rankMult = calcularRankMult();
+  const xpFinal = Math.max(1, Math.round(xpComBonuses * rankMult));
   const registro = {
     id: Date.now() + Math.random().toString(36).slice(2),
     exercicioId: exId,
@@ -494,10 +497,14 @@ function adicionarSerie(exId) {
   rpeWarnEl && rpeWarnEl.classList.remove("show");
 
   const bonusPct = Math.round(groovTotal / 10);
-  const bonusMsg = groovTotal > 0 ? (` · ⚙ GROOVE +${bonusPct}% XP` + (groovTotal >= 300 ? " · ★ SÉRIE PERFEITA" : "")) : "";
+  const bonusParts = [];
+  if (groovTotal > 0) bonusParts.push(`⚙ +${bonusPct}%`);
+  if (rpePenalty > 0) bonusParts.push(`RPE -${Math.round(rpePenalty*100)}%`);
+  if (readinessFactor < 1) bonusParts.push(`PRONTIDÃO ×${(readinessFactor*100).toFixed(0)}%`);
+  const bonusMsg = bonusParts.length > 0 ? ` · ${bonusParts.join(" ")}` : "";
   const toastVal = `+${valor} ${"tempo"===ex.tipo?"seg":"reps"}`;
   const rankLabel = rankMult < 1 ? ` · ⚔ POSTO ×${(100*rankMult).toFixed(0)}%` : "";
-  const xpToast = groovTotal > 0 ? `+${xpBase} → +${xpFinal} XP — ${ex.nome}${bonusMsg}${rankLabel}` : `+${xpFinal} XP — ${ex.nome}${rankLabel}`;
+  const xpToast = bonusParts.length > 0 ? `+${xpBase} → +${xpFinal} XP — ${ex.nome}${bonusMsg}${rankLabel}` : `+${xpFinal} XP — ${ex.nome}${rankLabel}`;
   mostrarToast(toastVal, xpToast, "success"), mostrarUndoBar(registro);
 
   atualizarGrooveStatus(groovTotal);
