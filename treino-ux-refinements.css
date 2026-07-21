@@ -920,130 +920,73 @@
   border:1px solid rgba(212,168,67,0.2);
   padding:1px 6px;border-radius:10px;
   margin-right:4px;
-  animation:warmupShieldPulse 3s ease-in-out infinite;
 }
 
-/* --- Mission Timer --- */
-.wu-mission-timer{
+/* --- Phase divider (section-divider style) --- */
+.wu-phase-divider{
+  display:flex;align-items:center;gap:6px;
+  margin:10px 0 4px;
   position:relative;z-index:1;
-  font-family:'Bebas Neue',sans-serif;font-size:22px;
-  letter-spacing:3px;text-align:center;
-  color:var(--gold);
-  text-shadow:0 0 20px rgba(212,168,67,0.3),0 0 40px rgba(212,168,67,0.1);
-  padding:4px 0 6px;
-  transition:color .4s,text-shadow .4s;
 }
-.wu-mission-timer.complete{
-  color:var(--green-bright);
-  text-shadow:0 0 25px rgba(68,204,68,0.5),0 0 50px rgba(68,204,68,0.2);
+.wu-phase-line{
+  flex:1;height:1px;
+  background:rgba(212,168,67,0.12);
+  transition:background .4s;
 }
-
-/* --- Phase container --- */
-.wu-phase{
-  position:relative;z-index:1;
-  margin-bottom:2px;
-  border:1px solid rgba(255,255,255,0.04);
-  border-radius:6px;
-  overflow:hidden;
-  transition:border-color .4s;
-}
-.wu-phase.wu-phase-done{
-  border-color:rgba(68,204,68,0.12);
-}
-
-/* --- Phase header --- */
-.wu-phase-header{
-  display:flex;align-items:center;gap:8px;
-  padding:6px 8px;
-  background:rgba(0,0,0,0.15);
-  cursor:default;
-  transition:background .3s;
-}
-.wu-phase-header:hover{
-  background:rgba(0,0,0,0.25);
-}
-
-.wu-phase-indicator{
-  width:22px;height:22px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Share Tech Mono',monospace;font-size:9px;font-weight:700;
-  border:2px solid var(--gold-dim);
+.wu-phase-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:8px;letter-spacing:1.5px;white-space:nowrap;
   color:var(--gold-dim);
-  background:transparent;
-  flex-shrink:0;
-  transition:all .4s var(--ease-expo);
+  transition:color .4s;
 }
-.wu-phase-indicator.wu-phase-active{
-  border-color:var(--gold);
-  color:var(--gold);
-  box-shadow:0 0 10px rgba(212,168,67,0.2);
-  animation:warmupShieldPulse 2s ease-in-out infinite;
-}
-.wu-phase-indicator.wu-phase-checked{
-  border-color:var(--green-bright);
-  color:var(--green-bright);
-  background:rgba(68,204,68,0.1);
-  box-shadow:0 0 12px rgba(68,204,68,0.2);
-  font-size:10px;
+.wu-phase-pct{
+  font-family:'Share Tech Mono',monospace;
+  font-size:7px;letter-spacing:1px;
+  color:var(--gray-dark);
+  transition:color .4s;
 }
 
-.wu-phase-info{
-  flex:1;min-width:0;
-}
-.wu-phase-name{
-  font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;
-  color:var(--paper);letter-spacing:1px;
-}
-.wu-phase-desc{
-  font-family:'Share Tech Mono',monospace;font-size:7px;
-  color:var(--gray);letter-spacing:.5px;
-  margin-top:1px;
-}
-.wu-phase-progress{
-  font-family:'Share Tech Mono',monospace;font-size:8px;
-  color:var(--gray-light);
-  padding:1px 6px;
-  background:rgba(255,255,255,0.04);
-  border-radius:4px;
-}
+/* Phase divider states */
+.wu-phase-active .wu-phase-line{background:rgba(212,168,67,0.35)}
+.wu-phase-active .wu-phase-label{color:var(--gold)}
+.wu-phase-active .wu-phase-pct{color:var(--gray-light)}
 
-/* --- Phase drills container --- */
-.wu-phase-drills{
-  display:flex;flex-direction:column;gap:1px;
-  padding:2px 4px 4px;
-}
+.wu-phase-done .wu-phase-line{background:rgba(68,204,68,0.2)}
+.wu-phase-done .wu-phase-label{color:var(--green-bright)}
+.wu-phase-done .wu-phase-pct{color:var(--green-bright)}
 
-/* --- Locked drill item --- */
+.wu-phase-locked .wu-phase-line{background:rgba(255,255,255,0.04)}
+.wu-phase-locked .wu-phase-label{color:var(--gray-dark)}
+.wu-phase-locked .wu-phase-pct{color:var(--gray-dark)}
+
+/* --- Category badge --- */
+.wu-cat-badge{
+  display:inline-block;
+  font-size:10px;line-height:1;
+  margin-left:3px;
+  opacity:.5;
+  vertical-align:middle;
+}
+.sb-warmup-item.done .wu-cat-badge{opacity:.3}
+
+/* --- Locked drill: dimmed, no pointer --- */
 .sb-warmup-item.locked{
-  opacity:.4;
-  cursor:not-allowed;
+  opacity:.35;
+  cursor:default;
   pointer-events:none;
-  filter:grayscale(.6);
 }
 .sb-warmup-item.locked .sb-warmup-circle{
-  border-color:rgba(255,255,255,0.1);
+  border-color:rgba(255,255,255,0.06);
 }
 .sb-warmup-item.locked .sb-warmup-name{
   color:var(--gray);
 }
 .sb-warmup-item.locked .sb-warmup-timer-btn{
-  opacity:.3;
+  border-color:rgba(255,255,255,0.06);
+  color:var(--gray-dark);
 }
-.wu-lock-overlay{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,0.3);
-  z-index:2;
-  border-radius:6px;
-}
-.wu-lock-overlay span{
-  font-size:14px;
-  opacity:.6;
-}
-
-/* --- Category icon in circle --- */
-.sb-warmup-item .sb-warmup-circle .sb-warmup-num{
-  font-size:13px;line-height:1;
+.sb-warmup-item.locked .sb-warmup-desc{
+  color:var(--gray-dark);
 }
 
 /* --- Collapsed/expanded description --- */
@@ -1053,7 +996,6 @@
   -webkit-box-orient:vertical;
   overflow:hidden;
   max-height:1.5em;
-  cursor:pointer;
   transition:all .3s;
 }
 .sb-warmup-desc:not(.collapsed){
@@ -1063,27 +1005,26 @@
 /* --- Timer btn done state --- */
 .sb-warmup-timer-btn.done{
   color:var(--green-bright);
-  border-color:rgba(68,204,68,0.3);
-  background:rgba(68,204,68,0.08);
+  border-color:rgba(68,204,68,0.25);
+  background:rgba(68,204,68,0.06);
   cursor:default;
   pointer-events:none;
 }
 
 /* --- Auto-advance button --- */
 #warmupAutoBtn.active{
-  background:rgba(68,204,68,0.15);
+  background:rgba(68,204,68,0.12);
   border-color:var(--green-bright);
   color:var(--green-bright);
-  box-shadow:0 0 12px rgba(68,204,68,0.15);
 }
 #warmupAutoBtn:not(.active){
   color:var(--gray-light);
-  border-color:rgba(255,255,255,0.1);
-  background:rgba(255,255,255,0.03);
+  border-color:rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.02);
 }
 #warmupAutoBtn:not(.active):hover{
-  background:rgba(255,255,255,0.07);
-  border-color:rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.06);
+  border-color:rgba(255,255,255,0.15);
 }
 
 /* --- Smaller action button variant --- */
@@ -1094,59 +1035,40 @@
 /* --- Mission complete status style --- */
 .sb-warmup-status.mission-done{
   color:var(--green-bright);
-  font-size:13px;
-  text-shadow:0 0 15px rgba(68,204,68,0.6),0 0 30px rgba(68,204,68,0.2);
   animation:warmupShieldPulse 2s ease-in-out infinite;
 }
+
 
 /* --- Progress bar complete state --- */
 .sb-warmup-progress-fill.complete{
   background:linear-gradient(90deg,var(--green-bright),rgba(68,204,68,0.6));
-  box-shadow:0 0 12px rgba(68,204,68,0.5);
+  box-shadow:0 0 10px rgba(68,204,68,0.3);
   animation:none;
 }
 
 /* --- Celebration animation --- */
 @keyframes wuCelebrateFlash{
-  0%{box-shadow:0 0 0 0 rgba(68,204,68,0);border-color:var(--border)}
-  20%{box-shadow:0 0 40px 10px rgba(68,204,68,0.3),0 0 80px 20px rgba(68,204,68,0.1);border-color:var(--green-bright)}
-  40%{box-shadow:0 0 30px 5px rgba(68,204,68,0.15);border-color:var(--gold)}
-  60%{box-shadow:0 0 50px 15px rgba(68,204,68,0.25),0 0 100px 30px rgba(68,204,68,0.08);border-color:var(--green-bright)}
-  80%{box-shadow:0 0 20px 3px rgba(68,204,68,0.08);border-color:var(--border)}
-  100%{box-shadow:0 0 0 0 rgba(68,204,68,0);border-color:var(--border)}
-}
-@keyframes wuCelebrateScan{
-  0%{opacity:0;background-position:0% 0%}
-  20%{opacity:1}
-  80%{opacity:1}
-  100%{opacity:0;background-position:200% 0%}
+  0%{border-color:var(--border)}
+  25%{border-color:var(--green-bright);box-shadow:0 0 30px rgba(68,204,68,0.2)}
+  50%{border-color:var(--gold);box-shadow:0 0 20px rgba(212,168,67,0.15)}
+  75%{border-color:var(--green-bright);box-shadow:0 0 30px rgba(68,204,68,0.2)}
+  100%{border-color:var(--border)}
 }
 .sb-card-warmup.wu-celebrate{
-  animation:wuCelebrateFlash 2s ease-in-out;
-}
-.sb-card-warmup.wu-celebrate::after{
-  opacity:1 !important;
-  background:linear-gradient(90deg,transparent 0%,var(--green-bright) 25%,var(--gold) 50%,var(--green-bright) 75%,transparent 100%) !important;
-  background-size:200% 100% !important;
-  animation:wuCelebrateScan 2s ease-in-out !important;
+  animation:wuCelebrateFlash 1.5s ease-in-out;
 }
 .sb-card-warmup.wu-celebrate .wu-accent-bar{
   background:linear-gradient(180deg,var(--green-bright),var(--gold),rgba(68,204,68,0.3)) !important;
-  box-shadow:0 0 20px rgba(68,204,68,0.6),0 0 40px rgba(68,204,68,0.2) !important;
 }
 .sb-card-warmup.wu-celebrate .wu-corner-glow-tl{
-  opacity:.2 !important;
-  background:radial-gradient(circle,rgba(68,204,68,0.5) 0%,transparent 70%) !important;
+  opacity:.15 !important;
+  background:radial-gradient(circle,rgba(68,204,68,0.4) 0%,transparent 70%) !important;
 }
 
-/* --- Minimized state: hide mission timer --- */
-.sb-card-warmup.minimized .wu-mission-timer{display:none!important}
+/* --- Minimized state --- */
 .sb-card-warmup.minimized .sb-warmup-streak{display:none!important}
 
-/* --- Responsive: condensed phase drills --- */
+/* --- Responsive --- */
 @media (max-width:380px){
-  .wu-phase-header{padding:4px 6px}
-  .wu-phase-name{font-size:10px}
-  .wu-phase-indicator{width:18px;height:18px;font-size:8px}
-  .wu-mission-timer{font-size:18px}
+  .wu-phase-label{font-size:7px}
 }

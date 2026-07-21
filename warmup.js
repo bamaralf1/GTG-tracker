@@ -152,19 +152,6 @@ function _formatTime(seconds) {
   return m + ":" + String(s).padStart(2, "0");
 }
 
-function _atualizarTotalTimer() {
-  const el = document.getElementById("warmupTotalTimer");
-  if (!el) return;
-  const remaining = _getTotalRemainingTime();
-  if (remaining <= 0) {
-    el.textContent = "✓ COMPLETO";
-    el.classList.add("complete");
-  } else {
-    el.textContent = "⏱ " + _formatTime(remaining);
-    el.classList.remove("complete");
-  }
-}
-
 function renderWarmup() {
   initWarmupData();
   const phases = getPhasesDoDia();
@@ -195,8 +182,6 @@ function renderWarmup() {
     else { status.innerHTML = "★ MISSÃO CUMPRIDA · PRONTO PARA O COMBATE"; status.classList.add("mission-done"); }
   }
 
-  _atualizarTotalTimer();
-
   const streak = dados.aquecimento.streak || 0;
   const streakEl = document.getElementById("warmupStreak");
   if (streakEl) {
@@ -216,47 +201,44 @@ function renderWarmup() {
       const unlocked = _phaseIsUnlocked(p);
       const pDone = _phaseIsComplete(p);
 
-      html += `<div class="wu-phase${pDone ? " wu-phase-done" : ""}">`;
+      const phaseStatus = pDone ? "done" : (unlocked ? "active" : "locked");
+      const phaseLabel = pDone
+        ? "✓ " + phase.name
+        : (unlocked ? "FASE " + (p + 1) + " — " + phase.name : "🔒 FASE " + (p + 1) + " — " + phase.name);
+      const phaseProgress = phase.drills.filter((_, di) => feitos.includes(_getGlobalDrillIndex(p, di))).length + "/" + phase.drills.length;
 
-      html += `<div class="wu-phase-header" data-phase="${p}">
-        <div class="wu-phase-indicator${unlocked && !pDone ? " wu-phase-active" : ""}${pDone ? " wu-phase-checked" : ""}">
-          ${pDone ? "✓" : (unlocked ? String(p + 1) : "🔒")}
-        </div>
-        <div class="wu-phase-info">
-          <div class="wu-phase-name">FASE ${p + 1}: ${phase.name}</div>
-          <div class="wu-phase-desc">${unlocked ? phase.desc : "Complete a fase anterior para desbloquear"}</div>
-        </div>
-        <div class="wu-phase-progress">${phase.drills.filter((_, di) => feitos.includes(_getGlobalDrillIndex(p, di))).length}/${phase.drills.length}</div>
+      html += `<div class="wu-phase-divider wu-phase-${phaseStatus}">
+        <div class="wu-phase-line"></div>
+        <span class="wu-phase-label">${phaseLabel}</span>
+        <span class="wu-phase-pct">${phaseProgress}</span>
+        <div class="wu-phase-line"></div>
       </div>`;
 
-      html += `<div class="wu-phase-drills">`;
       for (let d = 0; d < phase.drills.length; d++) {
         const drill = phase.drills[d];
         const gi = _getGlobalDrillIndex(p, d);
         const done = feitos.includes(gi);
         const cat = CATEGORY_ICONS[drill.cat] || { icon: "⚡", label: "" };
+        const lockedItem = !unlocked && !done;
 
-        const clickHandler = unlocked && !done
+        const clickHandler = !lockedItem
           ? `onclick="toggleWarmup(${gi})"`
-          : (done ? `onclick="toggleWarmup(${gi})"` : "");
-        const itemClass = "sb-warmup-item" + (done ? " done" : "") + (!unlocked && !done ? " locked" : "");
+          : "";
+        const itemClass = "sb-warmup-item" + (done ? " done" : "") + (lockedItem ? " locked" : "");
 
         html += `<div class="${itemClass}" data-idx="${gi}" ${clickHandler}>
-          ${!unlocked && !done ? '<div class="wu-lock-overlay"><span>🔒</span></div>' : ""}
           <div class="sb-warmup-circle">
-            <span class="sb-warmup-num">${cat.icon}</span>
+            <span class="sb-warmup-num">${done ? "✓" : globalIdx + 1}</span>
             <span class="sb-warmup-check">✓</span>
           </div>
           <div class="sb-warmup-info">
-            <div class="sb-warmup-name">${drill.name}</div>
-            <div class="sb-warmup-desc${done ? "" : " collapsed"}" data-desc="${gi}">${drill.desc}</div>
+            <div class="sb-warmup-name">${lockedItem ? "🔒 " : ""}${drill.name} <span class="wu-cat-badge">${cat.icon}</span></div>
+            <div class="sb-warmup-desc${done || lockedItem ? "" : " collapsed"}">${lockedItem ? "Complete a fase anterior" : drill.desc}</div>
           </div>
-          <button class="sb-warmup-timer-btn${done ? " done" : ""}" type="button" onclick="event.stopPropagation();${done ? "" : 'startWarmupTimer(' + gi + ')'}">${done ? "✓" : "▶ " + drill.time + "s"}</button>
+          <button class="sb-warmup-timer-btn${done ? " done" : ""}" type="button" onclick="event.stopPropagation();${done || lockedItem ? "" : 'startWarmupTimer(' + gi + ')'}">${done ? "✓" : (lockedItem ? "🔒" : "▶ " + drill.time + "s")}</button>
         </div>`;
         globalIdx++;
       }
-      html += `</div>`; // wu-phase-drills
-      html += `</div>`; // wu-phase
     }
     list.innerHTML = html;
   }
