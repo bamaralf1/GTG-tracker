@@ -256,6 +256,16 @@ function phToggleCheckoff(exId) {
   }
 }
 
+function planoHojeIrTreino() {
+  const grid = document.getElementById("exerciseGrid");
+  if (grid) {
+    grid.style.transition = "box-shadow 0.6s";
+    grid.style.boxShadow = "0 0 80px rgba(68,204,68,0.6), 0 0 150px rgba(68,204,68,0.15), inset 0 0 50px rgba(68,204,68,0.1)";
+    setTimeout(() => { grid.style.boxShadow = ""; }, 3000);
+    grid.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
 function _phCalcularVolume(exId, dataStr) {
   const regs = dados.registros.filter(r => r.exercicioId === exId && r.data === dataStr);
   const series = regs.length;
@@ -289,7 +299,7 @@ function renderPlanoHojeCard() {
 
   if (planos.length === 0) {
     card.style.display = "block";
-    body.innerHTML = '<div class="ph-empty"><span class="ph-empty-icon">📋</span><span class="ph-empty-text">Nada planejado para hoje</span><span class="ph-empty-sub">Vá em <strong style="color:var(--gold);cursor:pointer" onclick="document.querySelector(\'[data-tab=planejador]\')?.click()">📅 PLANEJADOR</strong> para montar seu plano semanal</span></div>';
+    body.innerHTML = '<div class="ph-empty"><span class="ph-empty-icon">📋</span><span class="ph-empty-text">Nada planejado para hoje</span><span class="ph-empty-sub">Vá em <strong style="color:var(--gold);cursor:pointer" onclick="planoHojeIrTreino()">🏋️ TREINO</strong> para começar a treinar</span></div>';
     if (label) label.textContent = "";
     if (wrap) wrap.style.display = "none";
     if (volEst) volEst.textContent = "";
@@ -356,9 +366,9 @@ function renderPlanoHojeCard() {
 function planoHojeIrPara(exId) {
   const target = document.getElementById("excard-" + exId);
   if (target) { target.scrollIntoView({ behavior: "smooth", block: "center" });
-    target.style.transition = "box-shadow 0.3s";
-    target.style.boxShadow = "0 0 40px rgba(212,168,67,0.4)";
-    setTimeout(() => { target.style.boxShadow = ""; }, 1200);
+    target.style.transition = "box-shadow 0.5s";
+    target.style.boxShadow = "0 0 80px rgba(68,204,68,0.7), 0 0 150px rgba(68,204,68,0.2), inset 0 0 40px rgba(68,204,68,0.15)";
+    setTimeout(() => { target.style.boxShadow = ""; }, 2500);
   }
 }
 
