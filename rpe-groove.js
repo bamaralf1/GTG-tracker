@@ -1,4 +1,23 @@
 ﻿const grooveState = {}; // {exercicioId: [amp:0-100, ten:0-100, bal:0-100]}
+const _GROOVE_STORAGE_KEY = "gtg_groove_state";
+
+async function _salvarGrooveState() {
+  try { await setItem(_GROOVE_STORAGE_KEY, JSON.stringify({ grooveState, plankGroove })) } catch (_) {}
+}
+
+async function carregarGrooveState() {
+  try {
+    const raw = await getItem(_GROOVE_STORAGE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (saved.grooveState) Object.assign(grooveState, saved.grooveState);
+    if (saved.plankGroove && Array.isArray(saved.plankGroove)) {
+      for (let i = 0; i < 3; i++) {
+        if (typeof plankGroove[i] !== "undefined") plankGroove[i] = saved.plankGroove[i];
+      }
+    }
+  } catch (e) { console.warn("[carregarGrooveState]", e) }
+}
 
 function setGrooveLevel(exId, idx, val) {
   if (!grooveState[exId]) grooveState[exId] = [0, 0, 0];
@@ -15,6 +34,7 @@ function setGrooveLevel(exId, idx, val) {
   atualizarPreviewGroove(exId);
   const st = grooveState[exId] || [0, 0, 0];
   atualizarGrooveStatus(st[0] + st[1] + st[2]);
+  _salvarGrooveState();
 }
 
 const PLANK_GROOVE_IDS = ['plank-groove-amp', 'plank-groove-ten', 'plank-groove-bal'];
@@ -38,6 +58,7 @@ function setPlankGrooveLevel(idx, val) {
     bonusEl.classList.toggle('perfeito', total >= 300);
   }
   atualizarGrooveStatus(total);
+  _salvarGrooveState();
   try {
     if (typeof tocarTom === 'function') tocarTom(220 + 80 * (plankGroove.filter(v => v > 0).length), .04, 'square', .06);
   } catch(e) {}

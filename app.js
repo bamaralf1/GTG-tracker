@@ -785,12 +785,12 @@ function inicializar() {
     skilltreeSyncExercicios(), atualizarDataHeader(), renderExercicios(), renderBadges(), renderHistory(), renderGuiaExercicios(), atualizarXP(), atualizarUIStreak(), atualizarStats(), renderWarmup(), setTimeout(() => {
       renderGraficos(), renderProgresso(), renderEstatisticasMensais()
     }, 300), verificarStreak(), verificarBadges(), preencherSelects(), exibirFraseDoDia(), iniciarLembretes();
-    await Promise.all([carregarReadiness(), carregarMetas(), carregarPlanejador(), carregarModoFoco()]);
+    await Promise.all([carregarReadiness(), carregarMetas(), carregarPlanejador(), carregarModoFoco(), carregarGrooveState()]);
     if (modoFocoState.ativo) {
       const e = document.getElementById("modoFocoToggle");
       e && e.classList.add("active"), populateFocoSelect(), document.getElementById("modoFocoSelect").value = modoFocoState.exercicioId || "", aplicarModoFoco()
     }
-    setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), setTimeout(function() {
+    restaurarTimersGTG(), setTimeout(atualizarSugestoesGTG, 500), setTimeout(mostrarResumoOntem, 1500), setTimeout(function() {
       // Restaura ordenação salva
       var sel = document.getElementById("sortExercicios");
       getItem("gtg_ex_order").then(function(v) { if (sel && v) sel.value = v; }).catch(function(){});

@@ -489,6 +489,13 @@ function calcularStreakExercicio(e) {
 }
 
 let _gtgTimers = {};
+const _TIMERS_STORAGE_KEY = "gtg_timers";
+
+async function _salvarTimers() {
+  const obj = {};
+  for (const [id, t] of Object.entries(_gtgTimers)) obj[id] = t.end;
+  try { await setItem(_TIMERS_STORAGE_KEY, JSON.stringify(obj)) } catch (_) {}
+}
 
 function iniciarTimerGTG(e) {
   pararTimerGTG(e);
@@ -501,16 +508,43 @@ function iniciarTimerGTG(e) {
         s = Math.floor(o % 6e4 / 1e3);
       t && (t.style.display = "flex", t.textContent = `⏱ ${String(r).padStart(2,"0")}:${String(s).padStart(2,"0")}`, t.style.color = o < 6e4 ? "var(--green-bright)" : o < 3e5 ? "var(--gold)" : "var(--gray-light)")
     };
-  o(), _gtgTimers[e] = {
-    end: a,
-    intervalId: setInterval(o, 1e3)
-  }
+  o(), _gtgTimers[e] = { end: a, intervalId: setInterval(o, 1e3) };
+  _salvarTimers()
 }
 
 function pararTimerGTG(e) {
   _gtgTimers[e] && (clearInterval(_gtgTimers[e].intervalId), delete _gtgTimers[e]);
   const a = document.getElementById("gtg-timer-" + e);
-  a && (a.style.display = "none")
+  a && (a.style.display = "none");
+  _salvarTimers()
+}
+
+async function restaurarTimersGTG() {
+  try {
+    const raw = await getItem(_TIMERS_STORAGE_KEY);
+    if (!raw) return;
+    const timers = JSON.parse(raw);
+    for (const [exId, endTs] of Object.entries(timers)) {
+      const remaining = endTs - Date.now();
+      if (remaining <= 0) {
+        somTimer();
+        const nome = dados.exercicios.find(ex => ex.id === exId)?.nome || exId;
+        mostrarToast("⚡ GTG PRONTO!", `${nome} — timer expirou enquanto você estava ausente!`, "success");
+        continue
+      }
+      const t = document.getElementById("gtg-timer-" + exId);
+      const tick = () => {
+        const r = endTs - Date.now();
+        if (r <= 0) { pararTimerGTG(exId); somTimer(); mostrarToast("⚡ GTG PRONTO!", `${dados.exercicios.find(ex=>ex.id===exId)?.nome||exId} — hora da próxima série!`, "success"); return }
+        const mins = Math.floor(r / 6e4), secs = Math.floor(r % 6e4 / 1e3);
+        const el = document.getElementById("gtg-timer-" + exId);
+        el && (el.style.display = "flex", el.textContent = `⏱ ${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`, el.style.color = r < 6e4 ? "var(--green-bright)" : r < 3e5 ? "var(--gold)" : "var(--gray-light)")
+      };
+      tick();
+      _gtgTimers[exId] = { end: endTs, intervalId: setInterval(tick, 1e3) };
+      if (t) t.style.display = "flex"
+    }
+  } catch (e) { console.warn("[restaurarTimersGTG]", e) }
 }
 
 function mostrarConfete() {
