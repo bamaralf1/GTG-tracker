@@ -443,8 +443,8 @@ const SKILL_TREE = {
 // ============================================================
 
 function _calcularPRExercicio(exercicioId) {
-  if (typeof GTG === "undefined" || !GTG.dados || !Array.isArray(GTG.dados.registros)) return 0;
-  const ex = GTG.dados.exercicios.find(e => e.id === exercicioId);
+  if (!dados || !Array.isArray(dados.registros)) return 0;
+  const ex = dados.exercicios.find(e => e.id === exercicioId);
   if (!ex) return 0;
   return typeof calcularPR === "function" ? calcularPR(ex) : 0;
 }
