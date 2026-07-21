@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#CC0000">
+<title>GTG TRACKER — ENTRAR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Bebas+Neue&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#D32F2F; --red-dark:#7F0F0F; --red-bright:#FF3B30;
+  --gold:#D4A843; --gold-light:#FFD269; --gold-dim:#7D6C28;
+  --accent-red:#CC0000;
+  --gray:#5C5C5C; --gray-light:#9A9A9A;
+  --white:#F7F5EE; --white-dim:#CFC7AF;
+  --green-bright:#44CC44; --cyan:#00BCD4;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --clip:polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 0%,#150707 0%,transparent 65%),
+    radial-gradient(ellipse 60% 45% at 10% 100%,#0f0808 0%,transparent 60%),
+    #0A0A0A;
+  color:var(--white);
+  font-family:'Rajdhani',sans-serif;
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';
+  position:fixed; inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.035) 1px,rgba(0,0,0,.035) 2px);
+  pointer-events:none; z-index:9;
+}
+.wrap{width:100%; max-width:420px; position:relative; z-index:1}
+.brand{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:26px}
+.brand-star{font-size:26px; color:var(--red); text-shadow:0 0 20px rgba(211,47,47,.7); animation:starPulse 5s ease-in-out infinite}
+@keyframes starPulse{0%,100%{opacity:.9}50%{opacity:1}}
+.brand-name{font-family:'Bebas Neue',sans-serif; font-size:23px; letter-spacing:3px; color:var(--gold)}
+.panel{
+  position:relative;
+  background:linear-gradient(160deg,rgba(20,10,10,.92),rgba(8,8,8,.97));
+  border:1px solid rgba(212,168,67,.22);
+  clip-path:var(--clip);
+  padding:28px 28px 24px;
+  box-shadow:0 30px 70px rgba(0,0,0,.6), 0 0 60px rgba(212,168,67,.05), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.panel::before{
+  content:''; position:absolute; inset:0; clip-path:var(--clip);
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.05) 3px,rgba(0,0,0,.05) 4px);
+  pointer-events:none;
+}
+
+.tabs{display:flex; margin-bottom:20px; border-bottom:1px solid rgba(212,168,67,.15)}
+.tab{
+  flex:1; text-align:center; padding:10px 0; cursor:pointer;
+  font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:2px;
+  color:var(--gray); transition:color .25s, border-color .25s;
+  border-bottom:2px solid transparent;
+}
+.tab:hover{color:var(--gold-dim)}
+.tab.active{color:var(--gold); border-bottom-color:var(--gold)}
+
+.form-section{display:none}
+.form-section.active{display:block; animation:stepIn .4s var(--ease)}
+@keyframes stepIn{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:translateY(0)}}
+
+.field{margin-bottom:14px}
+.field label{
+  display:block; font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:2px;
+  color:var(--gold-dim); text-transform:uppercase; margin-bottom:5px;
+}
+.field input{
+  width:100%; background:rgba(0,0,0,.5); border:1px solid rgba(212,168,67,.3);
+  color:var(--white); padding:11px 13px; font-family:'Share Tech Mono',monospace; font-size:14px;
+  outline:0; border-radius:3px; transition:border-color .25s var(--ease), box-shadow .25s var(--ease);
+}
+.field input:focus{border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,168,67,.12)}
+.field input::placeholder{color:var(--gray)}
+.field .hint{font-size:10px; color:var(--gray); margin-top:3px; font-family:'Share Tech Mono',monospace}
+
+.check-row{
+  display:flex; align-items:center; gap:9px; margin:4px 0 16px; cursor:pointer; user-select:none;
+}
+.check-row input{width:15px; height:15px; accent-color:var(--gold); cursor:pointer}
+.check-row span{font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--gray-light); letter-spacing:.5px}
+
+.btn{
+  width:100%; font-family:'Bebas Neue',sans-serif; letter-spacing:2px; font-size:15px;
+  border:none; cursor:pointer; padding:12px; border-radius:4px; color:#fff;
+  background:linear-gradient(135deg,var(--accent-red),var(--red-dark));
+  box-shadow:0 8px 24px rgba(204,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+  transition:transform .2s var(--ease), box-shadow .3s var(--ease);
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn:hover{box-shadow:0 10px 30px rgba(204,0,0,.5), 0 0 20px rgba(255,59,48,.25)}
+.btn:active{transform:scale(.97)}
+.btn-google{
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
+  box-shadow:none; color:var(--white); margin-top:10px;
+}
+.btn-google:hover{background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.25); box-shadow:none}
+.divider{
+  display:flex; align-items:center; gap:12px; margin:16px 0;
+  font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--gray);
+}
+.divider::before,.divider::after{content:''; flex:1; height:1px; background:rgba(212,168,67,.12)}
+
+.error-msg{
+  font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:.5px; color:var(--red-bright);
+  background:rgba(204,0,0,.1); border:1px solid rgba(204,0,0,.35); border-radius:3px;
+  padding:9px 12px; margin-bottom:14px; display:none;
+}
+.error-msg.show{display:block; animation:shake .4s var(--ease)}
+.success-msg{
+  font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:.5px; color:var(--green-bright);
+  background:rgba(68,204,68,.1); border:1px solid rgba(68,204,68,.35); border-radius:3px;
+  padding:9px 12px; margin-bottom:14px; display:none;
+}
+.success-msg.show{display:block}
+@keyframes shake{
+  0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)}
+  50%{transform:translateX(5px)} 75%{transform:translateX(-3px)}
+}
+.foot-link{
+  text-align:center; margin-top:16px; font-family:'Share Tech Mono',monospace;
+  font-size:10px; color:var(--gray); letter-spacing:1px; cursor:pointer;
+  transition:color .2s;
+}
+.foot-link:hover{color:var(--gold-dim)}
+.name-preview{
+  margin-top:4px; font-family:'Bebas Neue',sans-serif; font-size:13px; color:var(--gold-dim);
+  letter-spacing:.5px; min-height:16px;
+}
+.step2-lede{
+  font-size:14px; color:var(--gray-light); margin-bottom:20px; line-height:1.5;
+}
+.step2-lede b{color:var(--white-dim)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="brand"><span class="brand-star">★</span><span class="brand-name">GTG TRACKER</span></div>
+
+  <div class="panel">
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="login" onclick="switchTab('login')">ENTRAR</div>
+      <div class="tab" data-tab="signup" onclick="switchTab('signup')">CRIAR CONTA</div>
+    </div>
+
+    <!-- ===== LOGIN ===== -->
+    <div class="form-section active" id="sectionLogin">
+      <div class="error-msg" id="loginError">✕ USUÁRIO OU SENHA INCORRETOS.</div>
+
+      <form id="formLogin" autocomplete="on">
+        <div class="field">
+          <label for="inpUser">Usuário ou e-mail</label>
+          <input type="text" id="inpUser" name="username" placeholder="seu usuário" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="inpPass">Senha</label>
+          <input type="password" id="inpPass" name="password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+        <label class="check-row" for="inpRemember">
+          <input type="checkbox" id="inpRemember" checked>
+          <span>MANTER CONECTADO</span>
+        </label>
+        <button type="submit" class="btn">★ ENTRAR</button>
+      </form>
+
+      <div class="divider">OU</div>
+
+      <button class="btn btn-google" onclick="loginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.54 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.87 7.35 2.56 10.56l7.98-5.97z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.97C6.51 42.62 14.62 48 24 48z"/></svg>
+        Entrar com Google
+      </button>
+
+      <div class="foot-link" onclick="mostrarRecuperar()">Esqueceu a senha?</div>
+    </div>
+
+    <!-- ===== SIGN UP ===== -->
+    <div class="form-section" id="sectionSignup">
+      <div class="error-msg" id="signupError"></div>
+      <div class="success-msg" id="signupSuccess">✓ CONTA CRIADA! Faça login.</div>
+
+      <form id="formSignup" autocomplete="off">
+        <div class="field">
+          <label for="sigUser">Usuário</label>
+          <input type="text" id="sigUser" name="sigUser" placeholder="ex: soldado_gtg" required>
+          <div class="hint">Mínimo 3 caracteres, apenas letras e números</div>
+        </div>
+        <div class="field">
+          <label for="sigPass">Senha</label>
+          <input type="password" id="sigPass" name="sigPass" placeholder="mínimo 6 caracteres" required>
+        </div>
+        <div class="field">
+          <label for="sigPass2">Confirmar senha</label>
+          <input type="password" id="sigPass2" name="sigPass2" placeholder="repita a senha" required>
+        </div>
+        <label class="check-row" for="sigTerms">
+          <input type="checkbox" id="sigTerms" required>
+          <span>ACEITO OS TERMOS DE USO E POLÍTICA DE PRIVACIDADE</span>
+        </label>
+        <button type="submit" class="btn">★ CRIAR CONTA</button>
+      </form>
+    </div>
+
+    <!-- ===== NAME STEP ===== -->
+    <div class="form-section" id="sectionNome">
+      <div class="step2-lede">Como você quer ser <b>chamado</b>? Esse nome aparece nas saudações do app.</div>
+      <form id="formNome">
+        <div class="field">
+          <label for="inpNome">Nome ou apelido</label>
+          <input type="text" id="inpNome" name="nome" placeholder="Ex: Bamaralf" maxlength="24" required>
+          <div class="name-preview" id="namePreview">&nbsp;</div>
+        </div>
+        <button type="submit" class="btn">★ ENTRAR NO QG</button>
+      </form>
+    </div>
+
+    <!-- ===== FORGOT PASSWORD ===== -->
+    <div class="form-section" id="sectionRecuperar">
+      <div class="error-msg" id="recoverError"></div>
+      <div class="success-msg" id="recoverSuccess"></div>
+      <div class="step2-lede">Digite seu <b>usuário</b> para redefinir a senha. (Demonstração — a senha será resetada para <b>123456</b>.)</div>
+      <form id="formRecover">
+        <div class="field">
+          <label for="recUser">Usuário</label>
+          <input type="text" id="recUser" placeholder="seu usuário" required>
+        </div>
+        <button type="submit" class="btn">★ REDEFINIR SENHA</button>
+      </form>
+      <div class="foot-link" onclick="switchTab('login')">Voltar ao login</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ===== UTILS =====
+  function getCreds() {
+    var u = localStorage.getItem('gtg_cred_user');
+    var p = localStorage.getItem('gtg_cred_pass');
+    return { user: u || 'bamaralf', pass: p || '7970' };
+  }
+
+  function getContas() {
+    try { return JSON.parse(localStorage.getItem('gtg_contas') || '{}'); }
+    catch(e) { return {}; }
+  }
+
+  function salvarContas(contas) {
+    localStorage.setItem('gtg_contas', JSON.stringify(contas));
+  }
+
+  function irParaApp() {
+    document.getElementById('sectionLogin').classList.remove('active');
+    document.getElementById('sectionSignup').classList.remove('active');
+    document.getElementById('sectionNome').classList.remove('active');
+    document.getElementById('sectionRecuperar').classList.remove('active');
+    var el = document.getElementById('sectionGo');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'sectionGo';
+      el.className = 'form-section active';
+      el.style.textAlign = 'center';
+      el.style.padding = '20px 0';
+      el.innerHTML = '<div class="panel-eyebrow" style="font-family:\'Share Tech Mono\',monospace;font-size:10px;letter-spacing:3px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:10px">Tudo certo</div><div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--white)">BEM-VINDO<em style="color:var(--gold);font-style:normal">.</em></div><p style="font-size:14px;color:var(--gray-light);margin-top:10px">Entrando no GTG Tracker...</p>';
+      document.querySelector('.panel').appendChild(el);
+    } else {
+      el.classList.add('active');
+    }
+    setTimeout(function(){ location.href = 'index.html'; }, 650);
+  }
+
+  // Se já existe sessão, pula direto
+  (function() {
+    if (sessionStorage.getItem('gtg_auth') === '1' || localStorage.getItem('gtg_auth') === '1') {
+      irParaApp();
+    }
+  })();
+
+  // ===== TABS =====
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.form-section').forEach(function(s){ s.classList.remove('active'); });
+    document.querySelector('.tab[data-tab="'+tab+'"]').classList.add('active');
+    document.getElementById('section'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
+    // limpar erros
+    document.getElementById('loginError').classList.remove('show');
+    document.getElementById('signupError').classList.remove('show');
+    document.getElementById('signupSuccess').classList.remove('show');
+  }
+
+  // ===== LOGIN =====
+  document.getElementById('formLogin').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var user = document.getElementById('inpUser').value.trim().toLowerCase();
+    var pass = document.getElementById('inpPass').value;
+    var lembrar = document.getElementById('inpRemember').checked;
+    var err = document.getElementById('loginError');
+
+    var contas = getContas();
+    var cred = getCreds();
+
+    // Tenta primeiro como conta registrada, depois como credencial legada
+    var valida = false;
+    if (contas[user] && contas[user] === pass) {
+      valida = true;
+    } else if (user === cred.user && pass === cred.pass) {
+      valida = true;
+    }
+
+    if (!valida) {
+      err.textContent = '✕ USUÁRIO OU SENHA INCORRETOS. TENTE NOVAMENTE.';
+      err.classList.remove('show');
+      void err.offsetWidth;
+      err.classList.add('show');
+      return;
+    }
+
+    err.classList.remove('show');
+    if (!localStorage.getItem('gtg_cred_user')) {
+      localStorage.setItem('gtg_cred_user', user);
+      localStorage.setItem('gtg_cred_pass', pass);
+    }
+    if (lembrar) localStorage.setItem('gtg_auth', '1');
+    else sessionStorage.setItem('gtg_auth', '1');
+
+    var nomeSalvo = localStorage.getItem('gtg_display_name') || sessionStorage.getItem('gtg_display_name');
+    if (nomeSalvo) {
+      irParaApp();
+    } else {
+      document.getElementById('sectionLogin').classList.remove('active');
+      document.getElementById('sectionNome').classList.add('active');
+      document.getElementById('inpNome').focus();
+    }
+  });
+
+  // ===== SIGN UP =====
+  document.getElementById('formSignup').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var user = document.getElementById('sigUser').value.trim().toLowerCase();
+    var pass = document.getElementById('sigPass').value;
+    var pass2 = document.getElementById('sigPass2').value;
+    var terms = document.getElementById('sigTerms').checked;
+    var err = document.getElementById('signupError');
+    var ok = document.getElementById('signupSuccess');
+    ok.classList.remove('show');
+
+    if (user.length < 3 || !/^[a-z0-9_]+$/.test(user)) {
+      err.textContent = '✕ Usuário deve ter no mínimo 3 caracteres (letras, números e _).';
+      err.classList.add('show');
+      return;
+    }
+    if (pass.length < 6) {
+      err.textContent = '✕ Senha deve ter no mínimo 6 caracteres.';
+      err.classList.add('show');
+      return;
+    }
+    if (pass !== pass2) {
+      err.textContent = '✕ Senhas não conferem.';
+      err.classList.add('show');
+      return;
+    }
+    if (!terms) {
+      err.textContent = '✕ Você precisa aceitar os termos de uso.';
+      err.classList.add('show');
+      return;
+    }
+
+    var contas = getContas();
+    if (contas[user]) {
+      err.textContent = '✕ Este usuário já existe. Escolha outro.';
+      err.classList.add('show');
+      return;
+    }
+
+    contas[user] = pass;
+    salvarContas(contas);
+
+    // Pré-preenche login
+    document.getElementById('inpUser').value = user;
+    document.getElementById('inpPass').value = pass;
+    err.classList.remove('show');
+    ok.classList.add('show');
+
+    // Muda pra aba de login após 1.5s
+    setTimeout(function(){ switchTab('login'); }, 1500);
+  });
+
+  // ===== GOOGLE LOGIN (MOCK) =====
+  function loginGoogle() {
+    var emailBase = 'guerreiro' + Math.floor(Math.random() * 1000);
+    var nome = 'Guerreiro GTG';
+    localStorage.setItem('gtg_display_name', nome);
+    localStorage.setItem('gtg_auth', '1');
+    sessionStorage.setItem('gtg_auth', '1');
+    irParaApp();
+  }
+
+  // ===== FORGOT PASSWORD =====
+  function mostrarRecuperar() {
+    document.getElementById('sectionLogin').classList.remove('active');
+    document.getElementById('sectionRecuperar').classList.add('active');
+    document.getElementById('recoverError').classList.remove('show');
+    document.getElementById('recoverSuccess').classList.remove('show');
+  }
+
+  document.getElementById('formRecover').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var user = document.getElementById('recUser').value.trim().toLowerCase();
+    var err = document.getElementById('recoverError');
+    var ok = document.getElementById('recoverSuccess');
+    err.classList.remove('show');
+    ok.classList.remove('show');
+
+    var contas = getContas();
+    var cred = getCreds();
+    var novaSenha = '123456';
+
+    if (contas[user]) {
+      contas[user] = novaSenha;
+      salvarContas(contas);
+      ok.textContent = '✓ Senha redefinida para "'+novaSenha+'". Use para fazer login.';
+      ok.classList.add('show');
+    } else if (user === cred.user) {
+      localStorage.setItem('gtg_cred_pass', novaSenha);
+      ok.textContent = '✓ Senha redefinida para "'+novaSenha+'". Use para fazer login.';
+      ok.classList.add('show');
+    } else {
+      err.textContent = '✕ Usuário não encontrado.';
+      err.classList.add('show');
+    }
+  });
+
+  // ===== NAME STEP =====
+  var inpNome = document.getElementById('inpNome');
+  var namePreview = document.getElementById('namePreview');
+  if (inpNome) {
+    inpNome.addEventListener('input', function() {
+      var hora = new Date().getHours();
+      var saud = hora >= 5 && hora < 12 ? 'Bom dia' : hora >= 12 && hora < 18 ? 'Boa tarde' : 'Boa noite';
+      namePreview.textContent = this.value.trim() ? 'Prévia: "'+saud+', '+this.value.trim()+'"' : '\u00a0';
+    });
+  }
+
+  document.getElementById('formNome').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var nome = (inpNome.value || '').trim() || 'Soldado';
+    var lembrar = localStorage.getItem('gtg_auth') === '1';
+    if (lembrar) localStorage.setItem('gtg_display_name', nome);
+    else sessionStorage.setItem('gtg_display_name', nome);
+    irParaApp();
+  });
+</script>
+</body>
+</html>
