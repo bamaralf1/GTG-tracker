@@ -15,8 +15,9 @@ function atualizarSugestaoSessao() {
   const pr = calcularPR2(o),
     r = calcularSugestaoGTG(pr, o.tipo),
     s = "tempo" === o.tipo ? "seg" : o.unidade || "reps";
-  if (n) n.textContent = pr ? `PR: ${pr} ${s}` : "PR: —";
-  r ? (a.textContent = `${r} ${s} por série (${pr ? Math.round(r/pr*100) : 50}% do PR)`, t && !t.value && (t.value = r, t.placeholder = "GTG: " + r)) : a.textContent = "Sem histórico — defina manualmente"
+  if (n) n.innerHTML = pr ? `PR&nbsp;${pr} ${s}` : "PR —";
+  if (r) { a.textContent = `${r} ${s} • ${pr ? Math.round(r/pr*100) : 50}% do PR`; if (t && !t.value) t.value = r, t.placeholder = "GTG: " + r }
+  else a.textContent = "Sem histórico, defina manualmente"
 }
 
 function iniciarSessaoGTG() {
@@ -40,16 +41,26 @@ function iniciarSessaoGTG() {
     fase: "pronta",
     intervalo: null,
     segundosRestantes: 0
-  }, document.getElementById("sessionSetup").style.display = "none", document.getElementById("sessionProgress").style.display = "block", renderSessaoDots(), atualizarSessaoUI(), mostrarToast("🔗 SESSÃO INICIADA", `${a.nome} — ${t} séries de ${o} ${sessaoGTGState.unidade}`, "success")
+  };
+  document.getElementById("sessionSetup").style.display = "none";
+  document.getElementById("sessionProgress").style.display = "block";
+  renderSessaoProgress();
+  const bar = document.getElementById("ssAccentBar");
+  if (bar) bar.style.background = "linear-gradient(180deg,var(--gold),rgba(212,168,67,.1))";
+  atualizarSessaoUI();
+  mostrarToast("🔗 SESSÃO INICIADA", `${a.nome} — ${t} séries de ${o} ${sessaoGTGState.unidade}`, "success")
 }
 
-function renderSessaoDots() {
-  const e = document.getElementById("sessionSeriesDots");
+function renderSessaoProgress() {
+  const e = document.getElementById("sessionMuniBelt");
   if (!e || !sessaoGTGState) return;
   e.innerHTML = "";
   for (let a = 0; a < sessaoGTGState.totalSeries; a++) {
     const t = document.createElement("div");
-    t.style.cssText = "width:14px;height:14px;border-radius:50%;border:1px solid var(--gold-dim);" + (a < sessaoGTGState.seriesFeitas ? "background:var(--gold);box-shadow:0 0 8px rgba(212,160,23,.6);" : "background:transparent;"), e.appendChild(t)
+    t.className = "ss-muni-round";
+    if (a < sessaoGTGState.seriesFeitas) t.classList.add("ss-muni-spent");
+    else if (a === sessaoGTGState.seriesFeitas) t.classList.add("ss-muni-current");
+    e.appendChild(t)
   }
 }
 
@@ -60,12 +71,26 @@ function atualizarSessaoUI() {
     t = document.getElementById("sessionTimerDisplay"),
     o = document.getElementById("sessionActionBtn"),
     n = document.getElementById("sessionProgressLabel"),
-    r = document.getElementById("sessionProgressBar");
+    r = document.getElementById("sessionProgressBar"),
+    u = document.getElementById("sessionRingSub"),
+    b = document.getElementById("ssAccentBar");
   const pct = sessaoGTGState.totalSeries > 0 ? (sessaoGTGState.seriesFeitas / sessaoGTGState.totalSeries * 100) : 0;
   e && (e.textContent = `SÉRIE ${Math.min(sessaoGTGState.seriesFeitas+1,sessaoGTGState.totalSeries)} DE ${sessaoGTGState.totalSeries}`);
   n && (n.textContent = `${sessaoGTGState.seriesFeitas} / ${sessaoGTGState.totalSeries}`);
   r && (r.style.width = pct + "%");
-  "pronta" === sessaoGTGState.fase ? (a && (a.textContent = "PRONTO"), t && (t.textContent = "▶", t.style.color = "var(--gold)"), o && (o.disabled = !1, o.textContent = "✓ REGISTRAR")) : "descansando" === sessaoGTGState.fase && (a && (a.textContent = "DESCANSO"), o && (o.disabled = !0, o.textContent = "⏳ AGUARDE"))
+  if (b) { const pct2 = Math.round(pct); b.style.setProperty("--ss-pct", pct2 + "%"); b.dataset.ssPct = pct2 }
+  if ("pronta" === sessaoGTGState.fase) {
+    a && (a.textContent = "PRONTO");
+    t && (t.textContent = "▶", t.style.color = "var(--gold)");
+    u && (u.textContent = "REGISTRAR SÉRIE");
+    o && (o.disabled = !1, o.textContent = "✓ REGISTRAR");
+    if (b) b.style.background = "linear-gradient(180deg,var(--gold),rgba(212,168,67,.1))";
+  } else if ("descansando" === sessaoGTGState.fase) {
+    a && (a.textContent = "DESCANSO");
+    u && (u.textContent = "AGUARDE");
+    o && (o.disabled = !0, o.textContent = "⏳ AGUARDE");
+    if (b) b.style.background = "linear-gradient(180deg,var(--green-bright),rgba(68,204,68,.1))";
+  }
 }
 
 function executarSerieSessao() {
@@ -88,25 +113,40 @@ function executarSerieSessao() {
         rpe: null
       };
     dados.registros.push(t), adicionarXP(t.xp), _gtgSpark(), verificarStreak(), verificarBadges(), salvarDadosDebounced(), atualizarCardExercicio(t.exercicioId), atualizarStats(), renderHistory(), somRegistrar()
-  })(), sessaoGTGState.seriesFeitas++, renderSessaoDots(), mostrarToast(`✓ Série ${sessaoGTGState.seriesFeitas}/${sessaoGTGState.totalSeries}`, `${sessaoGTGState.valorPorSerie} ${sessaoGTGState.unidade} registrados`, "success"), sessaoGTGState.seriesFeitas >= sessaoGTGState.totalSeries ? concluirSessaoGTG() : iniciarDescansoSessao()
+  })(), sessaoGTGState.seriesFeitas++, renderSessaoProgress(), _animarSerieConcluida(), mostrarToast(`✓ Série ${sessaoGTGState.seriesFeitas}/${sessaoGTGState.totalSeries}`, `${sessaoGTGState.valorPorSerie} ${sessaoGTGState.unidade} registrados`, "success"), sessaoGTGState.seriesFeitas >= sessaoGTGState.totalSeries ? concluirSessaoGTG() : iniciarDescansoSessao()
+}
+
+function _animarSerieConcluida() {
+  const belt = document.getElementById("sessionMuniBelt");
+  if (!belt) return;
+  const rounds = belt.querySelectorAll(".ss-muni-round");
+  if (rounds.length < 1) return;
+  const idx = Math.min(sessaoGTGState.seriesFeitas - 1, rounds.length - 1);
+  if (idx >= 0) { const r = rounds[idx]; r.classList.remove("ss-muni-current"); r.classList.add("ss-muni-lit"); setTimeout(() => { r.classList.remove("ss-muni-lit") }, 500) }
 }
 
 function iniciarDescansoSessao() {
   sessaoGTGState.fase = "descansando", sessaoGTGState.segundosRestantes = sessaoGTGState.descansoSeg, atualizarSessaoUI();
   const e = document.getElementById("sessionTimerDisplay"),
     fill = document.getElementById("sessionRingFill"),
+    sub = document.getElementById("sessionRingSub"),
     total = sessaoGTGState.descansoSeg,
     circum = 502;
-  if (fill) fill.style.transition = "none";
+  if (fill) { fill.style.transition = "none"; fill.style.stroke = "var(--green-bright)" }
+  if (sub) sub.textContent = "PRÓXIMA SÉRIE EM";
   sessaoGTGState.intervalo && clearInterval(sessaoGTGState.intervalo), sessaoGTGState.intervalo = setInterval(() => {
     sessaoGTGState.segundosRestantes--;
+    if (sessaoGTGState.segundosRestantes < 0) { clearInterval(sessaoGTGState.intervalo); return }
     const a = Math.floor(sessaoGTGState.segundosRestantes / 60),
       t = sessaoGTGState.segundosRestantes % 60;
     const elap = total - sessaoGTGState.segundosRestantes,
       off = Math.max(0, circum - (elap / total) * circum);
-    if (fill && (fill.style.transition = "stroke-dashoffset .8s var(--ease-expo)", fill.style.strokeDashoffset = off, fill.style.stroke = sessaoGTGState.segundosRestantes < 30 ? "var(--green-bright)" : sessaoGTGState.segundosRestantes < 120 ? "var(--gold)" : "var(--gold-dim)"), e && (e.textContent = `${String(a).padStart(2,"0")}:${String(t).padStart(2,"0")}`, e.style.color = sessaoGTGState.segundosRestantes < 30 ? "var(--green-bright)" : "var(--gold)"), sessaoGTGState.segundosRestantes <= 0) {
+    const cor = sessaoGTGState.segundosRestantes < 10 ? "var(--red-bright)" : sessaoGTGState.segundosRestantes < 30 ? "var(--green-bright)" : "var(--gold)";
+    if (fill) { fill.style.transition = "stroke-dashoffset .8s var(--ease-expo)"; fill.style.strokeDashoffset = off; fill.style.stroke = cor }
+    if (e) { e.textContent = `${String(a).padStart(2,"0")}:${String(t).padStart(2,"0")}`; e.style.color = cor }
+    if (sessaoGTGState.segundosRestantes <= 0) {
       clearInterval(sessaoGTGState.intervalo), sessaoGTGState.intervalo = null, sessaoGTGState.fase = "pronta", atualizarSessaoUI(), somTimer();
-      if (fill) fill.style.transition = "none", fill.style.strokeDashoffset = circum, fill.style.stroke = "var(--gold)";
+      if (fill) { fill.style.transition = "none"; fill.style.strokeDashoffset = circum; fill.style.stroke = "var(--gold)" }
       mostrarToast("⚡ DESCANSO CONCLUÍDO", "Hora da próxima série!", "success")
     }
   }, 1e3)
@@ -115,7 +155,9 @@ function iniciarDescansoSessao() {
 function concluirSessaoGTG() {
   sessaoGTGState.intervalo && clearInterval(sessaoGTGState.intervalo);
   const fill = document.getElementById("sessionRingFill");
-  if (fill) fill.style.transition = "none", fill.style.strokeDashoffset = 502, fill.style.stroke = "var(--gold)";
+  if (fill) fill.style.transition = "none", fill.style.strokeDashoffset = 502, fill.style.stroke = "var(--green-bright)";
+  const card = document.querySelector(".sb-card-session-premium");
+  if (card) { card.classList.add("ss-complete"); setTimeout(() => card.classList.remove("ss-complete"), 1800) }
   const e = sessaoGTGState.exercicioNome,
     a = sessaoGTGState.totalSeries;
   mostrarToast("🏆 SESSÃO CONCLUÍDA", `${a} séries de ${e} completadas. Excelente trabalho!`, "success"), _mostrarGTGNeural(), sessaoGTGState = null, resetarPainelSessao()
@@ -173,6 +215,8 @@ function pararSessaoGTG() {
 function resetarPainelSessao() {
   const fill = document.getElementById("sessionRingFill");
   if (fill) fill.style.transition = "none", fill.style.strokeDashoffset = 502, fill.style.stroke = "var(--gold)";
+  const bar = document.getElementById("ssAccentBar");
+  if (bar) { bar.style.background = ""; bar.style.setProperty("--ss-pct", "0%"); bar.dataset.ssPct = "0" }
   const e = document.getElementById("sessionSetup"),
     a = document.getElementById("sessionProgress");
   e && (e.style.display = "block"), a && (a.style.display = "none")

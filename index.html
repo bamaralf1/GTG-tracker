@@ -615,7 +615,7 @@
 
           <div class="card sb-card sb-card-session-premium" style="margin:0">
             <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
-            <div class="ss-accent-bar"></div>
+            <div class="ss-accent-bar" id="ssAccentBar"></div>
             <div class="ss-noise"></div>
             <div class="ss-corner-glow ss-corner-glow-tl"></div>
             <div class="ss-corner-glow ss-corner-glow-br"></div>
@@ -654,24 +654,25 @@
                       <option value="1800">30 min</option>
                       <option value="60">1 min</option>
                     </select>
-                    <span class="sb-session-hint">💡 <span id="sessionSugestao">—</span></span>
+                    <span class="sb-session-hint"><span id="sessionSugestao">—</span></span>
                     <span class="sb-session-pr" id="sessionPRDisplay">PR: —</span>
-                    <button class="btn btn-red sb-session-start" onclick="iniciarSessaoGTG()">▶</button>
+                    <button class="btn btn-red sb-session-start" onclick="iniciarSessaoGTG()">▶&nbsp;INICIAR</button>
                   </div>
                 </div>
               </div>
               <div class="session-progress" id="sessionProgress" style="display:none">
                 <div class="sb-sprog">
                   <div class="sb-sprog-title" id="sessionProgressTitle">SESSÃO EM ANDAMENTO</div>
-                  <div id="sessionSeriesDots" class="sb-sprog-dots"></div>
+                  <div id="sessionMuniBelt" class="ss-muni-belt"></div>
                   <div class="sb-sprog-ring-wrap">
                     <svg class="sb-sprog-ring" viewBox="0 0 180 180">
                       <circle class="sb-sprog-ring-bg" cx="90" cy="90" r="80"/>
                       <circle class="sb-sprog-ring-fill" id="sessionRingFill" cx="90" cy="90" r="80"/>
                     </svg>
                     <div class="sb-sprog-ring-center">
-                      <div class="sb-sprog-state" id="sessionStateLabel">PRONTO</div>
-                      <div class="sb-sprog-timer" id="sessionTimerDisplay">▶</div>
+                      <div class="ss-ring-state" id="sessionStateLabel">PRONTO</div>
+                      <div class="ss-ring-timer" id="sessionTimerDisplay">▶</div>
+                      <div class="ss-ring-sub" id="sessionRingSub">REGISTRAR SÉRIE</div>
                     </div>
                   </div>
                   <div class="sb-sprog-bar-wrap">
@@ -681,8 +682,8 @@
                     <span class="sb-sprog-bar-label" id="sessionProgressLabel">0 / 0</span>
                   </div>
                   <div class="sb-sprog-actions">
-                    <button class="btn btn-gold" id="sessionActionBtn" onclick="executarSerieSessao()">✓ REGISTRAR</button>
-                    <button class="btn btn-red sb-sprog-stop" onclick="pararSessaoGTG()">■ PARAR</button>
+                    <button class="btn btn-gold" id="sessionActionBtn" onclick="executarSerieSessao()">✓&nbsp;REGISTRAR</button>
+                    <button class="btn btn-red sb-sprog-stop" onclick="pararSessaoGTG()">■&nbsp;PARAR</button>
                   </div>
                 </div>
               </div>

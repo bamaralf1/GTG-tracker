@@ -324,7 +324,79 @@
 
 
 /* ------------------------------------------------------------------------------
- * 17) GROOVE STATUS — INDICADOR NO HEADER
+ * 17) SESSÃO GTG — SETUP COMPACTO
+ * Tighter form, melhor hint inline, start button com texto
+ * ---------------------------------------------------------------------------- */
+.sb-card-session-premium .sb-session-form{gap:8px}
+.sb-card-session-premium .sb-session-row{gap:8px}
+.sb-card-session-premium .sb-session-row>.form-group{min-width:60px}
+.sb-card-session-premium .sb-session-row>.form-group:first-child{flex:3;min-width:120px}
+.sb-card-session-premium .sb-session-meta{background:rgba(0,0,0,.2);border-color:rgba(212,168,67,.08);padding:6px 8px;gap:6px}
+.sb-card-session-premium .sb-session-hint{font-size:10px;color:var(--gray);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.3px}
+.sb-card-session-premium .sb-session-pr{font-size:10px;color:var(--gold-dim);font-family:'Share Tech Mono',monospace;white-space:nowrap;background:rgba(212,168,67,.08);padding:2px 6px;border-radius:3px}
+.sb-card-session-premium .sb-session-start{min-width:80px;font-size:13px!important;padding:7px 14px!important;letter-spacing:1.5px;display:flex;align-items:center;gap:4px}
+
+/* ------------------------------------------------------------------------------
+ * 18) SESSÃO GTG — MUNITION BELT (barra segmentada)
+ * Substitui os dots redondos por uma "munição" militar — segmentos
+ * retangulares que se acendem em ouro conforme as séries são concluídas.
+ * ---------------------------------------------------------------------------- */
+.ss-muni-belt{display:flex;gap:4px;justify-content:center;padding:2px 0 8px}
+.ss-muni-round{width:22px;height:6px;border-radius:2px;background:rgba(212,168,67,.08);border:1px solid rgba(212,168,67,.12);transition:all .35s var(--ease-expo);position:relative;overflow:hidden}
+.ss-muni-round::after{content:'';position:absolute;inset:0;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gold-light));opacity:0;transition:opacity .35s var(--ease-expo)}
+.ss-muni-round.ss-muni-spent{background:rgba(212,168,67,.2);border-color:var(--gold)}
+.ss-muni-round.ss-muni-spent::after{opacity:1}
+.ss-muni-round.ss-muni-current{border-color:var(--gold);box-shadow:0 0 8px rgba(212,168,67,.3);animation:ssMuniCurrent 1.6s ease-in-out infinite}
+@keyframes ssMuniCurrent{0%,100%{box-shadow:0 0 6px rgba(212,168,67,.2)}50%{box-shadow:0 0 12px rgba(212,168,67,.4)}}
+.ss-muni-round.ss-muni-lit{animation:ssMuniFlash .5s ease-out}
+@keyframes ssMuniFlash{0%{background:var(--gold-light);box-shadow:0 0 16px rgba(212,168,67,.7)}100%{background:var(--gold);box-shadow:0 0 6px rgba(212,168,67,.3)}}
+
+/* ------------------------------------------------------------------------------
+ * 19) SESSÃO GTG — RING CENTER POLISH
+ * Timer/estado mais legíveis no centro do anel.
+ * ---------------------------------------------------------------------------- */
+.sb-card-session-premium .sb-sprog-ring-wrap{width:120px;height:120px}
+.sb-card-session-premium .sb-sprog-ring-bg{stroke:rgba(255,255,255,.04);stroke-width:5}
+.sb-card-session-premium .sb-sprog-ring-fill{stroke-width:5}
+.ss-ring-state{font-size:10px;color:var(--gray-light);letter-spacing:2px;text-transform:uppercase;margin-bottom:1px;transition:color .3s}
+.ss-ring-timer{font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--gold);line-height:1;letter-spacing:4px;font-variant-numeric:tabular-nums;transition:color .4s,text-shadow .4s}
+.ss-ring-timer.rest{animation:ssTimerRestPulse 1.5s ease-in-out infinite}
+@keyframes ssTimerRestPulse{0%,100%{text-shadow:0 0 20px rgba(68,204,68,.3)}50%{text-shadow:0 0 40px rgba(68,204,68,.5),0 0 8px rgba(68,204,68,.2)}}
+.ss-ring-sub{font-size:8px;color:var(--gray);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;transition:color .3s}
+
+/* ------------------------------------------------------------------------------
+ * 20) SESSÃO GTG — ACCENT BAR PROGRESSIVA
+ * A accent bar da esquerda muda de cor conforme as séries avançam:
+ * ouro (início) → verde (meio) → vermelho+brilho (final/descanso).
+ * Usa data attribute setado pelo JS.
+ * ---------------------------------------------------------------------------- */
+#ssAccentBar{transition:background .6s var(--ease-expo),box-shadow .6s var(--ease-expo);position:absolute;top:0;left:0;width:3px;height:100%;border-radius:0 2px 2px 0}
+#ssAccentBar[data-ss-pct="100"]{background:linear-gradient(180deg,var(--green-bright),rgba(68,204,68,.15))!important;box-shadow:0 0 10px rgba(68,204,68,.2)}
+
+/* ------------------------------------------------------------------------------
+ * 21) SESSÃO GTG — COMPLETION / CELEBRAÇÃO
+ * Card pulsa dourado brevemente ao concluir todas as séries.
+ * ---------------------------------------------------------------------------- */
+.sb-card-session-premium.ss-complete::before{background:linear-gradient(90deg,transparent,var(--gold),transparent)!important;animation:ssCompleteShine .8s ease-out 2}
+@keyframes ssCompleteShine{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+.sb-card-session-premium.ss-complete{animation:ssCompletePulse .6s ease-out 2}
+@keyframes ssCompletePulse{0%{box-shadow:0 0 0 rgba(212,168,67,0)}50%{box-shadow:0 0 30px rgba(212,168,67,.3),0 0 60px rgba(212,168,67,.1)}100%{box-shadow:0 0 0 rgba(212,168,67,0)}}
+
+/* ------------------------------------------------------------------------------
+ * 22) SESSÃO GTG — TRANSITION SETUP→PROGRESS
+ * Animação suave ao trocar do formulário para o painel ativo.
+ * ---------------------------------------------------------------------------- */
+.session-setup,.session-progress{transition:opacity .35s var(--ease-expo),transform .35s var(--ease-expo)}
+.session-setup{transform-origin:top center}
+.session-progress{transform-origin:top center}
+.session-setup[style*="display:none"]~.session-progress[style*="display:block"],
+.session-progress[style*="display:block"]{animation:ssPanelIn .4s var(--ease-expo) both}
+@keyframes ssPanelIn{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media (prefers-reduced-motion:reduce){.session-setup,.session-progress{animation:none!important;transition:none!important}}
+
+
+/* ------------------------------------------------------------------------------
+ * 23) GROOVE STATUS — INDICADOR NO HEADER
  * Um medidor estilizado "Groove:" no canto superior com anel de progresso
  * animado, gradiente dinâmico (vermelho→ouro→verde) e glow pulsante.
  * Glassmorphism, backdrop-blur e animação contínua.
