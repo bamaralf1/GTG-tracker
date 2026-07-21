@@ -164,6 +164,8 @@ function confirmRestTimer() {
 }
 
 function _darBonusDescanso() {
+  const w = document.getElementById("restTimerWidget");
+  if (w) { w.classList.add("rt-complete"); w.classList.remove("rest-critical", "rest-urgent", "rest-warning") }
   try { adicionarXP(3); mostrarToast("✓ DESCANSO RESPEITADO", "+3 XP bônus por descanso completo!", "success"); } catch(_) {}
 }
 
@@ -177,9 +179,26 @@ function iniciarRestTimer(duration, exId, exName) {
     exercicioNome: exName,
     _total: duration,
     _hideTimeout: null
-  }, document.getElementById("restTimerWidget").classList.add("active"), document.getElementById("restTimerBackdrop").classList.add("active"), document.getElementById("restTimerExercise").textContent = exName, atualizarDisplayRestTimer(), restTimer.intervalo = setInterval(() => {
-    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), _darBonusDescanso(), restTimer._hideTimeout = setTimeout(function() { document.getElementById("restTimerWidget").classList.remove("active"); document.getElementById("restTimerBackdrop").classList.remove("active"); }, 5e3))
+  };
+  const w = document.getElementById("restTimerWidget");
+  w && (w.classList.remove("rt-complete", "rest-critical", "rest-urgent", "rest-warning"), w.classList.add("active"));
+  document.getElementById("restTimerBackdrop")?.classList.add("active");
+  document.getElementById("restTimerExercise") && (document.getElementById("restTimerExercise").textContent = exName);
+  atualizarDisplayRestTimer();
+  restTimer.intervalo = setInterval(() => {
+    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), _darBonusDescanso(), restTimer._hideTimeout = setTimeout(function() { document.getElementById("restTimerWidget")?.classList.remove("active"); document.getElementById("restTimerBackdrop")?.classList.remove("active"); }, 5e3))
   }, 1e3)
+}
+
+function _updateRestPremiumUI(pct, restantes, total) {
+  const sub = document.getElementById("rtHeaderSub");
+  if (sub) sub.textContent = pct <= 0.15 ? "CRÍTICO" : pct <= 0.3 ? "URGENTE" : pct <= 0.5 ? "ATENÇÃO" : "NORMAL";
+  const phase = document.getElementById("rtPhase");
+  if (phase) phase.textContent = pct <= 0.15 ? "FASE CRÍTICA" : pct <= 0.3 ? "FASE URGENTE" : pct <= 0.5 ? "ATENÇÃO" : "RECUPERANDO";
+  const bar = document.getElementById("rtAccentBar");
+  if (bar) { const pp = Math.round((1 - pct) * 100); bar.style.setProperty("--rt-pct", pp + "%"); bar.dataset.rtPct = pp }
+  const hint = document.getElementById("rtFooterHint");
+  if (hint) hint.textContent = restantes > 0 ? `⚡ Complete o descanso para +3 XP bônus — ${restantes}s restantes` : "⚡ DESCANSO CONCLUÍDO!";
 }
 
 function atualizarDisplayRestTimer() {
@@ -205,22 +224,29 @@ function atualizarDisplayRestTimer() {
     else if (pct <= 0.3) widget.classList.add("rest-urgent");
     else if (pct <= 0.5) widget.classList.add("rest-warning");
   }
+  _updateRestPremiumUI(pct, restantes, total);
 }
 
 function toggleRestTimer() {
-  restTimer.rodando ? (clearInterval(restTimer.intervalo), restTimer.rodando = !1, document.getElementById("btnPauseRestTimer").textContent = "▶ RETOMAR") : (restTimer.rodando = !0, document.getElementById("btnPauseRestTimer").textContent = "⏸ PAUSAR", restTimer.intervalo = setInterval(() => {
-    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), _darBonusDescanso(), restTimer._hideTimeout = setTimeout(() => document.getElementById("restTimerWidget").classList.remove("active"), 5e3))
+  const btn = document.getElementById("btnPauseRestTimer");
+  const icon = btn?.querySelector(".rt-btn-icon");
+  const label = btn?.querySelector(".rt-btn-label");
+  restTimer.rodando ? (clearInterval(restTimer.intervalo), restTimer.rodando = !1, icon && (icon.textContent = "▶"), label && (label.textContent = "RETOMAR")) : (restTimer.rodando = !0, icon && (icon.textContent = "⏸"), label && (label.textContent = "PAUSAR"), restTimer.intervalo = setInterval(() => {
+    restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), _darBonusDescanso(), restTimer._hideTimeout = setTimeout(() => { document.getElementById("restTimerWidget")?.classList.remove("active"); document.getElementById("restTimerBackdrop")?.classList.remove("active"); }, 5e3))
   }, 1e3))
 }
 
 function resetRestTimer() {
   restTimer._hideTimeout && clearTimeout(restTimer._hideTimeout);
-  clearInterval(restTimer.intervalo), document.getElementById("restTimerWidget").classList.remove("active"), document.getElementById("restTimerBackdrop").classList.remove("active"), restTimer = {
-    intervalo: null,
-    segundos: 0,
-    rodando: !1,
-    exercicioId: null,
-    exercicioNome: ""
-  }
+  clearInterval(restTimer.intervalo);
+  const w = document.getElementById("restTimerWidget");
+  if (w) w.classList.remove("active", "rt-complete", "rest-critical", "rest-urgent", "rest-warning");
+  document.getElementById("restTimerBackdrop")?.classList.remove("active");
+  restTimer = { intervalo: null, segundos: 0, rodando: !1, exercicioId: null, exercicioNome: "" };
+  const btn = document.getElementById("btnPauseRestTimer");
+  const icon = btn?.querySelector(".rt-btn-icon");
+  const label = btn?.querySelector(".rt-btn-label");
+  if (icon) icon.textContent = "⏸";
+  if (label) label.textContent = "PAUSAR";
 }
 

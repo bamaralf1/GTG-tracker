@@ -1660,18 +1660,54 @@
       <div class="badge-unlock-desc" id="unlockDesc">Descrição</div><button class="btn btn-gold" style="margin-top:20px" onclick="closeBadgeUnlock()">✓ RECEBER HONRA</button>
     </div>
   </div>
-  <div class="rest-timer-overlay" id="restTimerBackdrop"></div>
+  <div class="rest-timer-overlay" id="restTimerBackdrop">
+    <div class="rt-noise"></div>
+    <div class="rt-corner-glow rt-corner-glow-tl"></div>
+    <div class="rt-corner-glow rt-corner-glow-br"></div>
+  </div>
   <div class="rest-timer-widget" id="restTimerWidget">
-    <div class="rest-timer-progress-ring">
-      <svg viewBox="0 0 120 120">
-        <circle class="rest-ring-bg" cx="60" cy="60" r="52"/>
-        <circle class="rest-ring-fill" id="restRingFill" cx="60" cy="60" r="52"/>
-      </svg>
+    <span class="hud-corner hud-corner-tl"></span><span class="hud-corner hud-corner-tr"></span><span class="hud-corner hud-corner-bl"></span><span class="hud-corner hud-corner-br"></span>
+    <div class="rt-accent-bar" id="rtAccentBar"></div>
+    <div class="rt-noise"></div>
+    <div class="rt-header-row">
+      <div class="rt-icon-wrap">
+        <div class="rt-icon-ring"></div>
+        <div class="rt-icon">⏱</div>
+      </div>
+      <div class="rt-header-text">
+        <div class="rt-header-title">RECUPERAÇÃO TÁTICA</div>
+        <div class="rt-header-sub" id="rtHeaderSub">AGUARDANDO</div>
+      </div>
+      <div class="rt-xp-badge" id="rtXpBadge">+3 XP</div>
     </div>
-    <div class="rest-timer-title">⏱ DESCANSO</div>
-    <div class="rest-timer-countdown" id="restTimerDisplay">15:00</div>
-    <div class="rest-timer-exercise" id="restTimerExercise">—</div>
-    <div class="rest-timer-controls"><button class="btn-pause-timer" id="btnPauseRestTimer" onclick="toggleRestTimer()">⏸ PAUSAR</button> <button class="btn-reset-timer" onclick="resetRestTimer()">↺ RESET</button></div>
+    <div class="rt-ring-section">
+      <div class="rest-timer-progress-ring">
+        <svg viewBox="0 0 120 120">
+          <circle class="rest-ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="rest-ring-glow" cx="60" cy="60" r="52"/>
+          <circle class="rest-ring-fill" id="restRingFill" cx="60" cy="60" r="52"/>
+        </svg>
+      </div>
+      <div class="rt-ring-center">
+        <div class="rest-timer-countdown" id="restTimerDisplay">15:00</div>
+        <div class="rt-phase" id="rtPhase">DESCANSO</div>
+      </div>
+    </div>
+    <div class="rt-exercise-row">
+      <span class="rt-ex-badge">🎯</span>
+      <span class="rest-timer-exercise" id="restTimerExercise">—</span>
+    </div>
+    <div class="rt-controls-row">
+      <button class="rt-btn rt-btn-pause" id="btnPauseRestTimer" onclick="toggleRestTimer()">
+        <span class="rt-btn-icon">⏸</span>
+        <span class="rt-btn-label">PAUSAR</span>
+      </button>
+      <button class="rt-btn rt-btn-reset" onclick="resetRestTimer()">
+        <span class="rt-btn-icon">↺</span>
+        <span class="rt-btn-label">RESET</span>
+      </button>
+    </div>
+    <div class="rt-footer-hint" id="rtFooterHint">⚡ Complete o descanso para +3 XP bônus</div>
   </div>
   <div class="confetti-container" id="confettiContainer"></div>
   <div class="toast-container" id="toastContainer"></div><button class="share-fab" onclick="abrirShareCard()" title="Exportar Cartão do Dia"><span class="share-fab-icon">📤</span> <span>CARTÃO DO DIA</span></button>
