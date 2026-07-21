@@ -321,55 +321,25 @@
         <div class="sb-warmup-header" onclick="toggleWarmupCard()" style="cursor:pointer">
           <span class="sb-warmup-shield">⚡</span>
           <div class="sb-warmup-title">ATIVAÇÃO PRÉ-COMBATE</div>
-          <span class="sb-warmup-badge" id="warmupBadge">0/4</span>
+          <span class="sb-warmup-streak" id="warmupStreak"></span>
+          <span class="sb-warmup-badge" id="warmupBadge">0/0</span>
         </div>
-        <div class="sb-warmup-sub">AQUECIMENTO DINÂMICO · PAVEL TSATSOULINE</div>
-        <div class="sb-warmup-summary" id="warmupSummary">Sua preparação começa com 4 passos simples: mobilidade, ombros, glúteos e ativação de cadeia posterior.</div>
-        <div class="sb-warmup-list" id="warmupList">
-          <div class="sb-warmup-item" data-idx="0" onclick="toggleWarmup(0)">
-            <div class="sb-warmup-circle"><span class="sb-warmup-num">1</span><span class="sb-warmup-check">✓</span></div>
-            <div class="sb-warmup-info">
-              <div class="sb-warmup-name">AGACHAMENTO DE MOBILIDADE</div>
-              <div class="sb-warmup-desc">Pés afastados na largura dos ombros, segure um peso leve no peito (goblet). Agache até o fundo mantendo o tronco ereto, cotovelos entre os joelhos. Na posição mais baixa, faça pequenos círculos com os quadris (prying) por 5 segundos para abrir o quadril e alongar a virilha. Suba com controle.</div>
-            </div>
-            <button class="sb-warmup-timer-btn" type="button">▶ 30s</button>
-          </div>
-          <div class="sb-warmup-item" data-idx="1" onclick="toggleWarmup(1)">
-            <div class="sb-warmup-circle"><span class="sb-warmup-num">2</span><span class="sb-warmup-check">✓</span></div>
-            <div class="sb-warmup-info">
-              <div class="sb-warmup-name">CÍRCULO DE OMBROS</div>
-              <div class="sb-warmup-desc">Em pé, segure um disco ou kettlebell leve com as duas mãos. Eleve o peso acima da cabeça e faça círculos amplos ao redor da cabeça (halos), mantendo os braços estendidos e o core contraído. Os cotovelos devem passar para trás das orelhas a cada volta. Controle o movimento — sem inclinar o tronco.</div>
-            </div>
-            <button class="sb-warmup-timer-btn" type="button">▶ 30s</button>
-          </div>
-          <div class="sb-warmup-item" data-idx="2" onclick="toggleWarmup(2)">
-            <div class="sb-warmup-circle"><span class="sb-warmup-num">3</span><span class="sb-warmup-check">✓</span></div>
-            <div class="sb-warmup-info">
-              <div class="sb-warmup-name">PONTE DE GLÚTEOS</div>
-              <div class="sb-warmup-desc">Deitado de costas, joelhos flexionados e pés no chão na largura do quadril. Eleve o quadril apertando os glúteos no topo do movimento, formando uma linha reta dos ombros aos joelhos. Segure a contração por 2 segundos no topo, depois desça lentamente sem encostar o quadril no chão. Mantenha o abdômen contraído.</div>
-            </div>
-            <button class="sb-warmup-timer-btn" type="button">▶ 30s</button>
-          </div>
-          <div class="sb-warmup-item" data-idx="3" onclick="toggleWarmup(3)">
-            <div class="sb-warmup-circle"><span class="sb-warmup-num">4</span><span class="sb-warmup-check">✓</span></div>
-            <div class="sb-warmup-info">
-              <div class="sb-warmup-name">LEVANTAMENTO TERRA ATIVO</div>
-              <div class="sb-warmup-desc">Com uma barra leve ou cabo de vassoura, execute o movimento do levantamento terra: pés sob a barra, flexione quadris e joelhos, mantenha as costas retas. Ao puxar, ative os dorsais (pense em "quebrar a barra" com as mãos) e aperte os glúteos no topo. Cada repetição é lenta e consciente — desça com controle e repita.</div>
-            </div>
-            <button class="sb-warmup-timer-btn" type="button">▶ 30s</button>
-          </div>
-        </div>
+        <div class="sb-warmup-sub">AQUECIMENTO DINÂMICO · FASES DE ATIVAÇÃO</div>
+        <div class="wu-mission-timer" id="warmupTotalTimer">⏱ 0:00</div>
+        <div class="sb-warmup-summary" id="warmupSummary">Ativação em fases: mobilize as articulações, ative o sistema nervoso, prepare o movimento específico.</div>
+        <div class="sb-warmup-list" id="warmupList"></div>
         <div class="sb-warmup-progress-wrap">
           <div class="sb-warmup-progress"><div class="sb-warmup-progress-fill" id="warmupProgressFill"></div></div>
         </div>
         <div class="sb-warmup-footer">
           <span class="sb-warmup-status" id="warmupStatus">❄ NÃO AQUECIDO</span>
           <div class="sb-warmup-actions">
+            <button class="sb-warmup-action-btn sb-warmup-action-btn-small" id="warmupAutoBtn" onclick="toggleAutoAvancar()">▶ MANUAL</button>
             <button class="sb-warmup-action-btn" onclick="completarWarmup()">✓ COMPLETAR</button>
             <button class="sb-warmup-action-btn sb-warmup-action-btn-secondary" onclick="resetWarmup()">↺ RESET</button>
           </div>
         </div>
-        <div class="sb-warmup-hint" id="warmupHint">Toque nos passos para marcar a ativação e preparar o corpo para a série.</div>
+        <div class="sb-warmup-hint" id="warmupHint">Complete cada fase em ordem. Toque nos passos ou use ▶ para iniciar o cronômetro.</div>
       </div>
       <div class="section-divider">
         <div class="section-divider-line"></div>
