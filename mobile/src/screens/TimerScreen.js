@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, ScrollView, SafeAreaView, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
-import { colors, spacing, fontSize, shadows } from '../theme/colors';
+import { colors, spacing, fontSize, shadows } from '../theme';
 import { EXERCICIOS_DEFAULT, getRestPhase, getRestPhaseLabel } from '@gtg/shared';
 import AnimatedRing from '../components/AnimatedRing';
 import { useFadeIn } from '../hooks/useAnimation';

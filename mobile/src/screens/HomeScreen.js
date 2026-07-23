@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, SafeAreaView, StyleSheet, RefreshControl, TouchableOpacity, Animated } from 'react-native';
-import { colors, spacing, fontSize, shadows } from '../theme/colors';
+import { colors, spacing, fontSize, shadows } from '../theme';
 import { StatCard } from '../components/StatCard';
 import AnimatedCard from '../components/AnimatedCard';
 import { useFadeIn, useSlideIn } from '../hooks/useAnimation';
