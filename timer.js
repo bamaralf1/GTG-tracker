@@ -166,7 +166,59 @@ function confirmRestTimer() {
 function _darBonusDescanso() {
   const w = document.getElementById("restTimerWidget");
   if (w) { w.classList.add("rt-complete"); w.classList.remove("rest-critical", "rest-urgent", "rest-warning") }
+  var grad = document.getElementById("restRingGradient");
+  if (grad) {
+    var stops = grad.querySelectorAll("stop");
+    if (stops.length >= 2) { stops[0].setAttribute("stop-color", "#22cc22"); stops[1].setAttribute("stop-color", "#66ee66") }
+  }
+  var glow = document.getElementById("restRingGlow");
+  if (glow) glow.style.opacity = "0.35";
   try { adicionarXP(3); mostrarToast("✓ DESCANSO RESPEITADO", "+3 XP bônus por descanso completo!", "success"); } catch(_) {}
+}
+
+function _initRestRingGradient() {
+  const svg = document.querySelector(".rest-timer-progress-ring svg");
+  if (!svg) return;
+  let defs = svg.querySelector("defs");
+  if (!defs) { defs = document.createElementNS("http://www.w3.org/2000/svg", "defs"); svg.prepend(defs) }
+  let grad = defs.querySelector("#restRingGradient");
+  if (!grad) {
+    grad = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+    grad.id = "restRingGradient";
+    grad.setAttribute("x1", "0%"); grad.setAttribute("y1", "0%");
+    grad.setAttribute("x2", "100%"); grad.setAttribute("y2", "100%");
+    const s1 = document.createElementNS("http://www.w3.org/2000/svg", "stop"); s1.setAttribute("offset", "0%");
+    const s2 = document.createElementNS("http://www.w3.org/2000/svg", "stop"); s2.setAttribute("offset", "100%");
+    grad.append(s1, s2); defs.append(grad)
+  }
+  const fill = document.getElementById("restRingFill");
+  if (fill) fill.setAttribute("stroke", "url(#restRingGradient)")
+}
+
+function _updateRestRingGradient(phase, pct) {
+  const grad = document.getElementById("restRingGradient");
+  if (!grad) return;
+  const stops = grad.querySelectorAll("stop");
+  if (stops.length < 2) return;
+  var c1, c2;
+  switch (phase) {
+    case "critical": c1 = "#cc0000"; c2 = "#ff3333"; break;
+    case "urgent":   c1 = "#e66600"; c2 = "#ffaa00"; break;
+    case "warning":  c1 = "#d9a000"; c2 = "#ffcc00"; break;
+    default:         c1 = "#d4a843"; c2 = "#ebd194"; break;
+  }
+  stops[0].setAttribute("stop-color", c1);
+  stops[1].setAttribute("stop-color", c2);
+  var glow = document.getElementById("restRingGlow");
+  if (glow) glow.style.opacity = Math.min(0.55, 0.06 + 0.5 * (1 - pct))
+}
+
+function _ensureRestScanline() {
+  var w = document.getElementById("restTimerWidget");
+  if (!w || w.querySelector(".rt-scanline")) return;
+  var sl = document.createElement("div");
+  sl.className = "rt-scanline";
+  w.prepend(sl)
 }
 
 function iniciarRestTimer(duration, exId, exName) {
@@ -184,6 +236,9 @@ function iniciarRestTimer(duration, exId, exName) {
   w && (w.classList.remove("rt-complete", "rest-critical", "rest-urgent", "rest-warning"), w.classList.add("active"));
   document.getElementById("restTimerBackdrop")?.classList.add("active");
   document.getElementById("restTimerExercise") && (document.getElementById("restTimerExercise").textContent = exName);
+  _initRestRingGradient(), _ensureRestScanline();
+  var pctInit = Math.max(0, duration > 0 ? 1 : 0);
+  _updateRestRingGradient("normal", pctInit);
   atualizarDisplayRestTimer();
   restTimer.intervalo = setInterval(() => {
     restTimer.segundos--, atualizarDisplayRestTimer(), restTimer.segundos <= 0 && (clearInterval(restTimer.intervalo), restTimer.rodando = !1, tocarSomDescanso(), _darBonusDescanso(), restTimer._hideTimeout = setTimeout(function() { document.getElementById("restTimerWidget")?.classList.remove("active"); document.getElementById("restTimerBackdrop")?.classList.remove("active"); }, 5e3))
@@ -217,13 +272,14 @@ function atualizarDisplayRestTimer() {
     ring.style.strokeDasharray = circ;
     ring.style.strokeDashoffset = offset;
   }
-  var widget = document.getElementById("restTimerWidget");
+  var widget = document.getElementById("restTimerWidget"), phase = "normal";
   if (widget) {
     widget.classList.remove("rest-urgent", "rest-warning", "rest-critical");
-    if (pct <= 0.15) widget.classList.add("rest-critical");
-    else if (pct <= 0.3) widget.classList.add("rest-urgent");
-    else if (pct <= 0.5) widget.classList.add("rest-warning");
+    if (pct <= 0.15) { widget.classList.add("rest-critical"); phase = "critical" }
+    else if (pct <= 0.3) { widget.classList.add("rest-urgent"); phase = "urgent" }
+    else if (pct <= 0.5) { widget.classList.add("rest-warning"); phase = "warning" }
   }
+  _updateRestRingGradient(phase, pct);
   _updateRestPremiumUI(pct, restantes, total);
 }
 

@@ -87,6 +87,10 @@ function atualizarSessaoUI() {
     if (b) b.style.background = "linear-gradient(180deg,var(--gold),rgba(212,168,67,.1))";
   } else if ("descansando" === sessaoGTGState.fase) {
     a && (a.textContent = "DESCANSO");
+    const seg = sessaoGTGState.segundosRestantes || sessaoGTGState.descansoSeg || 0;
+    const min = Math.floor(seg / 60);
+    const s = seg % 60;
+    t && (t.textContent = `${String(min).padStart(2,"0")}:${String(s).padStart(2,"0")}`, t.style.color = "var(--green-bright)");
     u && (u.textContent = "AGUARDE");
     o && (o.disabled = !0, o.textContent = "⏳ AGUARDE");
     if (b) b.style.background = "linear-gradient(180deg,var(--green-bright),rgba(68,204,68,.1))";
@@ -97,23 +101,44 @@ function executarSerieSessao() {
   if (!sessaoGTGState || "pronta" !== sessaoGTGState.fase) return;
   const e = dados.exercicios.find(e => e.id === sessaoGTGState.exercicioId);
   if (!e) return void pararSessaoGTG();
-  const a = document.getElementById(`valor-${e.id}`);
-  a ? (a.value = sessaoGTGState.valorPorSerie, adicionarSerie(e.id)) : (() => {
-    const a = new Date,
-      t = {
-        id: Date.now() + Math.random().toString(36).slice(2),
-        exercicioId: e.id,
-        exercicioNome: e.nome,
-        valor: sessaoGTGState.valorPorSerie,
-        peso: 0,
-        data: a.toISOString().slice(0, 10),
-        hora: a.toTimeString().slice(0, 5),
-        timestamp: a.getTime(),
-        xp: calcularXPSerie(e, sessaoGTGState.valorPorSerie, 0),
-        rpe: null
-      };
-    dados.registros.push(t), adicionarXP(t.xp), _gtgSpark(), verificarStreak(), verificarBadges(), salvarDadosDebounced(), atualizarCardExercicio(t.exercicioId), atualizarStats(), renderHistory(), somRegistrar()
-  })(), sessaoGTGState.seriesFeitas++, renderSessaoProgress(), _animarSerieConcluida(), mostrarToast(`✓ Série ${sessaoGTGState.seriesFeitas}/${sessaoGTGState.totalSeries}`, `${sessaoGTGState.valorPorSerie} ${sessaoGTGState.unidade} registrados`, "success"), sessaoGTGState.seriesFeitas >= sessaoGTGState.totalSeries ? concluirSessaoGTG() : iniciarDescansoSessao()
+  const inp = document.getElementById(`valor-${e.id}`);
+  if (inp) {
+    inp.value = sessaoGTGState.valorPorSerie;
+    try { adicionarSerie(e.id); } catch(_) { console.warn("adicionarSerie:", _) }
+  } else {
+    const agora = new Date;
+    const reg = {
+      id: Date.now() + Math.random().toString(36).slice(2),
+      exercicioId: e.id,
+      exercicioNome: e.nome,
+      valor: sessaoGTGState.valorPorSerie,
+      peso: 0,
+      data: agora.toISOString().slice(0, 10),
+      hora: agora.toTimeString().slice(0, 5),
+      timestamp: agora.getTime(),
+      xp: calcularXPSerie(e, sessaoGTGState.valorPorSerie, 0),
+      rpe: null
+    };
+    dados.registros.push(reg);
+    try { adicionarXP(reg.xp); } catch(_) {}
+    try { _gtgSpark(); } catch(_) {}
+    try { verificarStreak(); } catch(_) {}
+    try { verificarBadges(); } catch(_) {}
+    try { salvarDadosDebounced(); } catch(_) {}
+    try { atualizarCardExercicio(reg.exercicioId); } catch(_) {}
+    try { atualizarStats(); } catch(_) {}
+    try { renderHistory(); } catch(_) {}
+    try { somRegistrar(); } catch(_) {}
+  }
+  sessaoGTGState.seriesFeitas++;
+  renderSessaoProgress();
+  _animarSerieConcluida();
+  mostrarToast(`✓ Série ${sessaoGTGState.seriesFeitas}/${sessaoGTGState.totalSeries}`, `${sessaoGTGState.valorPorSerie} ${sessaoGTGState.unidade} registrados`, "success");
+  if (sessaoGTGState.seriesFeitas >= sessaoGTGState.totalSeries) {
+    concluirSessaoGTG();
+  } else {
+    iniciarDescansoSessao();
+  }
 }
 
 function _animarSerieConcluida() {
@@ -135,20 +160,22 @@ function iniciarDescansoSessao() {
   if (fill) { fill.style.transition = "none"; fill.style.stroke = "var(--green-bright)" }
   if (sub) sub.textContent = "PRÓXIMA SÉRIE EM";
   sessaoGTGState.intervalo && clearInterval(sessaoGTGState.intervalo), sessaoGTGState.intervalo = setInterval(() => {
-    sessaoGTGState.segundosRestantes--;
-    if (sessaoGTGState.segundosRestantes < 0) { clearInterval(sessaoGTGState.intervalo); return }
-    const a = Math.floor(sessaoGTGState.segundosRestantes / 60),
-      t = sessaoGTGState.segundosRestantes % 60;
-    const elap = total - sessaoGTGState.segundosRestantes,
-      off = Math.max(0, circum - (elap / total) * circum);
-    const cor = sessaoGTGState.segundosRestantes < 10 ? "var(--red-bright)" : sessaoGTGState.segundosRestantes < 30 ? "var(--green-bright)" : "var(--gold)";
-    if (fill) { fill.style.transition = "stroke-dashoffset .8s var(--ease-expo)"; fill.style.strokeDashoffset = off; fill.style.stroke = cor }
-    if (e) { e.textContent = `${String(a).padStart(2,"0")}:${String(t).padStart(2,"0")}`; e.style.color = cor }
-    if (sessaoGTGState.segundosRestantes <= 0) {
-      clearInterval(sessaoGTGState.intervalo), sessaoGTGState.intervalo = null, sessaoGTGState.fase = "pronta", atualizarSessaoUI(), somTimer();
-      if (fill) { fill.style.transition = "none"; fill.style.strokeDashoffset = circum; fill.style.stroke = "var(--gold)" }
-      mostrarToast("⚡ DESCANSO CONCLUÍDO", "Hora da próxima série!", "success")
-    }
+    try {
+      sessaoGTGState.segundosRestantes--;
+      if (sessaoGTGState.segundosRestantes < 0) { clearInterval(sessaoGTGState.intervalo); return }
+      const min = Math.floor(sessaoGTGState.segundosRestantes / 60),
+        sec = sessaoGTGState.segundosRestantes % 60;
+      const elap = total - sessaoGTGState.segundosRestantes,
+        off = Math.max(0, circum - (elap / total) * circum);
+      const cor = sessaoGTGState.segundosRestantes < 10 ? "var(--red-bright)" : sessaoGTGState.segundosRestantes < 30 ? "var(--green-bright)" : "var(--gold)";
+      if (fill) { fill.style.transition = "stroke-dashoffset .8s var(--ease-expo)"; fill.style.strokeDashoffset = off; fill.style.stroke = cor }
+      if (e) { e.textContent = `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}`; e.style.color = cor }
+      if (sessaoGTGState.segundosRestantes <= 0) {
+        clearInterval(sessaoGTGState.intervalo); sessaoGTGState.intervalo = null; sessaoGTGState.fase = "pronta"; atualizarSessaoUI(); try { somTimer(); } catch(_) {}
+        if (fill) { fill.style.transition = "none"; fill.style.strokeDashoffset = circum; fill.style.stroke = "var(--gold)" }
+        mostrarToast("⚡ DESCANSO CONCLUÍDO", "Hora da próxima série!", "success")
+      }
+    } catch(_e) { console.warn("timer tick:", _e) }
   }, 1e3)
 }
 

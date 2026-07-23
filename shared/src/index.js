@@ -1,0 +1,11 @@
+export { EXERCICIOS_DEFAULT, createExercicio, getExercicioById, syncExerciciosFromDefault } from './model/exercicios.js';
+export { NIVEIS, getNivel, getRankMult } from './model/niveis.js';
+export { defaultDados, defaultStreakData, defaultXpData, defaultRestTimer } from './model/dados.js';
+export { calcularXPSerie, adicionarXP, calcularBonusStreak, verificarStreak, calcularRankMult, aplicarBonusStreak, getXpProgress } from './logic/xp.js';
+export { calcularReadiness, READINESS_FACTOR_KEYS, PRIORITY_LEVELS, getReadinessStatus, getReadinessLabel } from './logic/readiness.js';
+export { formatDateBR, getHoje, getOntem, getDiasEntre, getInicioSemana, getDiaSemanaLabel, getMesLabel } from './utils/date.js';
+export { StorageAdapter } from './storage/adapter.js';
+export { WebStorageAdapter } from './storage/web.js';
+export { AsyncStorageAdapter } from './storage/async-storage.js';
+export { REST_TIMER_PHASES, getRestPhase, getRestPhaseLabel, getRestPhaseColor, getGlowIntensity } from './logic/timer.js';
+export { DEFAULT_READINESS, DEFAULT_WEIGHTS, getUsuarioFatorDisplay } from './logic/readiness.js';

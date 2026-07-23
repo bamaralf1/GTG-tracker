@@ -4216,33 +4216,7 @@ body::after{
 
 /* â”€â”€ 15. SIDEBAR â€” CADA CARTÃƒO COM ACENTO PRÃ“PRIO (variedade absurda) â”€â”€ */
 
-[data-theme=dark] .snowflake{display:none !important}
-@keyframes snowfall{
-  0%{
-    transform:translateY(0) translateX(0) rotate(0deg);
-    opacity:0;
-  }
-  10%{
-    opacity:1;
-  }
-  90%{
-    opacity:1;
-  }
-  100%{
-    transform:translateY(100vh) translateX(20px) rotate(360deg);
-    opacity:0;
-  }
-}
-[data-theme=dark] .frost-overlay{display:none !important}
-@keyframes frostShimmer{
-  0%,100%{opacity:0.6}
-  50%{opacity:1}
-}
-[data-theme=dark] .ice-crystal{display:none !important}
-@keyframes iceCrystalFloat{
-  0%,100%{transform:translateY(0) scale(1);opacity:0.4}
-  50%{transform:translateY(-15px) scale(1.3);opacity:0.9}
-}
+/* efeitos de neve/gelo removidos */
 
 
 /* â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ

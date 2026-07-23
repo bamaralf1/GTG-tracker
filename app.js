@@ -1296,7 +1296,7 @@ carregarTema();
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  "serviceWorker" in navigator && registrarServiceWorker().then(reg => {
+  !("gtgDesktop" in window) && "serviceWorker" in navigator && registrarServiceWorker().then(reg => {
     if (reg) {
       swRegistration = reg;
       const enviarBuild = () => { reg.active && reg.active.postMessage({ type: "ATUALIZAR_CACHE", version: CACHE_BUILD }) };
@@ -1307,7 +1307,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   const e = cssVar("--accent-red") || "#CC0000";
   const d = document.querySelector('meta[name="theme-color"]');
-  d && d.setAttribute("content", e), "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
+  d && d.setAttribute("content", e), !("gtgDesktop" in window) && "serviceWorker" in navigator && navigator.serviceWorker.getRegistration().then(e => {
     e && e.active && (swRegistration = e, "granted" === Notification.permission && (lembreteSWAtivo = true, lembreteProximo = Date.now() + (lembreteIntervaloMs || 900000), e.active.postMessage("INICIAR_LEMBRETES"), e.active.postMessage({ type: "ALTERAR_INTERVALO", intervalo: lembreteIntervaloMs || 900000 }), document.getElementById("btnAtivarLembrete").style.display = "none", document.getElementById("btnDesativarLembrete").style.display = "inline-block", window._lembreteCountdownInterval || (window._lembreteCountdownInterval = setInterval(_atualizarUIAlertas, 1000)), _atualizarUIAlertas()))
   }), document.addEventListener("visibilitychange", () => { "visible" === document.visibilityState && _atualizarUIAlertas() }), inicializar();
 

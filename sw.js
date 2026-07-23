@@ -1,28 +1,53 @@
 /* =============================================================================
- * sw.js — Service Worker do GTG Tracker
- * -----------------------------------------------------------------------------
+ * sw.js — Service Worker do GTG Tracker v2
  * Cache do app shell para uso OFFLINE + lembretes em background.
- * A versão do cache é gerenciada pelo app.js via postMessage — quando um novo
- * build é detectado, o SW troca o cache automaticamente sem intervenção manual.
+ * Cache-first para assets locais, stale-while-revalidate para CDN.
  * ========================================================================== */
+
+const CACHE_PREFIX = "gtg-cache-";
+let CACHE_NAME = "gtg-cache-v10";
 
 const PRECACHE_URLS = [
   "./",
   "./index.html",
+  "./entrar.html",
   "./app.js",
   "./styles.css",
   "./treino-ux-refinements.css",
   "./skilltree.css",
-  "./skilltree.js",
-  "./skilltree-render.js",
+  "./utils.js",
   "./storage.js",
+  "./audio.js",
+  "./rpe-groove.js",
+  "./timer.js",
+  "./exercicios.js",
+  "./xp-streak.js",
+  "./lembretes.js",
+  "./historico.js",
+  "./graficos.js",
+  "./readiness.js",
+  "./export-share.js",
+  "./planejador.js",
   "./warmup.js",
   "./gtg-session.js",
-  "./manifest.webmanifest"
+  "./quicklog.js",
+  "./skilltree.js",
+  "./skilltree-render.js",
+  "./manifest.webmanifest",
+  "./icons/icon-192.svg",
+  "./icons/icon-512.svg",
+  "./icons/icon-maskable.svg"
 ];
 
-const CACHE_PREFIX = "gtg-cache-";
-let CACHE_NAME = "gtg-cache-v9";
+const CDN_CACHE = "gtg-cdn-v1";
+const FONT_CACHE = "gtg-fonts-v1";
+
+const CDN_URLS = [
+  "cdnjs.cloudflare.com",
+  "cdn.jsdelivr.net",
+  "fonts.googleapis.com",
+  "fonts.gstatic.com"
+];
 
 const LEMBRETES = [
   "Hora de uma serie! Lembre: 50-60% do seu maximo. Qualidade acima de tudo.",
@@ -54,10 +79,12 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((names) =>
       Promise.all(
-        names.filter((name) => name.startsWith("gtg-cache-") && name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+        names.filter((name) =>
+          (name.startsWith(CACHE_PREFIX) || name === "gtg-cdn-v1" || name === "gtg-fonts-v1")
+          && name !== CACHE_NAME
+        ).map((name) => caches.delete(name))
       )
-    )    .then(() => self.clients.claim())
+    ).then(() => self.clients.claim())
   );
 });
 
@@ -65,31 +92,51 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
-  event.respondWith(
-    url.origin === self.location.origin
-      ? networkFirst(request)
-      : cacheFirst(request)
-  );
+  const isCDN = CDN_URLS.some(cdn => url.hostname.includes(cdn));
+
+  if (isCDN) {
+    event.respondWith(staleWhileRevalidate(request, url.hostname.includes("font") ? FONT_CACHE : CDN_CACHE));
+  } else if (url.origin === self.location.origin) {
+    event.respondWith(networkFirst(request));
+  }
 });
 
 async function networkFirst(request) {
   const cache = await caches.open(CACHE_NAME);
   try {
-    // cache:"no-store" evita que o próprio navegador sirva uma resposta HTTP
-    // cacheada por baixo do nosso controle — sempre busca a versão real do servidor.
     const response = await fetch(request, { cache: "no-store" });
     if (response && response.ok) cache.put(request, response.clone());
     return response;
   } catch (err) {
-    // Offline ou rede falhou: cai pro cache como fallback.
     const cached = await cache.match(request);
     if (cached) return cached;
     if (request.mode === "navigate") {
       const fallback = await getFallbackNavigationResponse(cache);
       if (fallback) return fallback;
     }
-    return new Response("Offline e recurso nao disponivel em cache.", { status: 503, statusText: "Offline" });
+    return new Response(`
+      <!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <title>GTG — Offline</title>
+      <style>body{background:#0a0a0a;color:#d4a843;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;padding:20px}
+      h1{font-size:48px;margin-bottom:10px;letter-spacing:6px}
+      p{color:#888;font-size:14px;letter-spacing:2px;line-height:1.8}
+      .star{font-size:64px}</style></head>
+      <body><div><div class="star">★</div>
+      <h1>OFFLINE</h1>
+      <p>Você está sem conexão.<br>Os dados salvos no dispositivo estão disponíveis.<br>As alterações serão sincronizadas quando a rede voltar.</p>
+      </div></body></html>`, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } });
   }
+}
+
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  const fetchPromise = fetch(request).then((response) => {
+    if (response && response.ok) cache.put(request, response.clone());
+    return response;
+  }).catch(() => cached);
+  return cached || fetchPromise;
 }
 
 async function getFallbackNavigationResponse(cache) {
@@ -106,21 +153,6 @@ async function getFallbackNavigationResponse(cache) {
   return null;
 }
 
-async function cacheFirst(request) {
-  const cache = await caches.open(CACHE_NAME);
-  const cached = await cache.match(request);
-  if (cached) return cached;
-  try {
-    const response = await fetch(request);
-    if (response && (response.ok || response.type === "opaque")) {
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch (err) {
-    return new Response(null, { status: 504, statusText: "Offline" });
-  }
-}
-
 let _lembreteIntervalo = INTERVALO_MS;
 
 self.addEventListener("message", (e) => {
@@ -134,17 +166,13 @@ self.addEventListener("message", (e) => {
     const novo = parseInt(data.intervalo);
     if (novo > 0 && novo !== _lembreteIntervalo) {
       _lembreteIntervalo = novo;
-      if (self._lembreteTimeout) {
-        clearTimeout(self._lembreteTimeout);
-        agendarProximo();
-      }
+      if (self._lembreteTimeout) { clearTimeout(self._lembreteTimeout); agendarProximo(); }
     }
   }
   if (data === "LIMPAR_CACHES_PWA") {
     e.waitUntil((async () => {
       const names = await caches.keys();
-      await Promise.all(names.filter((name) => name.startsWith(CACHE_PREFIX)).map((name) => caches.delete(name)));
-      if (CACHE_NAME.startsWith(CACHE_PREFIX)) CACHE_NAME = `${CACHE_PREFIX}v3`;
+      await Promise.all(names.filter((name) => name.startsWith(CACHE_PREFIX) || name === "gtg-cdn-v1" || name === "gtg-fonts-v1").map((name) => caches.delete(name)));
     })());
   }
   if (data && data.type === "ATUALIZAR_CACHE") {
@@ -156,10 +184,7 @@ self.addEventListener("message", (e) => {
         await cache.addAll(PRECACHE_URLS);
         CACHE_NAME = newCacheName;
         const names = await caches.keys();
-        await Promise.all(
-          names.filter((n) => n.startsWith(CACHE_PREFIX) && n !== CACHE_NAME)
-            .map((n) => caches.delete(n))
-        );
+        await Promise.all(names.filter((n) => n.startsWith(CACHE_PREFIX) && n !== CACHE_NAME).map((n) => caches.delete(n)));
         const clients = await self.clients.matchAll();
         clients.forEach((c) => c.postMessage({ type: "CACHE_ATUALIZADO", version: data.version }))
       } catch (err) {
@@ -181,8 +206,8 @@ function dispararNotificacao() {
   const msg = LEMBRETES[Math.floor(Math.random() * LEMBRETES.length)];
   self.registration.showNotification("GTG TRACKER — FORÇA E RESISTÊNCIA", {
     body: msg,
-    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230A0A0A"/><text y=".9em" font-size="80">%E2%AD%90</text></svg>',
-    badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="80">%E2%AD%90</text></svg>',
+    icon: "./icons/icon-512.svg",
+    badge: "./icons/icon-192.svg",
     tag: "gtg-lembrete",
     renotify: true,
     requireInteraction: true,

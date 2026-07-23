@@ -322,6 +322,36 @@ async function updateReadinessUI() {
     setTimeout(() => { c.circle.classList.remove("flash-green", "flash-red"); }, 700);
   }
   _saveReadinessHistory().catch(e => console.warn("[storage]", e));
+  _atualizarReadinessTooltips();
+}
+
+function _atualizarReadinessTooltips() {
+  const fatorLabels = { sono: "Sono", stress: "Stress", dor: "Dor", energia: "Energia", hidratacao: "Hidratação", alimentacao: "Alimentação", motivacao: "Motivação" };
+  const fatorEmojis = { sono: "😴", stress: "😰", dor: "💥", energia: "⚡", hidratacao: "💧", alimentacao: "🍽️", motivacao: "🧠" };
+  const invertidos = { stress: true, dor: true };
+  READINESS_FACTOR_KEYS.forEach(k => {
+    const raw = readinessData[k] ?? 5;
+    const invertido = invertidos[k];
+    const normalizado = invertido ? 10 - raw : raw;
+    const peso = readinessWeights[k] ?? 1;
+    const contrib = (normalizado * 10 * peso) / (Object.values(readinessWeights).reduce((a, b) => a + b, 0) || 1);
+    const emoji = fatorEmojis[k] || "";
+    const nome = fatorLabels[k] || k;
+    const labelPeso = peso === 0.7 ? "baixa" : peso === 1.5 ? "alta" : "normal";
+    const zone = getZonaSlider(raw, invertido);
+    const status = zone === "green" ? "✅" : zone === "yellow" ? "⚠️" : zone === "orange" ? "⚠️" : "🔴";
+    const invertStr = invertido ? ` (invertido: ${raw}→${normalizado}/10)` : "";
+    const detail = `${emoji} ${nome}: ${raw}/10${invertStr}\nPeso: ${peso}× (${labelPeso}) · Contribuição: ${contrib.toFixed(1)} pts\nStatus: ${status}`;
+    const idMap = { sono: "valSono", stress: "valStress", dor: "valDor", energia: "valEnergia", hidratacao: "valHidratacao", alimentacao: "valAlimentacao", motivacao: "valMotivacao" };
+    const valEl = document.getElementById(idMap[k]);
+    if (valEl) {
+      const label = valEl.closest(".readiness-slider-label");
+      if (label) {
+        const nameSpan = label.querySelector(".readiness-slider-name");
+        if (nameSpan) nameSpan.setAttribute("data-detail", detail);
+      }
+    }
+  });
 }
 
 function _renderReadinessDecision(config) {

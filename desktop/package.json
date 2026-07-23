@@ -1,0 +1,85 @@
+{
+  "name": "gtg-tracker",
+  "version": "1.0.0",
+  "description": "GTG Tracker — Força e Resistência (Desktop Edition)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "icons": "node scripts/generate-icons.js",
+    "build:web": "cd ../mobile && npx expo export --platform web",
+    "pack": "npm run build:web && npm run icons && electron-builder --dir",
+    "dist": "npm run build:web && npm run icons && electron-builder",
+    "dist:win": "npm run build:web && npm run icons && electron-builder --win",
+    "dist:portable": "npm run build:web && npm run icons && electron-builder --win portable",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.gtgtracker.desktop",
+    "productName": "GTG Tracker",
+    "copyright": "Copyright © 2026 GTG Tracker",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "build/",
+      "scripts/"
+    ],
+    "extraResources": [
+      {
+        "from": "../mobile/dist",
+        "to": "web",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.png",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "GTG Tracker",
+      "installerIcon": "build/icon.png",
+      "uninstallerIcon": "build/icon.png",
+      "installerHeaderIcon": "build/icon.png",
+      "license": "MIT",
+      "displayLanguageSelector": false,
+      "language": "1046",
+      "unicode": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "bamaralf1",
+      "repo": "GTG-tracker",
+      "private": false
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0",
+    "electron-updater": "^6.0.0",
+    "sharp": "^0.33.0"
+  },
+  "author": {
+    "name": "GTG Tracker",
+    "email": "dev@gtgtracker.app"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bamaralf1/GTG-tracker"
+  }
+}
