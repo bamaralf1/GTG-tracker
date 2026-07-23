@@ -42,7 +42,9 @@
         }
       ],
       "icon": "build/icon.png",
-      "artifactName": "${productName}-Setup-${version}.${ext}"
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "signAndEditExecutable": false,
+      "sign": false
     },
     "nsis": {
       "oneClick": false,
@@ -52,10 +54,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "GTG Tracker",
-      "installerIcon": "build/icon.png",
-      "uninstallerIcon": "build/icon.png",
-      "installerHeaderIcon": "build/icon.png",
-      "license": "MIT",
+
       "displayLanguageSelector": false,
       "language": "1046",
       "unicode": true
