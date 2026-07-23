@@ -1,31 +1,16 @@
 {
-  "name": "gtg",
+  "name": "gtg-tracker-monorepo",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "desktop": "cd desktop && npm start",
-    "desktop:dist": "cd desktop && npm run dist",
-    "mobile": "cd mobile && npx expo start",
-    "mobile:android": "cd mobile && npx expo start --android"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bamaralf1/GTG-tracker.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/bamaralf1/GTG-tracker/issues"
-  },
-  "homepage": "https://github.com/bamaralf1/GTG-tracker#readme",
-  "dependencies": {
-    "@capacitor/android": "^8.4.2",
-    "@capacitor/cli": "^8.4.2",
-    "@capacitor/core": "^8.4.2",
-    "@capacitor/ios": "^8.4.2"
+    "test:shared": "cd shared && npm test",
+    "build:mobile:web": "cd mobile && npx expo export --platform web",
+    "build:mobile:android": "cd mobile && npx expo export --platform android",
+    "start:mobile": "cd mobile && npx expo start",
+    "start:desktop": "cd desktop && electron .",
+    "build:desktop": "cd desktop && npm run dist:win",
+    "build:desktop:dir": "cd desktop && npm run pack",
+    "icons:desktop": "cd desktop && npm run icons",
+    "test:all": "npm run test:shared"
   }
 }
