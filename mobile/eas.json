@@ -38,9 +38,9 @@
         "track": "internal"
       },
       "ios": {
-        "appleId": "",
-        "ascAppId": "",
-        "appleTeamId": ""
+        "appleId": "placeholder@example.com",
+        "ascAppId": "PLACEHOLDER",
+        "appleTeamId": "PLACEHOLDER"
       }
     }
   }

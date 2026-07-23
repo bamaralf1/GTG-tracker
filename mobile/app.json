@@ -17,7 +17,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.gtgtracker.mobile",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -37,8 +39,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "gtg-tracker-mobile"
+        "projectId": "5ae7bb67-7ce1-41c8-b074-1499e99d9d69"
       }
-    }
+    },
+    "owner": "bamaralf"
   }
 }
