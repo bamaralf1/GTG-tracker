@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, SafeAreaView, StyleSheet } from 'react-native';
-import Slider from '@react-native-community/slider';
 import { colors, spacing, fontSize } from '../theme/colors';
 import { READINESS_FACTOR_KEYS, getReadinessStatus, getUsuarioFatorDisplay } from '@gtg/shared';
 
